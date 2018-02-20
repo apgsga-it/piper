@@ -1,0 +1,7 @@
+{
+	"dbModules": [
+		"testdbmodule",
+		"testdbAnotherdbModule",
+		"AndSomeOther"
+	]
+}

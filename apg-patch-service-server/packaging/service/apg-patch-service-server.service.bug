@@ -1,0 +1,10 @@
+[Unit]
+Description=Apg Patch Service Server
+
+[Service]
+ExecStart=/usr/bin/java -jar ${homeDir}/bin/${project.name}-all.jar
+User=${user}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

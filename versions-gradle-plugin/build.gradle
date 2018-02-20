@@ -1,0 +1,16 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+configurations {
+	all*.exclude group: 'ch.qos.logback' , module: 'logback-classic'
+	all*.exclude group: 'org.apache.logging.log4j' , module: '*'
+}
+
+dependencies {
+	compile project(':apg-patch-artifact-querymanager')
+	compile gradleApi()
+	compile localGroovy()
+	testCompile group: 'junit', name: 'junit', version: '4.9'
+}
+

@@ -1,0 +1,64 @@
+plugins {
+  id "io.spring.dependency-management" version "1.0.4.RELEASE"
+}
+
+project.ext {
+	mavenLocalRepo = repositories.mavenLocal().url
+}
+allprojects  {
+	apply plugin: 'maven'
+	group = 'com.apgsga.patchframework'
+	version  = '0.7.5'
+}
+
+subprojects {
+	apply plugin: 'java'
+	apply plugin: "io.spring.dependency-management"
+	apply plugin: 'maven-publish'
+	apply plugin: 'eclipse'
+
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+	tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
+	
+	eclipse {
+    	// TODO
+	}
+	repositories {
+		mavenLocal()
+		maven { url "http://mavenrepo.apgsga.ch/nexus/content/groups/public/" }
+		maven { url "http://mavenrepo.apgsga.ch/nexus/content/repositories/releases/" }
+		maven { url "http://mavenrepo.apgsga.ch/nexus/content/repositories/snapshots/" }
+		maven { url "http://mavenrepo.apgsga.ch/nexus/content/groups/public-snapshots/" }
+		maven { url "http://repo.maven.apache.org/maven2" }
+	}
+
+	dependencyManagement { imports {  mavenBom 'com.affichage.common.maven:dm-bom:9.0.6.ADMIN-UIMIG-SNAPSHOT' } }
+
+	task sourcesJar ( type: Jar) {
+		classifier 'sources'
+		from sourceSets.main.allJava
+	}
+	
+	publishing {
+		publications {
+			mavenJava(MavenPublication) { 
+				from components.java 
+				artifact sourcesJar
+			}
+		}
+		def repoTarget = version.endsWith("SNAPSHOT") ? "snapshots" : "releases"
+		repositories {
+			maven {
+				name ='deployRepo'
+				url  "http://mavenrepo.apgsga.ch/nexus/content/repositories/${repoTarget}/"
+				credentials {
+					username = repoUser
+					password = repoPassword
+				}
+			}
+		}
+	}
+	
+
+}

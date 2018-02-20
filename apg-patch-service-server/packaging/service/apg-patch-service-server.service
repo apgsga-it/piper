@@ -1,0 +1,11 @@
+[Unit]
+Description=Apg Patch Service Server
+
+[Service]
+ExecStart=/usr/bin/java -jar /opt/apg-patch-service-server/bin/apg-patch-service-server.jar --spring.config.location=file:/etc/opt/apg-patch-service-server/application.properties  --logging.config=/etc/opt/apg-patch-service-server/logback.xml
+User=apg-patch-service-server
+WorkingDirectory=/var/opt/apg-patch-service-server
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

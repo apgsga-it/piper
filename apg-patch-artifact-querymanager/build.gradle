@@ -1,0 +1,61 @@
+apply plugin: 'groovy'
+description = 'Apg Patch Maven Artifact Querymanager'
+jar {
+	baseName = 'apg-patch-artifact-querymanager'
+}
+
+println "Maven Local Repo is : ${rootProject.mavenLocalRepo}"
+
+dependencies {
+	compile project(':apg-patch-service-common')
+	compile group: 'org.codehaus.plexus', name: 'plexus-utils', version: '3.0.10'
+	compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
+	compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
+	compile group: 'org.eclipse.aether', name: 'aether-api', version: '1.1.0'
+	compile group: 'org.eclipse.aether', name: 'aether-spi', version: '1.1.0'
+	compile group: 'org.eclipse.aether', name: 'aether-util', version: '1.1.0'
+	compile group: 'org.eclipse.aether', name: 'aether-impl', version: '1.1.0'
+	compile group: 'org.eclipse.aether', name: 'aether-connector-basic', version: '1.1.0'
+	compile group: 'org.eclipse.aether', name: 'aether-transport-file', version: '1.1.0'
+	compile group: 'org.eclipse.aether', name: 'aether-transport-http', version: '1.1.0'
+	compile group: 'org.apache.maven', name: 'maven-aether-provider', version: '3.1.0'
+	compile ('org.eclipse.sisu:org.eclipse.sisu.plexus:0.1.1') {
+		exclude group: 'javax.enterprise', module: 'cdi-api'
+	}
+	compile group: 'commons-io', name: 'commons-io'
+	compile group: 'commons-lang', name: 'commons-lang'
+	testCompile group: 'junit', name: 'junit'
+	testCompile group: 'commons-collections', name: 'commons-collections'
+	testCompile group: 'org.springframework', name: 'spring-test'
+	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'	
+	testCompile group: 'org.codehaus.groovy' , name: 'groovy-all', version: '2.0.0'
+}
+
+def propertyFileLocation = "$buildDir/mavenLocal.properties"
+class CreateFile extends DefaultTask {
+	@OutputDirectory 
+	File outputDir
+  	@OutputFile
+    File prorpertiesFile
+}
+task createFile (type: CreateFile) {
+	outputDir = file("$buildDir")
+	prorpertiesFile = file(propertyFileLocation)
+}
+task mavenLocalProp (type : WriteProperties) {
+	encoding = "UTF-8"
+	outputFile= file(propertyFileLocation)
+	property "mavenLocalRepo", "${rootProject.mavenLocalRepo}"
+	println properties
+	doLast() {
+		writeProperties()
+	}
+}
+mavenLocalProp.dependsOn createFile
+test.dependsOn mavenLocalProp
+
+
+		
+
+	
+		

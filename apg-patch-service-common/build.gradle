@@ -1,0 +1,14 @@
+description = 'Common Api of the Microservice Patch Client / Server '
+jar {
+	baseName = 'apg-patch-service-common'
+}
+dependencies {
+	compile('com.affichage:dao-persistence') {
+		transitive = false
+	}
+	compile group: 'org.springframework', name: 'spring-web'
+	compile group: 'commons-lang', name: 'commons-lang'
+	compile group: 'commons-io', name: 'commons-io'
+	compile group: 'com.google.guava', name: 'guava'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.8.4'
+}

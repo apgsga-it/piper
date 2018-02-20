@@ -1,0 +1,102 @@
+plugins {
+  	id 'groovy'
+   id 'application'
+	id "com.github.johnrengelman.shadow" version "2.0.2"
+  	id "nebula.ospackage" version "4.6.0"
+}
+apply plugin: "nebula.ospackage"
+apply plugin: 'groovy'
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+version = "0.8.1"
+
+mainClassName = 'com.apgsga.patch.service.client.Pcli'
+
+jar {
+	baseName = "apg-patch-service-cli"
+} 
+
+shadowJar {
+	baseName = "apg-patch-service-cli"
+}
+
+
+dependencies {
+	// Application dependencies
+	compile project(':apg-patch-service-common')
+	compile group: 'org.codehaus.groovy' , name: 'groovy-all', version: '2.4.1'
+	compile 'org.codehaus.groovy:groovy-backports-compat23:2.4.5'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.8.4'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.4'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.4'
+	runtime group: 'commons-cli' , name: 'commons-cli', version: '1.4'
+	testCompile project(':apg-patch-service-server')
+	testCompile group: 'org.springframework', name: 'spring-test'
+	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'	
+	testCompile 'org.spockframework:spock-spring:1.1-groovy-2.4'
+	testCompile 'cglib:cglib-nodep:3.2.2' // for stubbing of classes
+
+}
+
+sourceSets {
+  test {
+    resources {
+      srcDir 'src/test/groovy'
+      include '**/*.properties'
+    }
+  }
+}
+
+def homeDir = "/opt/apg-patch-service-cli"
+
+// Netflix Nebula Os Package Configuration, see : https://github.com/nebula-plugins/gradle-ospackage-plugin/wiki
+ospackage {
+	packageName = "apg-patch-service-cli"
+	version = "${project.version}"
+	release = 2
+	os = LINUX
+	type = BINARY
+	arch = NOARCH
+
+	into "${homeDir}"
+	user "apg-patch-service-cli"
+	permissionGroup "apg-patch-service-cli"
+	
+	preInstall file("packaging/rpm/add-user-group.sh")
+	postInstall "chown -R ${user}:${permissionGroup} ${homeDir}"
+
+	
+	// Copy the actual .jar file
+	from(shadowJar) {
+		// Strip the version from the jar filename
+		rename { String fileName ->
+			fileName.replace("-${project.version}", "")
+		}
+		fileMode 0775
+		into "bin"
+	}
+	
+	from("src/main/resources") { 
+		include "*.sh"
+		fileMode 0777
+	}
+	
+	from("src/main/resources") { 
+		include "*.xml"
+		fileMode 0666
+	}
+	
+
+}
+
+// Configure our RPM build task
+buildRpm {
+
+	// Log directory 
+	directory("${homeDir}/log", 0755)	
+	directory("${homeDir}/bin", 0755)	
+}
+
+
