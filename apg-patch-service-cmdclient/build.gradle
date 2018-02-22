@@ -10,7 +10,6 @@ apply plugin: 'groovy'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-version = "0.8.1"
 
 mainClassName = 'com.apgsga.patch.service.client.Pcli'
 
