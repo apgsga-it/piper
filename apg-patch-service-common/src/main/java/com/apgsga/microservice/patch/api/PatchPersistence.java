@@ -11,11 +11,11 @@ public interface PatchPersistence {
 
 	public List<String> findAllPatchIds();
 
-	public void save(Patch patch);
+	public void savePatch(Patch patch);
 
-	public void remove(Patch patch);
+	public void removePatch(Patch patch);
 
-	public void save(DbModules dbModules);
+	public void saveDbModules(DbModules dbModules);
 
 	public DbModules getDbModules();
 

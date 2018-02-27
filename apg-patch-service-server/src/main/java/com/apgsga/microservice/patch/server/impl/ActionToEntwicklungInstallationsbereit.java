@@ -71,7 +71,7 @@ public class ActionToEntwicklungInstallationsbereit implements ActionExecuteStat
 		Integer tagNr = patch.getTagNr();
 		String patchBranch = patch.getDbPatchBranch();
 		patch.setPatchTag(patchBranch + "_" + tagNr.toString());
-		repo.save(patch);
+		repo.savePatch(patch);
 	}
 
 }

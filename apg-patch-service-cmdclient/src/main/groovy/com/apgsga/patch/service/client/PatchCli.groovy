@@ -51,8 +51,12 @@ class PatchCli {
 			cmdResults.results['r'] =  result
 		}
 		if (options.s) {
-			def result = savePatch(options,patchClient)
+			def result = uploadPatch(options,patchClient)
 			cmdResults.results['s']=  result
+		}
+		if (options.sa) {
+			def result = savePatch(options,patchClient)
+			cmdResults.results['sa']=  result
 		}
 		if (options.dd) {
 			def result = downloadDbModules(options,patchClient)
@@ -89,6 +93,7 @@ class PatchCli {
 			a longOpt: 'findAllIds','Retrieve and print all PatchIds', required: false
 			r longOpt: 'remove', args:1, argName: 'patchNumber', 'Remove Patch with <patchNumber>', required: false
 			s longOpt: 'save', args:1, argName: 'patchFile', 'Uploads a <patchFile> to the server', required: false
+			sa longOpt: 'save', args:1, argName: 'patchFile', 'Saves a <patchFile> to the server, which starts a Patchpile', required: false
 			dd longOpt: 'downloadDbmodules', args:1, argName: 'directory', 'Download Dbmodules from server to <directory>', required: false
 			ud longOpt: 'uploadDbmodules', args:1, argName: 'file', 'Upload Dbmodules from <file> to server', required: false
 			dm longOpt: 'downloadServicesMeta', args:1, argName: 'directory', 'Download ServiceMetaData from server to <directory>', required: false
@@ -147,6 +152,15 @@ class PatchCli {
 				error = true
 			}
 		}
+		
+		if (options.sa) {
+			def patchFile = new File(options.sa)
+			if (!patchFile.exists() | !patchFile.file) {
+				println "Patch File ${options.sa} not valid: either not a file or it doesn't exist"
+				error = true
+			}
+		} 
+		
 		if (options.dd) {
 			def directory = new File(options.dd)
 			if (!directory.exists() | !directory.directory) {
@@ -247,9 +261,16 @@ class PatchCli {
 		return cmdResult
 	}
 
-
 	def savePatch(def options, def patchClient) {
-		patchClient.save(new File(options.s), Patch.class)
+		patchClient.save(new File(options.sa), Patch.class)
+		def cmdResult = new Expando()
+		cmdResult.patchFile = options.sa
+		return cmdResult
+	}
+
+
+	def uploadPatch(def options, def patchClient) {
+		patchClient.savePatch(new File(options.s), Patch.class)
 		def cmdResult = new Expando()
 		cmdResult.patchFile = options.s
 		return cmdResult
@@ -260,7 +281,7 @@ class PatchCli {
 		println "Reading: ${options.r} to remove from server"
 		def patchData = patchClient.findById(options.r)
 		println "Removing Patch ${options.r}"
-		patchClient.remove(patchData)
+		patchClient.removePatch(patchData)
 		println "Remove Patch ${options.r} done."
 		def cmdResult = new Expando();
 		cmdResult.patchNumber = options.r
@@ -286,7 +307,7 @@ class PatchCli {
 		cmdResult.fileNames = []
 		ObjectMapper mapper = new ObjectMapper();
 		new File(options.l).eachFileMatch(~"^Patch.*.json") { file ->
-			patchClient.save(file, Patch.class)
+			patchClient.uploadPatch(file, Patch.class)
 			cmdResult.fileNames << file.absolutePath
 			found = true
 		}
@@ -320,7 +341,7 @@ class PatchCli {
 		println "Uploading Dbmodules from ${options.ud}"
 		ObjectMapper mapper = new ObjectMapper();
 		def dbModules = mapper.readValue(new File("${options.ud}"), DbModules.class)
-		patchClient.save(dbModules)
+		patchClient.saveDbModules(dbModules)
 	}
 
 	def downloadServiceMetaData(def options, def patchClient) {

@@ -103,7 +103,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public Patch save(Patch patch) {
 		Preconditions.checkNotNull(patch.getPatchNummer(), "Patchnummer null");
 		preProcessSave(patch);
-		repo.save(patch);
+		repo.savePatch(patch);
 		return patch;
 	}
 
@@ -129,7 +129,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public void remove(Patch patch) {
 		Preconditions.checkNotNull(patch.getPatchNummer(), "Patchnummer null");
-		repo.remove(patch);
+		repo.removePatch(patch);
 	}
 
 	private void createBranchForDbModules(Patch patch) {
@@ -187,7 +187,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public synchronized void startInstallPipeline(Patch patch) {
-		repo.save(patch);
+		repo.savePatch(patch);
 		String installationTarget = patch.getInstallationTarget(); 
 		TargetSystemEnviroment installationTargetData = repo.getInstallationTarget(installationTarget); 
 		Assert.notNull(installationTargetData, "Installationtarget : " + installationTarget + " not found");

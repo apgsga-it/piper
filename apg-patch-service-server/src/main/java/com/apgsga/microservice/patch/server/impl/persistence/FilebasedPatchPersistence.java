@@ -89,7 +89,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	}
 
 	@Override
-	public synchronized void save(Patch patch) {
+	public synchronized void savePatch(Patch patch) {
 		try {
 			File patchFile = createPatchFile(patch.getPatchNummer());
 			ObjectMapper mapper = new ObjectMapper();
@@ -102,7 +102,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	}
 
 	@Override
-	public synchronized void remove(Patch patch) {
+	public synchronized void removePatch(Patch patch) {
 		try {
 			File patchFile = createPatchFile(patch.getPatchNummer());
 			patchFile.delete();
@@ -163,7 +163,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	}
 
 	@Override
-	public void save(DbModules dbModules) {
+	public void saveDbModules(DbModules dbModules) {
 		try {
 			File dbModulesFile = createDbModulesFile();
 			ObjectMapper mapper = new ObjectMapper();

@@ -9,5 +9,16 @@ public interface PatchOpService  {
 	 * @param toStatus
 	 */
 	public void executeStateTransitionAction(String patchNumber, String toStatus);
+	
+	
+	/**
+	 * All changes on a patch Object need to be saved.
+	 * @param patch a Patch Object
+	 * @return MicroservicePatch with Server added data
+	 * @throws PatchContainerException
+	 */
+	public Patch save(Patch patch);
+
+
 
 }

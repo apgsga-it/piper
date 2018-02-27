@@ -35,8 +35,6 @@ public class MicroservicePatchClient implements PatchService {
 
 	private static final String REMOVE = "/remove";
 
-	private static final String STATE_CHANGE = "/executeStateChangeAction/{patchNumber}/{toStatus}";
-
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 
 	private String baseUrl;

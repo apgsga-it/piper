@@ -61,8 +61,8 @@ public class FilebasedPersistenceTest {
 			Assert.fail("Unable to copy ServiceData.json test file into testDb folder");
 		}
 		
-		repo.save(testPatch5401);
-		repo.save(testPatch5402);
+		repo.savePatch(testPatch5401);
+		repo.savePatch(testPatch5402);
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class FilebasedPersistenceTest {
 		List<DbObject> dbOList = Lists.newArrayList();
 		dbOList.add(new DbObjectBean("FileName1", "FilePath1"));
 		result.setDbObjects(dbOList);
-		persistence.save(result);
+		persistence.savePatch(result);
 		Patch upDatedresult = persistence.findById("5402");
 		assertNotNull(upDatedresult);
 		assertEquals("XXXX", upDatedresult.getBaseVersionNumber());

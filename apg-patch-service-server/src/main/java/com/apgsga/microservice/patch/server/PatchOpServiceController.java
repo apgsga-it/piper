@@ -58,9 +58,17 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
 	@Override
-	public void save(@RequestBody Patch patch) {
-		repo.save(patch);
+	public Patch save(@RequestBody Patch patch) {
+		return patchService.save(patch);
 	}
+	
+	@RequestMapping(value = "/savePatch", method = RequestMethod.POST)
+	@ResponseBody
+	@Override
+	public void savePatch(@RequestBody Patch patch) {
+		repo.savePatch(patch);
+	}
+
 
 	@RequestMapping(value = "/findAllPatchIds", method = RequestMethod.GET)
 	@ResponseBody
@@ -69,16 +77,16 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		return repo.findAllPatchIds();
 	}
 
-	@RequestMapping(value = "/remove", method = RequestMethod.POST)
+	@RequestMapping(value = "/removePatch", method = RequestMethod.POST)
 	@Override
-	public void remove(@RequestBody Patch patch) {
-		repo.remove(patch);
+	public void removePatch(@RequestBody Patch patch) {
+		repo.removePatch(patch);
 	}
 
 	@RequestMapping(value = "/saveDbModules", method = RequestMethod.POST)
 	@Override
-	public void save(@RequestBody DbModules dbModules) {
-		repo.save(dbModules);
+	public void saveDbModules(@RequestBody DbModules dbModules) {
+		repo.saveDbModules(dbModules);
 	}
 
 	@RequestMapping(value = "/getDbModules", method = RequestMethod.GET)

@@ -70,8 +70,8 @@ public class MicroServicePatchClientTest {
 			Assert.fail("Unable to copy ServiceData.json test file into testDb folder");
 		}
 
-		repo.save(testPatch5401);
-		repo.save(testPatch5402);
+		repo.savePatch(testPatch5401);
+		repo.savePatch(testPatch5402);
 	}
 
 	@Test

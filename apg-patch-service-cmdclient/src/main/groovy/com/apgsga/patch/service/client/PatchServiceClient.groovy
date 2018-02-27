@@ -51,6 +51,14 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 	}
 	
 
+	public void savePatch(File patchFile, Class<Patch> clx) {
+		println "File ${patchFile} to be uploaded"
+		ObjectMapper mapper = new ObjectMapper();
+		def patchData = mapper.readValue(patchFile, clx)
+		savePatch(patchData)
+	}
+
+	
 	public void save(File patchFile, Class<Patch> clx) {
 		println "File ${patchFile} to be uploaded"
 		ObjectMapper mapper = new ObjectMapper();
@@ -58,14 +66,17 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 		save(patchData)
 	}
 
-
 	@Override
-	public void save(Patch patch) {
+	public Patch save(Patch patch) {
 		restTemplate.postForLocation(getRestBaseUri() + "/save", patch);
-		println patch.toString() + " uploaded."	
+		println patch.toString() + " Saved Patch."
 	}
 
-
+	@Override
+	public void savePatch(Patch patch) {
+		restTemplate.postForLocation(getRestBaseUri() + "/savePatch", patch);
+		println patch.toString() + " uploaded."
+	}
 
 	@Override
 	public List<String> findAllPatchIds() {
@@ -75,12 +86,12 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 
 
 	@Override
-	public void remove(Patch patch) {
-		restTemplate.postForLocation(getRestBaseUri() + "/remove", patch);
+	public void removePatch(Patch patch) {
+		restTemplate.postForLocation(getRestBaseUri() + "/removePatch", patch);
 	}
 
 	@Override
-	public void save(DbModules dbModules) {
+	public void saveDbModules(DbModules dbModules) {
 		restTemplate.postForLocation(getRestBaseUri() + "/saveDbModules", dbModules);
 	}
 
@@ -137,4 +148,6 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 		// TODO Auto-generated method stub
 
 	}
+
+
 }
