@@ -23,30 +23,28 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 
 	private String propertyVersionParentFilePath;
 	private ArtifactManager artifactManager;
-	private String bomVersionId;
 	private Resource propertyFileResource;
 
 	public PropertyFileBasedVersionManager(String propertyVersionFilePath, URI mavenLocalPath, String bomGroupId,
-			String bomArtifactId, String bomVersionId) {
+			String bomArtifactId) {
 		super();
 		this.propertyVersionParentFilePath = propertyVersionFilePath;
 		this.artifactManager = ArtifactManager.create(bomGroupId, bomArtifactId, mavenLocalPath.getPath());
-		this.bomVersionId = bomVersionId;
 
 	}
 
 	@Override
-	public String getVersionFor(String group, String name) {
-		Properties versionsProperties = getProperties();
+	public String getVersionFor(String group, String name, String bomVersion) {
+		Properties versionsProperties = getProperties(bomVersion);
 		return versionsProperties.getProperty(group + ":" + name);
 
 	}
 
-	private Properties getProperties() {
+	private Properties getProperties(String bomVersion) {
 		Properties versionsProperties = null;
 		if (propertyFileResource == null) {
 			createPropertyFile();
-			versionsProperties = intialLoad();
+			versionsProperties = intialLoad(bomVersion);
 			storeProperties(versionsProperties);
 		} else {
 			versionsProperties = loadVersionProperties(propertyFileResource);
@@ -93,10 +91,10 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 	}
 
 
-	private Properties intialLoad() {
+	private Properties intialLoad(String bomVersion) {
 		Properties versionsProperties;
 		try {
-			versionsProperties = artifactManager.getVersionsProperties(bomVersionId);
+			versionsProperties = artifactManager.getVersionsProperties(bomVersion);
 			return versionsProperties;
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
 			throw new RuntimeException(e);
@@ -117,7 +115,7 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 
 	@Override
 	public void updateVersion(String group, String name, String version) {
-		Properties properties = getProperties();
+		Properties properties = getProperties(version);
 		properties.replace(group + ":" + name, version);
 		storeProperties(properties);
 	}
