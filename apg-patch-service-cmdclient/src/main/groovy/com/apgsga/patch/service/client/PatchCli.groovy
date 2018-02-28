@@ -78,6 +78,14 @@ class PatchCli {
 			def result = stateChangeAction(options,patchClient)
 			cmdResults.results['sta'] = result
 		}
+		if (options.la) {
+			def result = listAllFiles(options,patchClient)
+			cmdResults.results['la'] = result
+		}
+		if (options.lf) {
+			def result = listFiles(options,patchClient)
+			cmdResults.results['lf'] = result
+		}
 		cmdResults.returnCode = 0
 		return cmdResults
 	}
@@ -98,6 +106,8 @@ class PatchCli {
 			ud longOpt: 'uploadDbmodules', args:1, argName: 'file', 'Upload Dbmodules from <file> to server', required: false
 			dm longOpt: 'downloadServicesMeta', args:1, argName: 'directory', 'Download ServiceMetaData from server to <directory>', required: false
 			um longOpt: 'uploadServicesMeta', args:1, argName: 'file', 'Upload ServiceMetaData from <file> to server', required: false
+			la longOpt: 'listAllFiles', 'List all files on server', required: false	
+			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
 			sta longOpt: 'stateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Start State Change for a Patch with <patchNumber> to <toState>', required: false
 		}
 
@@ -242,7 +252,7 @@ class PatchCli {
 			retrieveAndWritePatch(id,options.d, patchClient)
 		}
 		cmdResult.patchNumbers = ids
-		cmdResult.directory = option.d
+		cmdResult.directory = options.d
 		return cmdResult
 	}
 
@@ -251,6 +261,20 @@ class PatchCli {
 		println "All Patch Ids: ${ids}"
 		def cmdResult = new Expando()
 		cmdResult.patchNumbers = ids
+	}
+	
+	def listAllFiles(def options,def patchClient) {
+		List<String> files =  patchClient.listAllFiles()
+		println "All Files on server: ${files}"
+		def cmdResult = new Expando()
+		cmdResult.files = files
+	}
+	
+	def listFiles(def options,def patchClient) {
+		List<String> files =  patchClient.listFiles(options.lf)
+		println "Files with ${options.lf} as prefix on server: ${files}"
+		def cmdResult = new Expando()
+		cmdResult.files = files
 	}
 
 	def patchExists(def options, def patchClient) {

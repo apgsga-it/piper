@@ -119,6 +119,22 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 			@PathVariable("toStatus") String toStatus) {
 		patchService.executeStateTransitionAction(patchNumber, toStatus);
 	}
+	
+	
+
+	@RequestMapping(value = "/listAllFiles", method = RequestMethod.GET)
+	@ResponseBody
+	@Override
+	public List<String> listAllFiles() {
+		return repo.listAllFiles(); 
+	}
+
+	@RequestMapping(value = "/listFiles/{prefix}", method = RequestMethod.GET)
+	@ResponseBody
+	@Override
+	public  List<String> listFiles(@PathVariable("prefix") String prefix) {
+		return repo.listFiles(prefix);
+	}
 
 	@Override
 	public void saveTargetSystemEnviroments(List<TargetSystemEnviroment> installationTargets) {

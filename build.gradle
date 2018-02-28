@@ -8,7 +8,7 @@ project.ext {
 allprojects  {
 	apply plugin: 'maven'
 	group = 'com.apgsga.patchframework'
-	version  = '0.8.0'
+	version  = '0.8.1'
 }
 
 subprojects {
@@ -26,11 +26,10 @@ subprojects {
 	}
 	repositories {
 		mavenLocal()
-		maven { url "http://mavenrepo.apgsga.ch/nexus/content/groups/public/" }
-		maven { url "http://mavenrepo.apgsga.ch/nexus/content/repositories/releases/" }
-		maven { url "http://mavenrepo.apgsga.ch/nexus/content/repositories/snapshots/" }
-		maven { url "http://mavenrepo.apgsga.ch/nexus/content/groups/public-snapshots/" }
-		maven { url "http://repo.maven.apache.org/maven2" }
+		maven { url "${mavenRepoBaseUrl}/groups/public/" }
+		maven { url "${mavenRepoBaseUrl}/repositories/releases/" }
+		maven { url "${mavenRepoBaseUrl}/repositories/snapshots/" }
+		maven { url "${mavenRepoBaseUrl}/groups/public-snapshots/" }
 	}
 
 	dependencyManagement { imports {  mavenBom 'com.affichage.common.maven:dm-bom:9.0.6.ADMIN-UIMIG-SNAPSHOT' } }
@@ -51,7 +50,7 @@ subprojects {
 		repositories {
 			maven {
 				name ='deployRepo'
-				url  "http://mavenrepo.apgsga.ch/nexus/content/repositories/${repoTarget}/"
+				url  "${mavenRepoBaseUrl}/repositories/${repoTarget}/"				
 				credentials {
 					username = repoUser
 					password = repoPassword

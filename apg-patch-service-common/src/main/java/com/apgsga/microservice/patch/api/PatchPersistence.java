@@ -30,6 +30,10 @@ public interface PatchPersistence {
 	public TargetSystemEnviroment getInstallationTarget(String installationTarget);
 
 	public ServiceMetaData findServiceByName(String serviceName);
+	
+	public List<String> listAllFiles();
+	
+	public List<String> listFiles(String prefix); 
 
 	public void clean();
 

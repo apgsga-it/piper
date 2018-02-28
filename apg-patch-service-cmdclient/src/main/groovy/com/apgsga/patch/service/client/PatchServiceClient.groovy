@@ -1,5 +1,6 @@
 package com.apgsga.patch.service.client
 
+import java.util.List
 import java.util.Map
 
 import org.springframework.web.client.RestTemplate
@@ -104,8 +105,21 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 	@Override
 	public void saveServicesMetaData(ServicesMetaData serviceData) {
 		restTemplate.postForLocation(getRestBaseUri() + "/saveServicesMetaData", serviceData);
-
 	}
+	
+	
+
+	@Override
+	public List<String> listAllFiles() {
+		return restTemplate.getForObject(getRestBaseUri() + "/listAllFiles",  String[].class);
+	}
+
+
+	@Override
+	public List<String> listFiles(String prefix) {
+		return restTemplate.getForObject(getRestBaseUri() + "/listFiles/{prefix}", String[].class, [prefix:prefix]);
+	}
+
 
 	@Override
 	public ServicesMetaData getServicesMetaData() {

@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-java -jar bin/apg-patch-service-cli-all.jar
+java -jar apg-patch-cli.jar $@

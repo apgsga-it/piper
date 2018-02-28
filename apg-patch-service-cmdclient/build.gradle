@@ -2,23 +2,23 @@ plugins {
   	id 'groovy'
    id 'application'
 	id "com.github.johnrengelman.shadow" version "2.0.2"
-  	id "nebula.ospackage" version "4.6.0"
 }
-apply plugin: "nebula.ospackage"
 apply plugin: 'groovy'
-
+apply plugin: "com.github.johnrengelman.shadow"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-mainClassName = 'com.apgsga.patch.service.client.Pcli'
-
+mainClassName = 'pli'
+def repoTarget= version.endsWith("SNAPSHOT") ? "snapshots" : "releases"
 jar {
-	baseName = "apg-patch-service-cli"
+	baseName = "apg-patch-cli"
 } 
 
 shadowJar {
-	baseName = "apg-patch-service-cli"
+	baseName = "apg-patch-cli"
+	classifier = null
+   	version = null
 }
 
 
@@ -48,54 +48,56 @@ sourceSets {
   }
 }
 
-def homeDir = "/opt/apg-patch-service-cli"
+task pkgAsGTar(type: Tar) {
+	from "$project.buildDir/apg-patch-cli"
+	archiveName = "apg-patch-cli.tar.gz"
+	compression = Compression.GZIP
+}
 
-// Netflix Nebula Os Package Configuration, see : https://github.com/nebula-plugins/gradle-ospackage-plugin/wiki
-ospackage {
-	packageName = "apg-patch-service-cli"
-	version = "${project.version}"
-	release = 2
-	os = LINUX
-	type = BINARY
-	arch = NOARCH
+task copyLib( type: Copy ) {
+	into "$project.buildDir/apg-patch-cli"
+	from shadowJar
+	fileMode 0755
+	// In lib we only want jars files to go in lib folder (no dll, exe, bat, etc...)
+	include "*.jar"
+}
 
-	into "${homeDir}"
-	user "apg-patch-service-cli"
-	permissionGroup "apg-patch-service-cli"
-	
-	preInstall file("packaging/rpm/add-user-group.sh")
-	postInstall "chown -R ${user}:${permissionGroup} ${homeDir}"
+task copyResources (type: Copy) {
+	from sourceSets.main.resources
+	into "$project.buildDir/apg-patch-cli"
+	fileMode 0755
+}
 
-	
-	// Copy the actual .jar file
-	from(shadowJar) {
-		// Strip the version from the jar filename
-		rename { String fileName ->
-			fileName.replace("-${project.version}", "")
+
+publishing {
+	publications {
+		cligtar(MavenPublication) {
+			artifact source: pkgAsGTar, extension: 'tar.gz'
+			
+			artifactId = 'apg-patch-cli'
+
+
+
+			pom.withXml { asNode().appendNode('description', 'From versions.properties generated dependency management pom.xml') }
 		}
-		fileMode 0775
-		into "bin"
 	}
-	
-	from("src/main/resources") { 
-		include "*.sh"
-		fileMode 0777
+	repositories {
+		maven {
+			name ='deployRepo'
+			url  "${mavenRepoBaseUrl}/repositories/${repoTarget}/"
+			credentials {
+				username = repoUser
+				password = repoPassword
+			}
+		}
+
 	}
-	
-	from("src/main/resources") { 
-		include "*.xml"
-		fileMode 0666
-	}
-	
 
 }
 
-// Configure our RPM build task
-buildRpm {
-
-	// Log directory 
-	directory("${homeDir}/log", 0755)	
-	directory("${homeDir}/bin", 0755)	
-}
+assemble { dependsOn  copyResources, copyLib,pkgAsGTar}
+build {dependsOn assemble }
+publish {dependsOn build }
+publishToMavenLocal {dependsOn build }
 
 

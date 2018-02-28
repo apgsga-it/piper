@@ -14,7 +14,6 @@ import org.springframework.util.Assert;
 
 import com.apgsga.microservice.patch.api.DbModules;
 import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchOpService;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
@@ -178,7 +177,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		try {
 			File dbModulesFile = createDbModulesFile();
 			if (!dbModulesFile.exists()) {
-				return null; 
+				return null;
 			}
 			ObjectMapper mapper = new ObjectMapper();
 			DbModules result = mapper.readValue(dbModulesFile, DbModules.class);
@@ -195,6 +194,27 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 				.collect(Collectors.toList());
 		Assert.isTrue(result.size() == 1, "Must be one , was: " + result.size());
 		return result.get(0);
+	}
+
+	@Override
+	public List<String> listAllFiles() {
+		try {
+			File[] listFiles = storagePath.getFile().listFiles();
+			return Lists.newArrayList(listFiles).stream().map(f -> f.getName()).collect(Collectors.toList());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public List<String> listFiles(String prefix) {
+		try {
+			File[] listFiles = storagePath.getFile().listFiles();
+			return Lists.newArrayList(listFiles).stream().filter(f -> f.getName().startsWith(prefix))
+					.map(f -> f.getName()).collect(Collectors.toList());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

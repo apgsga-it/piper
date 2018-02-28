@@ -59,7 +59,6 @@ def repoTarget= version.endsWith("SNAPSHOT") ? "snapshots" : "releases"
 def homeDir = "/opt/${project.name}"
 
 
-
 // Netflix Nebula Os Package Configuration, see : https://github.com/nebula-plugins/gradle-ospackage-plugin/wiki
 ospackage {
 	packageName = "${project.name}"
@@ -108,8 +107,8 @@ ospackage {
 	}
 	from("packaging/app/db") {
 		into "/var/opt/${project.name}/db"
-		user 'root'
-		permissionGroup 'root'
+		user "${user}"
+		permissionGroup "${permissionGroup}"
 		fileMode 0755 
 	}
 }
@@ -135,7 +134,7 @@ publishing {
 		mavenJava(MavenPublication) {
 			artifact buildRpm  {
 				extension "rpm"
-				classifier "noarch"
+				classifier "centos"
 			}
 		}
 	}
