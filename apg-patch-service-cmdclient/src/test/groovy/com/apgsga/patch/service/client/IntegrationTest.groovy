@@ -18,10 +18,14 @@ import com.apgsga.microservice.patch.api.PatchOpService
 import com.apgsga.microservice.patch.api.PatchPersistence
 import com.apgsga.microservice.patch.api.ServiceMetaData
 import com.apgsga.microservice.patch.api.ServicesMetaData
+import com.apgsga.microservice.patch.api.TargetSystemEnviroment
+import com.apgsga.microservice.patch.api.TargetSystemEnvironments
+import com.apgsga.microservice.patch.api.impl.TargetSystemEnviromentBean
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap.Empty
+import com.google.common.collect.Lists
 
 import spock.lang.Specification;
 
@@ -226,6 +230,49 @@ public class IntegrationTest extends Specification {
 			ObjectMapper mapper = new ObjectMapper();
 			mapper.readValue(dbFile,  ServicesMetaData.class).equals(mapper.readValue(copiedFile, ServicesMetaData.class))
 		cleanup:
+			repo.clean()
+	}
+	
+	def "Patch Cli upload TargetSystemEnvironments to server"() {
+		setup:
+			def client = PatchCli.create()
+		when:
+			def result = client.process(["-u", baseUrl, "-ut", "src/test/resources/TargetSystemEnvironments.json"])
+		then:
+			result != null
+			result.returnCode == 0
+			def dbFile = new File("${dbLocation}/InstallationTargets.json")
+			def sourceFile = new File("src/test/resources/TargetSystemEnvironments.json")
+			ObjectMapper mapper = new ObjectMapper();
+			TargetSystemEnviromentBean[] targetsDb = mapper.readValue(dbFile, TargetSystemEnviromentBean[].class);		
+			def targetsDbList = Lists.newArrayList(targetsDb)
+			TargetSystemEnvironments source = mapper.readValue(sourceFile, TargetSystemEnvironments.class)
+			def sourceList = source.getTargetSystemEnviroments();
+			sourceList.equals(targetsDbList)
+		 cleanup:
+		 	repo.clean()
+	}
+	
+	def "Patch Cli download TargetSystemEnvironments from server"() {
+		setup:
+			def client = PatchCli.create()
+		when:
+			def preConResult = client.process(["-u", baseUrl, "-ut", "src/test/resources/TargetSystemEnvironments.json"])
+			def result = client.process(["-u", baseUrl, "-dt", "build"])
+		then:
+			preConResult != null
+			preConResult.returnCode == 0
+			result != null
+			result.returnCode == 0
+			def dbFile = new File("${dbLocation}/InstallationTargets.json")
+			ObjectMapper mapper = new ObjectMapper();
+			TargetSystemEnviromentBean[] targetsDb = mapper.readValue(dbFile, TargetSystemEnviromentBean[].class);
+			def targetsDbList = Lists.newArrayList(targetsDb)
+			def copiedFile = new File("build/TargetSystemEnvironments.json")
+			TargetSystemEnvironments source = mapper.readValue(copiedFile, TargetSystemEnvironments.class)
+			def sourceList = source.getTargetSystemEnviroments();
+			sourceList.equals(targetsDbList)
+		 cleanup:
 			repo.clean()
 	}
 	

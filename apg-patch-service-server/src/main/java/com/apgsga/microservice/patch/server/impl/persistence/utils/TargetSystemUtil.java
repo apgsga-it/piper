@@ -10,7 +10,7 @@ import org.springframework.util.Assert;
 import com.apgsga.microservice.patch.api.PatchOpService;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
-import com.apgsga.microservice.patch.api.TargetSystemEnviroments;
+import com.apgsga.microservice.patch.api.TargetSystemEnvironments;
 import com.apgsga.microservice.patch.api.impl.TargetSystemEnviromentBean;
 import com.apgsga.microservice.patch.server.impl.persistence.FilebasedPatchPersistence;
 import com.google.common.collect.Lists;

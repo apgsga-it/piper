@@ -2,15 +2,15 @@ package com.apgsga.microservice.patch.api;
 
 import java.util.List;
 
-public class TargetSystemEnviroments {
+public class TargetSystemEnvironments {
 	
 	private List<TargetSystemEnviroment> targetSystemEnviroments;
 
-	public TargetSystemEnviroments() {
+	public TargetSystemEnvironments() {
 		super();
 	}
 
-	public TargetSystemEnviroments(List<TargetSystemEnviroment> targetSystemEnviroments) {
+	public TargetSystemEnvironments(List<TargetSystemEnviroment> targetSystemEnviroments) {
 		super();
 		this.targetSystemEnviroments = targetSystemEnviroments;
 	}
@@ -39,7 +39,7 @@ public class TargetSystemEnviroments {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		TargetSystemEnviroments other = (TargetSystemEnviroments) obj;
+		TargetSystemEnvironments other = (TargetSystemEnvironments) obj;
 		if (targetSystemEnviroments == null) {
 			if (other.targetSystemEnviroments != null)
 				return false;

@@ -5,6 +5,7 @@ import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.ServiceMetaData
 import com.apgsga.microservice.patch.api.ServicesMetaData
+import com.apgsga.microservice.patch.api.TargetSystemEnvironments
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 
@@ -79,7 +80,7 @@ class PatchCli {
 			cmdResults.results['dt'] = result
 		}
 		if (options.ut) {
-			def result = uploadTargetSystemEnviroments(options,patchClient)
+			def result = uploadTargetSystemEnvironments(options,patchClient)
 			cmdResults.results['ut'] = result
 		}
 		if (options.sta) {
@@ -435,10 +436,10 @@ class PatchCli {
 		return cmdResult
 	}
 
-	def uploadTargetSystemEnvironments(def options, def patchClient) {
-		println "Uploading ServiceMetaData from ${options.ut}"
+	def uploadTargetSystemEnvironments(def options, PatchServiceClient patchClient) {
+		println "Uploading TargetSystemEnvironments from ${options.ut}"
 		ObjectMapper mapper = new ObjectMapper();
-		def targets = mapper.readValue(new File("${options.ut}"), TargetSystemEnvironments.class)
-		patchClient.saveTargetSystemEnvironments(targets)
+		TargetSystemEnvironments targets = mapper.readValue(new File("${options.ut}"), TargetSystemEnvironments.class)
+		patchClient.saveTargetSystemEnviroments(targets)
 	}
 }

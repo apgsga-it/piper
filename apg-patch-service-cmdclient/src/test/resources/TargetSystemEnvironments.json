@@ -1,0 +1,24 @@
+{
+	"targetSystemEnviroments": [
+		{
+			"className": "com.apgsga.microservice.patch.api.impl.TargetSystemEnviromentBean",
+			"name": "CHEI212",
+			"targetTypIndicator": "T"
+		},
+		{
+			"className": "com.apgsga.microservice.patch.api.impl.TargetSystemEnviromentBean",
+			"name": "CHEI211",
+			"targetTypIndicator": "T"
+		},
+		{
+			"className": "com.apgsga.microservice.patch.api.impl.TargetSystemEnviromentBean",
+			"name": "CHTI211",
+			"targetTypIndicator": "T"
+		},
+		{
+			"className": "com.apgsga.microservice.patch.api.impl.TargetSystemEnviromentBean",
+			"name": "CHTI212",
+			"targetTypIndicator": "T"
+		}
+	]
+}

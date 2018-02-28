@@ -9,7 +9,7 @@ import com.apgsga.microservice.patch.api.PatchPersistence
 import com.apgsga.microservice.patch.api.ServiceMetaData
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.microservice.patch.api.TargetSystemEnviroment
-import com.apgsga.microservice.patch.api.TargetSystemEnviroments
+import com.apgsga.microservice.patch.api.TargetSystemEnvironments
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.collect.Lists
 
@@ -126,15 +126,15 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 
 
 	@Override
-	public void saveTargetSystemEnviroments(TargetSystemEnviroments targets) {
+	public void saveTargetSystemEnviroments(TargetSystemEnvironments targets) {
 		restTemplate.postForLocation(getRestBaseUri() + "/saveTargetSystemEnviroments", targets);
 	}
 
 
 	@Override
-	public TargetSystemEnviroments getTargetSystemEnviroments() {
+	public TargetSystemEnvironments getTargetSystemEnviroments() {
 		return restTemplate.getForObject(getRestBaseUri() + "/getTargetSystemEnviroments",
-				TargetSystemEnviroments.class);
+				TargetSystemEnvironments.class);
 	}
 
 
