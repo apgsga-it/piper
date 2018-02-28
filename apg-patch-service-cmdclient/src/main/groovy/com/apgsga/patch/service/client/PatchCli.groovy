@@ -74,6 +74,14 @@ class PatchCli {
 			def result = uploadServiceMetaData(options,patchClient)
 			cmdResults.results['um'] = result
 		}
+		if (options.dt) {
+			def result = downloadTargetSystemEnviroments(options,patchClient)
+			cmdResults.results['dt'] = result
+		}
+		if (options.ut) {
+			def result = uploadTargetSystemEnviroments(options,patchClient)
+			cmdResults.results['ut'] = result
+		}
 		if (options.sta) {
 			def result = stateChangeAction(options,patchClient)
 			cmdResults.results['sta'] = result
@@ -106,6 +114,8 @@ class PatchCli {
 			ud longOpt: 'uploadDbmodules', args:1, argName: 'file', 'Upload Dbmodules from <file> to server', required: false
 			dm longOpt: 'downloadServicesMeta', args:1, argName: 'directory', 'Download ServiceMetaData from server to <directory>', required: false
 			um longOpt: 'uploadServicesMeta', args:1, argName: 'file', 'Upload ServiceMetaData from <file> to server', required: false
+			dt longOpt: 'downloadTargetSystems', args:1, argName: 'directory', 'Download TargetSystemEnviroments from server to <directory>', required: false
+			ut longOpt: 'uploadTargetSystems', args:1, argName: 'file', 'Upload TargetSystemEnviroments from <file> to server', required: false
 			la longOpt: 'listAllFiles', 'List all files on server', required: false	
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
 			sta longOpt: 'stateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Start State Change for a Patch with <patchNumber> to <toState>', required: false
@@ -189,6 +199,20 @@ class PatchCli {
 			def directory = new File(options.dm)
 			if (!directory.exists() | !directory.directory) {
 				println "Directory ${options.dm} not valid: either not a directory or it doesn't exist"
+				error = true
+			}
+		}
+		if (options.ut) {
+			def dataFile = new File(options.ut)
+			if (!dataFile.exists() | !dataFile.file) {
+				println "File ${options.ut} not valid: either not a file or it doesn't exist"
+				error = true
+			}
+		}
+		if (options.dt) {
+			def directory = new File(options.dt)
+			if (!directory.exists() | !directory.directory) {
+				println "Directory ${options.dt} not valid: either not a directory or it doesn't exist"
 				error = true
 			}
 		}
@@ -391,5 +415,30 @@ class PatchCli {
 		ObjectMapper mapper = new ObjectMapper();
 		def serviceMetaData = mapper.readValue(new File("${options.um}"), ServicesMetaData.class)
 		patchClient.saveServicesMetaData(serviceMetaData)
+	}
+	
+	def downloadTargetSystemEnviroments(def options, def patchClient) {
+		println "Downloading TargetSystemEnviroments to ${options.dt}"
+		def cmdResult = new Expando()
+		def data =  patchClient.getTargetSystemEnviroments()
+		if (data == null) {
+			cmdResult.exists = false;
+			return cmdResult
+		}
+		def dataFile = new File(options.dt,"TargetSystemEnvironments.json")
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.writeValue(dataFile, data)
+		println "Downloaded TargetSystemEnviroments to ${options.dt} done."
+		cmdResult.targetSystemEnviroments = dataFile.absolutePath
+		cmdResult.data = data
+		cmdResult.exists = true;
+		return cmdResult
+	}
+
+	def uploadTargetSystemEnvironments(def options, def patchClient) {
+		println "Uploading ServiceMetaData from ${options.ut}"
+		ObjectMapper mapper = new ObjectMapper();
+		def targets = mapper.readValue(new File("${options.ut}"), TargetSystemEnvironments.class)
+		patchClient.saveTargetSystemEnvironments(targets)
 	}
 }

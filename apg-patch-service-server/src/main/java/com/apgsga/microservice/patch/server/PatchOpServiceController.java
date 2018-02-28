@@ -25,6 +25,7 @@ import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
 import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
+import com.apgsga.microservice.patch.api.TargetSystemEnviroments;
 
 @RestController
 @Scope(org.springframework.web.context.WebApplicationContext.SCOPE_SESSION)
@@ -134,6 +135,20 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@Override
 	public  List<String> listFiles(@PathVariable("prefix") String prefix) {
 		return repo.listFiles(prefix);
+	}
+
+	@RequestMapping(value = "/saveTargetSystemEnviroments", method = RequestMethod.POST)
+	@Override
+	public void saveTargetSystemEnviroments(@RequestBody TargetSystemEnviroments targets) {
+		repo.saveTargetSystemEnviroments(targets);
+	}
+
+
+	@RequestMapping(value = "/getTargetSystemEnviroments", method = RequestMethod.GET)
+	@ResponseBody
+	@Override
+	public TargetSystemEnviroments getTargetSystemEnviroments() {
+		return repo.getTargetSystemEnviroments();
 	}
 
 	@Override

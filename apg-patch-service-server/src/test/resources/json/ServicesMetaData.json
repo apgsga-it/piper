@@ -1,1 +1,44 @@
-{"className":"com.apgsga.microservice.patch.api.impl.ServicesMetaDataBean","servicesMetaData":[{"className":"com.apgsga.microservice.patch.api.impl.ServiceMetaDataBean","serviceName":"It21Ui","microServiceBranch":"it21_release_9_0_6_admin_uimig","baseVersionNumber":"9.0.6","revisionMnemoPart":"ADMIN-UIMIG","starterPoms":[{"className":"com.apgsga.microservice.patch.api.impl.MavenArtifactBean","artifactId":"it21ui-app-starter","groupId":"com.apgsga.it21.ui.mdt","name":"it21ui-app-starter","version":null},{"className":"com.apgsga.microservice.patch.api.impl.MavenArtifactBean","artifactId":"jadas-app-starter","groupId":"com.apgsga.it21.ui.mdt","name":"jadas-app-starter","version":null}]},{"className":"com.apgsga.microservice.patch.api.impl.ServiceMetaDataBean","serviceName":"SomeOtherService","microServiceBranch":"it21_release_9_0_6_some_tag","baseVersionNumber":"9.0.6","revisionMnemoPart":"SOME-TAG","starterPoms":[{"className":"com.apgsga.microservice.patch.api.impl.MavenArtifactBean","artifactId":"it21ui-app-starter","groupId":"com.apgsga.it21.ui.mdt","name":"it21ui-app-starter","version":null}]}]}
+{
+	"className": "com.apgsga.microservice.patch.api.impl.ServicesMetaDataBean",
+	"servicesMetaData": [
+		{
+			"className": "com.apgsga.microservice.patch.api.impl.ServiceMetaDataBean",
+			"serviceName": "It21Ui",
+			"microServiceBranch": "it21_release_9_0_6_admin_uimig",
+			"baseVersionNumber": "9.0.6",
+			"revisionMnemoPart": "ADMIN-UIMIG",
+			"starterPoms": [
+				{
+					"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+					"artifactId": "it21ui-app-starter",
+					"groupId": "com.apgsga.it21.ui.mdt",
+					"name": "it21ui-app-starter",
+					"version": null
+				},
+				{
+					"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+					"artifactId": "jadas-app-starter",
+					"groupId": "com.apgsga.it21.ui.mdt",
+					"name": "jadas-app-starter",
+					"version": null
+				}
+			]
+		},
+		{
+			"className": "com.apgsga.microservice.patch.api.impl.ServiceMetaDataBean",
+			"serviceName": "SomeOtherService",
+			"microServiceBranch": "it21_release_9_0_6_some_tag",
+			"baseVersionNumber": "9.0.6",
+			"revisionMnemoPart": "SOME-TAG",
+			"starterPoms": [
+				{
+					"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+					"artifactId": "it21ui-app-starter",
+					"groupId": "com.apgsga.it21.ui.mdt",
+					"name": "it21ui-app-starter",
+					"version": null
+				}
+			]
+		}
+	]
+}

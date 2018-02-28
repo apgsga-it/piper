@@ -105,19 +105,7 @@ ospackage {
 		fileMode 0755
 
 	}
-	from("packaging/app/db") {
-		into "/var/opt/${project.name}/db"
-		user "${user}"
-		permissionGroup "${permissionGroup}"
-		fileMode 0755 
-	}
-}
 	
-// Configure our RPM build task
-buildRpm {
-	// TODO (che, 1.2.2018) : alternative requirements how?
-	//requires('jre', '1.8', GREATER | EQUAL)	
-	// Data
 	directory("/var/opt/${project.name}", 0755 )
 	//Log dir
 	directory("/var/opt/${project.name}/log", 0755 )
@@ -125,7 +113,15 @@ buildRpm {
 	// Local Maven Repo
 	directory("/var/opt/${project.name}/mavenrepo", 0755 )
 	
+	from("packaging/app/db") {
+		into "/var/opt/${project.name}/db"
+		user "root"
+		permissionGroup "root"
+		fileMode 0755 
+	}
+	
 }
+
 
 
 

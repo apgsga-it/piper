@@ -26,6 +26,10 @@ public interface PatchPersistence {
 	public void saveTargetSystemEnviroments(List<TargetSystemEnviroment> installationTargets);
 
 	public List<TargetSystemEnviroment> getInstallationTargets();
+	
+	public void saveTargetSystemEnviroments(TargetSystemEnviroments targets);
+	
+	public TargetSystemEnviroments getTargetSystemEnviroments();
 
 	public TargetSystemEnviroment getInstallationTarget(String installationTarget);
 

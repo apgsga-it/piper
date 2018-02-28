@@ -18,6 +18,7 @@ import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
 import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
+import com.apgsga.microservice.patch.api.TargetSystemEnviroments;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
@@ -159,6 +160,16 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		} catch (IOException e) {
 			throw new RuntimeException("Persistence Error", e);
 		}
+	}
+
+	@Override
+	public void saveTargetSystemEnviroments(TargetSystemEnviroments targets) {
+		saveTargetSystemEnviroments(targets.getTargetSystemEnviroments());
+	}
+
+	@Override
+	public TargetSystemEnviroments getTargetSystemEnviroments() {
+		return new TargetSystemEnviroments(getInstallationTargets());
 	}
 
 	@Override

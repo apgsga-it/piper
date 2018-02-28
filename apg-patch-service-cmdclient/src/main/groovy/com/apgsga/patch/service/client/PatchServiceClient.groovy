@@ -1,8 +1,5 @@
 package com.apgsga.patch.service.client
 
-import java.util.List
-import java.util.Map
-
 import org.springframework.web.client.RestTemplate
 
 import com.apgsga.microservice.patch.api.DbModules
@@ -12,9 +9,9 @@ import com.apgsga.microservice.patch.api.PatchPersistence
 import com.apgsga.microservice.patch.api.ServiceMetaData
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.microservice.patch.api.TargetSystemEnviroment
+import com.apgsga.microservice.patch.api.TargetSystemEnviroments
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.collect.Lists
-import com.google.common.collect.Maps
 
 class PatchServiceClient implements PatchOpService, PatchPersistence {
 
@@ -33,7 +30,7 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 	def getRestBaseUri() {
 		"http://" + baseUrl + "patchdb";
 	}
-	
+
 	@Override
 	public void executeStateTransitionAction(String patchNumber, String toStatus) {
 		restTemplate.postForLocation(getRestBaseUri() + "/executeStateChangeAction/{patchNumber}/{toStatus}", null, [patchNumber:patchNumber,toStatus:toStatus]);
@@ -50,7 +47,7 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 	public Boolean patchExists(String patchNumber) {
 		return restTemplate.getForObject(getRestBaseUri() + "/patchExists/{id}", Boolean.class, [id:patchNumber]);
 	}
-	
+
 
 	public void savePatch(File patchFile, Class<Patch> clx) {
 		println "File ${patchFile} to be uploaded"
@@ -59,7 +56,7 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 		savePatch(patchData)
 	}
 
-	
+
 	public void save(File patchFile, Class<Patch> clx) {
 		println "File ${patchFile} to be uploaded"
 		ObjectMapper mapper = new ObjectMapper();
@@ -99,15 +96,14 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 	@Override
 	public DbModules getDbModules() {
 		return restTemplate.getForObject(getRestBaseUri() + "/getDbModules", DbModules.class);
-
 	}
 
 	@Override
 	public void saveServicesMetaData(ServicesMetaData serviceData) {
 		restTemplate.postForLocation(getRestBaseUri() + "/saveServicesMetaData", serviceData);
 	}
-	
-	
+
+
 
 	@Override
 	public List<String> listAllFiles() {
@@ -127,41 +123,48 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 				ServicesMetaData.class);
 	}
 
+
+
+	@Override
+	public void saveTargetSystemEnviroments(TargetSystemEnviroments targets) {
+		restTemplate.postForLocation(getRestBaseUri() + "/saveTargetSystemEnviroments", targets);
+	}
+
+
+	@Override
+	public TargetSystemEnviroments getTargetSystemEnviroments() {
+		return restTemplate.getForObject(getRestBaseUri() + "/getTargetSystemEnviroments",
+				TargetSystemEnviroments.class);
+	}
+
+
 	@Override
 	public void saveTargetSystemEnviroments(List<TargetSystemEnviroment> installationTargets) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("Not needed, see saveTargetSystemEnviroments");
 	}
 
 	@Override
 	public List<TargetSystemEnviroment> getInstallationTargets() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not needed, see getTargetSystemEnviroments");
 	}
 
 	@Override
 	public TargetSystemEnviroment getInstallationTarget(String installationTarget) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not needed, see getTargetSystemEnviroments");
 	}
 
 	@Override
 	public ServiceMetaData findServiceByName(String serviceName) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not needed, see getServiceMetaData");
 	}
 
 	@Override
 	public void clean() {
-		
-
+		throw new UnsupportedOperationException("Cleaning not supported by client");
 	}
 
 	@Override
 	public void init() throws IOException {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException("Init not supported by client");
 	}
-
-
 }
