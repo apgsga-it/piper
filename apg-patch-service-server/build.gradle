@@ -120,7 +120,19 @@ ospackage {
 		fileMode 0755 
 	}
 	
+
+	
 }
+
+ buildRpm {
+	directory("/var/opt/${project.name}", 0755 )
+	//Log dir
+	directory("/var/opt/${project.name}/log", 0755 )
+	
+	// Local Maven Repo
+	directory("/var/opt/${project.name}/mavenrepo", 0755 )
+}
+
 
 
 
