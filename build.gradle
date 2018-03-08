@@ -26,10 +26,13 @@ subprojects {
 	}
 	repositories {
 		mavenLocal()
-		maven { url "${mavenRepoBaseUrl}/groups/public/" }
-		maven { url "${mavenRepoBaseUrl}/repositories/releases/" }
-		maven { url "${mavenRepoBaseUrl}/repositories/snapshots/" }
-		maven { url "${mavenRepoBaseUrl}/groups/public-snapshots/" }
+		maven { 
+		  credentials {
+            	username "$repoUser"
+            	password "$repoPassword"
+        	}
+			url "${mavenRepoBaseUrl}/repo" 
+		}
 	}
 
 	dependencyManagement { imports {  mavenBom 'com.affichage.common.maven:dm-bom:9.0.6.ADMIN-UIMIG-SNAPSHOT' } }
@@ -50,7 +53,7 @@ subprojects {
 		repositories {
 			maven {
 				name ='deployRepo'
-				url  "${mavenRepoBaseUrl}/repositories/${repoTarget}/"				
+				url  "${mavenRepoBaseUrl}/${repoTarget}/"				
 				credentials {
 					username = repoUser
 					password = repoPassword

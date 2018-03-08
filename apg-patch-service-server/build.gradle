@@ -149,7 +149,7 @@ publishing {
 	repositories {
 		maven {
 			name ='deployRepo'
-			url  "http://mavenrepo.apgsga.ch/nexus/content/repositories/${repoTarget}/"
+			url  "${mavenRepoBaseUrl}/${repoTarget}/"
 			credentials {
 				username = repoUser
 				password = repoPassword

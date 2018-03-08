@@ -84,7 +84,7 @@ publishing {
 	repositories {
 		maven {
 			name ='deployRepo'
-			url  "${mavenRepoBaseUrl}/repositories/${repoTarget}/"
+			url  "${mavenRepoBaseUrl}/${repoTarget}/"
 			credentials {
 				username = repoUser
 				password = repoPassword
