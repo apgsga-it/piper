@@ -53,7 +53,7 @@ public class RepositorySystemFactory {
 	public static List<RemoteRepository> newRepositories(RepositorySystem system, RepositorySystemSession session) {
 		List<RemoteRepository> remoteRepos = Lists.newArrayList();
 		remoteRepos.add(newCentralRepository("central", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC));
-		remoteRepos.add(newCentralRepository("snapshots", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC));
+		remoteRepos.add(newCentralRepository("snapshots", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_SNAPSHOT));
 		return new ArrayList<RemoteRepository>(remoteRepos);
 	}
 
