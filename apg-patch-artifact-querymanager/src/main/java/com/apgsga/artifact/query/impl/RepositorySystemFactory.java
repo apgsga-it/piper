@@ -19,14 +19,14 @@ import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import com.google.common.collect.Lists;
 
 public class RepositorySystemFactory {
-	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = "http://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/repo";
+	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = "http://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/public";
+	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_SNAPSHOT = "http://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/public-snapshot";
 
 	public static RepositorySystem newRepositorySystem() {
 		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
 		locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
 		locator.addService(TransporterFactory.class, FileTransporterFactory.class);
 		locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
-
 		locator.setErrorHandler(new DefaultServiceLocator.ErrorHandler() {
 			@Override
 			public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception) {
@@ -53,6 +53,7 @@ public class RepositorySystemFactory {
 	public static List<RemoteRepository> newRepositories(RepositorySystem system, RepositorySystemSession session) {
 		List<RemoteRepository> remoteRepos = Lists.newArrayList();
 		remoteRepos.add(newCentralRepository("central", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC));
+		remoteRepos.add(newCentralRepository("snapshots", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC));
 		return new ArrayList<RemoteRepository>(remoteRepos);
 	}
 
