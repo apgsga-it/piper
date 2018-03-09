@@ -44,30 +44,14 @@ public class TestGettingDependenciesFromStarters {
 
 	@Configuration
 	static class ContextConfiguration {
-		
-		@Value("${gradle.build.propertyFile:build/mavenLocal.properties}")
-		public String gradleBuildPropertyFile; 
 
 		@Value("${test.localRepo}")
 		public String localRep;
 
 		@Bean
 		public ArtifactManager artifactManager() throws IOException {
-			// This makes the manual configuration of the Mavenlocal Repo , when Build with Gradle unnecessary
-			// A Grade Task writes the Url of MavenLocal() into mavenLocal.properties
-			// As a default the location, which manually configured is taken from test.properties
-			final ResourceLoader rl = new FileSystemResourceLoader();
-			Resource resource = rl.getResource(gradleBuildPropertyFile);
-			String localRepoToTake = localRep;
-			if (resource.exists()) {
-				Properties mavenProp = new Properties();
-				mavenProp.load(resource.getInputStream());
-				String urlAsString = mavenProp.getProperty("mavenLocalRepo",localRep);
-				Resource propResource = rl.getResource(urlAsString); 
-				localRepoToTake = propResource.getURI().getPath();
-			}
-			LOGGER.info("Running with MavenLocal from: " + localRepoToTake);
-			return ArtifactManager.create(localRepoToTake);
+			LOGGER.info("Running with MavenLocal from: " + localRep);
+			return ArtifactManager.create(localRep);
 		}
 	}
 
