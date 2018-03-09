@@ -7,6 +7,7 @@ jar {
 println "Maven Local Repo is : ${rootProject.mavenLocalRepo}"
 
 dependencies {
+	compile project(':apg-patch-service-common')
 	compile group: 'org.codehaus.plexus', name: 'plexus-utils', version: '3.0.10'
 	compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
 	compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
