@@ -19,9 +19,7 @@ import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import com.google.common.collect.Lists;
 
 public class RepositorySystemFactory {
-	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = "http://mavenrepo.apgsga.ch/nexus/content/groups/public/";
-
-	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC_SNAPSHOT = "http://mavenrepo.apgsga.ch/nexus/content/repositories/snapshots/";
+	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = "http://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/repo";
 
 	public static RepositorySystem newRepositorySystem() {
 		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
@@ -54,9 +52,7 @@ public class RepositorySystemFactory {
 
 	public static List<RemoteRepository> newRepositories(RepositorySystem system, RepositorySystemSession session) {
 		List<RemoteRepository> remoteRepos = Lists.newArrayList();
-		remoteRepos.add(newCentralRepository("public-release", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC));
-		remoteRepos.add(
-				newCentralRepository("public-snapshot", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC_SNAPSHOT));
+		remoteRepos.add(newCentralRepository("central", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC));
 		return new ArrayList<RemoteRepository>(remoteRepos);
 	}
 
