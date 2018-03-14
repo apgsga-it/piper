@@ -73,10 +73,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public List<MavenArtifact> listMavenArtifacts(Patch patch) {
 		ServiceMetaData data = repo.findServiceByName(patch.getServiceName());
-		List<MavenArtifact> starterPoms = data.getStarterPoms();
 		List<MavenArtifact> mavenArtFromStarterList = null;
 		try {
-			mavenArtFromStarterList = am.getAllDependencies(starterPoms,data.getBaseVersionNumber() + "." + data.getRevisionMnemoPart() + "-SNAPSHOT");
+			mavenArtFromStarterList = am.getAllDependencies(data.getBaseVersionNumber() + "." + data.getRevisionMnemoPart() + "-SNAPSHOT");
 		} catch (DependencyResolutionException | 
 				 ArtifactResolutionException | 
 				 IOException |

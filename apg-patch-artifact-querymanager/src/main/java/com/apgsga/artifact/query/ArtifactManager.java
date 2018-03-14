@@ -26,7 +26,7 @@ public interface ArtifactManager {
 
 	Properties getVersionsProperties(String version) throws DependencyResolutionException, FileNotFoundException,IOException, XmlPullParserException, ArtifactResolutionException;
 
-	List<MavenArtifact> getAllDependencies(List<MavenArtifact> starterProjects, String serviceVersion) throws FileNotFoundException, IOException, XmlPullParserException, DependencyResolutionException,ArtifactResolutionException;
+	List<MavenArtifact> getAllDependencies(String serviceVersion) throws FileNotFoundException, IOException, XmlPullParserException, DependencyResolutionException,ArtifactResolutionException;
 
 	List<MavenArtifact> getArtifactsWithNameFromBom(String bomVersion) throws FileNotFoundException, IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException;
 

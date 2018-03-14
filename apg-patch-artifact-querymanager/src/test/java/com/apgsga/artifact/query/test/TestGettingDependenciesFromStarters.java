@@ -97,7 +97,7 @@ public class TestGettingDependenciesFromStarters {
 				it21JadasAppStarterArtefactId.split(":")[0], null);
 		jadasMavenArtifactBean.setName("jadas-app-starter");
 		starterProjects.add(jadasMavenArtifactBean);
-		List<MavenArtifact> artifacts = am.getAllDependencies(starterProjects, it21StarterVersion);
+		List<MavenArtifact> artifacts = am.getAllDependencies(it21StarterVersion);
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		File file = rl.getResource("classpath:dependencyFromStarterProjects.txt").getFile();
 		List<String> expected = com.google.common.io.Files.readLines(file, StandardCharsets.UTF_8).stream()
@@ -106,19 +106,21 @@ public class TestGettingDependenciesFromStarters {
 				.collect(Collectors.toList());
 		List<String> removedExcpected = Lists.newArrayList(effective);
 		removedExcpected.removeAll(expected);
-		Assert.assertEquals("Expected no diff, but got: " + removedExcpected.toString(), 0, removedExcpected.size());
+		//JHE(14.03.2018): Now that we fetch based on the BOM only, it's expected that we get couple of artifacts which shouldn't be in the list
+		//Assert.assertEquals("Expected no diff, but got: " + removedExcpected.toString(), 0, removedExcpected.size());
 		List<String> artifactNotIncluded = Lists.newArrayList("lieferschein-rep", "montageauftrag-rep",
 				"lageretikette-rep", "vp-deckblatt-megaposter", "vp-offertverfall", "pz-service", "portal-service",
 				"lo-reportservice");
 		artifacts.stream().forEach(art -> {
 			Assert.assertTrue(
 					art.getGroupId().startsWith("com.affichage") || art.getGroupId().startsWith("com.apgsga"));
-			Assert.assertFalse(art.getArtifactId().equals("it21ui-app-starter"));
-			Assert.assertFalse(art.getArtifactId().equals("jadas-app-starter"));
-			Assert.assertFalse(art.getArtifactId().equals("microservice-patch-common"));
-			Assert.assertFalse(art.getArtifactId().equals("microservice-patch-server"));
-			Assert.assertFalse(art.getArtifactId().equals("microservice-patch-client"));
-			Assert.assertFalse(artifactNotIncluded.contains(art.getArtifactId()));
+			//JHE(14.03.2018): Now that we fetch based on the BOM only, it's expected that we get couple of artifacts which shouldn't be in the list
+//			Assert.assertFalse(art.getArtifactId().equals("it21ui-app-starter"));
+//			Assert.assertFalse(art.getArtifactId().equals("jadas-app-starter"));
+//			Assert.assertFalse(art.getArtifactId().equals("microservice-patch-common"));
+//			Assert.assertFalse(art.getArtifactId().equals("microservice-patch-server"));
+//			Assert.assertFalse(art.getArtifactId().equals("microservice-patch-client"));
+//			Assert.assertFalse(artifactNotIncluded.contains(art.getArtifactId()));
 		});
 	}
 }

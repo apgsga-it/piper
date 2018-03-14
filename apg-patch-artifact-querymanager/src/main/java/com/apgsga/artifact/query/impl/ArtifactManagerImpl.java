@@ -18,18 +18,11 @@ import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
-import org.eclipse.aether.collection.CollectRequest;
-import org.eclipse.aether.graph.DependencyFilter;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
-import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
-import org.eclipse.aether.resolution.DependencyResult;
 import org.eclipse.aether.transfer.ArtifactNotFoundException;
-import org.eclipse.aether.util.filter.DependencyFilterUtils;
-import org.eclipse.aether.util.filter.PatternExclusionsDependencyFilter;
-import org.eclipse.aether.util.filter.PatternInclusionsDependencyFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResourceLoader;
@@ -39,7 +32,6 @@ import org.springframework.core.io.ResourceLoader;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ArtifactManagerImpl implements ArtifactManager {
@@ -131,49 +123,8 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	 * List, java.lang.String)
 	 */
 	@Override
-	public List<MavenArtifact> getAllDependencies(List<MavenArtifact> starterProjects, String serviceVersion)
-			throws FileNotFoundException, IOException, XmlPullParserException, DependencyResolutionException,
-			ArtifactResolutionException {
-
-		Map<String, MavenArtifact> results = Maps.newHashMap();
-
-		starterProjects.stream().forEach(ma -> {
-			try {
-				DependencyResult resolveDependencies = system.resolveDependencies(session,
-						getDependencyRequestForStarterProject(ma, serviceVersion));
-				resolveDependencies.getArtifactResults().stream().forEach(artifactRes -> {
-					results.put(
-							artifactRes.getArtifact().getGroupId() + ":" + artifactRes.getArtifact().getArtifactId(),
-							new MavenArtifactBean(artifactRes.getArtifact().getArtifactId(),
-									artifactRes.getArtifact().getGroupId(), artifactRes.getArtifact().getVersion()));
-				});
-			} catch (DependencyResolutionException e) {
-				throw new RuntimeException(e);
-			}
-		});
-
-		return Lists.newArrayList(results.values());
-	}
-
-	private DependencyRequest getDependencyRequestForStarterProject(MavenArtifact starterProj, String version) {
-		// JHE: "runtime" parameter, really correct? Seems to work, but do we
-		// have any corner cases?
-		org.eclipse.aether.graph.Dependency dependency = new org.eclipse.aether.graph.Dependency(
-				new DefaultArtifact(starterProj.getGroupId(), starterProj.getArtifactId(), "", "pom", version),
-				"runtime");
-		CollectRequest cr = new CollectRequest();
-		cr.setRoot(dependency);
-		cr.setRepositories(RepositorySystemFactory.newRepositories(system, session));
-		DependencyRequest dr = new DependencyRequest();
-		dr.setCollectRequest(cr);
-		// JHE: do we want "com.affichage*" and "com.apgsga*" as external
-		// Parameter?
-		DependencyFilter inclusionfilter = new PatternInclusionsDependencyFilter("com.affichage*", "com.apgsga*");
-		// JHE: do we want exclusions filter as external Parameter?
-		DependencyFilter exclusionFilter = new PatternExclusionsDependencyFilter("*:apg-patch-service-client:*",
-				"*:apg-patch-service-common:*", "*:it21ui-app-starter:*", "*:jadas-app-starter:*");
-		dr.setFilter(DependencyFilterUtils.andFilter(inclusionfilter, exclusionFilter));
-		return dr;
+	public List<MavenArtifact> getAllDependencies(String serviceVersion) throws FileNotFoundException, DependencyResolutionException, ArtifactResolutionException, IOException, XmlPullParserException {
+		return getArtifactsWithNameFromBom(serviceVersion);
 	}
 
 	private List<MavenArtifact> getArtifactsWithVersionFromBom(String bomVersion) throws DependencyResolutionException,
@@ -206,17 +157,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	public List<MavenArtifact> getArtifactsWithNameFromBom(String bomVersion) throws FileNotFoundException, IOException,
 			XmlPullParserException, DependencyResolutionException, ArtifactResolutionException {
 		List<MavenArtifact> artifacts = getArtifactsWithVersionFromBom(bomVersion);
-		for (MavenArtifact art : artifacts) {
-			org.eclipse.aether.artifact.Artifact pom = load(art.getGroupId(), art.getArtifactId(), art.getVersion());
-			if (pom != null) {
-				Model model = getModel(pom.getFile());
-				art.setName(model.getName());
-			}
-		}
-		List<MavenArtifact> selectedArts = artifacts.stream()
-				.filter(artifact -> artifact.getName() != null && !artifact.getName().equals("upload"))
-				.collect(Collectors.toList());
-		return selectedArts;
+		return artifacts;
 	}
 
 	/*
