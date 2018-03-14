@@ -6,6 +6,12 @@ jar {
 
 println "Maven Local Repo is : ${rootProject.mavenLocalRepo}"
 
+test {
+   onlyIf {
+      project.hasProperty("querytests")
+  }
+}
+
 dependencies {
 	compile project(':apg-patch-service-common')
 	compile group: 'org.codehaus.plexus', name: 'plexus-utils', version: '3.0.10'

@@ -9,26 +9,29 @@ import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.impl.DefaultServiceLocator;
+import org.eclipse.aether.repository.Authentication;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
+import org.eclipse.aether.util.repository.AuthenticationBuilder;
 
 import com.google.common.collect.Lists;
 
 public class RepositorySystemFactory {
-	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = "http://mavenrepo.apgsga.ch/nexus/content/groups/public/";
-
-	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC_SNAPSHOT = "http://mavenrepo.apgsga.ch/nexus/content/repositories/snapshots/";
+	// TODO (che, 9.3 ) : Temporory fix
+	private static final String REPO_PASSWD = "dev1234";
+	private static final String REPO_USER = "dev";
+	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = "http://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/repo";
+	//private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_SNAPSHOT = "http://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/public-snapshot";
 
 	public static RepositorySystem newRepositorySystem() {
 		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
 		locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
 		locator.addService(TransporterFactory.class, FileTransporterFactory.class);
 		locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
-
 		locator.setErrorHandler(new DefaultServiceLocator.ErrorHandler() {
 			@Override
 			public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception) {
@@ -54,14 +57,14 @@ public class RepositorySystemFactory {
 
 	public static List<RemoteRepository> newRepositories(RepositorySystem system, RepositorySystemSession session) {
 		List<RemoteRepository> remoteRepos = Lists.newArrayList();
-		remoteRepos.add(newCentralRepository("public-release", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC));
-		remoteRepos.add(
-				newCentralRepository("public-snapshot", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC_SNAPSHOT));
+		remoteRepos.add(newCentralRepository("central", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC));
+	//	remoteRepos.add(newCentralRepository("snapshots", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_SNAPSHOT));
 		return new ArrayList<RemoteRepository>(remoteRepos);
 	}
 
 	private static RemoteRepository newCentralRepository(String name, String url) {
-		return new RemoteRepository.Builder(name, "default", url).build();
+        Authentication auth = new AuthenticationBuilder().addUsername(REPO_USER).addPassword( REPO_PASSWD ).build();
+		return new RemoteRepository.Builder(name, "default", url).setAuthentication( auth ).build();
 	}
 
 }
