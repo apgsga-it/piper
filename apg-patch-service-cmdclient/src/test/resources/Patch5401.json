@@ -40,6 +40,5 @@
 			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean"
 		}
 	],
-	"className": "com.apgsga.microservice.patch.api.impl.PatchBean",
-	"starterPoms": null
+	"className": "com.apgsga.microservice.patch.api.impl.PatchBean"
 }

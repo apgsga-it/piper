@@ -34,10 +34,10 @@ public class ServicesMetaDataUtil {
 		jadasStarter.setName("jadas-app-starter");
 		
 		final ServiceMetaData it21Ui = new ServiceMetaDataBean("It21Ui", "it21_release_9_0_6_admin_uimig", "9.0.6",
-				"ADMIN-UIMIG",Lists.newArrayList(it21UiStarter,jadasStarter));
+				"ADMIN-UIMIG");
 		serviceList.add(it21Ui);
 		final ServiceMetaData someOtherService = new ServiceMetaDataBean("SomeOtherService",
-				"it21_release_9_0_6_some_tag", "9.0.6", "SOME-TAG",Lists.newArrayList(it21UiStarter));
+				"it21_release_9_0_6_some_tag", "9.0.6", "SOME-TAG");
 		serviceList.add(someOtherService);
 	}
 

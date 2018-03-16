@@ -349,10 +349,4 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 				+ ", lastRevisionNumber=" + lastRevisionNumber + ", dbObjects=" + dbObjects + ", mavenArtifacts="
 				+ mavenArtifacts + "]";
 	}
-
-	@Override
-	public List<MavenArtifact> getStarterPoms() {
-		// TODO JHE (21.12.2017): make really sense to return anything here?
-		return null;
-	}
 }

@@ -1,7 +1,5 @@
 package com.apgsga.microservice.patch.api;
 
-import java.util.List;
-
 import com.affichage.persistence.common.client.EntityRootInterface;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -24,7 +22,4 @@ public interface ServiceMetaData {
 	public String getRevisionMnemoPart(); 
 	
 	public void setRevisionMnemoPart(String revisionMnemoPart); 
-
-	public List<MavenArtifact> getStarterPoms();
-
 }

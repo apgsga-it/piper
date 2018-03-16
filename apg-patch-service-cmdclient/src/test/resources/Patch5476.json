@@ -22,6 +22,5 @@
 			"name": "com.affichage.datetime.utils",
 			"version": "9.0.6.ADMIN-UIMIG-20180112.132308-89"
 		}
-	],
-	"starterPoms": null
+	]
 }

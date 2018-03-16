@@ -13,16 +13,14 @@ public class ServiceMetaDataBean extends AbstractTransientEntity  implements Ser
 	private String microServiceBranch;
 	private String baseVersionNumber;
 	private String revisionMnemoPart;
-	private List<MavenArtifact> starterPoms;
 	
 	public ServiceMetaDataBean(String serviceName, String microServiceBranch, String baseVersionNumber,
-			String revisionMnemoPart, List<MavenArtifact> starterPoms) {
+			String revisionMnemoPart) {
 		super();
 		this.serviceName = serviceName;
 		this.microServiceBranch = microServiceBranch;
 		this.baseVersionNumber = baseVersionNumber;
 		this.revisionMnemoPart = revisionMnemoPart;
-		this.starterPoms = starterPoms;
 	}
 	
 	
@@ -100,10 +98,4 @@ public class ServiceMetaDataBean extends AbstractTransientEntity  implements Ser
 		return "ServiceMetaDataBean [serviceName=" + serviceName + ", microServiceBranch=" + microServiceBranch
 				+ ", baseVersionNumber=" + baseVersionNumber + ", revisionMnemoPart=" + revisionMnemoPart + "]";
 	} 
-
-	@Override
-	public List<MavenArtifact> getStarterPoms() {
-		return starterPoms;
-	} 
-
 }
