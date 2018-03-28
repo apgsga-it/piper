@@ -1,24 +1,34 @@
+import org.apache.tools.ant.filters.*;
 plugins {
   	id 'groovy'
-   id 'application'
+    id 'application'
 	id "com.github.johnrengelman.shadow" version "2.0.2"
+  	id "nebula.ospackage" version "4.6.0"
 }
 apply plugin: 'groovy'
 apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "nebula.ospackage"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+def finalName = 'apg-patch-cli'
+
 mainClassName = 'pli'
 def repoTarget= version.endsWith("SNAPSHOT") ? "snapshots" : "releases"
 jar {
-	baseName = "apg-patch-cli"
+	baseName = "${finalName}"
 } 
 
+def savedVersion = version
+
 shadowJar {
-	baseName = "apg-patch-cli"
+	baseName = "${finalName}"
 	classifier = null
    	version = null
+	exclude 'cmd.sh'
+	exclude '**/downloads/*'
+	exclude '**/uploads/*'
 }
 
 
@@ -49,13 +59,13 @@ sourceSets {
 }
 
 task pkgAsGTar(type: Tar) {
-	from "$project.buildDir/apg-patch-cli"
-	archiveName = "apg-patch-cli.tar.gz"
+	from "$project.buildDir/${finalName}"
+	archiveName = "${finalName}.tar.gz"
 	compression = Compression.GZIP
 }
 
 task copyLib( type: Copy ) {
-	into "$project.buildDir/apg-patch-cli"
+	into "$project.buildDir/${finalName}"
 	from shadowJar
 	fileMode 0755
 	// In lib we only want jars files to go in lib folder (no dll, exe, bat, etc...)
@@ -64,7 +74,7 @@ task copyLib( type: Copy ) {
 
 task copyResources (type: Copy) {
 	from sourceSets.main.resources
-	into "$project.buildDir/apg-patch-cli"
+	into "$project.buildDir/${finalName}"
 	fileMode 0755
 }
 
@@ -74,7 +84,7 @@ publishing {
 		cligtar(MavenPublication) {
 			artifact source: pkgAsGTar, extension: 'tar.gz'
 			
-			artifactId = 'apg-patch-cli'
+			artifactId = "${finalName}"
 
 
 
@@ -95,9 +105,51 @@ publishing {
 
 }
 
+def homeDir = "/opt/${finalName}"
+
+
+// Netflix Nebula Os Package Configuration, see : https://github.com/nebula-plugins/gradle-ospackage-plugin/wiki
+ospackage {
+	packageName = "${finalName}"
+	version = "${savedVersion}"
+	release = 1
+	os = LINUX
+	type = BINARY
+	arch = NOARCH
+
+
+	into "${homeDir}"
+	
+	from(shadowJar.outputs.files) {
+		fileMode 0755
+		into 'bin'
+	}
+
+	from('packaging') {
+		include '*.sh'
+		fileMode 0755
+		into 'bin'
+		//expand project.properties
+	}
+	
+
+}
+
+// Generell Process Resources
+	processResources {
+		from sourceSets.main.resources
+		filesMatching('**/*.sh') {
+			filter(FixCrLfFilter.class,
+			eol:FixCrLfFilter.CrLf.newInstance("lf"))
+		}
+	}
+
+
+
 assemble { dependsOn  copyResources, copyLib,pkgAsGTar}
 build {dependsOn assemble }
 publish {dependsOn build }
 publishToMavenLocal {dependsOn build }
+buildRpm {dependsOn processResources}
 
 
