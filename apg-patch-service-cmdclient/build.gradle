@@ -83,12 +83,14 @@ publishing {
 	publications {
 		cligtar(MavenPublication) {
 			artifact source: pkgAsGTar, extension: 'tar.gz'
-			
 			artifactId = "${finalName}"
-
-
-
 			pom.withXml { asNode().appendNode('description', 'From versions.properties generated dependency management pom.xml') }
+		}
+		withRpm(MavenPublication) {
+			artifact buildRpm  {
+				extension "rpm"
+				classifier "centos"
+			}
 		}
 	}
 	repositories {
