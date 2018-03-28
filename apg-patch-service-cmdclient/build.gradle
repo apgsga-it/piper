@@ -114,7 +114,7 @@ def homeDir = "/opt/${finalName}"
 ospackage {
 	packageName = "${finalName}"
 	version = "${savedVersion}"
-	release = 1
+	release = 2
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -123,7 +123,7 @@ ospackage {
 	into "${homeDir}"
 	
 	from(shadowJar.outputs.files) {
-		fileMode 0755
+		fileMode 0644
 		into 'bin'
 	}
 

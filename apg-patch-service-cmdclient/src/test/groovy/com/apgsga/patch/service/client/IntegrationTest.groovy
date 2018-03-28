@@ -53,9 +53,9 @@ public class IntegrationTest extends Specification {
 	}
 
 	def "Patch Cli should print error with missing host"() {
-		def opts = PatchCli.create().process(["-e", "9999"])
-		expect: "PatchCli returns null in case of missing -u option "
-		opts == null
+		def opts = PatchCli.create().process([])
+		expect: "PatchCli doesn't return null, because default host url assumed "
+		opts != null
 	}
 
 	def "Patch Cli queries existance of not existing Patch and returns false"() {

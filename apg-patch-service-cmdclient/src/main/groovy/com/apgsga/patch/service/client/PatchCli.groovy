@@ -19,6 +19,7 @@ class PatchCli {
 		super();
 	}
 	def validToStates = ["EntwicklungInstallationsbereit","Informatiktestinstallation","Produktionsinstallation", "Entwicklung"]
+	def defaultHost = "localhost:9010"
 	
 	def process(def args) {
 		def options = validateOpts(args)
@@ -26,7 +27,7 @@ class PatchCli {
 		def cmdResults = new Expando();
 		cmdResults.results = [:]
 		cmdResults.returnCode = 1
-		def patchClient = new PatchServiceClient(options.u)
+		def patchClient = new PatchServiceClient(!options.u ? defaultHost : options.u)
 		if (options.l) {
 			def result = uploadPatchFiles(options,patchClient)
 			cmdResults.results['l'] = result
@@ -130,8 +131,7 @@ class PatchCli {
 			return null
 		}
 		if (!options.u) {
-			println "Patch Service Base Url must be provided"
-			error = true;
+			println "Default value for u option: ${defaultHost} assumed"
 		}
 		if (options.l) {
 			def directory = new File(options.l)
