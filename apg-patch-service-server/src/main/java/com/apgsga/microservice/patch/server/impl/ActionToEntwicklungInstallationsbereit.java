@@ -9,9 +9,9 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchOpService;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
-import com.apgsga.microservice.patch.server.impl.ssh.JschCvsSession;
-import com.apgsga.microservice.patch.server.impl.ssh.JschSession;
-import com.apgsga.microservice.patch.server.impl.ssh.JschSessionFactory;
+import com.apgsga.microservice.patch.server.impl.vcs.JschCvsSession;
+import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandSession;
+import com.apgsga.microservice.patch.server.impl.vcs.JschSessionFactory;
 
 public class ActionToEntwicklungInstallationsbereit implements ActionExecuteStateTransition {
 
@@ -33,7 +33,7 @@ public class ActionToEntwicklungInstallationsbereit implements ActionExecuteStat
 		Patch patch = repo.findById(patchNumber);
 		Assert.notNull(patch, "Patch : <" + patchNumber + "> not found");
 		createAndSaveTagForPatch(patch);
-		JschSession jschSession = jschSessionFactory.create();
+		VcsCommandSession jschSession = jschSessionFactory.create();
 		ExecutorService executorService = Executors.newSingleThreadExecutor();
 		executorService.execute(new Runnable() {
 
@@ -49,17 +49,16 @@ public class ActionToEntwicklungInstallationsbereit implements ActionExecuteStat
 		});
 		executorService.shutdown();
 	
-
 	}
 
-	private void tagJavaModules(JschSession jschSession,Patch patch) {
+	private void tagJavaModules(VcsCommandSession jschSession,Patch patch) {
 		final StringBuffer cmdBuffer = new StringBuffer();
 		cmdBuffer.append("cvs rtag -r " + patch.getMicroServiceBranch() + " " + patch.getPatchTag() + " ");
 		patch.getMavenArtifacts().forEach(artifact -> cmdBuffer.append(artifact.getName() + " "));
 		jschSession.execCommand(cmdBuffer.toString());
 	}
 
-	private void tagDbObjects(JschSession jschSession,Patch patch) {
+	private void tagDbObjects(VcsCommandSession jschSession,Patch patch) {
 		final StringBuffer cmdBuffer = new StringBuffer();
 		cmdBuffer.append("cvs rtag -r " + patch.getProdBranch() + " " + patch.getPatchTag() + " ");
 		patch.getDbObjects().forEach(dbObject -> cmdBuffer.append(dbObject.asFullPath() + " "));

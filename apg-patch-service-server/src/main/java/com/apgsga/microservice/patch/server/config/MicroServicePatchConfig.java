@@ -17,9 +17,9 @@ import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClientImpl;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchMockClient;
 import com.apgsga.microservice.patch.server.impl.persistence.FilebasedPatchPersistence;
-import com.apgsga.microservice.patch.server.impl.ssh.JschLoggingMockFactory;
-import com.apgsga.microservice.patch.server.impl.ssh.JschSessionFactory;
-import com.apgsga.microservice.patch.server.impl.ssh.JschSessionFactoryDefaultImpl;
+import com.apgsga.microservice.patch.server.impl.vcs.JschLoggingMockFactory;
+import com.apgsga.microservice.patch.server.impl.vcs.JschSessionFactory;
+import com.apgsga.microservice.patch.server.impl.vcs.JschSessionFactoryDefaultImpl;
 
 @Configuration
 @EnableWebMvc
