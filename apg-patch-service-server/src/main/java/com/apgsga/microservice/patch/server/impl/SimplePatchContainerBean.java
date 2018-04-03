@@ -27,8 +27,9 @@ import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
-import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandSession;
-import com.apgsga.microservice.patch.server.impl.vcs.JschSessionFactory;
+import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
+import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
+import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -49,7 +50,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private ArtifactManager am;
 
 	@Autowired
-	private JschSessionFactory jschSessionFactory;
+	private VcsCommandRunnerFactory vcsCommandRunnerFactory;
 
 	public SimplePatchContainerBean() {
 		super();
@@ -132,11 +133,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		if (dbModules == null) {
 			return;
 		}
-		final VcsCommandSession jschCommand = jschSessionFactory.create();
-		jschCommand.connect();
-		dbModules.getDbModules().stream().forEach(module -> jschCommand.execCommand(
-				"cvs rtag  -b -r  " + patch.getProdBranch() + " " + patch.getDbPatchBranch() + " " + module));
-		jschCommand.disconnect();
+		final VcsCommandRunner vcsCommandRunner = vcsCommandRunnerFactory.create();
+		vcsCommandRunner.preProcess();
+		vcsCommandRunner.run(PatchVcsCommand.createCreatePatchBranchCmd(patch.getDbPatchBranch(), patch.getProdBranch(),
+				dbModules.getDbModules()));
+		vcsCommandRunner.postProcess();
 
 	}
 
@@ -156,13 +157,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		if (dbModules == null) {
 			return Lists.newArrayList();
 		}
-		final VcsCommandSession jschCommand = jschSessionFactory.create();
-		jschCommand.connect();
+		final VcsCommandRunner vcsCmdRunner = vcsCommandRunnerFactory.create();
+		vcsCmdRunner.preProcess();
 		List<DbObject> dbObjects = Lists.newArrayList();
 		for (String dbModule : dbModules.getDbModules()) {
 			if (Strings.isNullOrEmpty(dbModule) || dbModule.contains(searchString)) {
-				List<String> result = jschCommand.execCommand("cvs -f rdiff -u -r  " + patch.getProdBranch() + "  -r "
-						+ patch.getDbPatchBranch() + " " + dbModule);
+				List<String> result = vcsCmdRunner.run(
+						PatchVcsCommand.createDiffPatchModulesCmd(patch.getDbPatchBranch(), patch.getProdBranch(), dbModule));
 				List<String> files = result.stream()
 						.filter(s -> s.startsWith("Index: ") && (s.endsWith("sql") || s.endsWith("deleted")))
 						.map(s -> s.substring(7)).collect(Collectors.toList());
@@ -176,7 +177,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 			}
 		}
-		jschCommand.disconnect();
+		vcsCmdRunner.postProcess();
 		return dbObjects;
 	}
 
@@ -211,8 +212,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		this.jenkinsClient = jenkinsClient;
 	}
 
-	public JschSessionFactory getJschSessionFactory() {
-		return jschSessionFactory;
+	public VcsCommandRunnerFactory getJschSessionFactory() {
+		return vcsCommandRunnerFactory;
 	}
 
 }

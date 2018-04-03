@@ -57,6 +57,8 @@ public interface Patch extends ServiceMetaData {
 	public String getRevisionMnemoPart(); 
 
 	List<DbObject> getDbObjects();
+	
+	List<String> getDbObjectsAsVcsPath();
 
 	void setDbObjects(List<DbObject> dbObjects);
 
@@ -65,6 +67,8 @@ public interface Patch extends ServiceMetaData {
 	void addDbObjects(DbObject dbObject);
 
 	List<MavenArtifact> getMavenArtifacts();
+	
+	List<String> getMavenArtifactsAsVcsPath();
 
 	void setMavenArtifacts(List<MavenArtifact> mavenArtifacts);
 

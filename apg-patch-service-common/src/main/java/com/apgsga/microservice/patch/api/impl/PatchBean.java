@@ -1,6 +1,7 @@
 package com.apgsga.microservice.patch.api.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.affichage.persistence.common.client.AbstractTransientEntity;
 import com.apgsga.microservice.patch.api.DbObject;
@@ -32,7 +33,6 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	public PatchBean() {
 		super();
 	}
-
 
 	@Override
 	public String getPatchNummer() {
@@ -109,6 +109,11 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	}
 
 	@Override
+	public List<String> getDbObjectsAsVcsPath() {
+		return dbObjects.stream().map(dbObjects -> dbObjects.asFullPath()).collect(Collectors.toList());
+	}
+
+	@Override
 	public void setDbObjects(List<DbObject> dbObjects) {
 		final Object oldValue = Lists.newArrayList(this.dbObjects);
 		this.dbObjects = dbObjects;
@@ -132,6 +137,12 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	@Override
 	public List<MavenArtifact> getMavenArtifacts() {
 		return mavenArtifacts;
+	}
+
+	@Override
+	public List<String> getMavenArtifactsAsVcsPath() {
+		return mavenArtifacts.stream().map(mavenArt -> mavenArt.getName()).collect(Collectors.toList());
+
 	}
 
 	@Override

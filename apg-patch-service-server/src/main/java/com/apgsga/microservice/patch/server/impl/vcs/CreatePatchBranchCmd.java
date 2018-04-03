@@ -1,8 +1,10 @@
 package com.apgsga.microservice.patch.server.impl.vcs;
 
-public class CreatePatchBranchCmd extends CvsCmd {
+import java.util.List;
 
-	public CreatePatchBranchCmd(String patchBranch, String prodBranch, String... modules) {
+public class CreatePatchBranchCmd extends PatchVcsCommand {
+
+	public CreatePatchBranchCmd(String patchBranch, String prodBranch, List<String> modules) {
 		super(patchBranch, prodBranch, modules);
 	}
 

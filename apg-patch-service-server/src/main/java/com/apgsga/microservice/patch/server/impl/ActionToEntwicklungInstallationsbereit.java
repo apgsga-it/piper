@@ -6,19 +6,18 @@ import java.util.concurrent.Executors;
 import org.springframework.util.Assert;
 
 import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchOpService;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
-import com.apgsga.microservice.patch.server.impl.vcs.JschCvsSession;
-import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandSession;
-import com.apgsga.microservice.patch.server.impl.vcs.JschSessionFactory;
+import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
+import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
+import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
 
 public class ActionToEntwicklungInstallationsbereit implements ActionExecuteStateTransition {
 
 	private final PatchPersistence repo;
 
-	private JschSessionFactory jschSessionFactory;
-	
+	private VcsCommandRunnerFactory jschSessionFactory;
+
 	private final JenkinsPatchClient jenkinsPatchClient;
 
 	public ActionToEntwicklungInstallationsbereit(SimplePatchContainerBean patchContainer) {
@@ -33,36 +32,24 @@ public class ActionToEntwicklungInstallationsbereit implements ActionExecuteStat
 		Patch patch = repo.findById(patchNumber);
 		Assert.notNull(patch, "Patch : <" + patchNumber + "> not found");
 		createAndSaveTagForPatch(patch);
-		VcsCommandSession jschSession = jschSessionFactory.create();
+		VcsCommandRunner jschSession = jschSessionFactory.create();
 		ExecutorService executorService = Executors.newSingleThreadExecutor();
 		executorService.execute(new Runnable() {
 
 			@Override
 			public void run() {
-				jschSession.connect();;
-				tagDbObjects(jschSession,patch);
-				tagJavaModules(jschSession,patch);
-				jschSession.disconnect();
+				jschSession.preProcess();
+				jschSession.run(PatchVcsCommand.createTagPatchModulesCmd(patch.getPatchTag(), patch.getProdBranch(),
+						patch.getDbObjectsAsVcsPath()));
+				jschSession.run(PatchVcsCommand.createTagPatchModulesCmd(patch.getPatchTag(),
+						patch.getMicroServiceBranch(), patch.getMavenArtifactsAsVcsPath()));
+				jschSession.postProcess();
 				jenkinsPatchClient.startProdPatchPipeline(patch);
 			}
-			
+
 		});
 		executorService.shutdown();
-	
-	}
 
-	private void tagJavaModules(VcsCommandSession jschSession,Patch patch) {
-		final StringBuffer cmdBuffer = new StringBuffer();
-		cmdBuffer.append("cvs rtag -r " + patch.getMicroServiceBranch() + " " + patch.getPatchTag() + " ");
-		patch.getMavenArtifacts().forEach(artifact -> cmdBuffer.append(artifact.getName() + " "));
-		jschSession.execCommand(cmdBuffer.toString());
-	}
-
-	private void tagDbObjects(VcsCommandSession jschSession,Patch patch) {
-		final StringBuffer cmdBuffer = new StringBuffer();
-		cmdBuffer.append("cvs rtag -r " + patch.getProdBranch() + " " + patch.getPatchTag() + " ");
-		patch.getDbObjects().forEach(dbObject -> cmdBuffer.append(dbObject.asFullPath() + " "));
-		jschSession.execCommand(cmdBuffer.toString());
 	}
 
 	private void createAndSaveTagForPatch(Patch patch) {

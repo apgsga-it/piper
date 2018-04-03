@@ -1,8 +1,10 @@
 package com.apgsga.microservice.patch.server.impl.vcs;
 
-public class DiffPatchModulesCmd extends CvsCmd {
+import java.util.List;
 
-	public DiffPatchModulesCmd(String patchBranch, String prodBranch, String... modules) {
+public class DiffPatchModulesCmd extends PatchVcsCommand {
+
+	public DiffPatchModulesCmd(String patchBranch, String prodBranch, List<String> modules) {
 		super(patchBranch, prodBranch, modules);
 	}
 

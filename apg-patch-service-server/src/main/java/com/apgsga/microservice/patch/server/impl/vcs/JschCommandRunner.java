@@ -17,18 +17,18 @@ import com.jcraft.jsch.Session;
  * @deprecated consider to use https://github.com/northern-bites/ganymed-ssh2 resp https://www.cleondris.com/opensource/ssh2/
  * Reason: Error Handling is not very good
  */
-public class JschCvsSession implements VcsCommandSession {
+public class JschCommandRunner implements VcsCommandRunner {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 
 	private final Session session;
 
-	public JschCvsSession(Session session) {
+	public JschCommandRunner(Session session) {
 		super();
 		this.session = session;
 	}
 
-	public void connect() {
+	public void preProcess() {
 		try {
 			session.connect();
 		} catch (JSchException e) {
@@ -37,8 +37,8 @@ public class JschCvsSession implements VcsCommandSession {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<String> execCommand(String[] commands) {
-		String command = String.join(" ", commands);
+	public List<String> run(VcsCommand vcsCmd) {
+		String command = String.join(" ", vcsCmd.getCommand());
 		LOGGER.info("Executing: " + command);
 		List<String> resultLines = Lists.newArrayList();
 		try {
@@ -71,7 +71,7 @@ public class JschCvsSession implements VcsCommandSession {
 		return resultLines;
 	}
 
-	public void disconnect() {
+	public void postProcess() {
 		session.disconnect();
 	}
 }

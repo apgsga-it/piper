@@ -8,7 +8,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-public class JschSessionFactoryDefaultImpl implements JschSessionFactory {
+public class JschSessionCmdRunnerFactory implements VcsCommandRunnerFactory {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 
@@ -18,7 +18,7 @@ public class JschSessionFactoryDefaultImpl implements JschSessionFactory {
 
 	private final String host;
 
-	public JschSessionFactoryDefaultImpl(String user, String password, String host) {
+	public JschSessionCmdRunnerFactory(String user, String password, String host) {
 		super();
 		this.user = user;
 		this.password = password;
@@ -26,7 +26,7 @@ public class JschSessionFactoryDefaultImpl implements JschSessionFactory {
 	}
 
 	@Override
-	public VcsCommandSession create() {
+	public VcsCommandRunner create() {
 		JSch jsch = new JSch();
 		Session session;
 		try {
@@ -38,7 +38,7 @@ public class JschSessionFactoryDefaultImpl implements JschSessionFactory {
 		java.util.Properties config = new java.util.Properties();
 		config.put("StrictHostKeyChecking", "no");
 		session.setConfig(config);
-		final VcsCommandSession jschSession = new JschCvsSession(session);
+		final VcsCommandRunner jschSession = new JschCommandRunner(session);
 		return jschSession;
 	}
 

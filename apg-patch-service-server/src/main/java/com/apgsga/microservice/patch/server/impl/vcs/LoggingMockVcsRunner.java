@@ -7,24 +7,24 @@ import org.apache.commons.logging.LogFactory;
 
 import com.google.common.collect.Lists;
 
-public class JschLoggingMockSession implements VcsCommandSession {
+public class LoggingMockVcsRunner implements VcsCommandRunner {
 	
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 
 	@Override
-	public void connect() {
+	public void preProcess() {
 		LOGGER.info("Mocking connect");
 	}
 
 	@Override
-	public void disconnect() {
+	public void postProcess() {
 		LOGGER.info("Mocking disconnect");
 
 	}
 
 	@Override
-	public List<String> execCommand(String[] commands) {
-		String command = String.join(" ", commands);
+	public List<String> run(VcsCommand vcsCommand) {
+		String command = String.join(" ", vcsCommand.getCommand());
 		LOGGER.info("Mocking execCommand with: " + command);
 		LOGGER.info("Returning empty List");
 		return Lists.newArrayList();

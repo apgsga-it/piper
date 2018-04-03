@@ -3,15 +3,15 @@ package com.apgsga.microservice.patch.server.impl.vcs;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class JschLoggingMockFactory implements JschSessionFactory {
+public class LoggingMockVcsRunnerFactory implements VcsCommandRunnerFactory {
 	
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 
 
 	@Override
-	public VcsCommandSession create() {
+	public VcsCommandRunner create() {
 		LOGGER.info("Create Mock Session");
-		return new JschLoggingMockSession(); 
+		return new LoggingMockVcsRunner(); 
 	}
 
 }

@@ -1,10 +1,12 @@
 package com.apgsga.microservice.patch.server.impl.vcs;
 
-public class TagPatchModulesCmd extends CvsCmd {
+import java.util.List;
+
+public class TagPatchModulesCmd extends PatchVcsCommand {
 
 
 
-	public TagPatchModulesCmd(String patchBranch, String prodBranch, String... modules) {
+	public TagPatchModulesCmd(String patchBranch, String prodBranch, List<String> modules) {
 		super(patchBranch, prodBranch, modules);
 
 	}
