@@ -1,12 +1,14 @@
 package com.apgsga.microservice.patch.server.impl.vcs;
 
 import org.apache.commons.lang.math.RandomUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
 public class IntegrationTestVcsSshCmds {
 
+	@Ignore("TODO make preconditions = cvs setup automatic")
 	@Test
 	public void testCreatePatchBranch() throws Exception {
 		VcsCommandRunner runner = new JschSessionCmdRunnerFactory("che","che","192.168.17.129", true).create();
@@ -18,6 +20,7 @@ public class IntegrationTestVcsSshCmds {
 		runner.postProcess();
 	}
 	
+	@Ignore("TODO make preconditions = cvs setup automatic")
 	@Test
 	public void testCreatePatchTag() throws Exception {
 		VcsCommandRunner runner = new JschSessionCmdRunnerFactory("che","che","192.168.17.129", true).create();
@@ -29,6 +32,7 @@ public class IntegrationTestVcsSshCmds {
 		runner.postProcess();
 	}
 	
+	@Ignore("TODO make preconditions = cvs setup automatic")
 	@Test
 	public void testDiff() throws Exception {
 		VcsCommandRunner runner = new JschSessionCmdRunnerFactory("che","che","192.168.17.129", true).create();

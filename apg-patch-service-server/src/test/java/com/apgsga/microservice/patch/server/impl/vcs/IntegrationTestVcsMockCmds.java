@@ -1,6 +1,7 @@
 package com.apgsga.microservice.patch.server.impl.vcs;
 
 import org.apache.commons.lang.math.RandomUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;

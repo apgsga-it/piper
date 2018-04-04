@@ -1,12 +1,14 @@
 package com.apgsga.microservice.patch.server.impl.vcs;
 
 import org.apache.commons.lang.math.RandomUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
 public class IntegrationTestVcsLocalCmds {
 
+	@Ignore("TODO make preconditions = cvs setup automatic")
 	@Test
 	public void testCreatePatchBranch() throws Exception {
 		RandomUtils.nextInt(); 
@@ -15,6 +17,7 @@ public class IntegrationTestVcsLocalCmds {
 				Lists.newArrayList("module1", "module2")));
 	}
 	
+	@Ignore("TODO make preconditions = cvs setup automatic")
 	@Test
 	public void testCreatePatchTag() throws Exception {
 		VcsCommandRunner runner = new ProcessBuilderCmdRunnerFactory().create();
@@ -22,6 +25,7 @@ public class IntegrationTestVcsLocalCmds {
 				Lists.newArrayList("module1", "module2")));
 	}
 	
+	@Ignore("TODO make preconditions = cvs setup automatic")
 	@Test
 	public void testDiff() throws Exception {
 		VcsCommandRunner runner = new ProcessBuilderCmdRunnerFactory().create();
