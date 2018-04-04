@@ -6,6 +6,8 @@ echo "Pre Install script: $1"
 if [ "$1" = "2" ]; then
 	echo "Stopping apg-patch-service-server"
 	systemctl stop apg-patch-service-server
+	# TODO (che, 4.4.2018) : Temp Fix see below
+	/usr/sbin/usermod -G apg-patch-service-server,"domain users" -a apg-patch-service-server  2> /dev/null || :
 fi
 if [ "$1" = "1" ]; then
 	echo "Creating group: apg-patch-service-server"
