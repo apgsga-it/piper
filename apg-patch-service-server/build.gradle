@@ -63,7 +63,7 @@ def homeDir = "/opt/${project.name}"
 ospackage {
 	packageName = "${project.name}"
 	version = "${pkgVersion}"
-	release = 4
+	release = 5
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
