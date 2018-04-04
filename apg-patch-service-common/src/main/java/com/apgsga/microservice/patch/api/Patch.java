@@ -3,10 +3,12 @@ package com.apgsga.microservice.patch.api;
 import java.util.List;
 
 import com.affichage.persistence.common.client.EntityRootInterface;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @EntityRootInterface
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "className")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public interface Patch extends ServiceMetaData {
 
 	public static final String PATCH_NUMMER = "patchNummer";
@@ -55,6 +57,8 @@ public interface Patch extends ServiceMetaData {
 	public String getRevisionMnemoPart(); 
 
 	List<DbObject> getDbObjects();
+	
+	List<String> getDbObjectsAsVcsPath();
 
 	void setDbObjects(List<DbObject> dbObjects);
 
@@ -63,6 +67,8 @@ public interface Patch extends ServiceMetaData {
 	void addDbObjects(DbObject dbObject);
 
 	List<MavenArtifact> getMavenArtifacts();
+	
+	List<String> getMavenArtifactsAsVcsPath();
 
 	void setMavenArtifacts(List<MavenArtifact> mavenArtifacts);
 

@@ -17,9 +17,10 @@ import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClientImpl;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchMockClient;
 import com.apgsga.microservice.patch.server.impl.persistence.FilebasedPatchPersistence;
-import com.apgsga.microservice.patch.server.impl.ssh.JschLoggingMockFactory;
-import com.apgsga.microservice.patch.server.impl.ssh.JschSessionFactory;
-import com.apgsga.microservice.patch.server.impl.ssh.JschSessionFactoryDefaultImpl;
+import com.apgsga.microservice.patch.server.impl.vcs.LoggingMockVcsRunnerFactory;
+import com.apgsga.microservice.patch.server.impl.vcs.ProcessBuilderCmdRunnerFactory;
+import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
+import com.apgsga.microservice.patch.server.impl.vcs.JschSessionCmdRunnerFactory;
 
 @Configuration
 @EnableWebMvc
@@ -70,10 +71,16 @@ public class MicroServicePatchConfig {
 		return new JenkinsPatchClientImpl(jenkinsHost, jenkinsUser, jenkinsAuthKey);
 	}
 
-	@Bean(name = "jschSessionFactory")
+	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile("live")
-	public JschSessionFactory jsessionFactory() {
-		return new JschSessionFactoryDefaultImpl(vcsUser, vcsPassword, vcsHost); 
+	public VcsCommandRunnerFactory jsessionFactory() {
+		return new JschSessionCmdRunnerFactory(vcsUser, vcsPassword, vcsHost); 
+	}
+	
+	@Bean(name = "vcsCmdRunnerFactory")
+	@Profile("live,localvcs")
+	public VcsCommandRunnerFactory vcsLocalFactory() {
+		return new ProcessBuilderCmdRunnerFactory(); 
 	}
 	
 	@Bean(name = "jenkinsBean")
@@ -82,10 +89,10 @@ public class MicroServicePatchConfig {
 		return new JenkinsPatchMockClient();
 	}
 
-	@Bean(name = "jschSessionFactory")
+	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile("mock")
-	public JschSessionFactory jsessionFactoryMock() {
-		return new JschLoggingMockFactory(); 
+	public VcsCommandRunnerFactory jsessionFactoryMock() {
+		return new LoggingMockVcsRunnerFactory(); 
 	}
 
 }

@@ -12,7 +12,6 @@ import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -25,13 +24,12 @@ import com.apgsga.microservice.patch.api.PatchOpService;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.PatchService;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
-import com.apgsga.microservice.patch.api.ServicesMetaData;
 import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
-import com.apgsga.microservice.patch.server.impl.ssh.JschCvsSession;
-import com.apgsga.microservice.patch.server.impl.ssh.JschSession;
-import com.apgsga.microservice.patch.server.impl.ssh.JschSessionFactory;
+import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
+import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
+import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -47,12 +45,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Autowired
 	private JenkinsPatchClient jenkinsClient;
-	
+
 	@Autowired
 	private ArtifactManager am;
-	
+
 	@Autowired
-	private JschSessionFactory jschSessionFactory;
+	private VcsCommandRunnerFactory vcsCommandRunnerFactory;
 
 	public SimplePatchContainerBean() {
 		super();
@@ -66,7 +64,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public List<String> listDbModules() {
 		DbModules dbModules = repo.getDbModules();
-		if (dbModules == null) return Lists.newArrayList();
+		if (dbModules == null)
+			return Lists.newArrayList();
 		return dbModules.getDbModules();
 	}
 
@@ -75,15 +74,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		ServiceMetaData data = repo.findServiceByName(patch.getServiceName());
 		List<MavenArtifact> mavenArtFromStarterList = null;
 		try {
-			mavenArtFromStarterList = am.getAllDependencies(data.getBaseVersionNumber() + "." + data.getRevisionMnemoPart() + "-SNAPSHOT");
-		} catch (DependencyResolutionException | 
-				 ArtifactResolutionException | 
-				 IOException |
-				 XmlPullParserException e) {
-			
+			mavenArtFromStarterList = am
+					.getAllDependencies(data.getBaseVersionNumber() + "." + data.getRevisionMnemoPart() + "-SNAPSHOT");
+		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
+
 			new RuntimeException(e);
 		}
-		
+
 		return mavenArtFromStarterList;
 	}
 
@@ -134,13 +131,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private void createBranchForDbModules(Patch patch) {
 		DbModules dbModules = repo.getDbModules();
 		if (dbModules == null) {
-			return; 
+			return;
 		}
-		final JschSession jschCommand = jschSessionFactory.create(); 
-		jschCommand.connect();
-		dbModules.getDbModules().stream().forEach(module -> jschCommand.execCommand(
-				"cvs rtag  -b -r  " + patch.getProdBranch() + " " + patch.getDbPatchBranch() + " " + module));
-		jschCommand.disconnect();
+		final VcsCommandRunner vcsCommandRunner = vcsCommandRunnerFactory.create();
+		vcsCommandRunner.preProcess();
+		vcsCommandRunner.run(PatchVcsCommand.createCreatePatchBranchCmd(patch.getDbPatchBranch(), patch.getProdBranch(),
+				dbModules.getDbModules()));
+		vcsCommandRunner.postProcess();
 
 	}
 
@@ -160,13 +157,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		if (dbModules == null) {
 			return Lists.newArrayList();
 		}
-		final JschSession jschCommand = jschSessionFactory.create();
-		jschCommand.connect();
+		final VcsCommandRunner vcsCmdRunner = vcsCommandRunnerFactory.create();
+		vcsCmdRunner.preProcess();
 		List<DbObject> dbObjects = Lists.newArrayList();
 		for (String dbModule : dbModules.getDbModules()) {
 			if (Strings.isNullOrEmpty(dbModule) || dbModule.contains(searchString)) {
-				List<String> result = jschCommand.execCommand("cvs -f rdiff -u -r  " + patch.getProdBranch() + "  -r "
-						+ patch.getDbPatchBranch() + " " + dbModule);
+				List<String> result = vcsCmdRunner.run(
+						PatchVcsCommand.createDiffPatchModulesCmd(patch.getDbPatchBranch(), patch.getProdBranch(), dbModule));
 				List<String> files = result.stream()
 						.filter(s -> s.startsWith("Index: ") && (s.endsWith("sql") || s.endsWith("deleted")))
 						.map(s -> s.substring(7)).collect(Collectors.toList());
@@ -180,22 +177,22 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 			}
 		}
-		jschCommand.disconnect();
+		vcsCmdRunner.postProcess();
 		return dbObjects;
 	}
 
 	@Override
 	public synchronized void startInstallPipeline(Patch patch) {
 		repo.savePatch(patch);
-		String installationTarget = patch.getInstallationTarget(); 
-		TargetSystemEnviroment installationTargetData = repo.getInstallationTarget(installationTarget); 
+		String installationTarget = patch.getInstallationTarget();
+		TargetSystemEnviroment installationTargetData = repo.getInstallationTarget(installationTarget);
 		Assert.notNull(installationTargetData, "Installationtarget : " + installationTarget + " not found");
 		jenkinsClient.startInstallPipeline(patch);
 	}
-	
+
 	@Override
 	public void executeStateTransitionAction(String patchNumber, String toStatus) {
-		ActionContextExecuteStateTransition actionContext = new ActionContextExecuteStateTransition(this); 
+		ActionContextExecuteStateTransition actionContext = new ActionContextExecuteStateTransition(this);
 		actionContext.executeStateTransitionAction(patchNumber, toStatus);
 	}
 
@@ -215,10 +212,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		this.jenkinsClient = jenkinsClient;
 	}
 
-	public JschSessionFactory getJschSessionFactory() {
-		return jschSessionFactory;
+	public VcsCommandRunnerFactory getJschSessionFactory() {
+		return vcsCommandRunnerFactory;
 	}
-	
-	
 
 }
