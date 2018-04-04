@@ -83,7 +83,7 @@ public abstract class PatchVcsCommand implements VcsCommand {
 			processBuilderParm = new String[] { "bash.exe", "-c", "-s", "cvs " + getParameterSpaceSeperated() };
 		} else {
 			// TODO (che, 4.4.2018) : either via bash or path 
-			processBuilderParm = new String[] { "/usr/bin/cvs",   getParameterSpaceSeperated() };
+			processBuilderParm = getParameterAsArray();
 		}
 		LOGGER.info("ProcessBuilder Parameters: " + Arrays.toString(processBuilderParm).toString()); 
 		return processBuilderParm; 
@@ -97,6 +97,13 @@ public abstract class PatchVcsCommand implements VcsCommand {
 			return additionalOptions + " " + parameter;
 		}
 		return parameter;
+	}
+	
+	private String[] getParameterAsArray() {
+		String[] parameter = Stream.concat(Arrays.stream(getFristPart()), Arrays.stream(modules.toArray()))
+				.toArray(String[]::new);
+		String[] processBuilderParm = Stream.concat(Arrays.stream(new String[] { "/usr/bin/cvs}" }), Arrays.stream(parameter)).toArray(String[]::new);
+		return processBuilderParm;
 	}
 
 	protected abstract String[] getFristPart();
