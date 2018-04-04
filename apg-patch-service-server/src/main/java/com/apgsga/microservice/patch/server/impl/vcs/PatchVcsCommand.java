@@ -102,7 +102,8 @@ public abstract class PatchVcsCommand implements VcsCommand {
 		String[] parameter = Stream.concat(Arrays.stream(getFristPart()), Arrays.stream(modules.toArray()))
 				.toArray(String[]::new);
 		// TODO (che, 4.4.2018) : either via bash or path 
-		String[] processBuilderParm = Stream.concat(Arrays.stream(new String[] { "/usr/bin/cvs" }), Arrays.stream(parameter)).toArray(String[]::new);
+		// TODO (che, 4.4.2018) : cvs Root either in Enviroment or Configuration
+		String[] processBuilderParm = Stream.concat(Arrays.stream(new String[] { "/usr/bin/cvs", "-d", "/var/local/cvs/root" }), Arrays.stream(parameter)).toArray(String[]::new);
 		return processBuilderParm;
 	}
 
