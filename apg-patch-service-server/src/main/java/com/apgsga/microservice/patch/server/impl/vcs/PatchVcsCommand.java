@@ -82,7 +82,8 @@ public abstract class PatchVcsCommand implements VcsCommand {
 		if (SystemUtils.IS_OS_WINDOWS && !noSystemCheck) {
 			processBuilderParm = new String[] { "bash.exe", "-c", "-s", "cvs " + getParameterSpaceSeperated() };
 		} else {
-			processBuilderParm = new String[] { "cvs " + getParameterSpaceSeperated() };
+			// TODO (che, 4.4.2018) : either via bash or path 
+			processBuilderParm = new String[] { "/usr/bin/cvs " + getParameterSpaceSeperated() };
 		}
 		LOGGER.info("ProcessBuilder Parameters: " + Arrays.toString(processBuilderParm).toString()); 
 		return processBuilderParm; 
