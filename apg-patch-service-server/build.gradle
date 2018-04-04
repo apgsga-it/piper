@@ -74,7 +74,7 @@ ospackage {
 
 	into "${homeDir}"
 	user "apg-patch-service-server"
-	permissionGroup "apg-patch-service-server"
+	permissionGroup "jenkins"
 	
 	from(jar.outputs.files) {
 		// Strip the version from the jar filename
