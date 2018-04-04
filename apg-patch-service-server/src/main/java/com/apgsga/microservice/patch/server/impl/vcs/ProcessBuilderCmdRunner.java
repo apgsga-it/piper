@@ -6,17 +6,23 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import org.assertj.core.util.Lists;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.google.common.collect.Lists;
+
 
 public class ProcessBuilderCmdRunner implements VcsCommandRunner {
+	
+	protected final static Log LOGGER = LogFactory.getLog(ProcessBuilderCmdRunner.class.getName());
 
 	public List<String> run(VcsCommand command) {
 		ProcessBuilder pb = new ProcessBuilder().command(command.getCommand());
 		Process p;
 		try {
 			p = pb.start();
-			StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(), "ERROR");
-			StreamGobbler outputGobbler = new StreamGobbler(p.getInputStream(), "OUTPUT");
+			StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream());
+			StreamGobbler outputGobbler = new StreamGobbler(p.getInputStream());
 			outputGobbler.start();
 			errorGobbler.start();
 			int exit = p.waitFor();
@@ -24,9 +30,6 @@ public class ProcessBuilderCmdRunner implements VcsCommandRunner {
 			outputGobbler.join();
 			if (exit != 0 ) {
 				throw new AssertionError(String.format("ProcessBuilder returned ExitCode %d", exit));
-			}
-			if (errorGobbler.getOutput().size() > 0) {
-				throw new AssertionError("ProcessBuilder Erroroutput");
 			}
 			return Lists.newArrayList(outputGobbler.getOutput());
 		} catch (IOException | InterruptedException e) {
@@ -38,11 +41,9 @@ public class ProcessBuilderCmdRunner implements VcsCommandRunner {
 
 		List<String> output = Lists.newArrayList();
 		InputStream is;
-		String type;
 
-		private StreamGobbler(InputStream is, String type) {
+		private StreamGobbler(InputStream is) {
 			this.is = is;
-			this.type = type;
 		}
 
 		@Override
@@ -52,7 +53,7 @@ public class ProcessBuilderCmdRunner implements VcsCommandRunner {
 				BufferedReader br = new BufferedReader(isr);
 				String line = null;
 				while ((line = br.readLine()) != null) {
-					System.out.println(type + "> " + line);
+					LOGGER.info(line);
 					output.add(line);
 				}
 			} catch (IOException ioe) {

@@ -8,9 +8,13 @@ public class CreatePatchBranchCmd extends PatchVcsCommand {
 		super(patchBranch, prodBranch, modules);
 	}
 
+	public CreatePatchBranchCmd(String patchBranch, String prodBranch, String additionalOptions, List<String> modules) {
+		super(patchBranch,prodBranch,additionalOptions,modules); 
+	}
+
 	@Override
 	protected String[] getFristPart() {
-		return new String[] { "cvs", "rtag", "-b", "-r", prodBranch, patchBranch };
+		return new String[] { "rtag", "-b", "-r", prodBranch, patchTag };
 	}
 
 }

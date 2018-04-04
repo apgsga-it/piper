@@ -4,16 +4,18 @@ import java.util.List;
 
 public class TagPatchModulesCmd extends PatchVcsCommand {
 
-
-
 	public TagPatchModulesCmd(String patchBranch, String prodBranch, List<String> modules) {
 		super(patchBranch, prodBranch, modules);
 
 	}
 
+	public TagPatchModulesCmd(String patchBranch, String prodBranch, String additionalOptions, List<String> modules) {
+		super(patchBranch,prodBranch,additionalOptions,modules); 
+	}
+
 	@Override
 	protected String[] getFristPart() {
-		return new String[] { "cvs", "-f", "rdiff", "-u", "-r", prodBranch, "-r", patchBranch };
+		return new String[] {"rtag",  "-r", prodBranch, patchTag };
 	}
 
 }
