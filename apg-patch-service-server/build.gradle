@@ -63,7 +63,7 @@ def homeDir = "/opt/${project.name}"
 ospackage {
 	packageName = "${project.name}"
 	version = "${pkgVersion}"
-	release = 12
+	release = 13
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -101,7 +101,7 @@ ospackage {
 	// Copy the config files
 	from("packaging/app/conf") {
 		into "/etc/opt/${project.name}"
-		fileType CONFIG 
+		fileType CONFIG | NOREPLACE
 		user 'root'
 		permissionGroup 'root'
 		fileMode 0777
