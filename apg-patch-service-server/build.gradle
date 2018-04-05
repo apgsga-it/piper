@@ -63,7 +63,7 @@ def homeDir = "/opt/${project.name}"
 ospackage {
 	packageName = "${project.name}"
 	version = "${pkgVersion}"
-	release = 15
+	release = 16
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -74,7 +74,7 @@ ospackage {
     postUninstall file("packaging/rpm/post-uninstall.sh")
 
 	into "${homeDir}"
-	user "apg-patch-service-server"
+	user ""
 	permissionGroup "apg-patch-service-server"
 	
 	from(jar.outputs.files) {
