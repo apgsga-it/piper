@@ -72,13 +72,13 @@ public class MicroServicePatchConfig {
 	}
 
 	@Bean(name = "vcsCmdRunnerFactory")
-	@Profile("live,remotessh")
+	@Profile("live,remotecvs")
 	public VcsCommandRunnerFactory jsessionFactory() {
 		return new JschSessionCmdRunnerFactory(vcsUser, vcsPassword, vcsHost); 
 	}
 	
 	@Bean(name = "vcsCmdRunnerFactory")
-	@Profile("live")
+	@Profile("live,localcvs")
 	public VcsCommandRunnerFactory vcsLocalFactory() {
 		return new ProcessBuilderCmdRunnerFactory(); 
 	}
