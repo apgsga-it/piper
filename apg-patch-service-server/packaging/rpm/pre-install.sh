@@ -12,5 +12,7 @@ if [ "$1" = "1" ]; then
 	/usr/sbin/groupadd -f -r apg-patch-service-server 2> /dev/null || :
 	echo "Creating user: apg-patch-service-server"
 	/usr/sbin/useradd -r -m -c "apg-patch-service-server user" apg-patch-service-server -g apg-patch-service-server 2> /dev/null || :
+	echo "Adding user apg-patch-service-server to *domain users*"
+	/usr/sbin/usermod -G domain\ users apg-patch-service-server
 fi
 exit 0
