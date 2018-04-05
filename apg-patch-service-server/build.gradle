@@ -63,7 +63,7 @@ def homeDir = "/opt/${project.name}"
 ospackage {
 	packageName = "${project.name}"
 	version = "${pkgVersion}"
-	release = 11
+	release = 12
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -71,6 +71,7 @@ ospackage {
 	preInstall file("packaging/rpm/pre-install.sh")
 	postInstall file("packaging/rpm/post-install.sh")
     preUninstall file("packaging/rpm/pre-uninstall.sh")
+    postUninstall file("packaging/rpm/post-uninstall.sh")
 
 	into "${homeDir}"
 	user "apg-patch-service-server"
