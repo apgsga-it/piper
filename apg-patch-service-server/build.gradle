@@ -101,10 +101,10 @@ ospackage {
 	// Copy the config files
 	from("packaging/app/conf") {
 		into "/etc/opt/${project.name}"
-		fileType CONFIG | NOREPLACE
+		fileType CONFIG 
 		user 'root'
 		permissionGroup 'root'
-		fileMode 0755
+		fileMode 0777
 
 	}
 	
