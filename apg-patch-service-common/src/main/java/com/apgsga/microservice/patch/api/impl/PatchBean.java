@@ -8,10 +8,8 @@ import com.apgsga.microservice.patch.api.DbObject;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.Lists;
 
-@JsonIgnoreProperties(value = { "changedProperties", "propertyChangeSupport" ,"propertyChangeListeners"}, ignoreUnknown = true)
 public class PatchBean extends AbstractTransientEntity implements Patch {
 
 	private static final String PROD_BRANCH_DEFAULT = "HEAD";

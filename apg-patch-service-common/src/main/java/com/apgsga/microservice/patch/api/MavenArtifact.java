@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @EntityRootInterface
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "className")
-@JsonIgnoreProperties(ignoreUnknown = true)
 public interface MavenArtifact  {
 
 	public static final String ARTIFACT_ID = "artifactId";
