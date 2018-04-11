@@ -45,6 +45,14 @@ public class IntegrationTest extends Specification {
 	@Autowired
 	@Qualifier("patchPersistence")
 	private PatchPersistence repo;
+	
+	def setup() {
+		def buildFolder = new File("build")
+		if (!buildFolder.exists()) {
+			def created = buildFolder.mkdir()
+			println ("Buildfolder has been created ${created}")
+		}
+	}
 
 	def "Patch Cli should print out help without errors"() {
 		def opts = PatchCli.create().process(["-h"])
@@ -52,10 +60,10 @@ public class IntegrationTest extends Specification {
 		opts == null
 	}
 
-	def "Patch Cli should print error with missing host"() {
+	def "Patch Cli should print out help without errors in case of no options "() {
 		def opts = PatchCli.create().process([])
-		expect: "PatchCli doesn't return null, because default host url assumed "
-		opts != null
+		expect: "PatchCli returns null in case no options entered"
+		opts == null
 	}
 
 	def "Patch Cli queries existance of not existing Patch and returns false"() {
@@ -291,17 +299,35 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-u", baseUrl, "-sta", "9999,XXXXXX"])
+			def result = client.process(["-u", baseUrl, "-sta", "9999,XXXXXX,aps"])
 		then:
 			result == null
 	}
 	
-	def "Patch Cli valid State Change Action"() {
+	def "Patch Cli Missing configuration for State Change Action"() {
+		setup:
+			def client = PatchCli.create()
+		when:
+			def result = client.process(["-u", baseUrl, "-sta", "9999,EntwicklungInstallationsbereit"])
+		then:
+			result == null
+	}
+	
+	def "Patch Cli Invalid configuration for State Change Action"() {
+		setup:
+			def client = PatchCli.create()
+		when:
+			def result = client.process(["-u", baseUrl, "-sta", "9999,EntwicklungInstallationsbereit,xxxxx"])
+		then:
+			result == null
+	}
+	
+	def "Patch Cli valid State Change Action for config aps"() {
 		setup:
 			def client = PatchCli.create()
 		when:
 			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"])
-			def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit"])
+			def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit,aps"])
 		then:
 			preCondResult != null
 			preCondResult.returnCode == 0
@@ -310,4 +336,36 @@ public class IntegrationTest extends Specification {
 		cleanup:
 			repo.clean()
 	}
+	
+	def "Patch Cli valid State Change Action for config nil"() {
+		setup:
+			def client = PatchCli.create()
+		when:
+			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"])
+			def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit,nil"])
+		then:
+			preCondResult != null
+			preCondResult.returnCode == 0
+			result != null
+			result.returnCode == 0
+		cleanup:
+			repo.clean()
+	}
+	
+	def "Patch Cli valid State Change Action for config db with config file"() {
+		setup:
+			def client = PatchCli.create()
+		when:
+			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"])
+			def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit,db", "-db", "src/main/resources/config/defaults.groovy"])
+		then:
+			preCondResult != null
+			preCondResult.returnCode == 0
+			result != null
+			result.returnCode == 0
+		cleanup:
+			repo.clean()
+	}
+	
+	
 }

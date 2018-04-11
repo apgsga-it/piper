@@ -19,6 +19,7 @@ class PatchCli {
 		super();
 	}
 	def validToStates = ["EntwicklungInstallationsbereit","Informatiktestinstallation","Produktionsinstallation", "Entwicklung"]
+	def validComponents = ["db", "aps", "nil"]
 	def defaultHost = "localhost:9010"
 	
 	def process(def args) {
@@ -100,7 +101,7 @@ class PatchCli {
 		return cmdResults
 	}
 	def validateOpts(args) {
-		def cli = new CliBuilder(usage: 'pli.groovy -u <url> -[h] -[[l|d|dd|dm] <directory>]')
+		def cli = new CliBuilder(usage: 'apspli.groovy [-u <url>] [-h] [-[l|d|dd|dm|dt] <directory>]  [-[e|r] <patchnumber>] [-[s|sa|ud|um|ut] <file>] [-f <patchnumber,directory>] [-sta <patchnumber,toState,[aps,db,nil]]')
 		cli.with {
 			h longOpt: 'help', 'Show usage information', required: false
 			u longOpt: 'host', args:1 , argName: 'hostBaseUrl', 'The Base Url of the Patch Service', required: false
@@ -120,18 +121,21 @@ class PatchCli {
 			ut longOpt: 'uploadTargetSystems', args:1, argName: 'file', 'Upload TargetSystemEnviroments from <file> to server', required: false
 			la longOpt: 'listAllFiles', 'List all files on server', required: false	
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
-			sta longOpt: 'stateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Start State Change for a Patch with <patchNumber> to <toState>', required: false
+			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
+			db longOpt: 'dbConfig', args:1, argName: 'file', 'Jdbc configuration File', required: false
+			
 		}
 
 		def options = cli.parse(args)
 		def error = false;
-		if (!options | options.h) {
+		if (!options | options.h| options.getOptions().size() == 0) {
 			cli.usage()
 			println "Valid toStates are: ${validToStates}"
+			println "Valid components are: ${validComponents}"
 			return null
 		}
 		if (!options.u) {
-			println "Default value for u option: ${defaultHost} assumed"
+			println "Assuming default value for u option: ${defaultHost}"
 		}
 		if (options.l) {
 			def directory = new File(options.l)
@@ -224,7 +228,14 @@ class PatchCli {
 				error = true
 			}
 		}
-		if (options.stas) {
+		if (options.db && !options.sta) {
+			println "No need to have a db configuration, if not using sta"
+		}
+		if (options.sta) {
+			if (options.stas.size() != 3 ) {
+				println "Option sta needs 3 arguments: <patchNumber,toState,[db,aps,nil]>"	
+				error = true
+			}
 			def patchNumber = options.stas[0]
 			if (!patchNumber.isInteger()) {
 				println "Patchnumber ${patchNumber} is not a Integer"
@@ -232,9 +243,22 @@ class PatchCli {
 			}
 			def toState = options.stas[1]
 			if (!validToStates.contains(toState) ) {
-				println "ToTate ${toState} not valid: needs to be one of ${validToStates}"
+				println "ToState ${toState} not valid: needs to be one of ${validToStates}"
 				error = true
 			}
+			def component = options.stas[2]
+			if (component != null && !validComponents.contains(component.toLowerCase()) ) {
+				println "Component ${component} not valid: needs to be one of ${validComponents}"
+				error = true
+			}
+			if (options.db) {
+				def dbConfigFile = new File(options.db)
+				if (!dbConfigFile.exists() || !dbConfigFile.isFile()) {
+					println "Db Configfile ${dbConfigFile} not valid: does'nt exist or isn't a file"
+					error = true
+				}
+			}
+			
 		}
 		if (options.e) {
 			if (!options.e.isInteger()) {
@@ -253,9 +277,20 @@ class PatchCli {
 		def cmdResult = new Expando()
 		def patchNumber = options.stas[0]
 		def toState = options.stas[1]
+		def component = options.stas[2].toLowerCase()
 		cmdResult.patchNumber = patchNumber
 		cmdResult.toState = toState
-		patchClient.executeStateTransitionAction(patchNumber,toState)
+		cmdResult.component = component
+		if (component.equals("aps")) {
+			patchClient.executeStateTransitionAction(patchNumber,toState)
+		} else if (component.equals("db")) {
+			def dbcli = new PatchDbClient()
+			def dbConfigfile = new File(options.db ? options.db : "config/defaults.config")
+			def dbProperties = new ConfigSlurper().parse(dbConfigfile.toURI().toURL())
+			dbcli.executeStateTransitionAction(dbProperties, patchNumber, toState)
+		} else {
+			println "Skipping State change Processing for ${patchNumber}"		
+		}
 		return cmdResult
 	}
 
