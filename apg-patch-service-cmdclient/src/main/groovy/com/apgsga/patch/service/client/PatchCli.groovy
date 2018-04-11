@@ -285,7 +285,7 @@ class PatchCli {
 			patchClient.executeStateTransitionAction(patchNumber,toState)
 		} else if (component.equals("db")) {
 			def dbcli = new PatchDbClient()
-			def dbConfigfile = new File(options.db ? options.db : "/etc/opt/apg-patch-cli/defaults.config")
+			def dbConfigfile = new File(options.db ? options.db : "/etc/opt/apg-patch-cli/defaults.groovy")
 			def dbProperties = new ConfigSlurper().parse(dbConfigfile.toURI().toURL())
 			dbcli.executeStateTransitionAction(dbProperties, patchNumber, toState)
 		} else {
