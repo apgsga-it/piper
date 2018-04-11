@@ -115,7 +115,7 @@ def homeDir = "/opt/${finalName}"
 ospackage {
 	packageName = "${finalName}"
 	version = "${savedVersion}"
-	release = 3
+	release = 1
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -135,7 +135,16 @@ ospackage {
 		//expand project.properties
 	}
 	
+	from("src/main/resources/config") {
+		into "/etc/opt/${finalName}"
+		include 'defaults.groovy'
+		fileType CONFIG | NOREPLACE
+		user 'root'
+		permissionGroup 'root'
+		// TODO (che,11.4)
+		fileMode 0777
 
+	}
 }
 
 // Generell Process Resources
