@@ -18,7 +18,7 @@ class PatchCli {
 	private PatchCli() {
 		super();
 	}
-	def validToStates = ["EntwicklungInstallationsbereit","Informatiktestinstallation","EntwicklungInstallationsbereit","Produktionsinstallation", "Entwicklung"]
+	def validToStates = ["EntwicklungInstallationsbereit","Informatiktestinstallation","ProduktionInstallationsbereit","Produktionsinstallation", "Entwicklung"]
 	def validComponents = ["db", "aps", "nil"]
 	def defaultHost = "localhost:9010"
 	
