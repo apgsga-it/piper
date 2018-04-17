@@ -23,7 +23,7 @@ public class ActionToProduktion implements ActionExecuteStateTransition {
 		Assert.notNull(patch,"Patch : " + patchNumber + " not found");
 		// TODO (che, 11.1.2018) : see JAVA8MIG-274
 		TargetSystemEnviroment installationTarget = repo.getInstallationTarget("CHEI211");
-		jenkinsPatchClient.approveBuild(installationTarget, patch);
+		jenkinsPatchClient.approveInstallation(installationTarget, patch);
 	}
 
 }
