@@ -19,7 +19,7 @@ class PatchCli {
 		super();
 	}
 	def validToStates = ["EntwicklungInstallationsbereit","InformatiktestInstallationsbereit","Informatiktest","ProduktionInstallationsbereit","Produktion", "Entwicklung"]
-	def validComponents = ["db", "aps", "nil"]
+	def validComponents = ["db", "aps", "mockdb", "nil"]
 	def defaultHost = "localhost:9010"
 	
 	def process(def args) {
@@ -283,8 +283,8 @@ class PatchCli {
 		cmdResult.component = component
 		if (component.equals("aps")) {
 			patchClient.executeStateTransitionAction(patchNumber,toState)
-		} else if (component.equals("db")) {
-			def dbcli = new PatchDbClient()
+		} else if (component.equals("db") || component.equals("mockdb")) {
+			def dbcli = new PatchDbClient(component)
 			def dbConfigfile = new File(options.db ? options.db : "/etc/opt/apg-patch-cli/defaults.groovy")
 			def dbProperties = new ConfigSlurper().parse(dbConfigfile.toURI().toURL())
 			dbcli.executeStateTransitionAction(dbProperties, patchNumber, toState)
