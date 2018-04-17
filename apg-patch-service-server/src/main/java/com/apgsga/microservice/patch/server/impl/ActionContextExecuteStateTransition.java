@@ -14,9 +14,11 @@ public class ActionContextExecuteStateTransition {
 
 	static {
 		actions.put("EntwicklungInstallationsbereit", ActionToEntwicklungInstallationsbereit.class);
+		actions.put("InformatiktestInstallationsbereit", ActionToInformatiktestInstallationsbereit.class);
+		actions.put("ProduktionInstallationsbereit", ActionToProduktionInstallationsbereit.class);
 		actions.put("Entwicklung", ActionToEntwicklung.class);
-		actions.put("Informatiktestinstallation", ActionToInformatiktestinstallation.class);
-		actions.put("Produktionsinstallation", ActionToProduktionsinstallation.class);
+		actions.put("Informatiktest", ActionToInformatiktest.class);
+		actions.put("Produktion", ActionToProduktion.class);
 	}
 
 	private SimplePatchContainerBean patchContainerBean;
