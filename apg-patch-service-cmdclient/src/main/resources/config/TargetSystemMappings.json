@@ -1,0 +1,22 @@
+{
+    "logicalNameInstanceMap": {
+        "Entwicklung": "CHEI212",
+        "Informatiktest": "CHTI212",
+        "Produktion": "CHEI211"
+    },
+    "stateMap": {
+        "EntwicklungInstallationsbereit": 2,
+        "InformatiktestInstallationsbereit": 15,
+        "ProduktionInstallationsbereit": 65,
+        "Entwicklung": 0,
+        "Informatiktest": 20,
+        "Produktion": 80
+    },
+    "otherInstances": [
+        "CHQI211",
+        "CHPI211",
+        "CHTI211",
+        "CHTI213",
+        "CHTI214"
+    ]
+}

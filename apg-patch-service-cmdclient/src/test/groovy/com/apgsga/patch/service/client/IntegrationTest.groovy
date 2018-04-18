@@ -357,7 +357,7 @@ public class IntegrationTest extends Specification {
 			def client = PatchCli.create()
 		when:
 			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"])
-			def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit,mockdb", "-db", "src/main/resources/config/defaults.groovy"])
+			def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit,mockdb"])
 		then:
 			preCondResult != null
 			preCondResult.returnCode == 0

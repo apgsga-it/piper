@@ -1,6 +1,10 @@
 package com.apgsga.patch.service.client
 
 
+import org.springframework.core.io.FileSystemResourceLoader
+import org.springframework.core.io.Resource
+import org.springframework.core.io.ResourceLoader
+
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.ServiceMetaData
@@ -8,6 +12,9 @@ import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.microservice.patch.api.TargetSystemEnvironments
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 
 class PatchCli {
 
@@ -18,10 +25,14 @@ class PatchCli {
 	private PatchCli() {
 		super();
 	}
-	def validToStates = ["EntwicklungInstallationsbereit","InformatiktestInstallationsbereit","Informatiktest","ProduktionInstallationsbereit","Produktion", "Entwicklung"]
 	def validComponents = ["db", "aps", "mockdb", "nil"]
 	def defaultHost = "localhost:9010"
-	
+	def linuxConfigDir = '/etc/opt/apg-patch-cli'
+	def targetSystemMappings
+	def validToStates
+	def configDir
+	def defaultConfig 
+
 	def process(def args) {
 		def options = validateOpts(args)
 		if (!options) return
@@ -122,20 +133,48 @@ class PatchCli {
 			la longOpt: 'listAllFiles', 'List all files on server', required: false	
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
-			db longOpt: 'dbConfig', args:1, argName: 'file', 'Jdbc configuration File', required: false
+			c longOpt: 'configDir', args:1, argName: 'directory', 'Configuration Directory', required: false
 			
 		}
 
 		def options = cli.parse(args)
 		def error = false;
+		
+		if (!options.u) {
+			println "Assuming default value for u option: ${defaultHost}"
+		}
+		if (options.c) {
+			configDir = new File(options.c)
+			if (!configDir.exists() | !configDir.directory) {
+				println "Configuration Directory ${options.c} not valid: either not a directory or it doesn't exist"
+				error = true
+				return
+			}
+			valdidateAndLoadConfigFiles()
+		} else {
+			// Guessing Config Directory 
+			ResourceLoader rl = new FileSystemResourceLoader();
+			Resource rs = rl.getResource(linuxConfigDir);
+			if (rs.exists()) {
+				configDir = rs.getFile()
+			} else {
+				// Assuming Eclipse Workspace
+				rs = rl.getResource("src/main/resources/config")	
+				if (!rs.exists() | !rs.getFile().isDirectory()) {
+					println "Could'nt determine Default Config Directory, use -c option"
+					error = true
+					return
+				} else {
+					configDir = rs.getFile()
+				}
+			}
+			valdidateAndLoadConfigFiles()
+		}
 		if (!options | options.h| options.getOptions().size() == 0) {
 			cli.usage()
 			println "Valid toStates are: ${validToStates}"
 			println "Valid components are: ${validComponents}"
 			return null
-		}
-		if (!options.u) {
-			println "Assuming default value for u option: ${defaultHost}"
 		}
 		if (options.l) {
 			def directory = new File(options.l)
@@ -272,6 +311,18 @@ class PatchCli {
 		}
 		options
 	}
+
+	def valdidateAndLoadConfigFiles() {
+		def targetSystemFile = new File(configDir, "TargetSystemMappings.json")
+		targetSystemMappings = new JsonSlurper().parseText(targetSystemFile.text)
+		println "Running with TargetSystemMappings: " 
+		println JsonOutput.prettyPrint(targetSystemFile.text)
+		// TODO validate
+		validToStates = targetSystemMappings.stateMap.keySet()
+		def jdbcConfigFule = new File(configDir, "defaults.groovy")
+		defaultConfig = new ConfigSlurper().parse(jdbcConfigFule.toURI().toURL())
+		// TODO validate
+	}
 	
 	def stateChangeAction(def options, def patchClient) {
 		def cmdResult = new Expando()
@@ -284,10 +335,8 @@ class PatchCli {
 		if (component.equals("aps")) {
 			patchClient.executeStateTransitionAction(patchNumber,toState)
 		} else if (component.equals("db") || component.equals("mockdb")) {
-			def dbcli = new PatchDbClient(component)
-			def dbConfigfile = new File(options.db ? options.db : "/etc/opt/apg-patch-cli/defaults.groovy")
-			def dbProperties = new ConfigSlurper().parse(dbConfigfile.toURI().toURL())
-			dbcli.executeStateTransitionAction(dbProperties, patchNumber, toState)
+			def dbcli = new PatchDbClient(component,targetSystemMappings.stateMap)
+			dbcli.executeStateTransitionAction(defaultConfig, patchNumber, toState)
 		} else {
 			println "Skipping State change Processing for ${patchNumber}"		
 		}
