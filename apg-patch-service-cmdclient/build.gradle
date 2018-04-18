@@ -138,6 +138,7 @@ ospackage {
 	from("src/main/resources/config") {
 		into "/etc/opt/${finalName}"
 		include 'defaults.groovy'
+		include 'TargetSystemMappings.json'
 		fileType CONFIG | NOREPLACE
 		user 'root'
 		permissionGroup 'root'
