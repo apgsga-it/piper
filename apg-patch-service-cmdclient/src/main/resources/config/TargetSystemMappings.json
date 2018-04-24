@@ -1,45 +1,54 @@
 {
-    "logicalNameInstanceMap": {
-        "Entwicklung": [
-            "Entwicklung",
-            "CHEI212"
-        ],
-        "Informatiktest": [
-            "Informatiktest",
-            "CHTI212"
-        ],
-        "Produktion": [
-            "Produktion",
-            "CHEI211"
-        ]
-    },
-    "stateMap": {
-        "EntwicklungInstallationsbereit": [
-            "EntwicklungInstallationsbereit",
-            2
-        ],
-        "InformatiktestInstallationsbereit": [
-            "ProduktionInstallationsbereit",
-            65
-        ],
-        "Entwicklung": [
-            "Entwicklung",
-            0
-        ],
-        "Informatiktest": [
-            "Informatiktest",
-            20
-        ],
-        "Produktion": [
-            "Produktion",
-            80
-        ]
-    },
-    "otherInstances": [
-        "CHQI211",
-        "CHPI211",
+    "targetSystems": [
+        {
+            "name": "Entwicklung",
+            "target": "CHEI212",
+            "stages": [
+                {
+                    "name": "startPipelineAndTag",
+                    "toState": "Installationsbereit",
+                    "code": 2
+                }
+            ]
+        },
+        {
+            "name": "Informatiktest",
+            "target": "CHTI212",
+            "stages": [
+                {
+                    "name": "buildAndAssemble",
+                    "toState": "Installationsbereit",
+                    "code": 15
+                },
+                {
+                    "name": "install",
+                    "toState": "",
+                    "code": 20
+                }
+            ]
+        },
+        {
+            "name": "Produktion",
+            "target": "CHEI211",
+            "stages": [
+                {
+                    "name": "buildAndAssemble",
+                    "toState": "Installationsbereit",
+                    "code": 65
+                },
+                {
+                    "name": "install",
+                    "toState": "",
+                    "code": 80
+                }
+            ]
+        }
+    ],
+    "otherTargetInstances": [
         "CHTI211",
         "CHTI213",
-        "CHTI214"
+        "CHTI214",
+        "CHQI211",
+        "CHPI211"
     ]
 }

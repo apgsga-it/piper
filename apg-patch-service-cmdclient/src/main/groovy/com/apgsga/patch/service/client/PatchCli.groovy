@@ -315,7 +315,7 @@ class PatchCli {
 	}
 
 	def valdidateAndLoadConfigFiles() {
-		def targetSystemFile = new File(configDir, "TargetSystemMappings2.json")
+		def targetSystemFile = new File(configDir, "TargetSystemMappings.json")
 		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
 		targetSystemMappings = [:]
 		jsonSystemTargets.targetSystems.find( { a ->  a.stages.find( { targetSystemMappings.put("${a.name}${it.toState}","${it.code}") })} )
