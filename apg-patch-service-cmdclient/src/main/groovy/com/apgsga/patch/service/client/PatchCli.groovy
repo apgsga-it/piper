@@ -7,10 +7,8 @@ import org.springframework.core.io.ResourceLoader
 
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
-import com.apgsga.microservice.patch.api.ServiceMetaData
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.microservice.patch.api.TargetSystemEnvironments
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 
 import groovy.json.JsonOutput
@@ -27,7 +25,8 @@ class PatchCli {
 	}
 	def validComponents = ["db", "aps", "mockdb", "nil"]
 	def defaultHost = "localhost:9010"
-	def linuxConfigDir = '/etc/opt/apg-patch-cli'
+	// TODO (che,19.4) better a common directory for apg-patch-service? To be discussed
+	def linuxConfigDir = '/etc/opt/apg-patch-service-server'
 	def targetSystemMappings
 	def validToStates
 	def configDir
@@ -113,6 +112,9 @@ class PatchCli {
 	}
 	def validateOpts(args) {
 		def cli = new CliBuilder(usage: 'apspli.groovy [-u <url>] [-h] [-[l|d|dd|dm|dt] <directory>]  [-[e|r] <patchnumber>] [-[s|sa|ud|um|ut] <file>] [-f <patchnumber,directory>] [-sta <patchnumber,toState,[aps,db,nil]]')
+		cli.formatter.setDescPadding(0)
+		cli.formatter.setLeftPadding(0)
+		cli.formatter.setWidth(100)
 		cli.with {
 			h longOpt: 'help', 'Show usage information', required: false
 			u longOpt: 'host', args:1 , argName: 'hostBaseUrl', 'The Base Url of the Patch Service', required: false
@@ -281,7 +283,7 @@ class PatchCli {
 				error = true
 			}
 			def toState = options.stas[1]
-			if (!validToStates.contains(toState) ) {
+			if (!validToStates.contains("${toState}") ) {
 				println "ToState ${toState} not valid: needs to be one of ${validToStates}"
 				error = true
 			}
@@ -313,12 +315,14 @@ class PatchCli {
 	}
 
 	def valdidateAndLoadConfigFiles() {
-		def targetSystemFile = new File(configDir, "TargetSystemMappings.json")
-		targetSystemMappings = new JsonSlurper().parseText(targetSystemFile.text)
+		def targetSystemFile = new File(configDir, "TargetSystemMappings2.json")
+		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
+		targetSystemMappings = [:]
+		jsonSystemTargets.targetSystems.find( { a ->  a.stages.find( { targetSystemMappings.put("${a.name}${it.toState}","${it.code}") })} )
 		println "Running with TargetSystemMappings: " 
 		println JsonOutput.prettyPrint(targetSystemFile.text)
 		// TODO validate
-		validToStates = targetSystemMappings.stateMap.keySet()
+		validToStates = targetSystemMappings.keySet()
 		def jdbcConfigFule = new File(configDir, "defaults.groovy")
 		defaultConfig = new ConfigSlurper().parse(jdbcConfigFule.toURI().toURL())
 		// TODO validate
@@ -335,7 +339,7 @@ class PatchCli {
 		if (component.equals("aps")) {
 			patchClient.executeStateTransitionAction(patchNumber,toState)
 		} else if (component.equals("db") || component.equals("mockdb")) {
-			def dbcli = new PatchDbClient(component,targetSystemMappings.stateMap)
+			def dbcli = new PatchDbClient(component,targetSystemMappings)
 			dbcli.executeStateTransitionAction(defaultConfig, patchNumber, toState)
 		} else {
 			println "Skipping State change Processing for ${patchNumber}"		

@@ -12,7 +12,6 @@ class PatchDbClient {
 	}
 
 	public void executeStateTransitionAction(def dbProperties, def patchNumber, def toStatus) {
-		println "Not implemented yet for ${dbProperties} , ${patchNumber} and ${toStatus}"
 		def statusNum = statusMap[toStatus]
 		if (statusNum == null) {
 			println "Error , no Status mapped for ${toStatus}"

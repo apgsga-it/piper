@@ -1,16 +1,39 @@
 {
     "logicalNameInstanceMap": {
-        "Entwicklung": "CHEI212",
-        "Informatiktest": "CHTI212",
-        "Produktion": "CHEI211"
+        "Entwicklung": [
+            "Entwicklung",
+            "CHEI212"
+        ],
+        "Informatiktest": [
+            "Informatiktest",
+            "CHTI212"
+        ],
+        "Produktion": [
+            "Produktion",
+            "CHEI211"
+        ]
     },
     "stateMap": {
-        "EntwicklungInstallationsbereit": 2,
-        "InformatiktestInstallationsbereit": 15,
-        "ProduktionInstallationsbereit": 65,
-        "Entwicklung": 0,
-        "Informatiktest": 20,
-        "Produktion": 80
+        "EntwicklungInstallationsbereit": [
+            "EntwicklungInstallationsbereit",
+            2
+        ],
+        "InformatiktestInstallationsbereit": [
+            "ProduktionInstallationsbereit",
+            65
+        ],
+        "Entwicklung": [
+            "Entwicklung",
+            0
+        ],
+        "Informatiktest": [
+            "Informatiktest",
+            20
+        ],
+        "Produktion": [
+            "Produktion",
+            80
+        ]
     },
     "otherInstances": [
         "CHQI211",
