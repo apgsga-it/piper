@@ -250,11 +250,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		return artifactsWithNameFromBom;
 	}
 	
-	private Map<String,List<MavenArtifact>> getArtifactNameErrorAsMap(List<MavenArtifact> mavenArtifacts) {
+	private Map<String,List<MavenArtifact>> getArtifactNameErrorAsMap(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
 		
 		VcsCommandRunner cmdRunner = initAndGetVcsCommandRunner();
 		Map<String, List<MavenArtifact>> artifactWihInvalidNames = initValidateArtefactNameMap();
 		RDiffCvsModuleCommand cvsCommand = initiValidateArtefactNamesCommand();
+		cvsCommand.setCvsBranch(cvsBranch);
 		
 		for(MavenArtifact ma : mavenArtifacts) {
 			try {
@@ -289,14 +290,14 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 	
 	@Override
-	public Map<String,List<MavenArtifact>> invalidArtifactNames(String version) {
-		Map<String, List<MavenArtifact>> artifactWithInvalidNames = getArtifactNameErrorAsMap(getArtifactsWithNameFromBom(version));
+	public Map<String,List<MavenArtifact>> invalidArtifactNames(String version, String cvsBranch) {
+		Map<String, List<MavenArtifact>> artifactWithInvalidNames = getArtifactNameErrorAsMap(getArtifactsWithNameFromBom(version),cvsBranch);
 		return artifactWithInvalidNames;
 	}
 
 	@Override
 	public Map<String, List<MavenArtifact>> invalidArtifactNames(Patch patch) {
-		Map<String, List<MavenArtifact>> artifactWithInvalidNames = getArtifactNameErrorAsMap(patch.getMavenArtifacts());
+		Map<String, List<MavenArtifact>> artifactWithInvalidNames = getArtifactNameErrorAsMap(patch.getMavenArtifacts(),patch.getMicroServiceBranch());
 		return artifactWithInvalidNames;
 	}
 }

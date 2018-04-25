@@ -25,9 +25,10 @@ public interface PatchOpService  {
 	/**
 	 * Validate that name of Maven Artifacts match CVS directories
 	 * @param: version bom Version
+	 * 		   cvsBranch branch where module have been checked-in
 	 * @return: map with List of MavenArtifact for each "mistakes"
 	 */
-	public Map<String,List<MavenArtifact>> invalidArtifactNames(String version);
+	public Map<String,List<MavenArtifact>> invalidArtifactNames(String version, String cvsBranch);
 	
 	/**
 	 * Validate that name of Maven Artifacts match CVS directories for modules within the Patch

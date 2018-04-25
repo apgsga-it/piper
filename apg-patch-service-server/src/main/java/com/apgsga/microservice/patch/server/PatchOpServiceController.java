@@ -190,8 +190,8 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@RequestMapping(value = "/validateArtifactNamesFromVersion", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
 	@Override
-	public Map<String,List<MavenArtifact>> invalidArtifactNames(@RequestParam ("version") String version) {
-		return patchService.invalidArtifactNames(version);
+	public Map<String,List<MavenArtifact>> invalidArtifactNames(@RequestParam ("version") String version, @RequestParam ("cvsbranch") String cvsBranch) {
+		return patchService.invalidArtifactNames(version,cvsBranch);
 	}
 
 	@RequestMapping(value = "/validateArtifactNamesFromPatch", method = RequestMethod.POST)

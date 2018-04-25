@@ -8,6 +8,8 @@ public class RDiffCvsModuleCommand implements VcsCommand {
 	
 	private String cvsModule;
 	
+	private String cvsBranch;
+	
 	@Override
 	public String[] getCommand() {
 		String[] processBuilderParm;
@@ -29,9 +31,11 @@ public class RDiffCvsModuleCommand implements VcsCommand {
 		if(getCvsModule() == null || getCvsModule().isEmpty()) {
 			throw new RuntimeException(this.getClass().getName() + ": cvsModule has to be set!");
 		}
+		if(getCvsBranch() == null || getCvsBranch().isEmpty()) {
+			throw new RuntimeException(this.getClass().getName() + ": cvsBranch has to be set!");
+		}
 //		return new String[] {"ls", varLocalCvsRoot + getCvsModule()};
-		// TODO JHE: get branch name as parameter
-		return new String[] {"cvs", "rdiff", "-r", "it21_release_9_0_6_admin_uimig", "-r", "HEAD", getCvsModule() };
+		return new String[] {"cvs", "rdiff", "-r", getCvsBranch(), "-r", "HEAD", getCvsModule() };
 	}
 
 	@Override
@@ -45,6 +49,14 @@ public class RDiffCvsModuleCommand implements VcsCommand {
 
 	public void setCvsModule(String cvsModule) {
 		this.cvsModule = cvsModule;
+	}
+
+	public String getCvsBranch() {
+		return cvsBranch;
+	}
+
+	public void setCvsBranch(String cvsBranch) {
+		this.cvsBranch = cvsBranch;
 	}
 
 }
