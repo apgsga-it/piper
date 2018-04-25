@@ -250,11 +250,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		return artifactsWithNameFromBom;
 	}
 	
-	private Map<String, List<MavenArtifact>> validateArtefactNames(RDiffCvsModuleCommand cvsCommand, VcsCommandRunner cmdRunner, String version) {
+	private Map<String,List<MavenArtifact>> getArtifactNameErrorAsMap(List<MavenArtifact> mavenArtifacts) {
 		
+		VcsCommandRunner cmdRunner = initAndGetVcsCommandRunner();
 		Map<String, List<MavenArtifact>> artifactWihInvalidNames = initValidateArtefactNameMap();
+		RDiffCvsModuleCommand cvsCommand = initiValidateArtefactNamesCommand();
 		
-		for(MavenArtifact ma : getArtifactsWithNameFromBom(version)) {
+		for(MavenArtifact ma : mavenArtifacts) {
 			try {
 				String artifactName = am.getArtifactName(ma.getGroupId(), ma.getArtifactId(), ma.getVersion());
 				ma.setName(artifactName);
@@ -274,28 +276,27 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				//TODO JHE: do we want to do anything special here?
 				System.out.println(ex.getMessage());
 			}
-			
 		}
 		
+		cmdRunner.postProcess();
 		return artifactWihInvalidNames;
 	}
 	
-	private Map<String,List<MavenArtifact>> parseArtefactForNameValidation(String version) {
-		
-		RDiffCvsModuleCommand cvsCommand = initiValidateArtefactNamesCommand();
-		
+	private VcsCommandRunner initAndGetVcsCommandRunner() {
 		VcsCommandRunner cmdRunner = getJschSessionFactory().create();
 		cmdRunner.preProcess();
-		
-		Map<String, List<MavenArtifact>> artifactWithInvalidNames = validateArtefactNames(cvsCommand,cmdRunner,version);
-		
-		cmdRunner.postProcess();
-		return artifactWithInvalidNames;
+		return cmdRunner;
 	}
 	
 	@Override
 	public Map<String,List<MavenArtifact>> invalidArtifactNames(String version) {
-		Map<String,List<MavenArtifact>> artifactWihInvalidNames = parseArtefactForNameValidation(version);
-		return artifactWihInvalidNames;
+		Map<String, List<MavenArtifact>> artifactWithInvalidNames = getArtifactNameErrorAsMap(getArtifactsWithNameFromBom(version));
+		return artifactWithInvalidNames;
+	}
+
+	@Override
+	public Map<String, List<MavenArtifact>> invalidArtifactNames(Patch patch) {
+		Map<String, List<MavenArtifact>> artifactWithInvalidNames = getArtifactNameErrorAsMap(patch.getMavenArtifacts());
+		return artifactWithInvalidNames;
 	}
 }

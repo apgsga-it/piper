@@ -97,9 +97,13 @@ class PatchCli {
 			def result = listFiles(options,patchClient)
 			cmdResults.results['lf'] = result
 		}
-		if (options.v) {
-			def result = validateArtifactNames(options,patchClient)
-			cmdResults.results['v'] = result
+		if (options.vv) {
+			def result = validateArtifactNamesForVersion(options,patchClient)
+			cmdResults.results['vv'] = result
+		}
+		if (options.vp) {
+			def result = validateArtifactNamesForPatch(options, patchClient)
+			cmdResults.results['vp'] = result
 		}
 		cmdResults.returnCode = 0
 		return cmdResults
@@ -127,7 +131,8 @@ class PatchCli {
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
 			db longOpt: 'dbConfig', args:1, argName: 'file', 'Jdbc configuration File', required: false
-			v longOpt: 'validateArtiactNames', args:1, argName: 'version', 'Validate all artifact names for a given version', required: false
+			vv longOpt: 'validateArtifactNamesForVersion', args:1, argName: 'version', 'Validate all artifact names for a given version', required: false
+			vp longOpt: 'validateArtifactNamesForPatch', args:1, argName: 'patchNumber', 'Validate all artifact names for a given patch number', required: false
 			
 		}
 
@@ -271,10 +276,16 @@ class PatchCli {
 				error = true
 			}
 		}
-		if (options.v) {
-			if(options.v == null || options.v.equals("")) {
-				println "You have to provide the version for which you want to validate the Artifact against."
+		if (options.vv) {
+			if(options.vv == null || options.vv.equals("")) {
+				println "You have to provide the version for which you want to validate Artifacts against."
 				error = true	
+			}
+		}
+		if (options.vp) {
+			if(options.vp == null || options.vp.equals("")) {
+				println "You have to provide the patch number for which you want Artifacts to be validated."
+				error = true
 			}
 		}
 		if (error) {
@@ -489,8 +500,16 @@ class PatchCli {
 		patchClient.saveTargetSystemEnviroments(targets)
 	}
 	
-	def validateArtifactNames(def options, PatchServiceClient patchClient) {
-		println("Validating all Artifact names for version ${options.v}")
-		patchClient.invalidArtifactNames(options.v)
+	def validateArtifactNamesForVersion(def options, PatchServiceClient patchClient) {
+		println("Validating all Artifact names for version ${options.vv}")
+		def invalidArtifacts = patchClient.invalidArtifactNames(options.vv)
+		println invalidArtifacts
+	}
+	
+	def validateArtifactNamesForPatch(def options, PatchServiceClient patchClient) {
+		println("Validating all Artifact names for patch ${options.vp}")
+		def patch = patchClient.findById(options.vp)
+		def invalidArtifacts = patchClient.invalidArtifactNames(patch)
+		println invalidArtifacts
 	}
 }

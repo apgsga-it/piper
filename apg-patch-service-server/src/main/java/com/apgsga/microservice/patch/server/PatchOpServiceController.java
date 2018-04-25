@@ -187,11 +187,18 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		throw new UnsupportedOperationException();
 	}
 	
-	@RequestMapping(value = "/validateArtifactNames", method = RequestMethod.GET)
+	@RequestMapping(value = "/validateArtifactNamesFromVersion", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
 	@Override
 	public Map<String,List<MavenArtifact>> invalidArtifactNames(@RequestParam ("version") String version) {
 		return patchService.invalidArtifactNames(version);
+	}
+
+	@RequestMapping(value = "/validateArtifactNamesFromPatch", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public Map<String, List<MavenArtifact>> invalidArtifactNames(@RequestBody Patch patch) {
+		return patchService.invalidArtifactNames(patch);
 	}	
 
 }

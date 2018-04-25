@@ -34,6 +34,6 @@ public interface PatchOpService  {
 	 * @param: patch a Patch Object
 	 * @return: map with List of MavenArtifact for each "mistakes"
 	 */
-//	public Map<String,List<MavenArtifact>> invalidArtifactNames(Patch patch);
+	public Map<String,List<MavenArtifact>> invalidArtifactNames(Patch patch);
 
 }
