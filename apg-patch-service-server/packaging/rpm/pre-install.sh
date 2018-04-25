@@ -15,4 +15,5 @@ if [ "$1" = "1" ]; then
 	echo "Adding user apg-patch-service-server to *domain users*"
 	/usr/sbin/usermod -G domain\ users apg-patch-service-server 2> /dev/null || :
 fi
+
 exit 0

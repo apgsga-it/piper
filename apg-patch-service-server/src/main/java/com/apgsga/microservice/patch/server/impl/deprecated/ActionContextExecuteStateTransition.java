@@ -1,4 +1,4 @@
-package com.apgsga.microservice.patch.server.impl;
+package com.apgsga.microservice.patch.server.impl.deprecated;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
@@ -6,9 +6,11 @@ import java.util.Map;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
 
+import com.apgsga.microservice.patch.server.impl.PatchActionExecutor;
+import com.apgsga.microservice.patch.server.impl.SimplePatchContainerBean;
 import com.google.common.collect.Maps;
 
-public class ActionContextExecuteStateTransition {
+public class ActionContextExecuteStateTransition implements PatchActionExecutor {
 
 	private static Map<String, Class<? extends ActionExecuteStateTransition>> actions = Maps.newConcurrentMap();
 
@@ -28,7 +30,7 @@ public class ActionContextExecuteStateTransition {
 		this.patchContainerBean = patchContainerBean;
 	}
 
-	public void executeStateTransitionAction(String patchNumber, String toStatus) {
+	public void execute(String patchNumber, String toStatus) {
 		try {
 			Class<? extends ActionExecuteStateTransition> strategyClass = actions.get(toStatus);
 			Assert.notNull(strategyClass, "No Strategy found for: " + toStatus);

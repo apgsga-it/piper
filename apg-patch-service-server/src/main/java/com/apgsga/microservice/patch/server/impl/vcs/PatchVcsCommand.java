@@ -9,12 +9,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.google.common.collect.Lists;
-import com.jcraft.jsch.Logger;
 
 public abstract class PatchVcsCommand implements VcsCommand {
-	
-	protected final static Log LOGGER = LogFactory.getLog(PatchVcsCommand.class.getName());
 
+	protected final static Log LOGGER = LogFactory.getLog(PatchVcsCommand.class.getName());
 
 	public static VcsCommand createCreatePatchBranchCmd(String patchBranch, String prodBranch, List<String> modules) {
 		return new CreatePatchBranchCmd(patchBranch, prodBranch, modules);
@@ -32,15 +30,16 @@ public abstract class PatchVcsCommand implements VcsCommand {
 	public static VcsCommand createDiffPatchModulesCmd(String patchBranch, String prodBranch, String module) {
 		return new DiffPatchModulesCmd(patchBranch, prodBranch, Lists.newArrayList(module));
 	}
-	
-	public static VcsCommand createDiffPatchModulesCmd(String patchBranch, String prodBranch,String additionalOptions, String module) {
-		return new DiffPatchModulesCmd(patchBranch, prodBranch,additionalOptions, Lists.newArrayList(module));
-	}
-	
-	public static VcsCommand createDiffPatchModulesCmd(String patchBranch, String prodBranch,String additionalOptions, List<String> modules) {
-		return new DiffPatchModulesCmd(patchBranch, prodBranch, additionalOptions,modules);
+
+	public static VcsCommand createDiffPatchModulesCmd(String patchBranch, String prodBranch, String additionalOptions,
+			String module) {
+		return new DiffPatchModulesCmd(patchBranch, prodBranch, additionalOptions, Lists.newArrayList(module));
 	}
 
+	public static VcsCommand createDiffPatchModulesCmd(String patchBranch, String prodBranch, String additionalOptions,
+			List<String> modules) {
+		return new DiffPatchModulesCmd(patchBranch, prodBranch, additionalOptions, modules);
+	}
 
 	public static VcsCommand createTagPatchModulesCmd(String patchBranch, String prodBranch, List<String> modules) {
 		return new TagPatchModulesCmd(patchBranch, prodBranch, modules);
@@ -58,8 +57,8 @@ public abstract class PatchVcsCommand implements VcsCommand {
 	protected List<String> modules;
 
 	protected String additionalOptions = null;
-	
-	protected boolean noSystemCheck = false; 
+
+	protected boolean noSystemCheck = false;
 
 	public PatchVcsCommand(String patchBranch, String prodBranch, List<String> modules) {
 		super();
@@ -84,8 +83,8 @@ public abstract class PatchVcsCommand implements VcsCommand {
 		} else {
 			processBuilderParm = getParameterAsArray();
 		}
-		LOGGER.info("ProcessBuilder Parameters: " + Arrays.toString(processBuilderParm).toString()); 
-		return processBuilderParm; 
+		LOGGER.info("ProcessBuilder Parameters: " + Arrays.toString(processBuilderParm).toString());
+		return processBuilderParm;
 	}
 
 	private String getParameterSpaceSeperated() {
@@ -97,13 +96,16 @@ public abstract class PatchVcsCommand implements VcsCommand {
 		}
 		return parameter;
 	}
-	
+
 	private String[] getParameterAsArray() {
 		String[] parameter = Stream.concat(Arrays.stream(getFristPart()), Arrays.stream(modules.toArray()))
 				.toArray(String[]::new);
-		// TODO (che, 4.4.2018) : either via bash or path 
+		// TODO (che, 4.4.2018) : either via bash or path
 		// TODO (che, 4.4.2018) : cvs Root either in Enviroment or Configuration
-		String[] processBuilderParm = Stream.concat(Arrays.stream(new String[] { "/usr/bin/cvs", "-d", "/var/local/cvs/root" }), Arrays.stream(parameter)).toArray(String[]::new);
+		String[] processBuilderParm = Stream
+				.concat(Arrays.stream(new String[] { "/usr/bin/cvs", "-d", "/var/local/cvs/root" }),
+						Arrays.stream(parameter))
+				.toArray(String[]::new);
 		return processBuilderParm;
 	}
 
@@ -113,7 +115,5 @@ public abstract class PatchVcsCommand implements VcsCommand {
 	public void noSystemCheck(boolean noChecnk) {
 		this.noSystemCheck = noChecnk;
 	}
-	
-	
 
 }

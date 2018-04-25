@@ -9,6 +9,8 @@ apply plugin: 'groovy'
 apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: "nebula.ospackage"
 
+description = 'Cli Programm, which provides  Patch Service API through Command Line Interface  '
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 

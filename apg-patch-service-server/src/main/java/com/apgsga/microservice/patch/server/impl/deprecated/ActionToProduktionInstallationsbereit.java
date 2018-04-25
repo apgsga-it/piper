@@ -1,10 +1,11 @@
-package com.apgsga.microservice.patch.server.impl;
+package com.apgsga.microservice.patch.server.impl.deprecated;
 
 import org.springframework.util.Assert;
 
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
+import com.apgsga.microservice.patch.server.impl.SimplePatchContainerBean;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
 
 public class ActionToProduktionInstallationsbereit implements ActionExecuteStateTransition {

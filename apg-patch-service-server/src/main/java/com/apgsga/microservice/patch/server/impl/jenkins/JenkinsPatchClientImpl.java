@@ -116,17 +116,19 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 	
 	@Override
 	public void cancelPatchPipeline(Patch patch) {
-		processInputAction(patch, "cancel");
+		processInputAction(patch, "cancel", null);
 	}
+	
+	
 
 	@Override
 	public void approveBuild(TargetSystemEnviroment target, Patch patch) {
-		processInputAction(patch, "Patch" + patch.getPatchNummer() + "BuildFor" + target.getName() +"Ok");
+		processInputAction(patch, "BuildFor",  target.getName());
 	}
 
 	@Override
 	public void approveInstallation(TargetSystemEnviroment target, Patch patch) {
-		processInputAction(patch, "Patch" + patch.getPatchNummer() + "InstallFor" + target.getName() +"Ok");
+		processInputAction(patch, "InstallFor" , target.getName());
 		
 	}
 
@@ -137,7 +139,17 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 		return lastBuild;
 	}
 	
-	private void processInputAction(Patch patch, String action) {
+	
+	
+	@Override
+	public void processInputAction(Patch patch, Map<String, String> parameter) {
+		// TODO (che, 25.4) : Switch to logical Target name
+		processInputAction(patch, parameter.get("target"), parameter.get("stage"));
+	}
+
+	@Override
+	public void processInputAction(Patch patch, String targetName, String stage) {
+		String action = stage.equals("cancel") ? stage :  "Patch" + patch.getPatchNummer() + stage + targetName +"Ok"; 
 		JenkinsServer jenkinsServer = null;
 		try {
 			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);

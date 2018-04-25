@@ -1,5 +1,6 @@
 package com.apgsga.microservice.patch.server.impl;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -12,7 +13,7 @@ import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
 
-public class ActionToEntwicklungInstallationsbereit implements ActionExecuteStateTransition {
+public class EntwicklungInstallationsbereitAction implements PatchAction {
 
 	private final PatchPersistence repo;
 
@@ -20,7 +21,7 @@ public class ActionToEntwicklungInstallationsbereit implements ActionExecuteStat
 
 	private final JenkinsPatchClient jenkinsPatchClient;
 
-	public ActionToEntwicklungInstallationsbereit(SimplePatchContainerBean patchContainer) {
+	public EntwicklungInstallationsbereitAction(SimplePatchContainerBean patchContainer) {
 		super();
 		this.repo = patchContainer.getRepo();
 		this.jschSessionFactory = patchContainer.getJschSessionFactory();
@@ -28,7 +29,7 @@ public class ActionToEntwicklungInstallationsbereit implements ActionExecuteStat
 	}
 
 	@Override
-	public void executeStateTransitionAction(String patchNumber) {
+	public String executeToStateAction(String patchNumber, String toAction,  Map<String,String> parameter) {
 		Patch patch = repo.findById(patchNumber);
 		Assert.notNull(patch, "Patch : <" + patchNumber + "> not found");
 		createAndSaveTagForPatch(patch);
@@ -49,7 +50,7 @@ public class ActionToEntwicklungInstallationsbereit implements ActionExecuteStat
 
 		});
 		executorService.shutdown();
-
+		return "Ok: Created Patch Tag and started Prod Patch Pipeline for: " + patch.getPatchNummer();
 	}
 
 	private void createAndSaveTagForPatch(Patch patch) {

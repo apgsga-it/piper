@@ -13,6 +13,9 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.PatchPersistence;
+import com.apgsga.microservice.patch.server.impl.GroovyScriptActionExecutorFactory;
+import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
+import com.apgsga.microservice.patch.server.impl.deprecated.DefaultPatchActionExecutorFactory;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClientImpl;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchMockClient;
@@ -49,7 +52,16 @@ public class MicroServicePatchConfig {
 
 	@Value("${maven.localrepo.location}")
 	private String localRepo;
-
+	
+	@Value("${config.common.location:/etc/opt/apg-patch-common}")
+	private String configCommon;
+	
+	@Value("${config.common.targetSystemFile:TargetSystemMappings.json}")
+	private String targetSystemFile;
+	
+	@Value("${patch.action.script.location:classpath:executePatchAction.groovy}")
+	private String groovyScriptFile;
+	
 	@Bean(name = "patchPersistence")
 	public PatchPersistence patchFilebasePersistence() throws IOException {
 		final ResourceLoader rl = new FileSystemResourceLoader();
@@ -61,8 +73,15 @@ public class MicroServicePatchConfig {
 	
 
 	@Bean(name = "artifactManager")
+	@Profile("live")
 	public ArtifactManager artifactManager() {
 		return ArtifactManager.create(localRepo);
+	}
+	
+	@Bean(name = "artifactManager")
+	@Profile("mock")
+	public ArtifactManager mockArtifactManager() {
+		return ArtifactManager.createMock(localRepo);
 	}
 
 	@Bean(name = "jenkinsBean")
@@ -94,5 +113,18 @@ public class MicroServicePatchConfig {
 	public VcsCommandRunnerFactory jsessionFactoryMock() {
 		return new LoggingMockVcsRunnerFactory(); 
 	}
+	
+	@Bean(name = "currentActionFactory")
+	@Profile("live")
+	public PatchActionExecutorFactory currentpatchActionFactory() {
+		return new DefaultPatchActionExecutorFactory();
+	}
+	
+	@Bean(name = "groovyActionFactory")
+	@Profile("mock")
+	public PatchActionExecutorFactory groovyPatchActionFactory() {
+		return new GroovyScriptActionExecutorFactory(configCommon, targetSystemFile, groovyScriptFile);
+	}
+
 
 }
