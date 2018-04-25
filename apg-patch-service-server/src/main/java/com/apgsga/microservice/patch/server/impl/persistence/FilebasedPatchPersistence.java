@@ -92,10 +92,6 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	@Override
 	public synchronized void savePatch(Patch patch) {
-		
-		//TODO JHE: before saving it, check that all modules are valid (name=cvsName)
-		
-		
 		try {
 			File patchFile = createPatchFile(patch.getPatchNummer());
 			ObjectMapper mapper = new ObjectMapper();

@@ -116,13 +116,20 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			createBranchForDbModules(patch);
 			jenkinsClient.createPatchPipelines(patch);
 		}
+		System.out.println(patch.getMavenArtifacts());
 		patch.getMavenArtifacts().stream().filter(art -> Strings.isNullOrEmpty(art.getName()))
-				.forEach(art -> addModuleName(art));
+				.forEach(art -> addModuleName(art,patch.getMicroServiceBranch()));
 	}
 
-	private MavenArtifact addModuleName(MavenArtifact art) {
+	private MavenArtifact addModuleName(MavenArtifact art, String cvsBranch) {
 		try {
 			String artifactName = am.getArtifactName(art.getGroupId(), art.getArtifactId(), art.getVersion());
+			
+			Map<String, List<MavenArtifact>> wrongNames = getArtifactNameErrorAsMap(Lists.newArrayList(art),cvsBranch);
+			if(!wrongNames.get(ARTEFACT_NAME_IS_NULL).isEmpty() || !wrongNames.get(ARTEFACT_NAME_IS_INVALID).isEmpty()) {
+				throw new RuntimeException("Patch cannot be saved as it contains module(s) with invalid name: " + wrongNames);
+			}
+			
 			art.setName(artifactName);
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
 			new RuntimeException(e);
