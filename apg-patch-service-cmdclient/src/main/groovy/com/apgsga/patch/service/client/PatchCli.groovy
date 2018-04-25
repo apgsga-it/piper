@@ -97,6 +97,10 @@ class PatchCli {
 			def result = listFiles(options,patchClient)
 			cmdResults.results['lf'] = result
 		}
+		if (options.v) {
+			def result = validateArtifactNames(options,patchClient)
+			cmdResults.results['v'] = result
+		}
 		cmdResults.returnCode = 0
 		return cmdResults
 	}
@@ -123,6 +127,7 @@ class PatchCli {
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
 			db longOpt: 'dbConfig', args:1, argName: 'file', 'Jdbc configuration File', required: false
+			v longOpt: 'validateArtiactNames', args:1, argName: 'version', 'Validate all artifact names for a given version', required: false
 			
 		}
 
@@ -264,6 +269,12 @@ class PatchCli {
 			if (!options.e.isInteger()) {
 				println "Patchnumber ${options.e} is not a Integer"
 				error = true
+			}
+		}
+		if (options.v) {
+			if(options.v == null || options.v.equals("")) {
+				println "You have to provide the version for which you want to validate the Artifact against."
+				error = true	
 			}
 		}
 		if (error) {
@@ -476,5 +487,10 @@ class PatchCli {
 		ObjectMapper mapper = new ObjectMapper();
 		TargetSystemEnvironments targets = mapper.readValue(new File("${options.ut}"), TargetSystemEnvironments.class)
 		patchClient.saveTargetSystemEnviroments(targets)
+	}
+	
+	def validateArtifactNames(def options, PatchServiceClient patchClient) {
+		println("Validating all Artifact names for version ${options.v}")
+		patchClient.invalidArtifactNames(options.v)
 	}
 }

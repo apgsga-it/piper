@@ -2,6 +2,7 @@ package com.apgsga.microservice.patch.server.impl;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -27,17 +28,24 @@ import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
+import com.apgsga.microservice.patch.server.impl.vcs.RDiffCvsModuleCommand;
+import com.apgsga.microservice.patch.server.impl.vcs.JschSessionCmdRunnerFactory;
 import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Component("ServerBean")
 public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());
+	
+	private final String ARTEFACT_NAME_IS_NULL = "artefactNameIsNull";
+	
+	private final String ARTEFACT_NAME_IS_INVALID = "artefactNameIsInvalid";
 
 	@Autowired
 	@Qualifier("patchPersistence")
@@ -215,5 +223,79 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public VcsCommandRunnerFactory getJschSessionFactory() {
 		return vcsCommandRunnerFactory;
 	}
+	
+	private RDiffCvsModuleCommand initiValidateArtefactNamesCommand() {
+		RDiffCvsModuleCommand cvsCommand = new RDiffCvsModuleCommand();
+		cvsCommand.noSystemCheck(true);
+		return cvsCommand;
+	}
 
+	private Map<String,List<MavenArtifact>> initValidateArtefactNameMap() {
+		Map<String,List<MavenArtifact>> artifactWihInvalidNames = Maps.newHashMap();
+		artifactWihInvalidNames.put(ARTEFACT_NAME_IS_NULL, Lists.newArrayList());
+		artifactWihInvalidNames.put(ARTEFACT_NAME_IS_INVALID, Lists.newArrayList());
+		return artifactWihInvalidNames;
+	}
+	
+	private List<MavenArtifact> getArtifactsWithNameFromBom(String version) {
+		List<MavenArtifact> artifactsWithNameFromBom = null;
+		try {
+			artifactsWithNameFromBom = am.getArtifactsWithNameFromBom(version);
+		}
+		catch(Exception ex) {
+			//TODO JHE: do we want to do anything special here?
+			System.out.println(ex.getMessage());
+		}
+		
+		return artifactsWithNameFromBom;
+	}
+	
+	private Map<String, List<MavenArtifact>> validateArtefactNames(RDiffCvsModuleCommand cvsCommand, VcsCommandRunner cmdRunner, String version) {
+		
+		Map<String, List<MavenArtifact>> artifactWihInvalidNames = initValidateArtefactNameMap();
+		
+		for(MavenArtifact ma : getArtifactsWithNameFromBom(version)) {
+			try {
+				String artifactName = am.getArtifactName(ma.getGroupId(), ma.getArtifactId(), ma.getVersion());
+				ma.setName(artifactName);
+				
+				if(artifactName == null) {
+					artifactWihInvalidNames.get(ARTEFACT_NAME_IS_NULL).add(ma);
+				}
+				else {
+					cvsCommand.setCvsModule(artifactName);
+					List<String> cvsResults = cmdRunner.run(cvsCommand);
+					if(cvsResults.isEmpty()) {
+						artifactWihInvalidNames.get(ARTEFACT_NAME_IS_INVALID).add(ma);
+					}
+				}
+			}
+			catch(Exception ex) {
+				//TODO JHE: do we want to do anything special here?
+				System.out.println(ex.getMessage());
+			}
+			
+		}
+		
+		return artifactWihInvalidNames;
+	}
+	
+	private Map<String,List<MavenArtifact>> parseArtefactForNameValidation(String version) {
+		
+		RDiffCvsModuleCommand cvsCommand = initiValidateArtefactNamesCommand();
+		
+		VcsCommandRunner cmdRunner = getJschSessionFactory().create();
+		cmdRunner.preProcess();
+		
+		Map<String, List<MavenArtifact>> artifactWithInvalidNames = validateArtefactNames(cvsCommand,cmdRunner,version);
+		
+		cmdRunner.postProcess();
+		return artifactWithInvalidNames;
+	}
+	
+	@Override
+	public Map<String,List<MavenArtifact>> invalidArtifactNames(String version) {
+		Map<String,List<MavenArtifact>> artifactWihInvalidNames = parseArtefactForNameValidation(version);
+		return artifactWihInvalidNames;
+	}
 }

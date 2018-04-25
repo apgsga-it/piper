@@ -2,6 +2,7 @@ package com.apgsga.microservice.patch.server;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
@@ -14,11 +15,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.apgsga.microservice.patch.api.DbModules;
+import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchOpService;
 import com.apgsga.microservice.patch.api.PatchPersistence;
@@ -183,5 +186,12 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	public void init() throws IOException {
 		throw new UnsupportedOperationException();
 	}
+	
+	@RequestMapping(value = "/validateArtifactNames", method = RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public Map<String,List<MavenArtifact>> invalidArtifactNames(@RequestParam ("version") String version) {
+		return patchService.invalidArtifactNames(version);
+	}	
 
 }

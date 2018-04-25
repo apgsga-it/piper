@@ -1,8 +1,12 @@
 package com.apgsga.patch.service.client
 
+import java.util.List
+import java.util.Map
+
 import org.springframework.web.client.RestTemplate
 
 import com.apgsga.microservice.patch.api.DbModules
+import com.apgsga.microservice.patch.api.MavenArtifact
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.PatchOpService
 import com.apgsga.microservice.patch.api.PatchPersistence
@@ -28,7 +32,7 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 
 
 	def getRestBaseUri() {
-		"http://" + baseUrl + "patchdb";
+		"http://" + baseUrl + "/patchdb";
 	}
 
 	@Override
@@ -166,5 +170,12 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 	@Override
 	public void init() throws IOException {
 		throw new UnsupportedOperationException("Init not supported by client");
+	}
+
+
+	@Override
+	public Map<String, List<MavenArtifact>> invalidArtifactNames(String version) {
+		def invalidArtifacts = restTemplate.getForObject(getRestBaseUri() + "/validateArtifactNames?version=${version}", Map.class)
+		return invalidArtifacts;
 	}
 }

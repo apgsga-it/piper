@@ -367,5 +367,15 @@ public class IntegrationTest extends Specification {
 			repo.clean()
 	}
 	
+	def "Patch Cli validate Artifact names"() {
+		setup:
+			def client = PatchCli.create()
+		when:
+			def result = client.process(["-u", baseUrl, "-v", "9.0.6.ADMIN-UIMIG-SNAPSHOT"])
+		then:
+			result != null
+		
+	}
+	
 	
 }

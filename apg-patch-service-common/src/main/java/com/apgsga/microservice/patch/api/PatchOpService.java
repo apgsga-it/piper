@@ -1,5 +1,8 @@
 package com.apgsga.microservice.patch.api;
 
+import java.util.List;
+import java.util.Map;
+
 public interface PatchOpService  {
 
 	/**
@@ -19,6 +22,18 @@ public interface PatchOpService  {
 	 */
 	public Patch save(Patch patch);
 
-
+	/**
+	 * Validate that name of Maven Artifacts match CVS directories
+	 * @param: version bom Version
+	 * @return: map with List of MavenArtifact for each "mistakes"
+	 */
+	public Map<String,List<MavenArtifact>> invalidArtifactNames(String version);
+	
+	/**
+	 * Validate that name of Maven Artifacts match CVS directories for modules within the Patch
+	 * @param: patch a Patch Object
+	 * @return: map with List of MavenArtifact for each "mistakes"
+	 */
+//	public Map<String,List<MavenArtifact>> invalidArtifactNames(Patch patch);
 
 }
