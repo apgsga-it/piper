@@ -2,7 +2,7 @@ package com.apgsga.microservice.patch.server.impl.vcs;
 
 import org.apache.commons.lang.SystemUtils;
 
-public class RDiffCvsModuleCommand implements VcsCommand {
+public class SilentCOCvsModuleCommand implements VcsCommand {
 	
 	private boolean noSystemCheck = false;
 	
@@ -34,8 +34,7 @@ public class RDiffCvsModuleCommand implements VcsCommand {
 		if(getCvsBranch() == null || getCvsBranch().isEmpty()) {
 			throw new RuntimeException(this.getClass().getName() + ": cvsBranch has to be set!");
 		}
-//		return new String[] {"ls", varLocalCvsRoot + getCvsModule()};
-		return new String[] {"cvs", "rdiff", "-r", getCvsBranch(), "-r", "HEAD", getCvsModule() };
+		return new String[] {"cvs", "co", "-p", "-r", getCvsBranch(), getCvsModule(), "&>/dev/null ; echo $?"};
 	}
 
 	@Override

@@ -28,7 +28,7 @@ import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
-import com.apgsga.microservice.patch.server.impl.vcs.RDiffCvsModuleCommand;
+import com.apgsga.microservice.patch.server.impl.vcs.SilentCOCvsModuleCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.JschSessionCmdRunnerFactory;
 import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
@@ -231,8 +231,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		return vcsCommandRunnerFactory;
 	}
 	
-	private RDiffCvsModuleCommand initiValidateArtefactNamesCommand() {
-		RDiffCvsModuleCommand cvsCommand = new RDiffCvsModuleCommand();
+	private SilentCOCvsModuleCommand initiValidateArtefactNamesCommand() {
+		SilentCOCvsModuleCommand cvsCommand = new SilentCOCvsModuleCommand();
 		cvsCommand.noSystemCheck(true);
 		return cvsCommand;
 	}
@@ -261,7 +261,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		
 		VcsCommandRunner cmdRunner = initAndGetVcsCommandRunner();
 		Map<String, List<MavenArtifact>> artifactWihInvalidNames = initValidateArtefactNameMap();
-		RDiffCvsModuleCommand cvsCommand = initiValidateArtefactNamesCommand();
+		SilentCOCvsModuleCommand cvsCommand = initiValidateArtefactNamesCommand();
 		cvsCommand.setCvsBranch(cvsBranch);
 		
 		for(MavenArtifact ma : mavenArtifacts) {
@@ -275,7 +275,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				else {
 					cvsCommand.setCvsModule(artifactName);
 					List<String> cvsResults = cmdRunner.run(cvsCommand);
-					if(cvsResults.isEmpty()) {
+					// JHE: SilentCOCvsModuleCommand returns 0 when all OK, 1 instead...
+					if(cvsResults.size() != 1 || cvsResults.get(0).equals("1")) {
 						artifactWihInvalidNames.get(ARTEFACT_NAME_IS_INVALID).add(ma);
 					}
 				}
