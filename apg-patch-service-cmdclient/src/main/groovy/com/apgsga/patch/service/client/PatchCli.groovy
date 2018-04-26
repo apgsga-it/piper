@@ -20,13 +20,13 @@ class PatchCli {
 		return new PatchCli()
 	}
 
-	private PatchCli() {
+	private PatchCli() { 
 		super();
 	}
 	def validComponents = ["db", "aps", "mockdb", "nil"]
 	def defaultHost = "localhost:9010"
 	// TODO (che,19.4) better a common directory for apg-patch-service? To be discussed
-	def linuxConfigDir = '/etc/opt/apg-patch-service-server'
+	def linuxConfigDir = 'file:///var/opt/apg-patch-common'
 	def targetSystemMappings
 	def validToStates
 	def configDir
@@ -111,16 +111,16 @@ class PatchCli {
 		return cmdResults
 	}
 	def validateOpts(args) {
-		def cli = new CliBuilder(usage: 'apspli.groovy [-u <url>] [-h] [-[l|d|dd|dm|dt] <directory>]  [-[e|r] <patchnumber>] [-[s|sa|ud|um|ut] <file>] [-f <patchnumber,directory>] [-sta <patchnumber,toState,[aps,db,nil]]')
+		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-[l|d|dd|dm|dt] <directory>]  [-[e|r] <patchnumber>] [-[s|sa|ud|um|ut] <file>] [-f <patchnumber,directory>] [-sta <patchnumber,toState,[aps,db,nil]]')
 		cli.formatter.setDescPadding(0)
 		cli.formatter.setLeftPadding(0)
 		cli.formatter.setWidth(100)
 		cli.with {
 			h longOpt: 'help', 'Show usage information', required: false
 			u longOpt: 'host', args:1 , argName: 'hostBaseUrl', 'The Base Url of the Patch Service', required: false
-			l longOpt: 'upload', args:1 , argName: 'directory', 'Upload all Patch files from this <directory> to the Patch Service', required: false
-			d longOpt: 'download', args:1 , argName: 'directory', 'Download all Patch files from the Patch Service to a directory', required: false
-			e longOpt: "exists", args:1, argName: 'patchNumber', 'Print true resp. false if Patch of the <patchNumber> exists or not', required: false
+			l longOpt: 'upload', args:1 , argName: 'directory', 'Upload all Patch files <directory> ', required: false
+			d longOpt: 'download', args:1 , argName: 'directory', 'Download all Patch files to a <directory>', required: false
+			e longOpt: "exists", args:1, argName: 'patchNumber', 'True resp. false if Patch of the <patchNumber> exists or not', required: false
 			f longOpt: 'findById', args:2, valueSeparator: ",", argName: 'patchNumber,directory','Retrieve a Patch with the <patchNumber> to a <directory>', required: false
 			a longOpt: 'findAllIds','Retrieve and print all PatchIds', required: false
 			r longOpt: 'remove', args:1, argName: 'patchNumber', 'Remove Patch with <patchNumber>', required: false
@@ -156,10 +156,12 @@ class PatchCli {
 		} else {
 			// Guessing Config Directory 
 			ResourceLoader rl = new FileSystemResourceLoader();
-			Resource rs = rl.getResource(linuxConfigDir);
+			Resource rs = rl.getResource("${linuxConfigDir}");
+			println "Checking on ${linuxConfigDir} as config dir"
 			if (rs.exists()) {
 				configDir = rs.getFile()
 			} else {
+				println "${linuxConfigDir} doesn't exist or is not readable"
 				// Assuming Eclipse Workspace
 				rs = rl.getResource("src/main/resources/config")	
 				if (!rs.exists() | !rs.getFile().isDirectory()) {
@@ -320,10 +322,10 @@ class PatchCli {
 		targetSystemMappings = [:]
 		jsonSystemTargets.targetSystems.find( { a ->  a.stages.find( { targetSystemMappings.put("${a.name}${it.toState}","${it.code}") })} )
 		println "Running with TargetSystemMappings: " 
-		println JsonOutput.prettyPrint(targetSystemFile.text)
+		//println JsonOutput.prettyPrint(targetSystemFile.text)
 		// TODO validate
 		validToStates = targetSystemMappings.keySet()
-		def jdbcConfigFule = new File(configDir, "defaults.groovy")
+		def jdbcConfigFule = new File(configDir, "jdbc.groovy")
 		defaultConfig = new ConfigSlurper().parse(jdbcConfigFule.toURI().toURL())
 		// TODO validate
 	}

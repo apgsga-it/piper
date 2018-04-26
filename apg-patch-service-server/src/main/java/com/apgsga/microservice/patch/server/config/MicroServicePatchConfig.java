@@ -115,13 +115,13 @@ public class MicroServicePatchConfig {
 	}
 	
 	@Bean(name = "currentActionFactory")
-	@Profile("live")
+	@Profile({"javaactions"})
 	public PatchActionExecutorFactory currentpatchActionFactory() {
 		return new DefaultPatchActionExecutorFactory();
 	}
 	
 	@Bean(name = "groovyActionFactory")
-	@Profile("mock")
+	@Profile({"groovyactions"})
 	public PatchActionExecutorFactory groovyPatchActionFactory() {
 		return new GroovyScriptActionExecutorFactory(configCommon, targetSystemFile, groovyScriptFile);
 	}

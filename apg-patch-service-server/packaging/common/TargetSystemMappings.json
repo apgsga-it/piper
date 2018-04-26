@@ -20,16 +20,16 @@
         },
         {
             "name": "Informatiktest",
-            "target": "CHTI212",
+            "target": "CHEI212",
             "stages": [
                 {
-                    "name": "buildAndAssemble",
+                    "name": "BuildFor",
                     "toState": "Installationsbereit",
                     "code": 15,
                     "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
                 },
                 {
-                    "name": "install",
+                    "name": "InstallFor",
                     "toState": "",
                     "code": 20,
                     "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
@@ -41,13 +41,13 @@
             "target": "CHEI211",
             "stages": [
                 {
-                    "name": "buildAndAssemble",
+                    "name": "BuildFor",
                     "toState": "Installationsbereit",
                     "code": 65,
                     "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
                 },
                 {
-                    "name": "install",
+                    "name": "InstallFor",
                     "toState": "",
                     "code": 80,
                     "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"

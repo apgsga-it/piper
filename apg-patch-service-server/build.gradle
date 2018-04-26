@@ -63,7 +63,7 @@ def homeDir = "/opt/${project.name}"
 ospackage {
 	packageName = "${project.name}"
 	version = "${pkgVersion}"
-	release = 4
+	release = 5
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -108,7 +108,7 @@ ospackage {
 		fileMode 0777
 	}
 	
-	from("packageing/common") {
+	from("packaging/common") {
 	   	into "/var/opt/apg-patch-common"
 		user "root"
 		permissionGroup "root"

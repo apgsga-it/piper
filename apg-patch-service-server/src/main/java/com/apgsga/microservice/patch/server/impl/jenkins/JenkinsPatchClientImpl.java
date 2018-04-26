@@ -91,14 +91,17 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 			String jsonRequestString = mapper.writeValueAsString(patch);
 			LOGGER.info("Jenkins request: " + jsonRequestString.toString());
 			String jobName = "Patch" + patch.getPatchNummer() + jobSuffix;
-
+			
 			JenkinsServer jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
+			LOGGER.info("Connected to Jenkinsserver with, url: " + jenkinsUrl + " and user: " + jenkinsUser);
 			JenkinsTriggerHelper jth = new JenkinsTriggerHelper(jenkinsServer, 2000L);
 			Map<String, String> jobParm = Maps.newHashMap();
 			jobParm.put("token", jobName);
 			jobParm.put("PARAMETER", jsonRequestString);
 			// TODO (jhe , che , 12.12. 2017) : hangs, when job fails immediately
+			LOGGER.info("Triggering Pipeline Job and waiting until Building " + jobName + " with Paramter: " + jobParm.toString() ); 
 			PipelineBuild result = jth.triggerPipelineJobAndWaitUntilBuilding(jobName, jobParm, true);
+			LOGGER.info("Getting Result of Pipeline Job " + jobName  + ", : " + result.toString());  
 			BuildWithDetails details = result.details();
 			if (details.isBuilding()) {
 				LOGGER.info(jobName + " Is Building");
@@ -123,12 +126,12 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 
 	@Override
 	public void approveBuild(TargetSystemEnviroment target, Patch patch) {
-		processInputAction(patch, "BuildFor",  target.getName());
+		processInputAction(patch,  target.getName(), "BuildFor");
 	}
 
 	@Override
 	public void approveInstallation(TargetSystemEnviroment target, Patch patch) {
-		processInputAction(patch, "InstallFor" , target.getName());
+		processInputAction(patch,  target.getName(), "InstallFor");
 		
 	}
 

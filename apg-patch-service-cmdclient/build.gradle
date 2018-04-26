@@ -130,19 +130,29 @@ ospackage {
 		into 'bin'
 	}
 
-	from('packaging') {
-		include '*.sh'
+	from('packaging/bin') {
+		include 'apscli.sh'
 		fileMode 0755
 		into 'bin'
 		//expand project.properties
 	}
 	
-	from("src/main/resources/config") {
-		into "/etc/opt/${finalName}"
-		include 'defaults.groovy'
-		fileType CONFIG | NOREPLACE
+	from('packaging/profile') {
+		include 'apscli.sh'
+		fileMode 0644
 		user 'root'
 		permissionGroup 'root'
+		into '/etc/profile.d'
+		//expand project.properties
+	}
+	
+	from("packaging/conf") {
+		into "/var/opt/apg-patch-common"
+		fileType CONFIG | NOREPLACE
+		include 'jdbc.groovy'
+		user 'root'
+		permissionGroup 'root'
+		addParentDirs false
 		// TODO (che,11.4)
 		fileMode 0777
 
