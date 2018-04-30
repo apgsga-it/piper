@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -34,6 +35,8 @@ import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+
+import groovy.util.logging.Commons;
 
 @Component("ServerBean")
 public class SimplePatchContainerBean implements PatchService, PatchOpService {
@@ -229,8 +232,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			artifactsWithNameFromBom = am.getArtifactsWithNameFromBom(version);
 		}
 		catch(Exception ex) {
-			//TODO JHE: do we want to do anything special here?
-			System.out.println(ex.getMessage());
+			LOGGER.error("Error when trying to get Artifact name from Bom for version " + version);
+			LOGGER.error(ex.getMessage());
+			LOGGER.error(ExceptionUtils.getStackTrace(ex));
+			throw new RuntimeException("Error when trying to get Artifact name from Bom for version " + version);
 		}
 		
 		return artifactsWithNameFromBom;
@@ -238,7 +243,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	
 	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
 		
-		VcsCommandRunner cmdRunner = initAndGetVcsCommandRunner();
+		VcsCommandRunner cmdRunner = getJschSessionFactory().create();
+		cmdRunner.preProcess();
 		List<MavenArtifact> artifactWihInvalidNames = Lists.newArrayList();
 		
 		for(MavenArtifact ma : mavenArtifacts) {
@@ -259,19 +265,15 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				}
 			}
 			catch(Exception ex) {
-				//TODO JHE: do we want to do anything special here?
-				System.out.println(ex.getMessage());
+				LOGGER.error("Error when trying to list Artifact having error in their names.");
+				LOGGER.error(ex.getMessage());
+				LOGGER.error(ExceptionUtils.getStackTrace(ex));
+				throw new RuntimeException("Error when trying to list Artifact having error in their names");
 			}
 		}
 		
 		cmdRunner.postProcess();
 		return artifactWihInvalidNames;
-	}
-	
-	private VcsCommandRunner initAndGetVcsCommandRunner() {
-		VcsCommandRunner cmdRunner = getJschSessionFactory().create();
-		cmdRunner.preProcess();
-		return cmdRunner;
 	}
 	
 	@Override
