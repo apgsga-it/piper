@@ -174,15 +174,8 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 
 
 	@Override
-	public Map<String, List<MavenArtifact>> invalidArtifactNames(String version,String cvsBranch) {
-		def invalidArtifacts = restTemplate.getForObject(getRestBaseUri() + "/validateArtifactNamesFromVersion?version=${version}&cvsbranch=${cvsBranch}", Map.class)
-		return invalidArtifacts;
-	}
-
-
-	@Override
-	public Map<String, List<MavenArtifact>> invalidArtifactNames(Patch patch) {
-		def invalidArtifacts = restTemplate.postForObject(getRestBaseUri() + "/validateArtifactNamesFromPatch", patch, Map.class)
+	public List<MavenArtifact> invalidArtifactNames(String version,String cvsBranch) {
+		def invalidArtifacts = restTemplate.getForObject(getRestBaseUri() + "/validateArtifactNamesFromVersion?version=${version}&cvsbranch=${cvsBranch}", List.class)
 		return invalidArtifacts;
 	}
 }

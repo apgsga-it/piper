@@ -50,6 +50,10 @@ public abstract class PatchVcsCommand implements VcsCommand {
 			List<String> modules) {
 		return new TagPatchModulesCmd(patchBranch, prodBranch, additionalOptions, modules);
 	}
+	
+	public static VcsCommand createSilentCoCvsModuleCmd(String cvsBranch, List<String> modules, String lastPart) {
+		return new SilentCOCvsModuleCmd(cvsBranch, modules, lastPart);
+	}
 
 	protected String patchTag;
 
@@ -59,6 +63,8 @@ public abstract class PatchVcsCommand implements VcsCommand {
 
 	protected String additionalOptions = null;
 	
+	protected String lastPart = null;
+	
 	protected boolean noSystemCheck = false; 
 
 	public PatchVcsCommand(String patchBranch, String prodBranch, List<String> modules) {
@@ -66,6 +72,13 @@ public abstract class PatchVcsCommand implements VcsCommand {
 		this.patchTag = patchBranch;
 		this.prodBranch = prodBranch;
 		this.modules = modules;
+	}
+	
+	public PatchVcsCommand(String cvsBranch, List<String> modules, String lastPart) {
+		super();
+		this.prodBranch = cvsBranch;
+		this.modules = modules;
+		this.lastPart = lastPart;
 	}
 
 	public PatchVcsCommand(String patchBranch, String prodBranch, String additionalOptions, List<String> modules) {
@@ -91,6 +104,9 @@ public abstract class PatchVcsCommand implements VcsCommand {
 	private String getParameterSpaceSeperated() {
 		String[] processParm = Stream.concat(Arrays.stream(getFristPart()), Arrays.stream(modules.toArray()))
 				.toArray(String[]::new);
+		if(lastPart != null) {
+			processParm = Stream.concat(Arrays.stream(processParm), Arrays.stream(new String[] {lastPart})).toArray(String[]::new);
+		}		
 		String parameter = String.join(" ", processParm);
 		if (additionalOptions != null) {
 			return additionalOptions + " " + parameter;
@@ -101,6 +117,11 @@ public abstract class PatchVcsCommand implements VcsCommand {
 	private String[] getParameterAsArray() {
 		String[] parameter = Stream.concat(Arrays.stream(getFristPart()), Arrays.stream(modules.toArray()))
 				.toArray(String[]::new);
+		
+		if(lastPart != null) {
+			parameter = Stream.concat(Arrays.stream(parameter), Arrays.stream(new String[] {lastPart})).toArray(String[]::new);
+		}
+		
 		// TODO (che, 4.4.2018) : either via bash or path 
 		// TODO (che, 4.4.2018) : cvs Root either in Enviroment or Configuration
 		String[] processBuilderParm = Stream.concat(Arrays.stream(new String[] { "/usr/bin/cvs", "-d", "/var/local/cvs/root" }), Arrays.stream(parameter)).toArray(String[]::new);

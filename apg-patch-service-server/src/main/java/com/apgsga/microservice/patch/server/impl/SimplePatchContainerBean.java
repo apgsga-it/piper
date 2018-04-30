@@ -2,7 +2,6 @@ package com.apgsga.microservice.patch.server.impl;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -28,25 +27,19 @@ import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
-import com.apgsga.microservice.patch.server.impl.vcs.SilentCOCvsModuleCommand;
-import com.apgsga.microservice.patch.server.impl.vcs.JschSessionCmdRunnerFactory;
 import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
+import com.apgsga.microservice.patch.server.impl.vcs.VcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 @Component("ServerBean")
 public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 	
-	private final String ARTEFACT_NAME_IS_NULL = "artefactNameIsNull";
-	
-	private final String ARTEFACT_NAME_IS_INVALID = "artefactNameIsInvalid";
-
 	@Autowired
 	@Qualifier("patchPersistence")
 	private PatchPersistence repo;
@@ -116,7 +109,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			createBranchForDbModules(patch);
 			jenkinsClient.createPatchPipelines(patch);
 		}
-		System.out.println(patch.getMavenArtifacts());
 		patch.getMavenArtifacts().stream().filter(art -> Strings.isNullOrEmpty(art.getName()))
 				.forEach(art -> addModuleName(art,patch.getMicroServiceBranch()));
 	}
@@ -125,8 +117,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		try {
 			String artifactName = am.getArtifactName(art.getGroupId(), art.getArtifactId(), art.getVersion());
 			
-			Map<String, List<MavenArtifact>> wrongNames = getArtifactNameErrorAsMap(Lists.newArrayList(art),cvsBranch);
-			if(!wrongNames.get(ARTEFACT_NAME_IS_NULL).isEmpty() || !wrongNames.get(ARTEFACT_NAME_IS_INVALID).isEmpty()) {
+			List<MavenArtifact> wrongNames = getArtifactNameError(Lists.newArrayList(art),cvsBranch);
+			if(!wrongNames.isEmpty()) {
 				throw new RuntimeException("Patch cannot be saved as it contains module(s) with invalid name: " + wrongNames);
 			}
 			
@@ -231,19 +223,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		return vcsCommandRunnerFactory;
 	}
 	
-	private SilentCOCvsModuleCommand initiValidateArtefactNamesCommand() {
-		SilentCOCvsModuleCommand cvsCommand = new SilentCOCvsModuleCommand();
-		cvsCommand.noSystemCheck(true);
-		return cvsCommand;
-	}
-
-	private Map<String,List<MavenArtifact>> initValidateArtefactNameMap() {
-		Map<String,List<MavenArtifact>> artifactWihInvalidNames = Maps.newHashMap();
-		artifactWihInvalidNames.put(ARTEFACT_NAME_IS_NULL, Lists.newArrayList());
-		artifactWihInvalidNames.put(ARTEFACT_NAME_IS_INVALID, Lists.newArrayList());
-		return artifactWihInvalidNames;
-	}
-	
 	private List<MavenArtifact> getArtifactsWithNameFromBom(String version) {
 		List<MavenArtifact> artifactsWithNameFromBom = null;
 		try {
@@ -257,12 +236,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		return artifactsWithNameFromBom;
 	}
 	
-	private Map<String,List<MavenArtifact>> getArtifactNameErrorAsMap(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
+	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
 		
 		VcsCommandRunner cmdRunner = initAndGetVcsCommandRunner();
-		Map<String, List<MavenArtifact>> artifactWihInvalidNames = initValidateArtefactNameMap();
-		SilentCOCvsModuleCommand cvsCommand = initiValidateArtefactNamesCommand();
-		cvsCommand.setCvsBranch(cvsBranch);
+		List<MavenArtifact> artifactWihInvalidNames = Lists.newArrayList();
 		
 		for(MavenArtifact ma : mavenArtifacts) {
 			try {
@@ -270,14 +247,14 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				ma.setName(artifactName);
 				
 				if(artifactName == null) {
-					artifactWihInvalidNames.get(ARTEFACT_NAME_IS_NULL).add(ma);
+					artifactWihInvalidNames.add(ma);
 				}
 				else {
-					cvsCommand.setCvsModule(artifactName);
-					List<String> cvsResults = cmdRunner.run(cvsCommand);
+					VcsCommand silentCoCmd = PatchVcsCommand.createSilentCoCvsModuleCmd(cvsBranch, Lists.newArrayList(artifactName),"&>/dev/null ; echo $?");
+					List<String> cvsResults = cmdRunner.run(silentCoCmd);
 					// JHE: SilentCOCvsModuleCommand returns 0 when all OK, 1 instead...
 					if(cvsResults.size() != 1 || cvsResults.get(0).equals("1")) {
-						artifactWihInvalidNames.get(ARTEFACT_NAME_IS_INVALID).add(ma);
+						artifactWihInvalidNames.add(ma);
 					}
 				}
 			}
@@ -298,14 +275,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 	
 	@Override
-	public Map<String,List<MavenArtifact>> invalidArtifactNames(String version, String cvsBranch) {
-		Map<String, List<MavenArtifact>> artifactWithInvalidNames = getArtifactNameErrorAsMap(getArtifactsWithNameFromBom(version),cvsBranch);
-		return artifactWithInvalidNames;
-	}
-
-	@Override
-	public Map<String, List<MavenArtifact>> invalidArtifactNames(Patch patch) {
-		Map<String, List<MavenArtifact>> artifactWithInvalidNames = getArtifactNameErrorAsMap(patch.getMavenArtifacts(),patch.getMicroServiceBranch());
-		return artifactWithInvalidNames;
+	public List<MavenArtifact> invalidArtifactNames(String version, String cvsBranch) {
+		return getArtifactNameError(getArtifactsWithNameFromBom(version),cvsBranch);
 	}
 }

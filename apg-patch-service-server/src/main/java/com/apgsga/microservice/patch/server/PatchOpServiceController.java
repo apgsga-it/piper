@@ -2,7 +2,6 @@ package com.apgsga.microservice.patch.server;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
@@ -189,16 +188,9 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	
 	@RequestMapping(value = "/validateArtifactNamesFromVersion", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
 	@Override
-	public Map<String,List<MavenArtifact>> invalidArtifactNames(@RequestParam ("version") String version, @RequestParam ("cvsbranch") String cvsBranch) {
+	public List<MavenArtifact> invalidArtifactNames(@RequestParam ("version") String version, @RequestParam ("cvsbranch") String cvsBranch) {
 		return patchService.invalidArtifactNames(version,cvsBranch);
 	}
-
-	@RequestMapping(value = "/validateArtifactNamesFromPatch", method = RequestMethod.POST)
-	@ResponseStatus(HttpStatus.OK)
-	@Override
-	public Map<String, List<MavenArtifact>> invalidArtifactNames(@RequestBody Patch patch) {
-		return patchService.invalidArtifactNames(patch);
-	}	
-
 }
