@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -28,17 +29,20 @@ import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
 import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
+import com.apgsga.microservice.patch.server.impl.vcs.VcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
+import groovy.util.logging.Commons;
+
 @Component("ServerBean")
 public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());
-
+	
 	@Autowired
 	@Qualifier("patchPersistence")
 	private PatchPersistence repo;
@@ -109,12 +113,18 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			jenkinsClient.createPatchPipelines(patch);
 		}
 		patch.getMavenArtifacts().stream().filter(art -> Strings.isNullOrEmpty(art.getName()))
-				.forEach(art -> addModuleName(art));
+				.forEach(art -> addModuleName(art,patch.getMicroServiceBranch()));
 	}
 
-	private MavenArtifact addModuleName(MavenArtifact art) {
+	private MavenArtifact addModuleName(MavenArtifact art, String cvsBranch) {
 		try {
 			String artifactName = am.getArtifactName(art.getGroupId(), art.getArtifactId(), art.getVersion());
+			
+			List<MavenArtifact> wrongNames = getArtifactNameError(Lists.newArrayList(art),cvsBranch);
+			if(!wrongNames.isEmpty()) {
+				throw new RuntimeException("Patch cannot be saved as it contains module(s) with invalid name: " + wrongNames);
+			}
+			
 			art.setName(artifactName);
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
 			new RuntimeException(e);
@@ -215,5 +225,59 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public VcsCommandRunnerFactory getJschSessionFactory() {
 		return vcsCommandRunnerFactory;
 	}
-
+	
+	private List<MavenArtifact> getArtifactsWithNameFromBom(String version) {
+		List<MavenArtifact> artifactsWithNameFromBom = null;
+		try {
+			artifactsWithNameFromBom = am.getArtifactsWithNameFromBom(version);
+		}
+		catch(Exception ex) {
+			LOGGER.error("Error when trying to get Artifact name from Bom for version " + version);
+			LOGGER.error(ex.getMessage());
+			LOGGER.error(ExceptionUtils.getStackTrace(ex));
+			throw new RuntimeException("Error when trying to get Artifact name from Bom for version " + version);
+		}
+		
+		return artifactsWithNameFromBom;
+	}
+	
+	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
+		
+		VcsCommandRunner cmdRunner = getJschSessionFactory().create();
+		cmdRunner.preProcess();
+		List<MavenArtifact> artifactWihInvalidNames = Lists.newArrayList();
+		
+		for(MavenArtifact ma : mavenArtifacts) {
+			try {
+				String artifactName = am.getArtifactName(ma.getGroupId(), ma.getArtifactId(), ma.getVersion());
+				ma.setName(artifactName);
+				
+				if(artifactName == null) {
+					artifactWihInvalidNames.add(ma);
+				}
+				else {
+					VcsCommand silentCoCmd = PatchVcsCommand.createSilentCoCvsModuleCmd(cvsBranch, Lists.newArrayList(artifactName),"&>/dev/null ; echo $?");
+					List<String> cvsResults = cmdRunner.run(silentCoCmd);
+					// JHE: SilentCOCvsModuleCommand returns 0 when all OK, 1 instead...
+					if(cvsResults.size() != 1 || cvsResults.get(0).equals("1")) {
+						artifactWihInvalidNames.add(ma);
+					}
+				}
+			}
+			catch(Exception ex) {
+				LOGGER.error("Error when trying to list Artifact having error in their names.");
+				LOGGER.error(ex.getMessage());
+				LOGGER.error(ExceptionUtils.getStackTrace(ex));
+				throw new RuntimeException("Error when trying to list Artifact having error in their names");
+			}
+		}
+		
+		cmdRunner.postProcess();
+		return artifactWihInvalidNames;
+	}
+	
+	@Override
+	public List<MavenArtifact> invalidArtifactNames(String version, String cvsBranch) {
+		return getArtifactNameError(getArtifactsWithNameFromBom(version),cvsBranch);
+	}
 }

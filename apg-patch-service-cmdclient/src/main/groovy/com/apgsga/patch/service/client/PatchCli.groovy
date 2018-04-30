@@ -97,6 +97,10 @@ class PatchCli {
 			def result = listFiles(options,patchClient)
 			cmdResults.results['lf'] = result
 		}
+		if (options.vv) {
+			def result = validateArtifactNamesForVersion(options,patchClient)
+			cmdResults.results['vv'] = result
+		}
 		cmdResults.returnCode = 0
 		return cmdResults
 	}
@@ -123,7 +127,7 @@ class PatchCli {
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
 			db longOpt: 'dbConfig', args:1, argName: 'file', 'Jdbc configuration File', required: false
-			
+			vv longOpt: 'validateArtifactNamesForVersion', args:2, valueSeparator: ",", argName: 'version,cvsBranch', 'Validate all artifact names for a given version on a given CVS branch', required: false
 		}
 
 		def options = cli.parse(args)
@@ -264,6 +268,12 @@ class PatchCli {
 			if (!options.e.isInteger()) {
 				println "Patchnumber ${options.e} is not a Integer"
 				error = true
+			}
+		}
+		if (options.vv) {
+			if(options.vvs.size() != 2 || options.vvs[0] == null || options.vvs[0].equals("") || options.vvs[1] == null || options.vvs[1].equals("")) {
+				println "You have to provide the version and the cvs branch for which you want to validate Artifacts against."
+				error = true	
 			}
 		}
 		if (error) {
@@ -476,5 +486,11 @@ class PatchCli {
 		ObjectMapper mapper = new ObjectMapper();
 		TargetSystemEnvironments targets = mapper.readValue(new File("${options.ut}"), TargetSystemEnvironments.class)
 		patchClient.saveTargetSystemEnviroments(targets)
+	}
+	
+	def validateArtifactNamesForVersion(def options, PatchServiceClient patchClient) {
+		println("Validating all Artifact names for version ${options.vvs[0]} on branch ${options.vvs[1]}")
+		def invalidArtifacts = patchClient.invalidArtifactNames(options.vvs[0],options.vvs[1])
+		println invalidArtifacts
 	}
 }
