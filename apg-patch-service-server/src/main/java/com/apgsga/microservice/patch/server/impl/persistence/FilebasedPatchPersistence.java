@@ -19,7 +19,6 @@ import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
 import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
 import com.apgsga.microservice.patch.api.TargetSystemEnvironments;
-import com.apgsga.microservice.patch.api.impl.TargetSystemEnviromentBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Lists;
@@ -146,8 +145,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		try {
 			File installTargets = createInstallationTargetFile();
 			ObjectMapper mapper = new ObjectMapper();
-			ObjectWriter writerFor = mapper.writerFor(TargetSystemEnviroment[].class); 
-			TargetSystemEnviroment[] array = new TargetSystemEnviroment[installationTargets.size()]; 
+			ObjectWriter writerFor = mapper.writerFor(TargetSystemEnviroment[].class);
+			TargetSystemEnviroment[] array = new TargetSystemEnviroment[installationTargets.size()];
 			writerFor.writeValue(installTargets, installationTargets.toArray(array));
 		} catch (IOException e) {
 			throw new RuntimeException("Persistence Error", e);
