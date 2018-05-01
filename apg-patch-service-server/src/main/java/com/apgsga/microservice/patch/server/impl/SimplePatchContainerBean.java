@@ -36,8 +36,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-import groovy.util.logging.Commons;
-
 @Component("ServerBean")
 public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
@@ -262,6 +260,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					VcsCommand silentCoCmd = PatchVcsCommand.createSilentCoCvsModuleCmd(cvsBranch, Lists.newArrayList(artifactName),"&>/dev/null ; echo $?");
 					List<String> cvsResults = cmdRunner.run(silentCoCmd);
 					// JHE: SilentCOCvsModuleCommand returns 0 when all OK, 1 instead...
+					// (TODO 1.5: JHE, CHE ) : fragil contract?, also for testing , eg mocking
 					if(cvsResults.size() != 1 || cvsResults.get(0).equals("1")) {
 						artifactWihInvalidNames.add(ma);
 					}

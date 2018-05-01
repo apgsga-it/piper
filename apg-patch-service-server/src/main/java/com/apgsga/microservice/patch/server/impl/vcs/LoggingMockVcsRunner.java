@@ -27,7 +27,8 @@ public class LoggingMockVcsRunner implements VcsCommandRunner {
 		String command = String.join(" ", vcsCommand.getCommand());
 		LOGGER.info("Mocking execCommand with: " + command);
 		LOGGER.info("Returning empty List");
-		return Lists.newArrayList();
+		// TODO 1.5 (CHE , JHE) for one special cvs command, could break other tests
+		return Lists.newArrayList("0");
 	}
 
 }

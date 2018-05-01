@@ -32,7 +32,7 @@ import spock.lang.Specification;
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = [MicroPatchServer.class ])
 @TestPropertySource(locations = "application-test.properties")
-@ActiveProfiles("test,mock")
+@ActiveProfiles("test,mock,groovyactions")
 public class IntegrationTest extends Specification {
 
 

@@ -25,9 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileCopyUtils;
 
 import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchOpService;
 import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.api.PatchService;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.api.impl.PatchBean;
@@ -40,7 +38,7 @@ import com.apgsga.microservice.patch.server.impl.persistence.FilebasedPatchPersi
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = { MicroPatchServer.class,
 		MicroServicePatchClientConfig.class })
 @TestPropertySource(locations = "application-test.properties")
-@ActiveProfiles("test,mock")
+@ActiveProfiles("test,mock,groovyactions")
 public class MicroServicePatchClientTest {
 
 	@Autowired
