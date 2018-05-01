@@ -329,7 +329,7 @@ class PatchCli {
 		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
 		targetSystemMappings = [:]
 		jsonSystemTargets.targetSystems.find( { a ->  a.stages.find( { targetSystemMappings.put("${a.name}${it.toState}","${it.code}") })} )
-		println "Running with TargetSystemMappings: " 
+		//println "Running with TargetSystemMappings: " 
 		//println JsonOutput.prettyPrint(targetSystemFile.text)
 		// TODO validate
 		validToStates = targetSystemMappings.keySet()
