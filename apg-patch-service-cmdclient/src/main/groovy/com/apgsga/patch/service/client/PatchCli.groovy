@@ -33,6 +33,7 @@ class PatchCli {
 	def defaultConfig 
 
 	def process(def args) {
+		println args
 		def options = validateOpts(args)
 		if (!options) return
 		def cmdResults = new Expando();

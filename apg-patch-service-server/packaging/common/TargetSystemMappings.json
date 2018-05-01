@@ -3,6 +3,7 @@
         {
             "name": "Entwicklung",
             "target": "CHEI212",
+            "targettype": "T",
             "stages": [
                 {
                     "name": "startPipelineAndTag",
@@ -13,7 +14,7 @@
                 {
                     "name": "cancel",
                     "toState": "",
-                    "code": 99,
+                    "code": 0,
                     "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
                 }
             ]
@@ -21,6 +22,7 @@
         {
             "name": "Informatiktest",
             "target": "CHEI212",
+            "targettype": "T",
             "stages": [
                 {
                     "name": "BuildFor",
@@ -39,6 +41,7 @@
         {
             "name": "Produktion",
             "target": "CHEI211",
+            "targettype": "T",
             "stages": [
                 {
                     "name": "BuildFor",
@@ -59,7 +62,6 @@
         "CHTI211",
         "CHTI213",
         "CHTI214",
-        "CHQI211",
-        "CHPI211"
+        "CHQI211"
     ]
 }

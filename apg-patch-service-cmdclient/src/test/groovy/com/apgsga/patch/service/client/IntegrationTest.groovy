@@ -35,6 +35,7 @@ import spock.lang.Specification;
 @ActiveProfiles("test,mock,groovyactions")
 public class IntegrationTest extends Specification {
 
+	private static def DEFAULT_CONFIG_OPT = ["-c", "src/test/resources/config"]
 
 	@Value('${baseUrl}')
 	private String baseUrl;
@@ -70,7 +71,7 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-u", baseUrl, "-e", "9999"])
+			def result = client.process(["-u", baseUrl, "-e", "9999"] + DEFAULT_CONFIG_OPT)
 		then: 
 			result != null
 			result.returnCode == 0
@@ -81,9 +82,9 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def preCondResult = client.process(["-u", baseUrl, "-e", "5401"])
-			def result = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"])
-			def postCondResult = client.process(["-u", baseUrl, "-e", "5401"])
+			def preCondResult = client.process(["-u", baseUrl, "-e", "5401"] + DEFAULT_CONFIG_OPT)
+			def result = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"] + DEFAULT_CONFIG_OPT)
+			def postCondResult = client.process(["-u", baseUrl, "-e", "5401"] + DEFAULT_CONFIG_OPT)
 			
 		then:
 			preCondResult != null
@@ -106,8 +107,8 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def preCondResult = client.process(["-u", baseUrl, "-e", "5401"])
-			def result = client.process(["-u", baseUrl, "-f", "5401,build"])
+			def preCondResult = client.process(["-u", baseUrl, "-e", "5401"] + DEFAULT_CONFIG_OPT)
+			def result = client.process(["-u", baseUrl, "-f", "5401,build"] + DEFAULT_CONFIG_OPT)
 			
 		then:
 			preCondResult != null
@@ -122,8 +123,8 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"])
-			def result = client.process(["-u", baseUrl, "-f", "5401,build"])
+			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"] + DEFAULT_CONFIG_OPT)
+			def result = client.process(["-u", baseUrl, "-f", "5401,build"] + DEFAULT_CONFIG_OPT)
 			
 		then:
 			preCondResult != null
@@ -144,9 +145,9 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"])
-			def result = client.process(["-u", baseUrl, "-r", "5401"])
-			def postCondResult = client.process(["-u", baseUrl, "-e", "5401"])
+			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"] + DEFAULT_CONFIG_OPT)
+			def result = client.process(["-u", baseUrl, "-r", "5401"] + DEFAULT_CONFIG_OPT)
+			def postCondResult = client.process(["-u", baseUrl, "-e", "5401"] + DEFAULT_CONFIG_OPT)
 		then:
 			preCondResult != null
 			preCondResult.returnCode == 0
@@ -163,7 +164,7 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-u", baseUrl, "-ud", "src/test/resources/DbModules.json"])
+			def result = client.process(["-u", baseUrl, "-ud", "src/test/resources/DbModules.json"] + DEFAULT_CONFIG_OPT)
 		then:
 			result != null
 			result.returnCode == 0
@@ -179,8 +180,8 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def preConResult = client.process(["-u", baseUrl, "-ud", "src/test/resources/DbModules.json"])
-			def result = client.process(["-u", baseUrl, "-dd", "build"])
+			def preConResult = client.process(["-u", baseUrl, "-ud", "src/test/resources/DbModules.json"] + DEFAULT_CONFIG_OPT)
+			def result = client.process(["-u", baseUrl, "-dd", "build"] + DEFAULT_CONFIG_OPT)
 		then:
 			preConResult != null
 			preConResult.returnCode == 0
@@ -198,7 +199,7 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-u", baseUrl, "-dd", "build"])
+			def result = client.process(["-u", baseUrl, "-dd", "build"] + DEFAULT_CONFIG_OPT)
 		then:
 			result != null
 			result.returnCode == 0
@@ -210,7 +211,7 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-u", baseUrl, "-um", "src/test/resources/ServicesMetaData.json"])
+			def result = client.process(["-u", baseUrl, "-um", "src/test/resources/ServicesMetaData.json"] + DEFAULT_CONFIG_OPT)
 		then:
 			result != null
 			result.returnCode == 0
@@ -226,8 +227,8 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def preConResult = client.process(["-u", baseUrl, "-um", "src/test/resources/ServicesMetaData.json"])
-			def result = client.process(["-u", baseUrl, "-dm", "build"])
+			def preConResult = client.process(["-u", baseUrl, "-um", "src/test/resources/ServicesMetaData.json"] + DEFAULT_CONFIG_OPT)
+			def result = client.process(["-u", baseUrl, "-dm", "build"] + DEFAULT_CONFIG_OPT)
 		then:
 			preConResult != null
 			preConResult.returnCode == 0
@@ -245,7 +246,7 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-u", baseUrl, "-ut", "src/test/resources/TargetSystemEnvironments.json"])
+			def result = client.process(["-u", baseUrl, "-ut", "src/test/resources/TargetSystemEnvironments.json"] + DEFAULT_CONFIG_OPT)
 		then:
 			result != null
 			result.returnCode == 0
@@ -265,8 +266,8 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def preConResult = client.process(["-u", baseUrl, "-ut", "src/test/resources/TargetSystemEnvironments.json"])
-			def result = client.process(["-u", baseUrl, "-dt", "build"])
+			def preConResult = client.process(["-u", baseUrl, "-ut", "src/test/resources/TargetSystemEnvironments.json"] + DEFAULT_CONFIG_OPT)
+			def result = client.process(["-u", baseUrl, "-dt", "build"] + DEFAULT_CONFIG_OPT)
 		then:
 			preConResult != null
 			preConResult.returnCode == 0
@@ -288,7 +289,7 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-u", baseUrl, "-dm", "build"])
+			def result = client.process(["-u", baseUrl, "-dm", "build"] + DEFAULT_CONFIG_OPT)
 		then:
 			result != null
 			result.returnCode == 0
@@ -299,7 +300,7 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-u", baseUrl, "-sta", "9999,XXXXXX,aps"])
+			def result = client.process(["-u", baseUrl, "-sta", "9999,XXXXXX,aps"] + DEFAULT_CONFIG_OPT)
 		then:
 			result == null
 	}
@@ -308,7 +309,7 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-u", baseUrl, "-sta", "9999,EntwicklungInstallationsbereit"])
+			def result = client.process(["-u", baseUrl, "-sta", "9999,EntwicklungInstallationsbereit"] + DEFAULT_CONFIG_OPT)
 		then:
 			result == null
 	}
@@ -317,7 +318,7 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-u", baseUrl, "-sta", "9999,EntwicklungInstallationsbereit,xxxxx"])
+			def result = client.process(["-u", baseUrl, "-sta", "9999,EntwicklungInstallationsbereit,xxxxx"] + DEFAULT_CONFIG_OPT)
 		then:
 			result == null
 	}
@@ -326,8 +327,8 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"])
-			def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit,aps"])
+			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"] + DEFAULT_CONFIG_OPT) 
+			def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit,aps"] + DEFAULT_CONFIG_OPT)
 		then:
 			preCondResult != null
 			preCondResult.returnCode == 0
@@ -341,8 +342,8 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"])
-			def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit,nil"])
+			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"] + DEFAULT_CONFIG_OPT)
+			def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit,nil"] + DEFAULT_CONFIG_OPT)
 		then:
 			preCondResult != null
 			preCondResult.returnCode == 0
@@ -356,8 +357,8 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"])
-			def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit,mockdb"])
+			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"] + DEFAULT_CONFIG_OPT)
+			def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit,mockdb"] + DEFAULT_CONFIG_OPT)
 		then:
 			preCondResult != null
 			preCondResult.returnCode == 0
@@ -371,22 +372,10 @@ public class IntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-u", baseUrl, "-vv", "9.0.6.ADMIN-UIMIG-SNAPSHOT,it21_release_9_0_6_admin_uimig"])
+			def result = client.process(["-u", baseUrl, "-vv", "9.0.6.ADMIN-UIMIG-SNAPSHOT,it21_release_9_0_6_admin_uimig"] + DEFAULT_CONFIG_OPT)
 		then:
 			result != null
 			result.returnCode == 0
 	}
 	
-	def "Patch Cli validate Artifact names contained within a Patch"() {
-		setup:
-			def client = PatchCli.create()
-		when:
-			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"])
-			def result = client.process((["-u", baseUrl, "-vp", "5401"]))
-		then:
-			preCondResult != null
-			preCondResult.returnCode == 0
-			result != null
-			result.returnCode == 0
-	}	
 }
