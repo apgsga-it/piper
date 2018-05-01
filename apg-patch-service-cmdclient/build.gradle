@@ -75,12 +75,6 @@ task copyLib( type: Copy ) {
 	include "*.jar"
 }
 
-task copyResources (type: Copy) {
-	from sourceSets.main.resources
-	into "$project.buildDir/${finalName}"
-	fileMode 0755
-}
-
 
 publishing {
 	publications {
@@ -159,18 +153,9 @@ ospackage {
 	}
 }
 
-// Generell Process Resources
-	processResources {
-		from sourceSets.main.resources
-		filesMatching('**/*.sh') {
-			filter(FixCrLfFilter.class,
-			eol:FixCrLfFilter.CrLf.newInstance("lf"))
-		}
-	}
 
 
-
-assemble { dependsOn  copyResources, copyLib,pkgAsGTar}
+assemble { dependsOn copyLib,pkgAsGTar}
 build {dependsOn assemble }
 publish {dependsOn build }
 publishToMavenLocal {dependsOn build }
