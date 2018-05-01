@@ -65,7 +65,8 @@ public class GroovyScriptActionExecutor implements PatchActionExecutor {
 		Resource script = rl.getResource(groovyScriptFile);
 		try {
 			File scriptFile = script.getFile();
-			LOGGER.info("About to execute script file: " + scriptFile.getAbsolutePath());
+			LOGGER.info("About to execute script file: " + scriptFile.getAbsolutePath() + ", with toStatus: " + toStatus);
+			LOGGER.info("With binding:" + sharedData.toString());
 			Object result = shell.evaluate(scriptFile);
 		} catch (CompilationFailedException | IOException e) {
 			throw new RuntimeException("Execution of Groovy Action script failed", e);
