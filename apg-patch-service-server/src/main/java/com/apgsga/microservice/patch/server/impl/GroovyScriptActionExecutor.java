@@ -3,6 +3,8 @@ package com.apgsga.microservice.patch.server.impl;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.control.CompilationFailedException;
@@ -62,12 +64,15 @@ public class GroovyScriptActionExecutor implements PatchActionExecutor {
 		sharedData.setProperty("toState", toStatus);
 		sharedData.setProperty("patchContainerBean", patchContainer); 
 		ResourceLoader rl = new FileSystemResourceLoader();
-		Resource script = rl.getResource(groovyScriptFile);
+		Resource scriptResource = rl.getResource(groovyScriptFile);
 		try {
-			File scriptFile = script.getFile();
+			File scriptFile = scriptResource.getFile();
 			LOGGER.info("About to execute script file: " + scriptFile.getAbsolutePath() + ", with toStatus: " + toStatus);
-			LOGGER.info("With binding:" + sharedData.toString());
-			Object result = shell.evaluate(scriptFile);
+			String script = FileUtils.readFileToString(scriptFile, "UTF-8");
+			LOGGER.info("About to execute script:");
+			LOGGER.info(script);
+			LOGGER.info("With binding:" + sharedData.getVariables().toString());
+			Object result = shell.evaluate(script);
 		} catch (CompilationFailedException | IOException e) {
 			throw new RuntimeException("Execution of Groovy Action script failed", e);
 		}
