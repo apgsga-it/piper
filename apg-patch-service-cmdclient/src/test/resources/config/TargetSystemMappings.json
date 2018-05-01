@@ -3,7 +3,7 @@
         {
             "name": "Entwicklung",
             "target": "CHEI212",
-            "targettype": "T",
+            "typeInd": "T",
             "stages": [
                 {
                     "name": "startPipelineAndTag",
@@ -22,7 +22,7 @@
         {
             "name": "Informatiktest",
             "target": "CHEI212",
-            "targettype": "T",
+            "typeInd": "T",
             "stages": [
                 {
                     "name": "BuildFor",
@@ -41,7 +41,7 @@
         {
             "name": "Produktion",
             "target": "CHEI211",
-            "targettype": "T",
+            "typeInd": "T",
             "stages": [
                 {
                     "name": "BuildFor",

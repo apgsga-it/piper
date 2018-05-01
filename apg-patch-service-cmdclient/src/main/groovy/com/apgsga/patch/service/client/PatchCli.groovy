@@ -324,6 +324,7 @@ class PatchCli {
 	}
 
 	def valdidateAndLoadConfigFiles() {
+		// TODO (che, 1.5 ) Make File name Configurable
 		def targetSystemFile = new File(configDir, "TargetSystemMappings.json")
 		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
 		targetSystemMappings = [:]
