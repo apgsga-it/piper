@@ -6,6 +6,7 @@ public class SilentCOCvsModuleCmd extends PatchVcsCommand {
 	
 	public SilentCOCvsModuleCmd(String cvsBranch, List<String> modules, String lastPart) {
 		super(cvsBranch, modules, lastPart);
+		// JHE: Forcing to true because this one could only be correctly tested with remote CVS option.
 		noSystemCheck = true;
 	}
 

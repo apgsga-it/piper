@@ -259,8 +259,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				else {
 					VcsCommand silentCoCmd = PatchVcsCommand.createSilentCoCvsModuleCmd(cvsBranch, Lists.newArrayList(artifactName),"&>/dev/null ; echo $?");
 					List<String> cvsResults = cmdRunner.run(silentCoCmd);
-					// JHE: SilentCOCvsModuleCommand returns 0 when all OK, 1 instead...
-					// (TODO 1.5: JHE, CHE ) : fragil contract?, also for testing , eg mocking
+					// JHE: SilentCOCvsModuleCmd returns 0 when all OK, 1 instead...
 					if(cvsResults.size() != 1 || cvsResults.get(0).equals("1")) {
 						artifactWihInvalidNames.add(ma);
 					}
