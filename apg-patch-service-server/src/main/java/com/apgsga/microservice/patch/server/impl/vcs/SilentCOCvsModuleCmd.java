@@ -1,5 +1,5 @@
 package com.apgsga.microservice.patch.server.impl.vcs;
- 
+
 import java.util.List;
 
 public class SilentCOCvsModuleCmd extends PatchVcsCommand {
@@ -9,7 +9,7 @@ public class SilentCOCvsModuleCmd extends PatchVcsCommand {
 		// JHE: Forcing to true because this one could only be correctly tested with remote CVS option.
 		noSystemCheck = true;
 	}
- 
+
 	@Override
 	protected String[] getFristPart() {
 		return new String[] {"co", "-p", "-r", prodBranch};
