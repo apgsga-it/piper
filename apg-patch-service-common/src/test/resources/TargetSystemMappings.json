@@ -1,0 +1,59 @@
+{
+    "targetSystems": [
+        {
+            "name": "Entwicklung",
+            "target": "CHEI212",
+            "stages": [
+                {
+                    "name": "startPipelineAndTag",
+                    "toState": "Installationsbereit",
+                    "code": 2,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.MockExecuteAction"
+                }
+            ]
+        },
+        {
+            "name": "Informatiktest",
+            "target": "CHTI212",
+            "stages": [
+                {
+                    "name": "buildAndAssemble",
+                    "toState": "Installationsbereit",
+                    "code": 15,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.MockExecuteAction"
+                },
+                {
+                    "name": "install",
+                    "toState": "",
+                    "code": 20,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.MockExecuteAction"
+                }
+            ]
+        },
+        {
+            "name": "Produktion",
+            "target": "CHEI211",
+            "stages": [
+                {
+                    "name": "buildAndAssemble",
+                    "toState": "Installationsbereit",
+                    "code": 65,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.MockExecuteAction"
+                },
+                {
+                    "name": "install",
+                    "toState": "",
+                    "code": 80,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.MockExecuteAction"
+                }
+            ]
+        }
+    ],
+    "otherTargetInstances": [
+        "CHTI211",
+        "CHTI213",
+        "CHTI214",
+        "CHQI211",
+        "CHPI211"
+    ]
+}

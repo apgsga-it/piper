@@ -9,6 +9,8 @@ apply plugin: 'groovy'
 apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: "nebula.ospackage"
 
+description = 'Cli Programm, which provides  Patch Service API through Command Line Interface  '
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -73,12 +75,6 @@ task copyLib( type: Copy ) {
 	include "*.jar"
 }
 
-task copyResources (type: Copy) {
-	from sourceSets.main.resources
-	into "$project.buildDir/${finalName}"
-	fileMode 0755
-}
-
 
 publishing {
 	publications {
@@ -128,37 +124,38 @@ ospackage {
 		into 'bin'
 	}
 
-	from('packaging') {
-		include '*.sh'
+	from('packaging/bin') {
+		include 'apscli.sh'
 		fileMode 0755
 		into 'bin'
 		//expand project.properties
 	}
 	
-	from("src/main/resources/config") {
-		into "/etc/opt/${finalName}"
-		include 'defaults.groovy'
-		fileType CONFIG | NOREPLACE
+	from('packaging/profile') {
+		include 'apscli.sh'
+		fileMode 0644
 		user 'root'
 		permissionGroup 'root'
+		into '/etc/profile.d'
+		//expand project.properties
+	}
+	
+	from("packaging/conf") {
+		into "/var/opt/apg-patch-common"
+		fileType CONFIG | NOREPLACE
+		include 'jdbc.groovy'
+		user 'root'
+		permissionGroup 'root'
+		addParentDirs false
 		// TODO (che,11.4)
 		fileMode 0777
 
 	}
 }
 
-// Generell Process Resources
-	processResources {
-		from sourceSets.main.resources
-		filesMatching('**/*.sh') {
-			filter(FixCrLfFilter.class,
-			eol:FixCrLfFilter.CrLf.newInstance("lf"))
-		}
-	}
 
 
-
-assemble { dependsOn  copyResources, copyLib,pkgAsGTar}
+assemble { dependsOn copyLib,pkgAsGTar}
 build {dependsOn assemble }
 publish {dependsOn build }
 publishToMavenLocal {dependsOn build }

@@ -2,16 +2,16 @@ package com.apgsga.patch.service.client
 import groovy.sql.Sql
 class PatchDbClient {
 	
-	def static statusMap = [EntwicklungInstallationsbereit:2,InformatiktestInstallationsbereit:15, ProduktionInstallationsbereit:65, Entwicklung:0, Informatiktest:20, Produktion:80]
+	def statusMap
 	def component
 	
-	private PatchDbClient(Object component) {
+	private PatchDbClient(def component, def statusMap) {
 		super();
 		this.component = component;
+		this.statusMap = statusMap
 	}
 
 	public void executeStateTransitionAction(def dbProperties, def patchNumber, def toStatus) {
-		println "Not implemented yet for ${dbProperties} , ${patchNumber} and ${toStatus}"
 		def statusNum = statusMap[toStatus]
 		if (statusNum == null) {
 			println "Error , no Status mapped for ${toStatus}"

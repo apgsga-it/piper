@@ -36,8 +36,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-import groovy.util.logging.Commons;
-
 @Component("ServerBean")
 public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
@@ -55,6 +53,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Autowired
 	private VcsCommandRunnerFactory vcsCommandRunnerFactory;
+	
+	@Autowired
+	private PatchActionExecutorFactory patchActionExecutorFactory; 
 
 	public SimplePatchContainerBean() {
 		super();
@@ -202,11 +203,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public void executeStateTransitionAction(String patchNumber, String toStatus) {
-		ActionContextExecuteStateTransition actionContext = new ActionContextExecuteStateTransition(this);
-		actionContext.executeStateTransitionAction(patchNumber, toStatus);
+		PatchActionExecutor patchActionExecutor = patchActionExecutorFactory.create(this);
+		patchActionExecutor.execute(patchNumber, toStatus);
 	}
 
-	protected PatchPersistence getRepo() {
+	public PatchPersistence getRepo() {
 		return repo;
 	}
 
@@ -214,7 +215,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		this.repo = repo;
 	}
 
-	protected JenkinsPatchClient getJenkinsClient() {
+	public JenkinsPatchClient getJenkinsClient() {
 		return jenkinsClient;
 	}
 

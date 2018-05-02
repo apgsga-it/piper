@@ -1,13 +1,18 @@
 package com.apgsga.patch.service.client
 
 
+import org.springframework.core.io.FileSystemResourceLoader
+import org.springframework.core.io.Resource
+import org.springframework.core.io.ResourceLoader
+
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
-import com.apgsga.microservice.patch.api.ServiceMetaData
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.microservice.patch.api.TargetSystemEnvironments
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 
 class PatchCli {
 
@@ -15,14 +20,20 @@ class PatchCli {
 		return new PatchCli()
 	}
 
-	private PatchCli() {
+	private PatchCli() { 
 		super();
 	}
-	def validToStates = ["EntwicklungInstallationsbereit","InformatiktestInstallationsbereit","Informatiktest","ProduktionInstallationsbereit","Produktion", "Entwicklung"]
 	def validComponents = ["db", "aps", "mockdb", "nil"]
 	def defaultHost = "localhost:9010"
-	
+	// TODO (che,19.4) better a common directory for apg-patch-service? To be discussed
+	def linuxConfigDir = 'file:///var/opt/apg-patch-common'
+	def targetSystemMappings
+	def validToStates
+	def configDir
+	def defaultConfig 
+
 	def process(def args) {
+		println args
 		def options = validateOpts(args)
 		if (!options) return
 		def cmdResults = new Expando();
@@ -97,21 +108,20 @@ class PatchCli {
 			def result = listFiles(options,patchClient)
 			cmdResults.results['lf'] = result
 		}
-		if (options.vv) {
-			def result = validateArtifactNamesForVersion(options,patchClient)
-			cmdResults.results['vv'] = result
-		}
 		cmdResults.returnCode = 0
 		return cmdResults
 	}
 	def validateOpts(args) {
-		def cli = new CliBuilder(usage: 'apspli.groovy [-u <url>] [-h] [-[l|d|dd|dm|dt] <directory>]  [-[e|r] <patchnumber>] [-[s|sa|ud|um|ut] <file>] [-f <patchnumber,directory>] [-sta <patchnumber,toState,[aps,db,nil]]')
+		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-[l|d|dd|dm|dt] <directory>]  [-[e|r] <patchnumber>] [-[s|sa|ud|um|ut] <file>] [-f <patchnumber,directory>] [-sta <patchnumber,toState,[aps,db,nil]]')
+		cli.formatter.setDescPadding(0)
+		cli.formatter.setLeftPadding(0)
+		cli.formatter.setWidth(100)
 		cli.with {
 			h longOpt: 'help', 'Show usage information', required: false
 			u longOpt: 'host', args:1 , argName: 'hostBaseUrl', 'The Base Url of the Patch Service', required: false
-			l longOpt: 'upload', args:1 , argName: 'directory', 'Upload all Patch files from this <directory> to the Patch Service', required: false
-			d longOpt: 'download', args:1 , argName: 'directory', 'Download all Patch files from the Patch Service to a directory', required: false
-			e longOpt: "exists", args:1, argName: 'patchNumber', 'Print true resp. false if Patch of the <patchNumber> exists or not', required: false
+			l longOpt: 'upload', args:1 , argName: 'directory', 'Upload all Patch files <directory> ', required: false
+			d longOpt: 'download', args:1 , argName: 'directory', 'Download all Patch files to a <directory>', required: false
+			e longOpt: "exists", args:1, argName: 'patchNumber', 'True resp. false if Patch of the <patchNumber> exists or not', required: false
 			f longOpt: 'findById', args:2, valueSeparator: ",", argName: 'patchNumber,directory','Retrieve a Patch with the <patchNumber> to a <directory>', required: false
 			a longOpt: 'findAllIds','Retrieve and print all PatchIds', required: false
 			r longOpt: 'remove', args:1, argName: 'patchNumber', 'Remove Patch with <patchNumber>', required: false
@@ -126,20 +136,50 @@ class PatchCli {
 			la longOpt: 'listAllFiles', 'List all files on server', required: false	
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
-			db longOpt: 'dbConfig', args:1, argName: 'file', 'Jdbc configuration File', required: false
+			c longOpt: 'configDir', args:1, argName: 'directory', 'Configuration Directory', required: false
 			vv longOpt: 'validateArtifactNamesForVersion', args:2, valueSeparator: ",", argName: 'version,cvsBranch', 'Validate all artifact names for a given version on a given CVS branch', required: false
 		}
 
 		def options = cli.parse(args)
 		def error = false;
+		
+		if (!options.u) {
+			println "Assuming default value for u option: ${defaultHost}"
+		}
+		if (options.c) {
+			configDir = new File(options.c)
+			if (!configDir.exists() | !configDir.directory) {
+				println "Configuration Directory ${options.c} not valid: either not a directory or it doesn't exist"
+				error = true
+				return
+			}
+			valdidateAndLoadConfigFiles()
+		} else {
+			// Guessing Config Directory 
+			ResourceLoader rl = new FileSystemResourceLoader();
+			Resource rs = rl.getResource("${linuxConfigDir}");
+			println "Checking on ${linuxConfigDir} as config dir"
+			if (rs.exists()) {
+				configDir = rs.getFile()
+			} else {
+				println "${linuxConfigDir} doesn't exist or is not readable"
+				// Assuming Eclipse Workspace
+				rs = rl.getResource("src/main/resources/config")	
+				if (!rs.exists() | !rs.getFile().isDirectory()) {
+					println "Could'nt determine Default Config Directory, use -c option"
+					error = true
+					return
+				} else {
+					configDir = rs.getFile()
+				}
+			}
+			valdidateAndLoadConfigFiles()
+		}
 		if (!options | options.h| options.getOptions().size() == 0) {
 			cli.usage()
 			println "Valid toStates are: ${validToStates}"
 			println "Valid components are: ${validComponents}"
 			return null
-		}
-		if (!options.u) {
-			println "Assuming default value for u option: ${defaultHost}"
 		}
 		if (options.l) {
 			def directory = new File(options.l)
@@ -246,7 +286,7 @@ class PatchCli {
 				error = true
 			}
 			def toState = options.stas[1]
-			if (!validToStates.contains(toState) ) {
+			if (!validToStates.contains("${toState}") ) {
 				println "ToState ${toState} not valid: needs to be one of ${validToStates}"
 				error = true
 			}
@@ -282,6 +322,21 @@ class PatchCli {
 		}
 		options
 	}
+
+	def valdidateAndLoadConfigFiles() {
+		// TODO (che, 1.5 ) Make File name Configurable
+		def targetSystemFile = new File(configDir, "TargetSystemMappings.json")
+		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
+		targetSystemMappings = [:]
+		jsonSystemTargets.targetSystems.find( { a ->  a.stages.find( { targetSystemMappings.put("${a.name}${it.toState}","${it.code}") })} )
+		//println "Running with TargetSystemMappings: " 
+		//println JsonOutput.prettyPrint(targetSystemFile.text)
+		// TODO validate
+		validToStates = targetSystemMappings.keySet()
+		def jdbcConfigFule = new File(configDir, "jdbc.groovy")
+		defaultConfig = new ConfigSlurper().parse(jdbcConfigFule.toURI().toURL())
+		// TODO validate
+	}
 	
 	def stateChangeAction(def options, def patchClient) {
 		def cmdResult = new Expando()
@@ -294,10 +349,8 @@ class PatchCli {
 		if (component.equals("aps")) {
 			patchClient.executeStateTransitionAction(patchNumber,toState)
 		} else if (component.equals("db") || component.equals("mockdb")) {
-			def dbcli = new PatchDbClient(component)
-			def dbConfigfile = new File(options.db ? options.db : "/etc/opt/apg-patch-cli/defaults.groovy")
-			def dbProperties = new ConfigSlurper().parse(dbConfigfile.toURI().toURL())
-			dbcli.executeStateTransitionAction(dbProperties, patchNumber, toState)
+			def dbcli = new PatchDbClient(component,targetSystemMappings)
+			dbcli.executeStateTransitionAction(defaultConfig, patchNumber, toState)
 		} else {
 			println "Skipping State change Processing for ${patchNumber}"		
 		}

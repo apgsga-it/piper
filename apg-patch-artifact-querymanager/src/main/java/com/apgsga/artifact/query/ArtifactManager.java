@@ -23,6 +23,11 @@ public interface ArtifactManager {
 	public static ArtifactManager create(String localRep) {
 		return new ArtifactManagerImpl(localRep);
 	}
+	
+	public static ArtifactManager createMock(String localRep) {
+		return new MockArtifactManagerImpl();
+	}
+
 
 	Properties getVersionsProperties(String version) throws DependencyResolutionException, FileNotFoundException,IOException, XmlPullParserException, ArtifactResolutionException;
 

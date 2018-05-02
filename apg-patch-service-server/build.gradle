@@ -12,6 +12,7 @@ apply plugin: 'groovy'
 description = 'Server, which provides  Patch Functionality through a Restful Controller  '
 jar {
 	baseName = 'apg-patch-service-server'
+	//exclude('**/application.properties')
 }
 
 dependencies {
@@ -40,7 +41,7 @@ dependencies {
 	compile group: 'com.google.guava', name: 'guava', version: '23.0'
 	testCompile group: 'org.springframework', name: 'spring-test'
 	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'	
-	testCompile group: 'org.codehaus.groovy' , name: 'groovy-all', version: '2.2.1'
+	testCompile group: 'org.codehaus.groovy' , name: 'groovy-all', version: '2.4.13'
 }
 
 sourceSets {
@@ -63,7 +64,7 @@ def homeDir = "/opt/${project.name}"
 ospackage {
 	packageName = "${project.name}"
 	version = "${pkgVersion}"
-	release = 4
+	release = 8
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -99,15 +100,23 @@ ospackage {
 	}
 
 	// Copy the config files
-	from("packaging/app/conf") {
+	from("packaging/conf") {
 		into "/etc/opt/${project.name}"
 		fileType CONFIG | NOREPLACE
 		user 'root'
 		permissionGroup 'root'
 		// TODO (che,11.4)
 		fileMode 0777
-
 	}
+	
+	from("packaging/common") {
+	   	into "/var/opt/apg-patch-common"
+		user "root"
+		permissionGroup "root"
+		fileMode 0777 
+	}
+	
+
 	
 	directory("/var/opt/${project.name}", 0755 )
 	//Log dir
@@ -116,12 +125,22 @@ ospackage {
 	// Local Maven Repo
 	directory("/var/opt/${project.name}/mavenrepo", 0755 )
 	
-	from("packaging/app/db") {
+	from("packaging/db") {
 		into "/var/opt/${project.name}/db"
 		user "root"
 		permissionGroup "root"
 		fileMode 0755 
 	}
+	
+	from("src/main/groovy") {
+		into "/var/opt/${project.name}/scripts"
+		user "root"
+		permissionGroup "root"
+		fileMode 0755 
+	}
+	
+	
+
 	
 
 	

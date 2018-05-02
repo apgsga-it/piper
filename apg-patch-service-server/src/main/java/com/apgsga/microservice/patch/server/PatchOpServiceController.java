@@ -120,7 +120,10 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@Override
 	public void executeStateTransitionAction(@PathVariable("patchNumber") String patchNumber,
 			@PathVariable("toStatus") String toStatus) {
+		LOGGER.info("Got executeStateChangeAction Request for Patch: " + patchNumber + ", toState: " + toStatus);
 		patchService.executeStateTransitionAction(patchNumber, toStatus);
+		LOGGER.info("Got executeStateChangeAction Request for Patch: " + patchNumber + ", toState: " + toStatus + " Done.");
+
 	}
 	
 	

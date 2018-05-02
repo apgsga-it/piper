@@ -91,14 +91,17 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 			String jsonRequestString = mapper.writeValueAsString(patch);
 			LOGGER.info("Jenkins request: " + jsonRequestString.toString());
 			String jobName = "Patch" + patch.getPatchNummer() + jobSuffix;
-
+			
 			JenkinsServer jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
+			LOGGER.info("Connected to Jenkinsserver with, url: " + jenkinsUrl + " and user: " + jenkinsUser);
 			JenkinsTriggerHelper jth = new JenkinsTriggerHelper(jenkinsServer, 2000L);
 			Map<String, String> jobParm = Maps.newHashMap();
 			jobParm.put("token", jobName);
 			jobParm.put("PARAMETER", jsonRequestString);
 			// TODO (jhe , che , 12.12. 2017) : hangs, when job fails immediately
+			LOGGER.info("Triggering Pipeline Job and waiting until Building " + jobName + " with Paramter: " + jobParm.toString() ); 
 			PipelineBuild result = jth.triggerPipelineJobAndWaitUntilBuilding(jobName, jobParm, true);
+			LOGGER.info("Getting Result of Pipeline Job " + jobName  + ", : " + result.toString());  
 			BuildWithDetails details = result.details();
 			if (details.isBuilding()) {
 				LOGGER.info(jobName + " Is Building");
@@ -116,17 +119,19 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 	
 	@Override
 	public void cancelPatchPipeline(Patch patch) {
-		processInputAction(patch, "cancel");
+		processInputAction(patch, "cancel", null);
 	}
+	
+	
 
 	@Override
 	public void approveBuild(TargetSystemEnviroment target, Patch patch) {
-		processInputAction(patch, "Patch" + patch.getPatchNummer() + "BuildFor" + target.getName() +"Ok");
+		processInputAction(patch,  target.getName(), "BuildFor");
 	}
 
 	@Override
 	public void approveInstallation(TargetSystemEnviroment target, Patch patch) {
-		processInputAction(patch, "Patch" + patch.getPatchNummer() + "InstallFor" + target.getName() +"Ok");
+		processInputAction(patch,  target.getName(), "InstallFor");
 		
 	}
 
@@ -137,7 +142,17 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 		return lastBuild;
 	}
 	
-	private void processInputAction(Patch patch, String action) {
+	
+	
+	@Override
+	public void processInputAction(Patch patch, Map<String, String> parameter) {
+		// TODO (che, 25.4) : Switch to logical Target name
+		processInputAction(patch, parameter.get("target"), parameter.get("stage"));
+	}
+
+	@Override
+	public void processInputAction(Patch patch, String targetName, String stage) {
+		String action = stage.equals("cancel") ? stage :  "Patch" + patch.getPatchNummer() + stage + targetName +"Ok"; 
 		JenkinsServer jenkinsServer = null;
 		try {
 			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
