@@ -12,7 +12,8 @@ class PatchDbClient {
 	}
 
 	public void executeStateTransitionAction(def dbProperties, def patchNumber, def toStatus) {
-		def statusNum = statusMap["${toStatus}"]
+		println "Statusmap: " + statusMap.toString()
+		def statusNum = statusMap[toStatus]
 		if (statusNum == null) {
 			println "Error , no Status mapped for ${toStatus}"
 			return

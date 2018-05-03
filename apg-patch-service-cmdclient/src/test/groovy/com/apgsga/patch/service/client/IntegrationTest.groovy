@@ -328,7 +328,7 @@ public class IntegrationTest extends Specification {
 			def client = PatchCli.create()
 		when:
 			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"] + DEFAULT_CONFIG_OPT) 
-			def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit,aps"] + DEFAULT_CONFIG_OPT)
+			def result = client.process(["-u", baseUrl, "-sta", '5401,EntwicklungInstallationsbereit,aps'] + DEFAULT_CONFIG_OPT)
 		then:
 			preCondResult != null
 			preCondResult.returnCode == 0
@@ -343,7 +343,7 @@ public class IntegrationTest extends Specification {
 			def client = PatchCli.create()
 		when:
 			def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"] + DEFAULT_CONFIG_OPT)
-			def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit,nil"] + DEFAULT_CONFIG_OPT)
+			def result = client.process(["-u", baseUrl, "-sta", '5401,EntwicklungInstallationsbereit,nil'] + DEFAULT_CONFIG_OPT)
 		then:
 			preCondResult != null
 			preCondResult.returnCode == 0
