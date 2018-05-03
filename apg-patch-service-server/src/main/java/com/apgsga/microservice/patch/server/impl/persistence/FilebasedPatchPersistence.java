@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Lists;
 
 public class FilebasedPatchPersistence implements PatchPersistence {
-
+	
 	private static final String SERVICE_META_DATA_JSON = "ServicesMetaData.json";
 
 	private static final String INSTALLATION_TARGETS_JSON = "InstallationTargets.json";
@@ -92,9 +92,13 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	@Override
 	public synchronized void savePatch(Patch patch) {
 		try {
+			LOGGER.info("Saveing patch: " + patch.toString());
 			File patchFile = createPatchFile(patch.getPatchNummer());
 			ObjectMapper mapper = new ObjectMapper();
+			String jsonRequestString = mapper.writeValueAsString(patch);
+			LOGGER.info("Json string: " + jsonRequestString.toString());
 			mapper.writeValue(patchFile, patch);
+			LOGGER.info("Saveing patch: " + patch.toString());
 
 		} catch (IOException e) {
 			throw new RuntimeException("Persistence Error", e);
@@ -105,8 +109,10 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	@Override
 	public synchronized void removePatch(Patch patch) {
 		try {
+			LOGGER.info("Deleting patch: " + patch.toString());
 			File patchFile = createPatchFile(patch.getPatchNummer());
 			patchFile.delete();
+			LOGGER.info("Deleting patch: " + patch.toString());
 
 		} catch (IOException e) {
 			throw new RuntimeException("Persistence Error", e);
