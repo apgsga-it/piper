@@ -18,7 +18,7 @@ class PatchDbClient {
 			println "Error , no Status mapped for ${toStatus}"
 			return
 		}
-		def sql = "update cm_patch_f set status = ${statusNum} where id = ${patchNumber}"
+		def sql = "update cm_patch_f set status = ${statusNum} where id = ${patchNumber}".toString()
 		println "Executing ${sql}"
 		if (component.equals("db")) {
 			def dbConnection = Sql.newInstance(dbProperties.db.url, dbProperties.db.user, dbProperties.db.passwd)
