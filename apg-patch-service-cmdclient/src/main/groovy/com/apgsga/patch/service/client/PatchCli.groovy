@@ -286,7 +286,7 @@ class PatchCli {
 				error = true
 			}
 			def toState = options.stas[1]
-			if (!validToStates.contains("${toState}") ) {
+			if (!validToStates.contains(toState) ) {
 				println "ToState ${toState} not valid: needs to be one of ${validToStates}"
 				error = true
 			}
@@ -328,7 +328,7 @@ class PatchCli {
 		def targetSystemFile = new File(configDir, "TargetSystemMappings.json")
 		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
 		targetSystemMappings = [:]
-		jsonSystemTargets.targetSystems.find( { a ->  a.stages.find( { targetSystemMappings.put("${a.name}${it.toState}","${it.code}") })} )
+		jsonSystemTargets.targetSystems.find( { a ->  a.stages.find( { targetSystemMappings.put("${a.name}${it.toState}".toString(),"${it.code}") })} )
 		//println "Running with TargetSystemMappings: " 
 		//println JsonOutput.prettyPrint(targetSystemFile.text)
 		// TODO validate
