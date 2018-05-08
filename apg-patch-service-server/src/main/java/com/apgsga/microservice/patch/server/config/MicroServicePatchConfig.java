@@ -15,20 +15,19 @@ import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.server.impl.GroovyScriptActionExecutorFactory;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
-import com.apgsga.microservice.patch.server.impl.deprecated.DefaultPatchActionExecutorFactory;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClientImpl;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchMockClient;
 import com.apgsga.microservice.patch.server.impl.persistence.FilebasedPatchPersistence;
+import com.apgsga.microservice.patch.server.impl.vcs.JschSessionCmdRunnerFactory;
 import com.apgsga.microservice.patch.server.impl.vcs.LoggingMockVcsRunnerFactory;
 import com.apgsga.microservice.patch.server.impl.vcs.ProcessBuilderCmdRunnerFactory;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
-import com.apgsga.microservice.patch.server.impl.vcs.JschSessionCmdRunnerFactory;
 
 @Configuration
 @EnableWebMvc
 public class MicroServicePatchConfig {
-	
+
 	@Value("${vcs.host:cvs.apgsga.ch}")
 	private String vcsHost;
 
@@ -41,6 +40,9 @@ public class MicroServicePatchConfig {
 	@Value("${json.db.location:db}")
 	private String dbLocation;
 
+	@Value("${json.db.work.location:work}")
+	private String workDirLocation;
+
 	@Value("${jenkins.host:https://jenkins.apgsga.ch/}")
 	private String jenkinsHost;
 
@@ -52,32 +54,32 @@ public class MicroServicePatchConfig {
 
 	@Value("${maven.localrepo.location}")
 	private String localRepo;
-	
+
 	@Value("${config.common.location:/etc/opt/apg-patch-common}")
 	private String configCommon;
-	
+
 	@Value("${config.common.targetSystemFile:TargetSystemMappings.json}")
 	private String targetSystemFile;
-	
+
 	@Value("${patch.action.script.location:classpath:executePatchAction.groovy}")
 	private String groovyScriptFile;
-	
+
 	@Bean(name = "patchPersistence")
 	public PatchPersistence patchFilebasePersistence() throws IOException {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource dbStorabe = rl.getResource(dbLocation);
-		final PatchPersistence per = new FilebasedPatchPersistence(dbStorabe);
+		Resource workDir = rl.getResource(workDirLocation);
+		final PatchPersistence per = new FilebasedPatchPersistence(dbStorabe, workDir);
 		per.init();
 		return per;
 	}
-	
 
 	@Bean(name = "artifactManager")
 	@Profile("live")
 	public ArtifactManager artifactManager() {
 		return ArtifactManager.create(localRepo);
 	}
-	
+
 	@Bean(name = "artifactManager")
 	@Profile("mock")
 	public ArtifactManager mockArtifactManager() {
@@ -93,15 +95,15 @@ public class MicroServicePatchConfig {
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile({ "live", "remotecvs" })
 	public VcsCommandRunnerFactory jsessionFactory() {
-		return new JschSessionCmdRunnerFactory(vcsUser, vcsPassword, vcsHost); 
+		return new JschSessionCmdRunnerFactory(vcsUser, vcsPassword, vcsHost);
 	}
-	
+
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile({ "live", "localcvs" })
 	public VcsCommandRunnerFactory vcsLocalFactory() {
-		return new ProcessBuilderCmdRunnerFactory(); 
+		return new ProcessBuilderCmdRunnerFactory();
 	}
-	
+
 	@Bean(name = "jenkinsBean")
 	@Profile("mock")
 	public JenkinsPatchClient jenkinsPatchClientMock() {
@@ -111,20 +113,13 @@ public class MicroServicePatchConfig {
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile("mock")
 	public VcsCommandRunnerFactory jsessionFactoryMock() {
-		return new LoggingMockVcsRunnerFactory(); 
+		return new LoggingMockVcsRunnerFactory();
 	}
-	
-	@Bean(name = "currentActionFactory")
-	@Profile({"javaactions"})
-	public PatchActionExecutorFactory currentpatchActionFactory() {
-		return new DefaultPatchActionExecutorFactory();
-	}
-	
+
 	@Bean(name = "groovyActionFactory")
-	@Profile({"groovyactions"})
+	@Profile({ "groovyactions" })
 	public PatchActionExecutorFactory groovyPatchActionFactory() {
 		return new GroovyScriptActionExecutorFactory(configCommon, targetSystemFile, groovyScriptFile);
 	}
-
 
 }

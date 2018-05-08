@@ -40,6 +40,7 @@ dependencies {
 	compile group: 'org.slf4j', name: 'slf4j-api'
 	compile group: 'com.google.guava', name: 'guava', version: '23.0'
 	compile group: 'commons-transaction', name: 'commons-transaction', version: '1.2'
+	compile group: 'javax.transaction', name: 'jta'
 	testCompile group: 'org.springframework', name: 'spring-test'
 	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'	
 	testCompile group: 'org.codehaus.groovy' , name: 'groovy-all', version: '2.4.13'
@@ -151,6 +152,9 @@ ospackage {
 	directory("/var/opt/${project.name}", 0755 )
 	//Log dir
 	directory("/var/opt/${project.name}/log", 0755 )
+	
+		//Log dir
+	directory("/var/opt/${project.name}/dbwork", 0755 )
 	
 	// Local Maven Repo
 	directory("/var/opt/${project.name}/mavenrepo", 0755 )

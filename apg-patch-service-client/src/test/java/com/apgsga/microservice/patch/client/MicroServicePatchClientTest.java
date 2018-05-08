@@ -50,12 +50,16 @@ public class MicroServicePatchClientTest {
 
 	@Value("${json.db.location:target/testdb}")
 	private String dbLocation;
+	
+	@Value("${json.db.work.location:work}")
+	private String dbWorkLocation;
 
 	@Before
 	public void setUp() {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource testResources = rl.getResource("src/test/resources/json");
-		final PatchPersistence per = new FilebasedPatchPersistence(testResources);
+		Resource workDir = rl.getResource(dbWorkLocation);
+		final PatchPersistence per = new FilebasedPatchPersistence(testResources, workDir);
 		Patch testPatch5401 = per.findById("5401");
 		Patch testPatch5402 = per.findById("5402");
 		repo.clean();
