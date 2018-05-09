@@ -14,35 +14,12 @@ import org.springframework.core.io.Resource;
 /**
  * "Simple" File Write Manager Attempts to implement a "Atomic" File write:
  * 
- * 1. If the File exists is the Target Directory, it is copied to a Backup
- * Directory , assumed to be on the same Filesystem as the Target File
- * 
- * 2. If 1. fails, the orginal State of the Target File is maintained and we
- * throw a Runtime Exception
- * 
- * 3. The Target File to be written, is written to a temporary Directory ,
- * assumed to be on the same Filesystem as the Target file
- * 
- * 4. If 3. Fails a Runtime Exceptions is thrown: the orginal state of the
- * Target File is maintained
- * 
- * 5. The temporary File in the Temporary directory is moved to target Directory
- * with a temporary Name
- * 
- * 6. If 5 fails the original state of the File is maintained
- * 
- * 7. If 6 ok, we delete the current file and rename the temporary File created
- * in 5.
- * 
- * 8. 7 is the critical path: if 7 fails , we may have a corrupt state of the
- * Target File, but we have a Backup in the Backup Directory
- * 
- * 
  * As a temporary solution, we use the dormant Apache commons library:
  * https://commons.apache.org/proper/commons-transaction/ Specifically:
- * https://commons.apache.org/proper/commons-transaction/file/index.html Which
+ * https://commons.apache.org/proper/commons-transaction/file/index.html Which though 
  * is "dormant", but which seems to working just fine. Better, then probably ,
- * if i would write my own code and in much less time ;-)
+ * if i would write my own code and in much less time ;-) ... certainly with much less code.
+ * See also : https://commons.apache.org/proper/commons-transaction/apidocs/org/apache/commons/transaction/file/FileResourceManager.html
  * 
  * @author che
  *
@@ -68,14 +45,19 @@ public class AtomicFileWriteManager {
 
 	public void write(String outputString, String fileName) {
 		try {
-			FileResourceManager frm = new FileResourceManager(storagePath.getFile().getAbsolutePath(),
-					tempStoragePath.getFile().getAbsolutePath(), false, loggerFacade);
+			String targetPath = storagePath.getFile().getAbsolutePath();
+			String workDir = tempStoragePath.getFile().getAbsolutePath();
+			FileResourceManager frm = new FileResourceManager(targetPath,
+					workDir, false, loggerFacade, true);
 			frm.start();
+			LOGGER.info("Resource Manager started with target Dir: " + targetPath + ", and work Dir: " + workDir);
 			Object txId = frm.generatedUniqueTxId();
 			frm.startTransaction(txId);
+			LOGGER.info("Started File write Transaction with: " + txId.toString());
 			OutputStream outputStream = frm.writeResource(txId, fileName, false);
 			IOUtils.write(outputString, outputStream);
 			frm.commitTransaction(txId);
+			LOGGER.info("Commited File write Transaction with: " + txId.toString());
 
 		} catch (Throwable e) {
 			LOGGER.error("Transactional Write of : " + outputString + " failed: " + e.getLocalizedMessage());
