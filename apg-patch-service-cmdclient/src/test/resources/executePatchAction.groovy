@@ -9,7 +9,6 @@ import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 
 import com.apgsga.microservice.patch.server.impl.SimplePatchContainerBean
-import com.apgsga.microservice.patch.server.impl.deprecated.ActionExecuteStateTransition
 
 ResourceLoader rl = new FileSystemResourceLoader();
 Resource parent = rl.getResource("$configDir")

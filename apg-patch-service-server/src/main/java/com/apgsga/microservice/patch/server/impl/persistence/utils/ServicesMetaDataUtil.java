@@ -43,7 +43,7 @@ public class ServicesMetaDataUtil {
 
 	public static void main(String[] args) {
 		final ResourceLoader rl = new FileSystemResourceLoader();
-		final PatchPersistence db = new FilebasedPatchPersistence(rl.getResource("db"));
+		final PatchPersistence db = new FilebasedPatchPersistence(rl.getResource("db"),rl.getResource("work"));
 		final ServicesMetaData data = new ServicesMetaDataBean();
 		data.setServicesMetaData(serviceList);
 		db.saveServicesMetaData(data);

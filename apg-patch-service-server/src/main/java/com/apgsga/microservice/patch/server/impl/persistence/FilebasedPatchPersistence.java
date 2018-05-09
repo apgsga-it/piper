@@ -19,6 +19,7 @@ import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
 import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
 import com.apgsga.microservice.patch.api.TargetSystemEnvironments;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Lists;
@@ -35,9 +36,12 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	private Resource storagePath;
 
-	public FilebasedPatchPersistence(Resource storagePath) {
+	private Resource tempStoragePath;
+
+	public FilebasedPatchPersistence(Resource storagePath, Resource workDir) {
 		super();
 		this.storagePath = storagePath;
+		this.tempStoragePath = workDir;
 	}
 
 	public void init() throws IOException {
@@ -46,12 +50,18 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			LOGGER.info("Creating persistence directory: " + storagePath);
 			storagePath.getFile().mkdir();
 		}
+
+		if (!tempStoragePath.exists()) {
+			// TODO (che, 25.1) : Do we want this? Correct here?
+			LOGGER.info("Creating Temporary work directory: " + tempStoragePath);
+			tempStoragePath.getFile().mkdir();
+		}
 	}
 
 	@Override
 	public synchronized Patch findById(String patchNummer) {
 		try {
-			File patchFile = createPatchFile(patchNummer);
+			File patchFile = createFile("Patch" + patchNummer + ".json");
 			if (!patchFile.exists()) {
 				return null;
 			}
@@ -66,7 +76,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	@Override
 	public synchronized Boolean patchExists(String patchNumber) {
 		try {
-			File patchFile = createPatchFile(patchNumber);
+			File patchFile = createFile("Patch" + patchNumber + ".json");
 			if (patchFile.exists()) {
 				return true;
 			}
@@ -91,21 +101,10 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	@Override
 	public synchronized void savePatch(Patch patch) {
-		try {
-			LOGGER.info("Saveing patch: " + patch.toString());
-			File patchFile = createPatchFile(patch.getPatchNummer());
-			ObjectMapper mapper = new ObjectMapper();
-			String jsonRequestString = mapper.writeValueAsString(patch);
-			LOGGER.info("Json string: " + jsonRequestString.toString());
-			mapper.writeValue(patchFile, patch);
-			LOGGER.info("Saveing patch: " + patch.toString());
-
-		} catch (IOException e) {
-			throw new RuntimeException("Persistence Error", e);
-		}
-
+		writeToFile(patch, "Patch" + patch.getPatchNummer() + ".json");
 	}
 
+	// TODO (che, 8.5) Do we want remove also "Atomic"
 	@Override
 	public synchronized void removePatch(Patch patch) {
 		try {
@@ -121,25 +120,18 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	@Override
 	public void saveServicesMetaData(ServicesMetaData serviceData) {
-		try {
-			File patchFile = createServiceDataFile();
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.writeValue(patchFile, serviceData);
-		} catch (IOException e) {
-			throw new RuntimeException("Persistence Error", e);
-		}
-
+		writeToFile(serviceData, SERVICE_META_DATA_JSON);
 	}
 
 	@Override
 	public ServicesMetaData getServicesMetaData() {
 		try {
-			File serviceData = createServiceDataFile();
-			if (!serviceData.exists()) {
+			File serviceMetaDataFile = createFile(SERVICE_META_DATA_JSON);
+			if (!serviceMetaDataFile.exists()) {
 				return null;
 			}
 			ObjectMapper mapper = new ObjectMapper();
-			ServicesMetaData result = mapper.readValue(serviceData, ServicesMetaData.class);
+			ServicesMetaData result = mapper.readValue(serviceMetaDataFile, ServicesMetaData.class);
 			return result;
 		} catch (IOException e) {
 			throw new RuntimeException("Persistence Error", e);
@@ -148,23 +140,24 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	@Override
 	public void saveTargetSystemEnviroments(List<TargetSystemEnviroment> installationTargets) {
+		String jsonRequestString = null;
 		try {
-			File installTargets = createInstallationTargetFile();
 			ObjectMapper mapper = new ObjectMapper();
 			ObjectWriter writerFor = mapper.writerFor(TargetSystemEnviroment[].class);
 			TargetSystemEnviroment[] array = new TargetSystemEnviroment[installationTargets.size()];
-			writerFor.writeValue(installTargets, installationTargets.toArray(array));
+			jsonRequestString = writerFor.writeValueAsString(installationTargets.toArray(array));
 		} catch (IOException e) {
 			throw new RuntimeException("Persistence Error", e);
 		}
+		AtomicFileWriteManager.create(storagePath, tempStoragePath).write(jsonRequestString, INSTALLATION_TARGETS_JSON);
 	}
 
 	@Override
 	public List<TargetSystemEnviroment> getInstallationTargets() {
 		try {
-			File installTargets = createInstallationTargetFile();
+			File installTargetsFile = createFile(INSTALLATION_TARGETS_JSON);
 			ObjectMapper mapper = new ObjectMapper();
-			TargetSystemEnviroment[] result = mapper.readValue(installTargets, TargetSystemEnviroment[].class);
+			TargetSystemEnviroment[] result = mapper.readValue(installTargetsFile, TargetSystemEnviroment[].class);
 			return Lists.newArrayList(result);
 		} catch (IOException e) {
 			throw new RuntimeException("Persistence Error", e);
@@ -183,19 +176,13 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	@Override
 	public void saveDbModules(DbModules dbModules) {
-		try {
-			File dbModulesFile = createDbModulesFile();
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.writeValue(dbModulesFile, dbModules);
-		} catch (IOException e) {
-			throw new RuntimeException("Persistence Error", e);
-		}
+		writeToFile(dbModules, DB_MODULES_JSON);
 	}
 
 	@Override
 	public DbModules getDbModules() {
 		try {
-			File dbModulesFile = createDbModulesFile();
+			File dbModulesFile = createFile(DB_MODULES_JSON);
 			if (!dbModulesFile.exists()) {
 				return null;
 			}
@@ -257,28 +244,22 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		return result.get(0);
 	}
 
-	private File createDbModulesFile() throws IOException {
+	private <T> void writeToFile(T object, String filename) {
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonRequestString;
+		try {
+			jsonRequestString = mapper.writeValueAsString(object);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException("Json Processing Error, before File write", e);
+		}
+		AtomicFileWriteManager.create(storagePath, tempStoragePath).write(jsonRequestString, filename);
+
+	}
+
+	private File createFile(String fileName) throws IOException {
 		File parentDir = storagePath.getFile();
-		File revisions = new File(parentDir, DB_MODULES_JSON);
+		File revisions = new File(parentDir, fileName);
 		return revisions;
-	}
-
-	private File createInstallationTargetFile() throws IOException {
-		File parentDir = storagePath.getFile();
-		File patchFile = new File(parentDir, INSTALLATION_TARGETS_JSON);
-		return patchFile;
-	}
-
-	private File createServiceDataFile() throws IOException {
-		File parentDir = storagePath.getFile();
-		File patchFile = new File(parentDir, SERVICE_META_DATA_JSON);
-		return patchFile;
-	}
-
-	private File createPatchFile(String patchNumber) throws IOException {
-		File parentDir = storagePath.getFile();
-		File patchFile = new File(parentDir, "Patch" + patchNumber + ".json");
-		return patchFile;
 	}
 
 }
