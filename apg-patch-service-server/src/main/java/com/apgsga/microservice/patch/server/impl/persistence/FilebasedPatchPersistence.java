@@ -109,7 +109,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	public synchronized void removePatch(Patch patch) {
 		try {
 			LOGGER.info("Deleting patch: " + patch.toString());
-			File patchFile = createPatchFile(patch.getPatchNummer());
+			File patchFile = createFile("Patch" + patch.getPatchNummer() + ".json");
 			patchFile.delete();
 			LOGGER.info("Deleting patch: " + patch.toString());
 
