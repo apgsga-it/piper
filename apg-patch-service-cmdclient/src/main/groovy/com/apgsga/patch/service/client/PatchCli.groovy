@@ -188,6 +188,13 @@ class PatchCli {
 				error = true
 			}
 		}
+		if (options.lf) {
+			def searchString = new File(options.lf)
+			if (!searchString?.trim()) {
+				println "Empty Searchstring for Option"
+				error = true; 
+			}
+		}
 		if (options.d) {
 			def directory = new File(options.d)
 			if (!directory.exists() | !directory.directory) {

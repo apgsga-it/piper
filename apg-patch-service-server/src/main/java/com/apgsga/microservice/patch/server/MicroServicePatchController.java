@@ -24,7 +24,7 @@ import com.apgsga.microservice.patch.api.ServiceMetaData;
 
 @RestController
 @Scope(org.springframework.web.context.WebApplicationContext.SCOPE_SESSION)
-@RequestMapping(path = "patch")
+@RequestMapping(path = "patch/public")
 public class MicroServicePatchController implements PatchService {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());

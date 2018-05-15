@@ -32,7 +32,7 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 
 
 	def getRestBaseUri() {
-		"http://" + baseUrl + "/patchdb";
+		"http://" + baseUrl + "/patch/private";
 	}
 
 	@Override
