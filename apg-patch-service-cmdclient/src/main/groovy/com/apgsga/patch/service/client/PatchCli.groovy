@@ -143,6 +143,12 @@ class PatchCli {
 		def options = cli.parse(args)
 		def error = false;
 		
+		if (options == null) {
+			println "Wrong parameters"
+			cli.usage()
+			return null
+		}
+		
 		if (!options.u) {
 			println "Assuming default value for u option: ${defaultHost}"
 		}
