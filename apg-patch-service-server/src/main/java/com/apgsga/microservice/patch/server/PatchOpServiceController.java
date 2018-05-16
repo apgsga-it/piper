@@ -31,7 +31,7 @@ import com.apgsga.microservice.patch.api.TargetSystemEnvironments;
 
 @RestController
 @Scope(org.springframework.web.context.WebApplicationContext.SCOPE_SESSION)
-@RequestMapping(path = "patchdb")
+@RequestMapping(path = "patch/private")
 public class PatchOpServiceController implements PatchOpService, PatchPersistence {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());

@@ -143,6 +143,12 @@ class PatchCli {
 		def options = cli.parse(args)
 		def error = false;
 		
+		if (options == null) {
+			println "Wrong parameters"
+			cli.usage()
+			return null
+		}
+		
 		if (!options.u) {
 			println "Assuming default value for u option: ${defaultHost}"
 		}
@@ -186,6 +192,13 @@ class PatchCli {
 			if (!directory.exists() | !directory.directory) {
 				println "Directory ${options.l} not valid: either not a directory or it doesn't exist"
 				error = true
+			}
+		}
+		if (options.lf) {
+			def searchString = new File(options.lf)
+			if (!searchString?.trim()) {
+				println "Empty Searchstring for Option"
+				error = true; 
 			}
 		}
 		if (options.d) {

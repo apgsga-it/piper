@@ -68,7 +68,7 @@ public class MicroservicePatchClient implements PatchService {
 	}
 
 	private String getRestBaseUri() {
-		return "http://" + baseUrl + "/patch";
+		return "http://" + baseUrl + "/patch/public";
 	}
 
 	@Override
