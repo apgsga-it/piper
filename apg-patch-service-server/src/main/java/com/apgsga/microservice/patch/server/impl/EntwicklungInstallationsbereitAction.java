@@ -45,7 +45,7 @@ public class EntwicklungInstallationsbereitAction implements PatchAction {
 			public void run() {
 				LOGGER.info("Running EntwicklungInstallationsbereitAction PatchVcsCommands"); 
 				jschSession.preProcess();
-				jschSession.run(PatchVcsCommand.createTagPatchModulesCmd(patch.getPatchTag(), patch.getProdBranch(),
+				jschSession.run(PatchVcsCommand.createTagPatchModulesCmd(patch.getPatchTag(), patch.getDbPatchBranch(),
 						patch.getDbObjectsAsVcsPath()));
 				jschSession.run(PatchVcsCommand.createTagPatchModulesCmd(patch.getPatchTag(),
 						patch.getMicroServiceBranch(), patch.getMavenArtifactsAsVcsPath()));
