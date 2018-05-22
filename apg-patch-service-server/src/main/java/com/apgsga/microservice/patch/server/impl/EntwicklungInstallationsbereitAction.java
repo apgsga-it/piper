@@ -64,8 +64,6 @@ public class EntwicklungInstallationsbereitAction implements PatchAction {
 		Integer tagNr = patch.getTagNr();
 		String patchBranch = patch.getDbPatchBranch();
 		patch.setPatchTag(patchBranch + "_" + tagNr.toString());
-		// TODO 
-		repo.removePatch(patch);
 		repo.savePatch(patch);
 	}
 
