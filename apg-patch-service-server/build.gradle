@@ -66,7 +66,7 @@ def homeDir = "/opt/${project.name}"
 ospackage {
 	packageName = "${project.name}"
 	version = "${pkgVersion}"
-	release = 1
+	release = 2
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -107,7 +107,7 @@ ospackage {
 		fileType CONFIG | NOREPLACE
 		user 'root'
 		permissionGroup 'root'
-		// TODO (che,11.4)
+		// TODO (che,11.4) : temporarly for testing purposes
 		fileMode 0777
 	}
 	
@@ -115,7 +115,8 @@ ospackage {
 	   	into "/var/opt/apg-patch-common"
 		user "root"
 		permissionGroup "root"
-		fileMode 0777 
+		// TODO (che 22.5) :  we need a common group for this directory
+		fileMode 0666 
 	}
 	
 

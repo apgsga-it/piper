@@ -107,6 +107,10 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 		restTemplate.postForLocation(getRestBaseUri() + "/saveServicesMetaData", serviceData);
 	}
 
+	@Override
+	public void onClone(String clonedTarget) {
+		restTemplate.postForLocation(getRestBaseUri() + "/onClone/{clonedTarget}", null, [clonedTarget:clonedTarget]);
+	}
 
 
 	@Override

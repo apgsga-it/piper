@@ -191,6 +191,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		vcsCmdRunner.postProcess();
 		return dbObjects;
 	}
+	
+	
+
+	@Override
+	public void onClone(String clonedTarget) {
+		// TODO , see also https://jira.apgsga.ch/browse/JAVA8MIG-356, https://jira.apgsga.ch/browse/JAVA8MIG-353 
+	}
 
 	@Override
 	public synchronized void startInstallPipeline(Patch patch) {

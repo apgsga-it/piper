@@ -155,6 +155,14 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	public TargetSystemEnvironments getTargetSystemEnviroments() {
 		return repo.getTargetSystemEnviroments();
 	}
+	
+	
+
+	@RequestMapping(value = "/onClone", method = RequestMethod.POST)
+	@Override
+	public void onClone(@PathVariable("clonedTarget") String clonedTarget) {
+		patchService.onClone(clonedTarget);
+	}
 
 	@Override
 	public void saveTargetSystemEnviroments(List<TargetSystemEnviroment> installationTargets) {
@@ -172,6 +180,8 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		throw new NotImplementedException();
 
 	}
+	
+	
 
 	@Override
 	public ServiceMetaData findServiceByName(String serviceName) {
