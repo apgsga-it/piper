@@ -1,8 +1,5 @@
 package com.apgsga.patch.service.client
 
-import java.util.List
-import java.util.Map
-
 import org.springframework.web.client.RestTemplate
 
 import com.apgsga.microservice.patch.api.DbModules
@@ -12,8 +9,6 @@ import com.apgsga.microservice.patch.api.PatchOpService
 import com.apgsga.microservice.patch.api.PatchPersistence
 import com.apgsga.microservice.patch.api.ServiceMetaData
 import com.apgsga.microservice.patch.api.ServicesMetaData
-import com.apgsga.microservice.patch.api.TargetSystemEnviroment
-import com.apgsga.microservice.patch.api.TargetSystemEnvironments
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.collect.Lists
 
@@ -107,10 +102,6 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 		restTemplate.postForLocation(getRestBaseUri() + "/saveServicesMetaData", serviceData);
 	}
 
-	@Override
-	public void onClone(String clonedTarget) {
-		restTemplate.postForLocation(getRestBaseUri() + "/onClone/{clonedTarget}", null, [clonedTarget:clonedTarget]);
-	}
 
 
 	@Override

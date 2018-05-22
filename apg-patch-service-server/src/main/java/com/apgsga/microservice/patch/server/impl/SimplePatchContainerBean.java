@@ -1,9 +1,7 @@
 package com.apgsga.microservice.patch.server.impl;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -20,7 +18,6 @@ import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.DbModules;
@@ -31,7 +28,6 @@ import com.apgsga.microservice.patch.api.PatchOpService;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.PatchService;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
-import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
 import com.apgsga.microservice.patch.server.impl.targets.InstallTargetsUtil;
@@ -39,7 +35,6 @@ import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -48,7 +43,7 @@ import com.google.common.collect.Lists;
 public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());
-	
+
 	@Autowired
 	@Qualifier("patchPersistence")
 	private PatchPersistence repo;
@@ -61,10 +56,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Autowired
 	private VcsCommandRunnerFactory vcsCommandRunnerFactory;
-	
+
 	@Autowired
-	private PatchActionExecutorFactory patchActionExecutorFactory; 
-	
+	private PatchActionExecutorFactory patchActionExecutorFactory;
+
 	@Value("${config.common.location:/etc/opt/apg-patch-common}")
 	private String configCommon;
 
@@ -128,18 +123,19 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			jenkinsClient.createPatchPipelines(patch);
 		}
 		patch.getMavenArtifacts().stream().filter(art -> Strings.isNullOrEmpty(art.getName()))
-				.forEach(art -> addModuleName(art,patch.getMicroServiceBranch()));
+				.forEach(art -> addModuleName(art, patch.getMicroServiceBranch()));
 	}
 
 	private MavenArtifact addModuleName(MavenArtifact art, String cvsBranch) {
 		try {
 			String artifactName = am.getArtifactName(art.getGroupId(), art.getArtifactId(), art.getVersion());
-			
-			List<MavenArtifact> wrongNames = getArtifactNameError(Lists.newArrayList(art),cvsBranch);
-			if(!wrongNames.isEmpty()) {
-				throw new RuntimeException("Patch cannot be saved as it contains module(s) with invalid name: " + wrongNames);
+
+			List<MavenArtifact> wrongNames = getArtifactNameError(Lists.newArrayList(art), cvsBranch);
+			if (!wrongNames.isEmpty()) {
+				throw new RuntimeException(
+						"Patch cannot be saved as it contains module(s) with invalid name: " + wrongNames);
 			}
-			
+
 			art.setName(artifactName);
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
 			new RuntimeException(e);
@@ -169,10 +165,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public List<String> listInstallationTargetsFor(String requestingTarget) {
 		ResourceLoader rl = new FileSystemResourceLoader();
-		Resource targetConfigFile = rl.getResource(configCommon + "/" + targetSystemFile); 
+		Resource targetConfigFile = rl.getResource(configCommon + "/" + targetSystemFile);
 		return InstallTargetsUtil.listInstallTargets(targetConfigFile);
 	}
-
 
 	@Override
 	public List<DbObject> listAllObjectsChangedForDbModule(String patchId, String searchString) {
@@ -189,8 +184,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		List<DbObject> dbObjects = Lists.newArrayList();
 		for (String dbModule : dbModules.getDbModules()) {
 			if (Strings.isNullOrEmpty(dbModule) || dbModule.contains(searchString)) {
-				List<String> result = vcsCmdRunner.run(
-						PatchVcsCommand.createDiffPatchModulesCmd(patch.getDbPatchBranch(), patch.getProdBranch(), dbModule));
+				List<String> result = vcsCmdRunner.run(PatchVcsCommand
+						.createDiffPatchModulesCmd(patch.getDbPatchBranch(), patch.getProdBranch(), dbModule));
 				List<String> files = result.stream()
 						.filter(s -> s.startsWith("Index: ") && (s.endsWith("sql") || s.endsWith("deleted")))
 						.map(s -> s.substring(7)).collect(Collectors.toList());
@@ -206,13 +201,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		}
 		vcsCmdRunner.postProcess();
 		return dbObjects;
-	}
-	
-	
-
-	@Override
-	public void onClone(String clonedTarget) {
-		// TODO , see also https://jira.apgsga.ch/browse/JAVA8MIG-356, https://jira.apgsga.ch/browse/JAVA8MIG-353 
 	}
 
 	@Override
@@ -246,59 +234,58 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public VcsCommandRunnerFactory getJschSessionFactory() {
 		return vcsCommandRunnerFactory;
 	}
-	
+
 	private List<MavenArtifact> getArtifactsWithNameFromBom(String version) {
 		List<MavenArtifact> artifactsWithNameFromBom = null;
 		try {
 			artifactsWithNameFromBom = am.getArtifactsWithNameFromBom(version);
-		}
-		catch(Exception ex) {
+		} catch (Exception ex) {
 			LOGGER.error("Error when trying to get Artifact name from Bom for version " + version);
 			LOGGER.error(ex.getMessage());
 			LOGGER.error(ExceptionUtils.getStackTrace(ex));
 			throw new RuntimeException("Error when trying to get Artifact name from Bom for version " + version);
 		}
-		
+
 		return artifactsWithNameFromBom;
 	}
-	
+
 	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
-		
+
 		VcsCommandRunner cmdRunner = getJschSessionFactory().create();
 		cmdRunner.preProcess();
 		List<MavenArtifact> artifactWihInvalidNames = Lists.newArrayList();
-		
-		for(MavenArtifact ma : mavenArtifacts) {
+
+		for (MavenArtifact ma : mavenArtifacts) {
 			try {
 				String artifactName = am.getArtifactName(ma.getGroupId(), ma.getArtifactId(), ma.getVersion());
 				ma.setName(artifactName);
-				
-				if(artifactName == null) {
+
+				if (artifactName == null) {
 					artifactWihInvalidNames.add(ma);
-				}
-				else {
-					VcsCommand silentCoCmd = PatchVcsCommand.createSilentCoCvsModuleCmd(cvsBranch, Lists.newArrayList(artifactName),"&>/dev/null ; echo $?");
+				} else {
+					VcsCommand silentCoCmd = PatchVcsCommand.createSilentCoCvsModuleCmd(cvsBranch,
+							Lists.newArrayList(artifactName), "&>/dev/null ; echo $?");
 					List<String> cvsResults = cmdRunner.run(silentCoCmd);
-					// JHE: SilentCOCvsModuleCmd returns 0 when all OK, 1 instead...
-					if(cvsResults.size() != 1 || cvsResults.get(0).equals("1")) {
+					// JHE: SilentCOCvsModuleCmd returns 0 when all OK, 1
+					// instead...
+					if (cvsResults.size() != 1 || cvsResults.get(0).equals("1")) {
 						artifactWihInvalidNames.add(ma);
 					}
 				}
-			}
-			catch(Exception ex) {
+			} catch (Exception ex) {
 				LOGGER.error("Error when trying to list Artifact having error in their names.");
 				LOGGER.error(ex.getMessage());
 				LOGGER.error(ExceptionUtils.getStackTrace(ex));
 				throw new RuntimeException("Error when trying to list Artifact having error in their names");
 			}
 		}
-		
+
 		cmdRunner.postProcess();
 		return artifactWihInvalidNames;
 	}
-	
+
 	@Override
 	public List<MavenArtifact> invalidArtifactNames(String version, String cvsBranch) {
-		return getArtifactNameError(getArtifactsWithNameFromBom(version),cvsBranch);
+		return getArtifactNameError(getArtifactsWithNameFromBom(version), cvsBranch);
 	}
 }
