@@ -445,7 +445,7 @@ class PatchCli {
 		cmdResult.fileNames = []
 		ObjectMapper mapper = new ObjectMapper();
 		new File(options.l).eachFileMatch(~"^Patch.*.json") { file ->
-			patchClient.uploadPatch(file, Patch.class)
+			patchClient.savePatch(file, Patch.class)
 			cmdResult.fileNames << file.absolutePath
 			found = true
 		}
