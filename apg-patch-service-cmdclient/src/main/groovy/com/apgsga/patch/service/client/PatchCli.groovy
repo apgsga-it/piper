@@ -88,14 +88,6 @@ class PatchCli {
 			def result = uploadServiceMetaData(options,patchClient)
 			cmdResults.results['um'] = result
 		}
-		if (options.dt) {
-			def result = downloadTargetSystemEnviroments(options,patchClient)
-			cmdResults.results['dt'] = result
-		}
-		if (options.ut) {
-			def result = uploadTargetSystemEnvironments(options,patchClient)
-			cmdResults.results['ut'] = result
-		}
 		if (options.sta) {
 			def result = stateChangeAction(options,patchClient)
 			cmdResults.results['sta'] = result
@@ -112,7 +104,7 @@ class PatchCli {
 		return cmdResults
 	}
 	def validateOpts(args) {
-		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-[l|d|dd|dm|dt] <directory>]  [-[e|r] <patchnumber>] [-[s|sa|ud|um|ut] <file>] [-f <patchnumber,directory>] [-sta <patchnumber,toState,[aps,db,nil]]')
+		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-[l|d|dd|dm] <directory>]  [-[e|r] <patchnumber>] [-[s|sa|ud|um] <file>] [-f <patchnumber,directory>] [-sta <patchnumber,toState,[aps,db,nil]]')
 		cli.formatter.setDescPadding(0)
 		cli.formatter.setLeftPadding(0)
 		cli.formatter.setWidth(100)
@@ -261,20 +253,6 @@ class PatchCli {
 			def directory = new File(options.dm)
 			if (!directory.exists() | !directory.directory) {
 				println "Directory ${options.dm} not valid: either not a directory or it doesn't exist"
-				error = true
-			}
-		}
-		if (options.ut) {
-			def dataFile = new File(options.ut)
-			if (!dataFile.exists() | !dataFile.file) {
-				println "File ${options.ut} not valid: either not a file or it doesn't exist"
-				error = true
-			}
-		}
-		if (options.dt) {
-			def directory = new File(options.dt)
-			if (!directory.exists() | !directory.directory) {
-				println "Directory ${options.dt} not valid: either not a directory or it doesn't exist"
 				error = true
 			}
 		}
@@ -529,30 +507,6 @@ class PatchCli {
 		patchClient.saveServicesMetaData(serviceMetaData)
 	}
 	
-	def downloadTargetSystemEnviroments(def options, def patchClient) {
-		println "Downloading TargetSystemEnviroments to ${options.dt}"
-		def cmdResult = new Expando()
-		def data =  patchClient.getTargetSystemEnviroments()
-		if (data == null) {
-			cmdResult.exists = false;
-			return cmdResult
-		}
-		def dataFile = new File(options.dt,"TargetSystemEnvironments.json")
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.writeValue(dataFile, data)
-		println "Downloaded TargetSystemEnviroments to ${options.dt} done."
-		cmdResult.targetSystemEnviroments = dataFile.absolutePath
-		cmdResult.data = data
-		cmdResult.exists = true;
-		return cmdResult
-	}
-
-	def uploadTargetSystemEnvironments(def options, PatchServiceClient patchClient) {
-		println "Uploading TargetSystemEnvironments from ${options.ut}"
-		ObjectMapper mapper = new ObjectMapper();
-		TargetSystemEnvironments targets = mapper.readValue(new File("${options.ut}"), TargetSystemEnvironments.class)
-		patchClient.saveTargetSystemEnviroments(targets)
-	}
 	
 	def validateArtifactNamesForVersion(def options, PatchServiceClient patchClient) {
 		println("Validating all Artifact names for version ${options.vvs[0]} on branch ${options.vvs[1]}")

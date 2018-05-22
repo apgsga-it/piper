@@ -23,16 +23,6 @@ public interface PatchPersistence {
 
 	public ServicesMetaData getServicesMetaData();
 
-	public void saveTargetSystemEnviroments(List<TargetSystemEnviroment> installationTargets);
-
-	public List<TargetSystemEnviroment> getInstallationTargets();
-	
-	public void saveTargetSystemEnviroments(TargetSystemEnvironments targets);
-	
-	public TargetSystemEnvironments getTargetSystemEnviroments();
-
-	public TargetSystemEnviroment getInstallationTarget(String installationTarget);
-
 	public ServiceMetaData findServiceByName(String serviceName);
 	
 	public List<String> listAllFiles();

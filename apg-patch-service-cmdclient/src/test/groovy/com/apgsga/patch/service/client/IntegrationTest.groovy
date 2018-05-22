@@ -242,49 +242,7 @@ public class IntegrationTest extends Specification {
 			repo.clean()
 	}
 	
-	def "Patch Cli upload TargetSystemEnvironments to server"() {
-		setup:
-			def client = PatchCli.create()
-		when:
-			def result = client.process(["-u", baseUrl, "-ut", "src/test/resources/TargetSystemEnvironments.json"] + DEFAULT_CONFIG_OPT)
-		then:
-			result != null
-			result.returnCode == 0
-			def dbFile = new File("${dbLocation}/InstallationTargets.json")
-			def sourceFile = new File("src/test/resources/TargetSystemEnvironments.json")
-			ObjectMapper mapper = new ObjectMapper();
-			TargetSystemEnviromentBean[] targetsDb = mapper.readValue(dbFile, TargetSystemEnviromentBean[].class);		
-			def targetsDbList = Lists.newArrayList(targetsDb)
-			TargetSystemEnvironments source = mapper.readValue(sourceFile, TargetSystemEnvironments.class)
-			def sourceList = source.getTargetSystemEnviroments();
-			sourceList.equals(targetsDbList)
-		 cleanup:
-		 	repo.clean()
-	}
-	
-	def "Patch Cli download TargetSystemEnvironments from server"() {
-		setup:
-			def client = PatchCli.create()
-		when:
-			def preConResult = client.process(["-u", baseUrl, "-ut", "src/test/resources/TargetSystemEnvironments.json"] + DEFAULT_CONFIG_OPT)
-			def result = client.process(["-u", baseUrl, "-dt", "build"] + DEFAULT_CONFIG_OPT)
-		then:
-			preConResult != null
-			preConResult.returnCode == 0
-			result != null
-			result.returnCode == 0
-			def dbFile = new File("${dbLocation}/InstallationTargets.json")
-			ObjectMapper mapper = new ObjectMapper();
-			TargetSystemEnviromentBean[] targetsDb = mapper.readValue(dbFile, TargetSystemEnviromentBean[].class);
-			def targetsDbList = Lists.newArrayList(targetsDb)
-			def copiedFile = new File("build/TargetSystemEnvironments.json")
-			TargetSystemEnvironments source = mapper.readValue(copiedFile, TargetSystemEnvironments.class)
-			def sourceList = source.getTargetSystemEnviroments();
-			sourceList.equals(targetsDbList)
-		 cleanup:
-			repo.clean()
-	}
-	
+
 	def "Patch Cli download ServiceMetaData from server, where it does'nt exist"() {
 		setup:
 			def client = PatchCli.create()

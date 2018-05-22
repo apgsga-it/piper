@@ -127,7 +127,6 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	}
 	
 	
-
 	@RequestMapping(value = "/listAllFiles", method = RequestMethod.GET)
 	@ResponseBody
 	@Override
@@ -142,36 +141,6 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		return repo.listFiles(prefix);
 	}
 
-	@RequestMapping(value = "/saveTargetSystemEnviroments", method = RequestMethod.POST)
-	@Override
-	public void saveTargetSystemEnviroments(@RequestBody TargetSystemEnvironments targets) {
-		repo.saveTargetSystemEnviroments(targets);
-	}
-
-
-	@RequestMapping(value = "/getTargetSystemEnviroments", method = RequestMethod.GET)
-	@ResponseBody
-	@Override
-	public TargetSystemEnvironments getTargetSystemEnviroments() {
-		return repo.getTargetSystemEnviroments();
-	}
-
-	@Override
-	public void saveTargetSystemEnviroments(List<TargetSystemEnviroment> installationTargets) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public List<TargetSystemEnviroment> getInstallationTargets() {
-		throw new NotImplementedException();
-
-	}
-
-	@Override
-	public TargetSystemEnviroment getInstallationTarget(String installationTarget) {
-		throw new NotImplementedException();
-
-	}
 
 	@Override
 	public ServiceMetaData findServiceByName(String serviceName) {

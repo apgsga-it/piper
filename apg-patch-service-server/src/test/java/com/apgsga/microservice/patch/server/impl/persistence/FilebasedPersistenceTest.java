@@ -165,20 +165,6 @@ public class FilebasedPersistenceTest {
 		assertEquals(data, serviceData);
 	}
 	
-	@Test
-	public void testTargetSystemEviroments() {
-		List<TargetSystemEnviroment> installationTargets = Lists.newArrayList();
-		installationTargets.add(new TargetSystemEnviromentBean("CHEI212", "T"));
-		installationTargets.add(new TargetSystemEnviromentBean("CHEI211", "T"));
-		installationTargets.add(new TargetSystemEnviromentBean("CHTI211", "T"));
-		installationTargets.add(new TargetSystemEnviromentBean("CHTI212", "T"));
-		final ResourceLoader rl = new FileSystemResourceLoader();
-		final PatchPersistence db = new FilebasedPatchPersistence(rl.getResource("db"),rl.getResource("work"));
-		db.saveTargetSystemEnviroments(installationTargets);
-		List<TargetSystemEnviroment> installTargets = db.getInstallationTargets();
-		assertTrue(CollectionUtils.isEqualCollection(installTargets, installationTargets)); 	
-	}
-	
 
 	@Configurable
 	static class TestConfiguration {
