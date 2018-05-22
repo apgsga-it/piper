@@ -131,36 +131,7 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 				ServicesMetaData.class);
 	}
 
-
-
-	@Override
-	public void saveTargetSystemEnviroments(TargetSystemEnvironments targets) {
-		restTemplate.postForLocation(getRestBaseUri() + "/saveTargetSystemEnviroments", targets);
-	}
-
-
-	@Override
-	public TargetSystemEnvironments getTargetSystemEnviroments() {
-		return restTemplate.getForObject(getRestBaseUri() + "/getTargetSystemEnviroments",
-				TargetSystemEnvironments.class);
-	}
-
-
-	@Override
-	public void saveTargetSystemEnviroments(List<TargetSystemEnviroment> installationTargets) {
-		throw new UnsupportedOperationException("Not needed, see saveTargetSystemEnviroments");
-	}
-
-	@Override
-	public List<TargetSystemEnviroment> getInstallationTargets() {
-		throw new UnsupportedOperationException("Not needed, see getTargetSystemEnviroments");
-	}
-
-	@Override
-	public TargetSystemEnviroment getInstallationTarget(String installationTarget) {
-		throw new UnsupportedOperationException("Not needed, see getTargetSystemEnviroments");
-	}
-
+	
 	@Override
 	public ServiceMetaData findServiceByName(String serviceName) {
 		throw new UnsupportedOperationException("Not needed, see getServiceMetaData");

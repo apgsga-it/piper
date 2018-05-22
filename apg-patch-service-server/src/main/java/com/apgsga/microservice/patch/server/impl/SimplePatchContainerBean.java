@@ -1,7 +1,9 @@
 package com.apgsga.microservice.patch.server.impl;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -13,6 +15,10 @@ import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -28,10 +34,12 @@ import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
+import com.apgsga.microservice.patch.server.impl.targets.InstallTargetsUtil;
 import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -56,6 +64,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	
 	@Autowired
 	private PatchActionExecutorFactory patchActionExecutorFactory; 
+	
+	@Value("${config.common.location:/etc/opt/apg-patch-common}")
+	private String configCommon;
+
+	@Value("${config.common.targetSystemFile:TargetSystemMappings.json}")
+	private String targetSystemFile;
 
 	public SimplePatchContainerBean() {
 		super();
@@ -154,9 +168,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public List<String> listInstallationTargetsFor(String requestingTarget) {
-		// TODO (che, 13.12) : Filtering Rules per requestTarget
-		return repo.getInstallationTargets().stream().map(e -> e.getName()).collect(Collectors.toList());
+		ResourceLoader rl = new FileSystemResourceLoader();
+		Resource targetConfigFile = rl.getResource(configCommon + "/" + targetSystemFile); 
+		return InstallTargetsUtil.listInstallTargets(targetConfigFile);
 	}
+
 
 	@Override
 	public List<DbObject> listAllObjectsChangedForDbModule(String patchId, String searchString) {
@@ -202,9 +218,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public synchronized void startInstallPipeline(Patch patch) {
 		repo.savePatch(patch);
-		String installationTarget = patch.getInstallationTarget();
-		TargetSystemEnviroment installationTargetData = repo.getInstallationTarget(installationTarget);
-		Assert.notNull(installationTargetData, "Installationtarget : " + installationTarget + " not found");
 		jenkinsClient.startInstallPipeline(patch);
 	}
 

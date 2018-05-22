@@ -17,18 +17,13 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
-import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
-import com.apgsga.microservice.patch.api.TargetSystemEnvironments;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Lists;
 
 public class FilebasedPatchPersistence implements PatchPersistence {
-	
-	private static final String SERVICE_META_DATA_JSON = "ServicesMetaData.json";
 
-	private static final String INSTALLATION_TARGETS_JSON = "InstallationTargets.json";
+	private static final String SERVICE_META_DATA_JSON = "ServicesMetaData.json";
 
 	private static final String DB_MODULES_JSON = "DbModules.json";
 
@@ -139,42 +134,6 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	}
 
 	@Override
-	public void saveTargetSystemEnviroments(List<TargetSystemEnviroment> installationTargets) {
-		String jsonRequestString = null;
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			ObjectWriter writerFor = mapper.writerFor(TargetSystemEnviroment[].class);
-			TargetSystemEnviroment[] array = new TargetSystemEnviroment[installationTargets.size()];
-			jsonRequestString = writerFor.writeValueAsString(installationTargets.toArray(array));
-		} catch (IOException e) {
-			throw new RuntimeException("Persistence Error", e);
-		}
-		AtomicFileWriteManager.create(storagePath, tempStoragePath).write(jsonRequestString, INSTALLATION_TARGETS_JSON);
-	}
-
-	@Override
-	public List<TargetSystemEnviroment> getInstallationTargets() {
-		try {
-			File installTargetsFile = createFile(INSTALLATION_TARGETS_JSON);
-			ObjectMapper mapper = new ObjectMapper();
-			TargetSystemEnviroment[] result = mapper.readValue(installTargetsFile, TargetSystemEnviroment[].class);
-			return Lists.newArrayList(result);
-		} catch (IOException e) {
-			throw new RuntimeException("Persistence Error", e);
-		}
-	}
-
-	@Override
-	public void saveTargetSystemEnviroments(TargetSystemEnvironments targets) {
-		saveTargetSystemEnviroments(targets.getTargetSystemEnviroments());
-	}
-
-	@Override
-	public TargetSystemEnvironments getTargetSystemEnviroments() {
-		return new TargetSystemEnvironments(getInstallationTargets());
-	}
-
-	@Override
 	public void saveDbModules(DbModules dbModules) {
 		writeToFile(dbModules, DB_MODULES_JSON);
 	}
@@ -192,15 +151,6 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		} catch (IOException e) {
 			throw new RuntimeException("Persistence Error", e);
 		}
-	}
-
-	@Override
-	public TargetSystemEnviroment getInstallationTarget(String installationTarget) {
-		List<TargetSystemEnviroment> targets = getInstallationTargets();
-		List<TargetSystemEnviroment> result = targets.stream().filter(p -> p.getName().equals(installationTarget))
-				.collect(Collectors.toList());
-		Assert.isTrue(result.size() == 1, "Must be one , was: " + result.size());
-		return result.get(0);
 	}
 
 	@Override
