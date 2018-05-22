@@ -66,11 +66,7 @@ def homeDir = "/opt/${project.name}"
 ospackage {
 	packageName = "${project.name}"
 	version = "${pkgVersion}"
-<<<<<<< HEAD
-	release = 2
-=======
 	release = 4
->>>>>>> refs/heads/master
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -111,7 +107,7 @@ ospackage {
 		fileType CONFIG | NOREPLACE
 		user 'root'
 		permissionGroup 'root'
-		// TODO (che,11.4) : temporarly for testing purposes
+		// TODO (che,11.4)
 		fileMode 0777
 	}
 	
