@@ -1,13 +1,12 @@
 package com.apgsga.microservice.patch.server.impl.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.assertj.core.util.Lists;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,10 +31,12 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
+import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.api.impl.ServiceMetaDataBean;
 import com.apgsga.microservice.patch.api.impl.ServicesMetaDataBean;
+import com.apgsga.microservice.patch.api.impl.TargetSystemEnviromentBean;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource(locations = "test.properties")
@@ -121,22 +122,21 @@ public class FilebasedPersistenceTest {
 		assertNotNull(repo.findServiceByName("It21Ui"));
 		assertNotNull(repo.findServiceByName("SomeOtherService"));
 	}
-
+	
 	@Test
 	public void testSaveModules() {
 		List<String> dbModulesList = Lists.newArrayList("testdbmodule", "testdbAnotherdbModule");
 		final ResourceLoader rl = new FileSystemResourceLoader();
-		final PatchPersistence db = new FilebasedPatchPersistence(rl.getResource("db"), rl.getResource("work"));
+		final PatchPersistence db = new FilebasedPatchPersistence(rl.getResource("db"),rl.getResource("work"));
 		DbModules intialLoad = new DbModules(dbModulesList);
 		db.saveDbModules(intialLoad);
 		DbModules dbModules = db.getDbModules();
-		List<String> dbModulesRead = dbModules.getDbModules();
+		List<String> dbModulesRead = dbModules.getDbModules(); 
 		assertTrue(dbModulesRead.size() == 2);
-		dbModulesRead.forEach(m -> {
-			assertTrue(m.equals("testdbmodule") || m.equals("testdbAnotherdbModule"));
-		});
+		dbModulesRead.forEach( m-> { assertTrue(m.equals("testdbmodule") || m.equals("testdbAnotherdbModule")) ; } );
 	}
-
+	
+	
 	@Test
 	public void testServicesMetaData() {
 		List<ServiceMetaData> serviceList = Lists.newArrayList();
@@ -144,12 +144,12 @@ public class FilebasedPersistenceTest {
 		it21UiStarter.setArtifactId("it21ui-app-starter");
 		it21UiStarter.setGroupId("com.apgsga.it21.ui.mdt");
 		it21UiStarter.setName("it21ui-app-starter");
-
+		
 		MavenArtifactBean jadasStarter = new MavenArtifactBean();
 		jadasStarter.setArtifactId("jadas-app-starter");
 		jadasStarter.setGroupId("com.apgsga.it21.ui.mdt");
 		jadasStarter.setName("jadas-app-starter");
-
+		
 		final ServiceMetaData it21Ui = new ServiceMetaDataBean("It21Ui", "it21_release_9_0_6_admin_uimig", "9.0.6",
 				"ADMIN-UIMIG");
 		serviceList.add(it21Ui);
@@ -159,11 +159,12 @@ public class FilebasedPersistenceTest {
 		final ServicesMetaData data = new ServicesMetaDataBean();
 		data.setServicesMetaData(serviceList);
 		final ResourceLoader rl = new FileSystemResourceLoader();
-		final PatchPersistence db = new FilebasedPatchPersistence(rl.getResource("db"), rl.getResource("work"));
+		final PatchPersistence db = new FilebasedPatchPersistence(rl.getResource("db"),rl.getResource("work"));
 		db.saveServicesMetaData(data);
 		ServicesMetaData serviceData = db.getServicesMetaData();
 		assertEquals(data, serviceData);
 	}
+	
 
 	@Configurable
 	static class TestConfiguration {

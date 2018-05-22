@@ -8,8 +8,10 @@ import org.springframework.core.io.ResourceLoader
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.ServicesMetaData
+import com.apgsga.microservice.patch.api.TargetSystemEnvironments
 import com.fasterxml.jackson.databind.ObjectMapper
 
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 class PatchCli {
@@ -18,7 +20,7 @@ class PatchCli {
 		return new PatchCli()
 	}
 
-	private PatchCli() {
+	private PatchCli() { 
 		super();
 	}
 	def validComponents = ["db", "aps", "mockdb", "nil"]
@@ -28,13 +30,13 @@ class PatchCli {
 	def targetSystemMappings
 	def validToStates
 	def configDir
-	def defaultConfig
+	def defaultConfig 
 
 	def process(def args) {
 		println args
 		def options = validateOpts(args)
 		if (!options) return
-			def cmdResults = new Expando();
+		def cmdResults = new Expando();
 		cmdResults.results = [:]
 		cmdResults.returnCode = 1
 		def patchClient = new PatchServiceClient(!options.u ? defaultHost : options.u)
@@ -121,9 +123,7 @@ class PatchCli {
 			ud longOpt: 'uploadDbmodules', args:1, argName: 'file', 'Upload Dbmodules from <file> to server', required: false
 			dm longOpt: 'downloadServicesMeta', args:1, argName: 'directory', 'Download ServiceMetaData from server to <directory>', required: false
 			um longOpt: 'uploadServicesMeta', args:1, argName: 'file', 'Upload ServiceMetaData from <file> to server', required: false
-			dt longOpt: 'downloadTargetSystems', args:1, argName: 'directory', 'Download TargetSystemEnviroments from server to <directory>', required: false
-			ut longOpt: 'uploadTargetSystems', args:1, argName: 'file', 'Upload TargetSystemEnviroments from <file> to server', required: false
-			la longOpt: 'listAllFiles', 'List all files on server', required: false
+			la longOpt: 'listAllFiles', 'List all files on server', required: false	
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
 			c longOpt: 'configDir', args:1, argName: 'directory', 'Configuration Directory', required: false
@@ -132,13 +132,13 @@ class PatchCli {
 
 		def options = cli.parse(args)
 		def error = false;
-
+		
 		if (options == null) {
 			println "Wrong parameters"
 			cli.usage()
 			return null
 		}
-
+		
 		if (!options.u) {
 			println "Assuming default value for u option: ${defaultHost}"
 		}
@@ -151,7 +151,7 @@ class PatchCli {
 			}
 			valdidateAndLoadConfigFiles()
 		} else {
-			// Guessing Config Directory
+			// Guessing Config Directory 
 			ResourceLoader rl = new FileSystemResourceLoader();
 			Resource rs = rl.getResource("${linuxConfigDir}");
 			println "Checking on ${linuxConfigDir} as config dir"
@@ -160,7 +160,7 @@ class PatchCli {
 			} else {
 				println "${linuxConfigDir} doesn't exist or is not readable"
 				// Assuming Eclipse Workspace
-				rs = rl.getResource("src/main/resources/config")
+				rs = rl.getResource("src/main/resources/config")	
 				if (!rs.exists() | !rs.getFile().isDirectory()) {
 					println "Could'nt determine Default Config Directory, use -c option"
 					error = true
@@ -188,7 +188,7 @@ class PatchCli {
 			def searchString = new File(options.lf)
 			if (!searchString?.trim()) {
 				println "Empty Searchstring for Option"
-				error = true;
+				error = true; 
 			}
 		}
 		if (options.d) {
@@ -224,15 +224,15 @@ class PatchCli {
 				error = true
 			}
 		}
-
+		
 		if (options.sa) {
 			def patchFile = new File(options.sa)
 			if (!patchFile.exists() | !patchFile.file) {
 				println "Patch File ${options.sa} not valid: either not a file or it doesn't exist"
 				error = true
 			}
-		}
-
+		} 
+		
 		if (options.dd) {
 			def directory = new File(options.dd)
 			if (!directory.exists() | !directory.directory) {
@@ -266,7 +266,7 @@ class PatchCli {
 		}
 		if (options.sta) {
 			if (options.stas.size() != 3 ) {
-				println "Option sta needs 3 arguments: <patchNumber,toState,[db,aps,nil]>"
+				println "Option sta needs 3 arguments: <patchNumber,toState,[db,aps,nil]>"	
 				error = true
 			}
 			def patchNumber = options.stas[0]
@@ -291,7 +291,7 @@ class PatchCli {
 					error = true
 				}
 			}
-
+			
 		}
 		if (options.e) {
 			if (!options.e.isInteger()) {
@@ -302,7 +302,7 @@ class PatchCli {
 		if (options.vv) {
 			if(options.vvs.size() != 2 || options.vvs[0] == null || options.vvs[0].equals("") || options.vvs[1] == null || options.vvs[1].equals("")) {
 				println "You have to provide the version and the cvs branch for which you want to validate Artifacts against."
-				error = true
+				error = true	
 			}
 		}
 		if (error) {
@@ -318,7 +318,7 @@ class PatchCli {
 		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
 		targetSystemMappings = [:]
 		jsonSystemTargets.targetSystems.find( { a ->  a.stages.find( { targetSystemMappings.put("${a.name}${it.toState}".toString(),"${it.code}") })} )
-		//println "Running with TargetSystemMappings: "
+		//println "Running with TargetSystemMappings: " 
 		//println JsonOutput.prettyPrint(targetSystemFile.text)
 		// TODO validate
 		validToStates = targetSystemMappings.keySet()
@@ -326,7 +326,7 @@ class PatchCli {
 		defaultConfig = new ConfigSlurper().parse(jdbcConfigFule.toURI().toURL())
 		// TODO validate
 	}
-
+	
 	def stateChangeAction(def options, def patchClient) {
 		def cmdResult = new Expando()
 		def patchNumber = options.stas[0]
@@ -341,7 +341,7 @@ class PatchCli {
 			def dbcli = new PatchDbClient(component,targetSystemMappings)
 			dbcli.executeStateTransitionAction(defaultConfig, patchNumber, toState)
 		} else {
-			println "Skipping State change Processing for ${patchNumber}"
+			println "Skipping State change Processing for ${patchNumber}"		
 		}
 		return cmdResult
 	}
@@ -374,14 +374,14 @@ class PatchCli {
 		def cmdResult = new Expando()
 		cmdResult.patchNumbers = ids
 	}
-
+	
 	def listAllFiles(def options,def patchClient) {
 		List<String> files =  patchClient.listAllFiles()
 		println "All Files on server: ${files}"
 		def cmdResult = new Expando()
 		cmdResult.files = files
 	}
-
+	
 	def listFiles(def options,def patchClient) {
 		List<String> files =  patchClient.listFiles(options.lf)
 		println "Files with ${options.lf} as prefix on server: ${files}"
@@ -504,8 +504,8 @@ class PatchCli {
 		def serviceMetaData = mapper.readValue(new File("${options.um}"), ServicesMetaData.class)
 		patchClient.saveServicesMetaData(serviceMetaData)
 	}
-
-
+	
+	
 	def validateArtifactNamesForVersion(def options, PatchServiceClient patchClient) {
 		println("Validating all Artifact names for version ${options.vvs[0]} on branch ${options.vvs[1]}")
 		def invalidArtifacts = patchClient.invalidArtifactNames(options.vvs[0],options.vvs[1])

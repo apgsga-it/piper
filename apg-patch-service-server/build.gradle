@@ -115,7 +115,8 @@ ospackage {
 	   	into "/var/opt/apg-patch-common"
 		user "root"
 		permissionGroup "root"
-		fileMode 0777 
+		// TODO (che 22.5) :  we need a common group for this directory
+		fileMode 0666 
 	}
 	
 
