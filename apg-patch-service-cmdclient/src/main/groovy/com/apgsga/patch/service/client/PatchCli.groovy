@@ -183,7 +183,7 @@ class PatchCli {
 			}
 		}
 		if (options.lf) {
-			def searchString = new File(options.lf)
+			def searchString = options.lf
 			if (!searchString?.trim()) {
 				println "Empty Searchstring for Option"
 				error = true;
