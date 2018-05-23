@@ -204,9 +204,21 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public void onClone(String clonedTarget) {
+	public void onCloneOf(String clonedTarget) {
 		// TODO , see also https://jira.apgsga.ch/browse/JAVA8MIG-356,
 		// https://jira.apgsga.ch/browse/JAVA8MIG-353
+		cleanUpRepoFor(clonedTarget);
+		resetRevisionFor(clonedTarget); 
+	}
+
+	private void resetRevisionFor(String clonedTarget) {
+		// TODO 
+		
+	}
+
+	private void cleanUpRepoFor(String clonedTarget) {
+		// TODO 
+		
 	}
 
 	@Override

@@ -103,7 +103,7 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 	}
 
 	@Override
-	public void onClone(String clonedTarget) {
+	public void onCloneOf(String clonedTarget) {
 		restTemplate.postForLocation(getRestBaseUri() + "/onClone/{clonedTarget}", null, [clonedTarget:clonedTarget]);
 	}
 

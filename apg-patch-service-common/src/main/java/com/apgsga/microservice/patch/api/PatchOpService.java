@@ -39,5 +39,5 @@ public interface PatchOpService {
 	 * 
 	 * @param clonedTarget the Id of the cloned System
 	 */
-	public void onClone(String clonedTarget);
+	public void onCloneOf(String clonedTarget);
 }

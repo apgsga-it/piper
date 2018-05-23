@@ -140,8 +140,8 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 
 	@RequestMapping(value = "/onClone", method = RequestMethod.POST)
 	@Override
-	public void onClone(@PathVariable("clonedTarget") String clonedTarget) {
-		patchService.onClone(clonedTarget);
+	public void onCloneOf(@PathVariable("clonedTarget") String clonedTarget) {
+		patchService.onCloneOf(clonedTarget);
 	}
 
 	@Override
