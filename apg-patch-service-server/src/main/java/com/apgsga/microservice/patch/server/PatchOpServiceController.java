@@ -26,8 +26,6 @@ import com.apgsga.microservice.patch.api.PatchOpService;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
-import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
-import com.apgsga.microservice.patch.api.TargetSystemEnvironments;
 
 @RestController
 @Scope(org.springframework.web.context.WebApplicationContext.SCOPE_SESSION)
@@ -64,14 +62,13 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	public Patch save(@RequestBody Patch patch) {
 		return patchService.save(patch);
 	}
-	
+
 	@RequestMapping(value = "/savePatch", method = RequestMethod.POST)
 	@ResponseBody
 	@Override
 	public void savePatch(@RequestBody Patch patch) {
 		repo.savePatch(patch);
 	}
-
 
 	@RequestMapping(value = "/findAllPatchIds", method = RequestMethod.GET)
 	@ResponseBody
@@ -122,22 +119,22 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 			@PathVariable("toStatus") String toStatus) {
 		LOGGER.info("Got executeStateChangeAction Request for Patch: " + patchNumber + ", toState: " + toStatus);
 		patchService.executeStateTransitionAction(patchNumber, toStatus);
-		LOGGER.info("Got executeStateChangeAction Request for Patch: " + patchNumber + ", toState: " + toStatus + " Done.");
+		LOGGER.info(
+				"Got executeStateChangeAction Request for Patch: " + patchNumber + ", toState: " + toStatus + " Done.");
 
 	}
-	
-	
+
 	@RequestMapping(value = "/listAllFiles", method = RequestMethod.GET)
 	@ResponseBody
 	@Override
 	public List<String> listAllFiles() {
-		return repo.listAllFiles(); 
+		return repo.listAllFiles();
 	}
 
 	@RequestMapping(value = "/listFiles/{prefix}", method = RequestMethod.GET)
 	@ResponseBody
 	@Override
-	public  List<String> listFiles(@PathVariable("prefix") String prefix) {
+	public List<String> listFiles(@PathVariable("prefix") String prefix) {
 		return repo.listFiles(prefix);
 	}
 
@@ -146,7 +143,6 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	public void onClone(@PathVariable("clonedTarget") String clonedTarget) {
 		patchService.onClone(clonedTarget);
 	}
-
 
 	@Override
 	public ServiceMetaData findServiceByName(String serviceName) {
@@ -163,12 +159,13 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	public void init() throws IOException {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@RequestMapping(value = "/validateArtifactNamesFromVersion", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
 	@Override
-	public List<MavenArtifact> invalidArtifactNames(@RequestParam ("version") String version, @RequestParam ("cvsbranch") String cvsBranch) {
-		return patchService.invalidArtifactNames(version,cvsBranch);
+	public List<MavenArtifact> invalidArtifactNames(@RequestParam("version") String version,
+			@RequestParam("cvsbranch") String cvsBranch) {
+		return patchService.invalidArtifactNames(version, cvsBranch);
 	}
 }

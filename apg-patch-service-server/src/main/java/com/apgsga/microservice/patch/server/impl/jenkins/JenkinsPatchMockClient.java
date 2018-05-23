@@ -6,7 +6,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
 
 public class JenkinsPatchMockClient implements JenkinsPatchClient {
 
@@ -34,12 +33,10 @@ public class JenkinsPatchMockClient implements JenkinsPatchClient {
 		LOGGER.info("approvate for target " + target + ",stage: " + stage + " and patch: " + patch.toString());
 
 	}
-	
-	
 
 	@Override
 	public void processInputAction(Patch patch, Map<String, String> parameter) {
-		LOGGER.info("processInputAction for patch: " + patch.toString()  + ",with parameters: " + parameter.toString());
+		LOGGER.info("processInputAction for patch: " + patch.toString() + ",with parameters: " + parameter.toString());
 
 	}
 
@@ -49,16 +46,5 @@ public class JenkinsPatchMockClient implements JenkinsPatchClient {
 
 	}
 
-	@Override
-	public void approveBuild(TargetSystemEnviroment target, Patch patch) {
-		LOGGER.info("approveBuild for : " + patch.toString() + " and Target: " + target);
-
-	}
-
-	@Override
-	public void approveInstallation(TargetSystemEnviroment target, Patch patch) {
-		LOGGER.info("approveInstallation for : " + patch.toString() + " and Target: " + target);
-
-	}
 
 }

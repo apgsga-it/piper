@@ -12,7 +12,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.TargetSystemEnviroment;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.offbytwo.jenkins.JenkinsServer;
@@ -42,7 +41,8 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 
 	@Override
 	public void createPatchPipelines(Patch patch) {
-		// TODO (che. jhe ) : What happens , when the job fails? And when somebody is
+		// TODO (che. jhe ) : What happens , when the job fails? And when
+		// somebody is
 		// really fast with a patch?
 		ExecutorService executorService = Executors.newSingleThreadExecutor();
 		executorService.execute(new Runnable() {
@@ -74,16 +74,15 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 
 	@Override
 	public void startInstallPipeline(Patch patch) {
-		startPipeline(patch,"Download");
+		startPipeline(patch, "Download");
 
 	}
-	
+
 	@Override
 	public void startProdPatchPipeline(Patch patch) {
-		startPipeline(patch,"");
+		startPipeline(patch, "");
 
 	}
-
 
 	private void startPipeline(Patch patch, String jobSuffix) {
 		try {
@@ -91,24 +90,26 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 			String jsonRequestString = mapper.writeValueAsString(patch);
 			LOGGER.info("Jenkins request: " + jsonRequestString.toString());
 			String jobName = "Patch" + patch.getPatchNummer() + jobSuffix;
-			
+
 			JenkinsServer jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
 			LOGGER.info("Connected to Jenkinsserver with, url: " + jenkinsUrl + " and user: " + jenkinsUser);
 			JenkinsTriggerHelper jth = new JenkinsTriggerHelper(jenkinsServer, 2000L);
 			Map<String, String> jobParm = Maps.newHashMap();
 			jobParm.put("token", jobName);
 			jobParm.put("PARAMETER", jsonRequestString);
-			// TODO (jhe , che , 12.12. 2017) : hangs, when job fails immediately
-			LOGGER.info("Triggering Pipeline Job and waiting until Building " + jobName + " with Paramter: " + jobParm.toString() ); 
+			// TODO (jhe , che , 12.12. 2017) : hangs, when job fails
+			// immediately
+			LOGGER.info("Triggering Pipeline Job and waiting until Building " + jobName + " with Paramter: "
+					+ jobParm.toString());
 			PipelineBuild result = jth.triggerPipelineJobAndWaitUntilBuilding(jobName, jobParm, true);
-			LOGGER.info("Getting Result of Pipeline Job " + jobName  + ", : " + result.toString());  
+			LOGGER.info("Getting Result of Pipeline Job " + jobName + ", : " + result.toString());
 			BuildWithDetails details = result.details();
 			if (details.isBuilding()) {
 				LOGGER.info(jobName + " Is Building");
 				LOGGER.info("Buildnumber: " + details.getNumber());
 			} else {
-				throw new RuntimeException("Start Install Pipeline Job: " + jobName + " failed with: "
-						+ details.getConsoleOutputText());
+				throw new RuntimeException(
+						"Start Install Pipeline Job: " + jobName + " failed with: " + details.getConsoleOutputText());
 			}
 
 		} catch (URISyntaxException | IOException | InterruptedException e) {
@@ -116,23 +117,9 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 		}
 	}
 
-	
 	@Override
 	public void cancelPatchPipeline(Patch patch) {
 		processInputAction(patch, "cancel", null);
-	}
-	
-	
-
-	@Override
-	public void approveBuild(TargetSystemEnviroment target, Patch patch) {
-		processInputAction(patch,  target.getName(), "BuildFor");
-	}
-
-	@Override
-	public void approveInstallation(TargetSystemEnviroment target, Patch patch) {
-		processInputAction(patch,  target.getName(), "InstallFor");
-		
 	}
 
 	private PipelineBuild getPipelineBuild(JenkinsServer jenkinsServer, String patchNumber) throws IOException {
@@ -141,9 +128,7 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 		PipelineBuild lastBuild = job.getLastBuild();
 		return lastBuild;
 	}
-	
-	
-	
+
 	@Override
 	public void processInputAction(Patch patch, Map<String, String> parameter) {
 		// TODO (che, 25.4) : Switch to logical Target name
@@ -152,7 +137,7 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 
 	@Override
 	public void processInputAction(Patch patch, String targetName, String stage) {
-		String action = stage.equals("cancel") ? stage :  "Patch" + patch.getPatchNummer() + stage + targetName +"Ok"; 
+		String action = stage.equals("cancel") ? stage : "Patch" + patch.getPatchNummer() + stage + targetName + "Ok";
 		JenkinsServer jenkinsServer = null;
 		try {
 			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
@@ -217,6 +202,5 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 			return;
 		}
 	}
-
 
 }
