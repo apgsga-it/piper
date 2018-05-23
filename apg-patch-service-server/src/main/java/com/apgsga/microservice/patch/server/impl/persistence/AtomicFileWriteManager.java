@@ -11,6 +11,8 @@ import org.apache.commons.transaction.util.CommonsLoggingLogger;
 import org.apache.commons.transaction.util.LoggerFacade;
 import org.springframework.core.io.Resource;
 
+import com.apgsga.microservice.patch.exceptions.AtomicFileWriteManagerException;
+
 /**
  * "Simple" File Write Manager Attempts to implement a "Atomic" File write:
  * 
@@ -45,6 +47,7 @@ public class AtomicFileWriteManager {
 
 	public void write(String outputString, String fileName) {
 		try {
+			LOGGER.info("Atomic write of: " + outputString + " to File: " + fileName);
 			String targetPath = storagePath.getFile().getAbsolutePath();
 			String workDir = tempStoragePath.getFile().getAbsolutePath();
 			FileResourceManager frm = new FileResourceManager(targetPath,
@@ -60,9 +63,7 @@ public class AtomicFileWriteManager {
 			LOGGER.info("Commited File write Transaction with: " + txId.toString());
 
 		} catch (Throwable e) {
-			LOGGER.error("Transactional Write of : " + outputString + " failed: " + e.getLocalizedMessage());
-			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
-			throw new RuntimeException(e);
+			throw new AtomicFileWriteManagerException("Exception on Atomic write of: " + outputString + " to File: " + fileName,e);
 		}
 
 	}
