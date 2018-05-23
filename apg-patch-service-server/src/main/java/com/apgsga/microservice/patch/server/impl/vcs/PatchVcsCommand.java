@@ -9,7 +9,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.google.common.collect.Lists;
-import com.jcraft.jsch.Logger;
 
 public abstract class PatchVcsCommand implements VcsCommand {
 	
