@@ -17,6 +17,7 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
+import com.apgsga.microservice.patch.exceptions.PersistenceException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
@@ -64,7 +65,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			Patch patchData = mapper.readValue(patchFile, Patch.class);
 			return patchData;
 		} catch (IOException e) {
-			throw new RuntimeException("Persistence Error", e);
+			throw new PersistenceException("Persistence Error for Patchnumber: " + patchNummer, e);
 		}
 	}
 
@@ -77,7 +78,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			}
 			return false;
 		} catch (IOException e) {
-			throw new RuntimeException("Persistence Error", e);
+			throw new PersistenceException("Persistence Error on patchExists for Patchnumber: " + patchNumber, e);
 		}
 
 	}
@@ -89,7 +90,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			return Lists.newArrayList(files).stream().map(f -> FilenameUtils.getBaseName(f.getName()).substring(5))
 					.collect(Collectors.toList());
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new PersistenceException("Persistence Error for finding all Patch ids", e);
 		}
 
 	}
@@ -109,7 +110,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			LOGGER.info("Deleting patch: " + patch.toString());
 
 		} catch (IOException e) {
-			throw new RuntimeException("Persistence Error", e);
+			throw new PersistenceException("Persistence Error for removing Patch: " + patch.toString(), e);
 		}
 	}
 
@@ -129,7 +130,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			ServicesMetaData result = mapper.readValue(serviceMetaDataFile, ServicesMetaData.class);
 			return result;
 		} catch (IOException e) {
-			throw new RuntimeException("Persistence Error", e);
+			throw new PersistenceException("Persistence Error getting ServiceMetadata", e);
 		}
 	}
 
@@ -149,7 +150,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			DbModules result = mapper.readValue(dbModulesFile, DbModules.class);
 			return result;
 		} catch (IOException e) {
-			throw new RuntimeException("Persistence Error", e);
+			throw new PersistenceException("Persistence Error getting DbModules", e);
 		}
 	}
 
@@ -159,7 +160,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			File[] listFiles = storagePath.getFile().listFiles();
 			return Lists.newArrayList(listFiles).stream().map(f -> f.getName()).collect(Collectors.toList());
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new PersistenceException("Persistence Error listing all Files", e);
 		}
 	}
 
@@ -170,7 +171,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			return Lists.newArrayList(listFiles).stream().filter(f -> f.getName().startsWith(prefix))
 					.map(f -> f.getName()).collect(Collectors.toList());
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new PersistenceException("Persistence Error listing all Files with prefix: " + prefix, e);
 		}
 	}
 
@@ -180,7 +181,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			File parentDir = storagePath.getFile();
 			FileUtils.cleanDirectory(parentDir);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new PersistenceException("Persistence Error on clean", e);
 		}
 
 	}
@@ -200,7 +201,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		try {
 			jsonRequestString = mapper.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
-			throw new RuntimeException("Json Processing Error, before File write", e);
+			throw new PersistenceException("Json Processing Error, before Atomic write of File: " + filename, e);
 		}
 		AtomicFileWriteManager.create(storagePath, tempStoragePath).write(jsonRequestString, filename);
 
