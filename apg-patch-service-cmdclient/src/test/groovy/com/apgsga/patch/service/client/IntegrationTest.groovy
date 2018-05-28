@@ -324,4 +324,13 @@ public class IntegrationTest extends Specification {
 		result != null
 		result.returnCode == 0
 	}
+	
+	def "Patch Cli start onClone method"() {
+		setup:
+			def client = PatchCli.create()
+		when:
+			def result = client.process(["-u", baseUrl, "-oc", "CHEI212"]+ DEFAULT_CONFIG_OPT)
+		then:
+			result.returnCode == 0
+	}
 }
