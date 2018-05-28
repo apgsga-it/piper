@@ -12,13 +12,16 @@ class PatchCloneClientTest extends Specification {
 	
 	def testRevisionFilePath = "src/test/resources/Revisions.json"
 	
+	def testTargetSystemFilePath = "src/test/resources/config/TargetSystemMappings.json"
+	
 	def "Test onClone method for a non-valid target, should get an excpetion"() {
 		setup:
-			def client = new PatchCloneClient(testRevisionFilePath)
+			def client = new PatchCloneClient(testRevisionFilePath,testTargetSystemFilePath)
 		when:
 			client.onClone("NON_TARGET")
 		then:
-			thrown(RuntimeException)
+			// Simply nothing should happen.
+			notThrown(RuntimeException)
 	}
 	
 	def "Test onClone method, validate that Artifact are effectively deleted from Artifactory and that revision has been reset"() {
@@ -27,7 +30,7 @@ class PatchCloneClientTest extends Specification {
 			def user = "dev"
 			def password = "dev1234"
 			def artifactory = ArtifactoryClientBuilder.create().setUrl(url).setUsername(user).setPassword(password).build()
-			def client = new PatchCloneClient(testRevisionFilePath)
+			def client = new PatchCloneClient(testRevisionFilePath,testTargetSystemFilePath)
 			def jarFile1 = new File("src/test/resources/forArtifactoryTest/patchCloneTest-T-10001.jar")
 			artifactory.repository("releases").upload("patchCloneTest-T-10001", jarFile1).doUpload()
 			println "${jarFile1} uploaded!"
@@ -80,7 +83,7 @@ class PatchCloneClientTest extends Specification {
 				revisions = new JsonSlurper().parseText(revisionFile.text)
 			}
 			def currentChei212Revision = revisions.lastRevisions["CHEI212"]
-			def currentProdRevision = revisions.lastRevisions["CHPI211"]
+			def currentProdRevision = revisions.lastRevisions["CHEI211"]
 			if(currentProdRevision != null) {
 				assert (currentChei212Revision == currentProdRevision) : "Revision has not been reset correctly. CHEI212 is ${currentChei212Revision} and PROD is ${currentProdRevision}"
 			}

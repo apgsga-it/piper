@@ -9,8 +9,6 @@ import groovy.json.JsonSlurper
 
 class PatchCloneClient {
 	
-	private final String PROD_TARGET = "CHPI211"
-	
 	private final String FIRST_PART_FOR_ARTIFACT_SEARCH = "T-"
 	
 	private final String RELEASE_REPO = "releases"
@@ -19,19 +17,29 @@ class PatchCloneClient {
 	
 	private revisionFilePath
 	
-	public PatchCloneClient(String p_revisionFilePath) {
-		// TODO JHE: Get these from a configuration file. Maybe a new file: /var/opt/apg-patch-common/artifactory.properties ?? 
+	private targetSystemFilePath
+	
+	//TODO JHE: As soon as JAVA8MIG-363 will be done, p_revisionFilePatch will probably be removed
+	//TODO JHE: As soon as JAVA8MIG-363 will be done, we'll probably also have a property within cmdCli configuration file which will contain path to targetSystemFilePath
+	public PatchCloneClient(String p_revisionFilePath, String p_targetSystemFilePath) {
+		// TODO JHE: As soon as JAVA8MIG-363 will be done -> read properties from /etc/opt/apg-patch-cli.
+		//			 										 name of the file is still to be determined.
 		def url = "https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga"
 		def user = "dev"
 		def password = "dev1234"
 		artifactory = ArtifactoryClientBuilder.create().setUrl(url).setUsername(user).setPassword(password).build();
 		revisionFilePath = p_revisionFilePath
+		targetSystemFilePath = p_targetSystemFilePath
 	}
 	
 	public void onClone(String target) {
 		Long lastRevision = getLastRevisionForTarget(target)
-		deleteRevisionWithinRange(lastRevision)
-		resetLastRevision(target)
+		
+		// If the target doesn't exit, we don't have anything to delete, and don't have any revision to reset. It simply means that so far no patch has been installed on this target.
+		if(lastRevision != null) {
+			deleteRevisionWithinRange(lastRevision)
+			resetLastRevision(target)
+		}
 	}
 	
 	private Long getLastRevisionForTarget(String target) {
@@ -39,9 +47,6 @@ class PatchCloneClient {
 		def revisions = getParsedRevisionFile()
 		
 		def lastRevisionForTarget = revisions.lastRevisions[target]
-		if(lastRevisionForTarget == null) {
-			throw new RuntimeException("No revision found for ${target}.")
-		}		
 		
 		return lastRevisionForTarget	
 	}
@@ -49,6 +54,7 @@ class PatchCloneClient {
 	private void deleteRevisionWithinRange(Long lastRevision) {
 		
 		// TODO JHE: Ideally the range step should be centralized somewhere
+		//			 Might be improved when/if we decide to implement JAVA8MIG-365.
 		def rangeStep = 10000
 		def from = ((int) (lastRevision / rangeStep)) * rangeStep
 		
@@ -64,14 +70,36 @@ class PatchCloneClient {
 		
 		def revisions = getParsedRevisionFile()
 		
+		def prodTarget = getProdTarget()
+		
 		// TODO JHE: Is this part really correct? I mean that we eventually set it to SNAPSHOT? Not sure it will even happen, but ...
-		def currentProdRev = revisions.lastRevisions[PROD_TARGET]
+		def currentProdRev = revisions.lastRevisions[prodTarget]
 		if(currentProdRev == null) {
 			currentProdRev = "SNAPSHOT"
 		}
 		
 		revisions.lastRevisions[target] = currentProdRev
 		new File(revisionFilePath).write(new JsonBuilder(revisions).toPrettyString())
+	}
+	
+
+	private String getProdTarget() {
+		File targetSystemFileName = new File(targetSystemFilePath)
+		def targetSystems = [:]
+		
+		if (targetSystemFileName.exists()) {
+			targetSystems = new JsonSlurper().parseText(targetSystemFileName.text)
+		}
+				
+		def prodTarget = ""
+				
+		targetSystems.targetSystems.each{targetSystem ->
+			if(targetSystem.typeInd.equalsIgnoreCase("P")) {
+				prodTarget = targetSystem.target
+			}
+		}
+				
+		return prodTarget
 	}
 	
 	private Object getParsedRevisionFile() {
@@ -88,27 +116,15 @@ class PatchCloneClient {
 		return revisions
 	}
 	
-	private void listArtifacts(String repoId, String regex) {
-		List<RepoPath> searchItems = artifactory.searches().repositories(repoId).artifactsByName(regex).doSearch();
-		System.out.println("Listing all Artifacts for repo " + repoId);
-		searchItems.each{repoPath -> 
-			System.out.println(repoPath.getItemPath());
-		};
-		System.out.println("Total number of Artifacts in " + repoId + ": " + searchItems.size());
-		
-	}
-	
 	private void removeArtifacts(String repo, String regex, boolean dryRun) {
-		if(dryRun) {
-			println "Dry run only ... following Artifacts would have been deleted";
-			listArtifacts(repo,regex);
-		}
-		else {
-			List<RepoPath> searchItems = artifactory.searches().repositories(repo).artifactsByName(regex).doSearch();
-			searchItems.each{repoPath ->
+		List<RepoPath> searchItems = artifactory.searches().repositories(repo).artifactsByName(regex).doSearch();
+		searchItems.each{repoPath ->
+			if(dryRun) {
+				println "${repoPath} would have been deleted."
+			}
+			else {
 				artifactory.repository(repo).delete(repoPath.getItemPath());
-			};
-		}
+			}
+		};
 	}
-
 }
