@@ -523,8 +523,9 @@ class PatchCli {
 	
 	def onClone(def options, PatchServiceClient patchClient) {
 		println "Performing onClone for ${options.ocs[0]}"
-		//TODO JHE: get the path to Revision file from a configuration file, or via parameter on command line?
-		def onCloneClient = new PatchCloneClient("/var/jenkins/userContent/PatchPipeline/data/Revisions.json")
+		// TODO JHE: get the path to Revision file from a configuration file, or via parameter on command line?
+		// 			 will/should be improved as soon as JAVA8MIG-363 will be done. 
+		def onCloneClient = new PatchCloneClient("/var/jenkins/userContent/PatchPipeline/data/Revisions.json","/var/opt/apg-patch-common/TargetSystemMappings.json")
 		onCloneClient.onClone(options.ocs[0])
 	}
 }
