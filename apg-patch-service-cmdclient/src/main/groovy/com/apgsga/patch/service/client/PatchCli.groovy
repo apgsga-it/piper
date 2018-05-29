@@ -98,6 +98,10 @@ class PatchCli {
 			def result = listFiles(options,patchClient)
 			cmdResults.results['lf'] = result
 		}
+		if (options.oc) {
+			def result = onClone(options,patchClient)
+			cmdResults.results['oc'] = result
+		}
 		cmdResults.returnCode = 0
 		return cmdResults
 	}
@@ -126,6 +130,7 @@ class PatchCli {
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
 			c longOpt: 'configDir', args:1, argName: 'directory', 'Configuration Directory', required: false
 			vv longOpt: 'validateArtifactNamesForVersion', args:2, valueSeparator: ",", argName: 'version,cvsBranch', 'Validate all artifact names for a given version on a given CVS branch', required: false
+			oc longOpt: 'onclone', args:1, argName: 'target', 'Clean Artifactory Repo and reset Revision file while cloning', required: false
 		}
 
 		def options = cli.parse(args)
@@ -300,6 +305,12 @@ class PatchCli {
 		if (options.vv) {
 			if(options.vvs.size() != 2 || options.vvs[0] == null || options.vvs[0].equals("") || options.vvs[1] == null || options.vvs[1].equals("")) {
 				println "You have to provide the version and the cvs branch for which you want to validate Artifacts against."
+				error = true
+			}
+		}
+		if (options.oc) {
+			if(options.ocs.size() != 1 || options.ocs[0] == null) {
+				println "You have to provide the target for which the onClone method will be done."
 				error = true
 			}
 		}
@@ -508,5 +519,13 @@ class PatchCli {
 		println("Validating all Artifact names for version ${options.vvs[0]} on branch ${options.vvs[1]}")
 		def invalidArtifacts = patchClient.invalidArtifactNames(options.vvs[0],options.vvs[1])
 		println invalidArtifacts
+	}
+	
+	def onClone(def options, PatchServiceClient patchClient) {
+		println "Performing onClone for ${options.ocs[0]}"
+		// TODO JHE: get the path to Revision file from a configuration file, or via parameter on command line?
+		// 			 will/should be improved as soon as JAVA8MIG-363 will be done. 
+		def onCloneClient = new PatchCloneClient("/var/jenkins/userContent/PatchPipeline/data/Revisions.json","/var/opt/apg-patch-common/TargetSystemMappings.json")
+		onCloneClient.onClone(options.ocs[0])
 	}
 }

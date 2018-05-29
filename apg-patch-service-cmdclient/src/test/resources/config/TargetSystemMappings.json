@@ -41,7 +41,7 @@
         {
             "name": "Produktion",
             "target": "CHEI211",
-            "typeInd": "T",
+            "typeInd": "P",
             "stages": [
                 {
                     "name": "BuildFor",

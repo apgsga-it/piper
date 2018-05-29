@@ -42,6 +42,7 @@ dependencies {
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.8.4'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.4'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.4'
+	compile("org.jfrog.artifactory.client:artifactory-java-client-services:2.6.0")
 	runtime group: 'commons-cli' , name: 'commons-cli', version: '1.4'
 	runtime group: 'oracle', name: 'ojdbc'
 	testCompile project(':apg-patch-service-server')
