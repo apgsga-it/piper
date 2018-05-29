@@ -94,7 +94,7 @@ class PatchCloneClient {
 		def prodTarget = ""
 				
 		targetSystems.targetSystems.each{targetSystem ->
-			if(targetSystem.typeInd.equalsIgnoreCase("P")) {
+			if(targetSystem.name.equalsIgnoreCase("Produktion")) {
 				prodTarget = targetSystem.target
 			}
 		}
