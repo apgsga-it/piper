@@ -130,6 +130,7 @@ ospackage {
 	
 	from("packaging/db") {
 		into "/var/opt/${project.name}/db"
+		fileType NOREPLACE
 		user "root"
 		permissionGroup "root"
 		fileMode 0755 

@@ -29,14 +29,13 @@ import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.PatchService;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
-import com.apgsga.microservice.patch.exceptions.SimplePatchContainerBeanException;
+import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
 import com.apgsga.microservice.patch.server.impl.targets.InstallTargetsUtil;
 import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
@@ -93,7 +92,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					.getAllDependencies(data.getBaseVersionNumber() + "." + data.getRevisionMnemoPart() + "-SNAPSHOT");
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
 
-			throw new SimplePatchContainerBeanException("Exception listing Maven artefacts for " + patch.toString(), e);
+			throw new PatchServiceRuntimeException("Exception listing Maven artefacts for " + patch.toString(), e);
 		}
 
 		return mavenArtFromStarterList;
@@ -134,13 +133,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 			List<MavenArtifact> wrongNames = getArtifactNameError(Lists.newArrayList(art), cvsBranch);
 			if (!wrongNames.isEmpty()) {
-				throw new SimplePatchContainerBeanException(
+				throw new PatchServiceRuntimeException(
 						"Patch cannot be saved as it contains module(s) with invalid name: " + wrongNames);
 			}
 
 			art.setName(artifactName);
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
-			throw new SimplePatchContainerBeanException(
+			throw new PatchServiceRuntimeException(
 					"Exception adding Module: " + art.toString() + " to Branch: " + cvsBranch, e);
 		}
 		return art;
@@ -260,7 +259,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		try {
 			artifactsWithNameFromBom = am.getArtifactsWithNameFromBom(version);
 		} catch (Exception ex) {
-			throw new SimplePatchContainerBeanException(
+			throw new PatchServiceRuntimeException(
 					"Error when trying to get Artifact name from Bom for version " + version, ex);
 		}
 
@@ -291,7 +290,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					}
 				}
 			} catch (Exception ex) {
-				throw new SimplePatchContainerBeanException("Error resolving cvs name for Artifact: " + ma, ex);
+				throw new PatchServiceRuntimeException("Error resolving cvs name for Artifact: " + ma, ex);
 			}
 		}
 

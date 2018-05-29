@@ -11,7 +11,7 @@ import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
-import com.apgsga.microservice.patch.exceptions.GroovyScriptActionExecutorException;
+import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -76,7 +76,7 @@ public class GroovyScriptActionExecutor implements PatchActionExecutor {
 			Object result = shell.evaluate(script);
 			LOGGER.info("Result: " + result == null ? " <Empty> " : result.toString());
 		} catch (CompilationFailedException | IOException e) {
-			throw new GroovyScriptActionExecutorException(
+			throw new PatchServiceRuntimeException(
 					"Execution of Groovy Action script " + groovyScriptFile + " failed for Patch : " + patchNumber
 							+ ", toStatus: " + toStatus + ", configDir: " + configDir + " and File: " + configFileName,
 					e);

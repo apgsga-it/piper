@@ -7,7 +7,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.apgsga.microservice.patch.exceptions.JschExecutionException;
+import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.google.common.collect.Lists;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
@@ -15,8 +15,9 @@ import com.jcraft.jsch.Session;
 
 /**
  * @author che
- * @deprecated consider to use https://github.com/northern-bites/ganymed-ssh2 resp https://www.cleondris.com/opensource/ssh2/
- * Reason: Error Handling is not very good
+ * @deprecated consider to use https://github.com/northern-bites/ganymed-ssh2
+ *             resp https://www.cleondris.com/opensource/ssh2/ Reason: Error
+ *             Handling is not very good
  */
 public class JschCommandRunner implements VcsCommandRunner {
 
@@ -65,7 +66,7 @@ public class JschCommandRunner implements VcsCommandRunner {
 			}
 			channel.disconnect();
 		} catch (Exception e) {
-			throw new JschExecutionException("Error Executeing Jshell Command: " + command, e);
+			throw new PatchServiceRuntimeException("Error Executeing Jshell Command: " + command, e);
 		}
 		resultLines.stream().forEach(l -> LOGGER.info(l));
 		LOGGER.info("Done: " + command);

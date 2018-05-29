@@ -3,7 +3,6 @@ package com.apgsga.microservice.patch.server.impl.persistence;
 import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.transaction.file.FileResourceManager;
@@ -11,17 +10,19 @@ import org.apache.commons.transaction.util.CommonsLoggingLogger;
 import org.apache.commons.transaction.util.LoggerFacade;
 import org.springframework.core.io.Resource;
 
-import com.apgsga.microservice.patch.exceptions.AtomicFileWriteManagerException;
+import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 
 /**
  * "Simple" File Write Manager Attempts to implement a "Atomic" File write:
  * 
  * As a temporary solution, we use the dormant Apache commons library:
  * https://commons.apache.org/proper/commons-transaction/ Specifically:
- * https://commons.apache.org/proper/commons-transaction/file/index.html Which though 
- * is "dormant", but which seems to working just fine. Better, then probably ,
- * if i would write my own code and in much less time ;-) ... certainly with much less code.
- * See also : https://commons.apache.org/proper/commons-transaction/apidocs/org/apache/commons/transaction/file/FileResourceManager.html
+ * https://commons.apache.org/proper/commons-transaction/file/index.html Which
+ * though is "dormant", but which seems to working just fine. Better, then
+ * probably , if i would write my own code and in much less time ;-) ...
+ * certainly with much less code. See also :
+ * https://commons.apache.org/proper/commons-transaction/apidocs/org/apache/
+ * commons/transaction/file/FileResourceManager.html
  * 
  * @author che
  *
@@ -50,8 +51,7 @@ public class AtomicFileWriteManager {
 			LOGGER.info("Atomic write of: " + outputString + " to File: " + fileName);
 			String targetPath = storagePath.getFile().getAbsolutePath();
 			String workDir = tempStoragePath.getFile().getAbsolutePath();
-			FileResourceManager frm = new FileResourceManager(targetPath,
-					workDir, false, loggerFacade, true);
+			FileResourceManager frm = new FileResourceManager(targetPath, workDir, false, loggerFacade, true);
 			frm.start();
 			LOGGER.info("Resource Manager started with target Dir: " + targetPath + ", and work Dir: " + workDir);
 			Object txId = frm.generatedUniqueTxId();
@@ -63,7 +63,8 @@ public class AtomicFileWriteManager {
 			LOGGER.info("Commited File write Transaction with: " + txId.toString());
 
 		} catch (Throwable e) {
-			throw new AtomicFileWriteManagerException("Exception on Atomic write of: " + outputString + " to File: " + fileName,e);
+			throw new PatchServiceRuntimeException(
+					"Exception on Atomic write of: " + outputString + " to File: " + fileName, e);
 		}
 
 	}

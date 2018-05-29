@@ -11,32 +11,24 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.apgsga.microservice.patch.api.PatchErrorMessage;
-import com.apgsga.microservice.patch.exceptions.AtomicFileWriteManagerException;
-import com.apgsga.microservice.patch.exceptions.GroovyScriptActionExecutorException;
-import com.apgsga.microservice.patch.exceptions.JschExecutionException;
+import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 
 public class PatchServiceExceptionHandler extends ResponseEntityExceptionHandler {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 
-	@ExceptionHandler(JschExecutionException.class)
-	public ResponseEntity<PatchErrorMessage> notFoundException(final JschExecutionException e) {
-		return error(e, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
-	@ExceptionHandler(GroovyScriptActionExecutorException.class)
-	public ResponseEntity<PatchErrorMessage> notFoundException(final GroovyScriptActionExecutorException e) {
-		return error(e, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
-	@ExceptionHandler(AtomicFileWriteManagerException.class)
-	public ResponseEntity<PatchErrorMessage> notFoundException(final AtomicFileWriteManagerException e) {
-		return error(e, HttpStatus.INTERNAL_SERVER_ERROR);
+	@ExceptionHandler(PatchServiceRuntimeException.class)
+	public ResponseEntity<PatchErrorMessage> notFoundException(final PatchServiceRuntimeException e) {
+		return error(e);
 	}
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<PatchErrorMessage> assertionException(final IllegalArgumentException e) {
 		return error(e, HttpStatus.CONFLICT);
+	}
+	
+	private ResponseEntity<PatchErrorMessage> error(final PatchServiceRuntimeException exception) {
+		return error(exception, exception.getHttpStatusCode()); 
 	}
 
 	// TODO (che,23.5) : First go, to be discussed
