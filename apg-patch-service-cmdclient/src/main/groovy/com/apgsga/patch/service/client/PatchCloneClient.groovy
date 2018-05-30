@@ -55,7 +55,7 @@ class PatchCloneClient {
 	private void renameRevisionFile() {
 		def revisionFile = new File(revisionFilePath)
 		def fileSuffix = new Date().format("yyyyMMdd_HHmmss")
-		revisionFile.renameTo(revisionFilePath + fileSuffix)
+		revisionFile.renameTo(revisionFilePath + "." + fileSuffix)
 	}
 	
 	private Long getLastRevisionForTarget(String target) {
