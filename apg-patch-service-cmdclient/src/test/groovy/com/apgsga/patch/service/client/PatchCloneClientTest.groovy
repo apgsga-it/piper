@@ -14,7 +14,7 @@ class PatchCloneClientTest extends Specification {
 	
 	def testTargetSystemFilePath = "src/test/resources/config/TargetSystemMappings.json"
 	
-	def "Test onClone method for a non-valid target, should get an excpetion"() {
+	def "Test onClone method for a non-valid target, shouldn't get an excpetion"() {
 		setup:
 			def client = new PatchCloneClient(testRevisionFilePath,testTargetSystemFilePath)
 		when:
