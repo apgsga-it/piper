@@ -138,12 +138,6 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		return repo.listFiles(prefix);
 	}
 
-	@RequestMapping(value = "/onClone", method = RequestMethod.POST)
-	@Override
-	public void onCloneOf(@PathVariable("clonedTarget") String clonedTarget) {
-		patchService.onCloneOf(clonedTarget);
-	}
-
 	@Override
 	public ServiceMetaData findServiceByName(String serviceName) {
 		throw new NotImplementedException();
