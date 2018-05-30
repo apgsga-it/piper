@@ -544,7 +544,7 @@ class PatchCli {
 		println "Removing all T Artifact from Artifactory."
 		boolean dryRun = true
 		if(options.rtr.size() > 0) {
-			if(options.rtr[0] == 0) {
+			if(options.rtr[0] == "0") {
 				dryRun = false
 			}
 		}
