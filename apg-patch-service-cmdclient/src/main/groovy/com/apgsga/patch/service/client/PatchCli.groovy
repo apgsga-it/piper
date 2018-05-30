@@ -2,6 +2,7 @@ package com.apgsga.patch.service.client
 
 
 import org.springframework.core.io.FileSystemResourceLoader
+
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 
@@ -11,6 +12,7 @@ import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.fasterxml.jackson.databind.ObjectMapper
 
 import groovy.json.JsonSlurper
+import groovy.json.JsonBuilder
 
 class PatchCli {
 
@@ -102,6 +104,14 @@ class PatchCli {
 			def result = onClone(options,patchClient)
 			cmdResults.results['oc'] = result
 		}
+		if (options.sr) {
+			def result = saveRevisions(options)
+			cmdResults.results['sr'] = result
+		}
+		if (options.rr) {
+			def result = retrieveRevisions(options)
+			cmdResults.results['rr'] = result
+		}
 		cmdResults.returnCode = 0
 		return cmdResults
 	}
@@ -131,6 +141,8 @@ class PatchCli {
 			c longOpt: 'configDir', args:1, argName: 'directory', 'Configuration Directory', required: false
 			vv longOpt: 'validateArtifactNamesForVersion', args:2, valueSeparator: ",", argName: 'version,cvsBranch', 'Validate all artifact names for a given version on a given CVS branch', required: false
 			oc longOpt: 'onclone', args:1, argName: 'target', 'Clean Artifactory Repo and reset Revision file while cloning', required: false
+			sr longOpt: 'saveRevision', args:3, valueSeparator: ",", argName: 'targetInd,installationTarget,revision', 'Update revision with new value for given target', required: false
+			rr longOpt: 'retrieveRevision', args:3, valueSeparator: ",", argName: 'targetInd,installationTarget,revision', 'Save revision file with new value for a given target', required: false
 		}
 
 		def options = cli.parse(args)
@@ -527,5 +539,68 @@ class PatchCli {
 		// 			 will/should be improved as soon as JAVA8MIG-363 will be done. 
 		def onCloneClient = new PatchCloneClient("/var/jenkins/userContent/PatchPipeline/data/Revisions.json","/var/opt/apg-patch-common/TargetSystemMappings.json")
 		onCloneClient.onClone(options.ocs[0])
+	}
+	
+	def retrieveRevisions(def options) {
+		
+		//TODO JHE: replace patchConfig.* with parameter passed within options
+		
+		
+		// TODO JHE: get this from property file
+//		def revisionFileName = "${env.JENKINS_HOME}/userContent/PatchPipeline/data/Revisions.json"
+		def revisionFileName = "src/test/resources/Revisions.json"
+		
+		
+		def revisionFile = new File(revisionFileName)
+		def currentRevision = [P:1,T:10000]
+		def lastRevision = [:]
+		def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
+		if (revisionFile.exists()) {
+			revisions = new JsonSlurper().parseText(revisionFile.text)
+		}
+		
+		if(patchConfig.targetInd.equals("P")) {
+			patchConfig.revision = revisions.currentRevision[patchConfig.targetInd]
+		}
+		else {
+			if(revisions.lastRevisions.get(patchConfig.installationTarget) == null) {
+				patchConfig.revision = revisions.currentRevision[patchConfig.targetInd]
+			}
+			else {
+				patchConfig.revision = revisions.lastRevisions.get(patchConfig.installationTarget) + 1
+			}
+		}
+	
+		patchConfig.lastRevision = revisions.lastRevisions.get(patchConfig.installationTarget,'SNAPSHOT')
+	}
+	
+	def saveRevisions(def options) {
+
+		//TODO JHE: replace patchConfig.* with parameter passed within options
+		
+		
+		// TODO JHE: Get this from a configuration file
+		def revisionFileName = "src/test/resources/Revisions.json"
+//		def revisionFileName = "${env.JENKINS_HOME}/userContent/PatchPipeline/data/Revisions.json"
+		
+		def revisionFile = new File(revisionFileName)
+		def currentRevision = [P:1,T:10000]
+		def lastRevision = [:]
+		def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
+		if (revisionFile.exists()) {
+			revisions = new JsonSlurper().parseText(revisionFile.text)
+		}
+		if(patchConfig.targetInd.equals("P")) {
+			revisions.currentRevision[patchConfig.targetInd]++
+		}
+		else {
+			// We increase it only when saving a new Target
+			if(revisions.lastRevisions.get(patchConfig.installationTarget) == null) {
+				revisions.currentRevision[patchConfig.targetInd] = revisions.currentRevision[patchConfig.targetInd] + 10000
+			}
+		}
+		revisions.lastRevisions[patchConfig.installationTarget] = patchConfig.revision
+		new File(revisionFileName).write(new JsonBuilder(revisions).toPrettyString())
+	
 	}
 }
