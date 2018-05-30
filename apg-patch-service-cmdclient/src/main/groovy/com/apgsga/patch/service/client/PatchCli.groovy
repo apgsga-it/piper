@@ -548,6 +548,8 @@ class PatchCli {
 				dryRun = false
 			}
 		}
+		// TODO JHE: get the path to Revision file from a configuration file, or via parameter on command line?
+		// 			 will/should be improved as soon as JAVA8MIG-363 will be done.
 		def cloneClient = new PatchCloneClient("/var/jenkins/userContent/PatchPipeline/data/Revisions.json","/var/opt/apg-patch-common/TargetSystemMappings.json")
 		cloneClient.deleteAllTRevisions(dryRun)
 	}
