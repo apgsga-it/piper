@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -17,6 +18,7 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
+import com.apgsga.microservice.patch.exceptions.ExceptionUtils;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,10 +36,13 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	private Resource tempStoragePath;
 
-	public FilebasedPatchPersistence(Resource storagePath, Resource workDir) {
+	private MessageSource messageSource;
+
+	public FilebasedPatchPersistence(Resource storagePath, Resource workDir, MessageSource messageSource) {
 		super();
 		this.storagePath = storagePath;
 		this.tempStoragePath = workDir;
+		this.messageSource = messageSource;
 	}
 
 	public void init() throws IOException {
@@ -65,7 +70,9 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			Patch patchData = mapper.readValue(patchFile, Patch.class);
 			return patchData;
 		} catch (IOException e) {
-			throw new PatchServiceRuntimeException("Persistence Error for Patchnumber: " + patchNummer, e);
+			ExceptionUtils.throwPatchServiceException("FilebasedPatchPersistence.findById.error",
+					messageSource, new Object[] {patchNummer }, e);
+			return null; 
 		}
 	}
 
@@ -78,7 +85,10 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			}
 			return false;
 		} catch (IOException e) {
-			throw new PatchServiceRuntimeException("Persistence Error on patchExists for Patchnumber: " + patchNumber, e);
+			ExceptionUtils.throwPatchServiceException("FilebasedPatchPersistence.findById.error",
+					messageSource, new Object[] {patchNumber }, e);
+			throw new PatchServiceRuntimeException("Persistence Error on patchExists for Patchnumber: " + patchNumber,
+					e);
 		}
 
 	}
@@ -201,9 +211,10 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		try {
 			jsonRequestString = mapper.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
-			throw new PatchServiceRuntimeException("Json Processing Error, before Atomic write of File: " + filename, e);
+			throw new PatchServiceRuntimeException("Json Processing Error, before Atomic write of File: " + filename,
+					e);
 		}
-		AtomicFileWriteManager.create(storagePath, tempStoragePath).write(jsonRequestString, filename);
+		AtomicFileWriteManager.create(this).write(jsonRequestString, filename);
 
 	}
 
@@ -211,6 +222,18 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		File parentDir = storagePath.getFile();
 		File revisions = new File(parentDir, fileName);
 		return revisions;
+	}
+
+	public Resource getStoragePath() {
+		return storagePath;
+	}
+
+	public Resource getTempStoragePath() {
+		return tempStoragePath;
+	}
+
+	public MessageSource getMessageSource() {
+		return messageSource;
 	}
 
 }

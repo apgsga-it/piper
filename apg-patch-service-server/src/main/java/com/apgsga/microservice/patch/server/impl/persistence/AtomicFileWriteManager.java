@@ -8,9 +8,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.transaction.file.FileResourceManager;
 import org.apache.commons.transaction.util.CommonsLoggingLogger;
 import org.apache.commons.transaction.util.LoggerFacade;
-import org.springframework.core.io.Resource;
 
-import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
+import com.apgsga.microservice.patch.exceptions.ExceptionUtils;
 
 /**
  * "Simple" File Write Manager Attempts to implement a "Atomic" File write:
@@ -29,28 +28,25 @@ import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
  */
 public class AtomicFileWriteManager {
 
-	public static AtomicFileWriteManager create(Resource storagePath, Resource tempStoragePath) {
-		return new AtomicFileWriteManager(storagePath, tempStoragePath);
+	public static AtomicFileWriteManager create(FilebasedPatchPersistence fileBasedPersistance) {
+		return new AtomicFileWriteManager(fileBasedPersistance);
 	}
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 	private LoggerFacade loggerFacade = new CommonsLoggingLogger(LOGGER);
 
-	private Resource storagePath;
+	private FilebasedPatchPersistence fileBasedPersistenance;
 
-	private Resource tempStoragePath;
-
-	private AtomicFileWriteManager(Resource storagePath, Resource tempStoragePath) {
+	private AtomicFileWriteManager(FilebasedPatchPersistence fileBasedPersistenance) {
 		super();
-		this.storagePath = storagePath;
-		this.tempStoragePath = tempStoragePath;
+		this.fileBasedPersistenance = fileBasedPersistenance;
 	}
 
 	public void write(String outputString, String fileName) {
 		try {
 			LOGGER.info("Atomic write of: " + outputString + " to File: " + fileName);
-			String targetPath = storagePath.getFile().getAbsolutePath();
-			String workDir = tempStoragePath.getFile().getAbsolutePath();
+			String targetPath = fileBasedPersistenance.getStoragePath().getFile().getAbsolutePath();
+			String workDir = fileBasedPersistenance.getTempStoragePath().getFile().getAbsolutePath();
 			FileResourceManager frm = new FileResourceManager(targetPath, workDir, false, loggerFacade, true);
 			frm.start();
 			LOGGER.info("Resource Manager started with target Dir: " + targetPath + ", and work Dir: " + workDir);
@@ -63,8 +59,8 @@ public class AtomicFileWriteManager {
 			LOGGER.info("Commited File write Transaction with: " + txId.toString());
 
 		} catch (Throwable e) {
-			throw new PatchServiceRuntimeException(
-					"Exception on Atomic write of: " + outputString + " to File: " + fileName, e);
+			ExceptionUtils.throwPatchServiceException("AtomicFileWriteManager.write.error",
+					fileBasedPersistenance.getMessageSource(), new Object[] { outputString, fileName }, e);
 		}
 
 	}

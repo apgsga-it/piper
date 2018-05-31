@@ -14,6 +14,7 @@ import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -30,7 +31,7 @@ import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.PatchService;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
-import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
+import com.apgsga.microservice.patch.exceptions.ExceptionUtils;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
 import com.apgsga.microservice.patch.server.impl.targets.InstallTargetsUtil;
 import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
@@ -61,6 +62,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Autowired
 	private PatchActionExecutorFactory patchActionExecutorFactory;
 
+	@Autowired
+	private MessageSource messageSource;
+
 	@Value("${config.common.location:/etc/opt/apg-patch-common}")
 	private String configCommon;
 
@@ -75,6 +79,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		super();
 		this.repo = repo;
 	}
+	
+	
 
 	@Override
 	public List<String> listDbModules() {
@@ -92,8 +98,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			mavenArtFromStarterList = am
 					.getAllDependencies(data.getBaseVersionNumber() + "." + data.getRevisionMnemoPart() + "-SNAPSHOT");
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
-
-			throw new PatchServiceRuntimeException("Exception listing Maven artefacts for " + patch.toString(), e);
+			ExceptionUtils.throwPatchServiceException("SimplePatchContainerBean.listMavenArtifacts.error",
+					messageSource, new Object[] { patch.toString() }, e);
 		}
 
 		return mavenArtFromStarterList;
@@ -134,14 +140,15 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 			List<MavenArtifact> wrongNames = getArtifactNameError(Lists.newArrayList(art), cvsBranch);
 			if (!wrongNames.isEmpty()) {
-				throw new PatchServiceRuntimeException(
-						"Patch cannot be saved as it contains module(s) with invalid name: " + wrongNames);
+				ExceptionUtils.throwPatchServiceException("SimplePatchContainerBean.addModuleName.wrongname.error",
+						messageSource, new Object[] { art.toString() });
 			}
 
 			art.setName(artifactName);
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
-			throw new PatchServiceRuntimeException(
-					"Exception adding Module: " + art.toString() + " to Branch: " + cvsBranch, e);
+			ExceptionUtils.throwPatchServiceException("SimplePatchContainerBean.addModuleName.wrongname.error",
+					messageSource, new Object[] { art.toString(), cvsBranch }, e);
+
 		}
 		return art;
 	}
@@ -209,25 +216,27 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public void onCloneOf(String clonedTarget) {
 
 		/*
-		 * The logic has been implemented within the patchCli. Here we don't have to do anything else than
-		 *     - calling the patchCli command
-		 *     - Wait for the command to be finished.
+		 * The logic has been implemented within the patchCli. Here we don't
+		 * have to do anything else than - calling the patchCli command - Wait
+		 * for the command to be finished.
 		 */
-		
+
 		String cmd = "sh -c apscli.sh -oc" + clonedTarget;
 		Long waitTimeout = 180L;
 		try {
 			Process proc = Runtime.getRuntime().exec(cmd);
 			boolean isFinished = proc.waitFor(waitTimeout, TimeUnit.SECONDS);
-			
-			if(!isFinished || !(proc.exitValue() == 0)) {
-				// TODO JHE: what to do in this situation? 
-				// TODO JHE: probably take Runtime Exception done for https://github.com/apgsga-it/piper/pull/11
+
+			if (!isFinished || !(proc.exitValue() == 0)) {
+				// TODO JHE: what to do in this situation?
+				// TODO JHE: probably take Runtime Exception done for
+				// https://github.com/apgsga-it/piper/pull/11
 				throw new RuntimeException("Problem while cloning for " + clonedTarget);
 			}
-			
+
 		} catch (IOException | InterruptedException e) {
-			// TODO JHE: probably take Runtime Exception done for https://github.com/apgsga-it/piper/pull/11
+			// TODO JHE: probably take Runtime Exception done for
+			// https://github.com/apgsga-it/piper/pull/11
 			throw new RuntimeException("Error while cloning for " + clonedTarget + "." + e.getMessage());
 		}
 	}
@@ -244,33 +253,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		patchActionExecutor.execute(patchNumber, toStatus);
 	}
 
-	public PatchPersistence getRepo() {
-		return repo;
-	}
-
-	protected void setRepo(PatchPersistence repo) {
-		this.repo = repo;
-	}
-
-	public JenkinsPatchClient getJenkinsClient() {
-		return jenkinsClient;
-	}
-
-	protected void setJenkinsClient(JenkinsPatchClient jenkinsClient) {
-		this.jenkinsClient = jenkinsClient;
-	}
-
-	public VcsCommandRunnerFactory getJschSessionFactory() {
-		return vcsCommandRunnerFactory;
-	}
-
 	private List<MavenArtifact> getArtifactsWithNameFromBom(String version) {
 		List<MavenArtifact> artifactsWithNameFromBom = null;
 		try {
 			artifactsWithNameFromBom = am.getArtifactsWithNameFromBom(version);
-		} catch (Exception ex) {
-			throw new PatchServiceRuntimeException(
-					"Error when trying to get Artifact name from Bom for version " + version, ex);
+		} catch (Exception e) {
+			ExceptionUtils.throwPatchServiceException("SimplePatchContainerBean.getArtifactsWithNameFromBom.error",
+					messageSource, new Object[] { version }, e);
 		}
 
 		return artifactsWithNameFromBom;
@@ -299,8 +288,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 						artifactWihInvalidNames.add(ma);
 					}
 				}
-			} catch (Exception ex) {
-				throw new PatchServiceRuntimeException("Error resolving cvs name for Artifact: " + ma, ex);
+			} catch (Exception e) {
+				ExceptionUtils.throwPatchServiceException("SimplePatchContainerBean.getArtifactNameError.error",
+						messageSource, new Object[] { ma.toString() }, e);
 			}
 		}
 
@@ -312,4 +302,31 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public List<MavenArtifact> invalidArtifactNames(String version, String cvsBranch) {
 		return getArtifactNameError(getArtifactsWithNameFromBom(version), cvsBranch);
 	}
+	
+	public PatchPersistence getRepo() {
+		return repo;
+	}
+
+	protected void setRepo(PatchPersistence repo) {
+		this.repo = repo;
+	}
+
+	public JenkinsPatchClient getJenkinsClient() {
+		return jenkinsClient;
+	}
+
+	protected void setJenkinsClient(JenkinsPatchClient jenkinsClient) {
+		this.jenkinsClient = jenkinsClient;
+	}
+
+	public VcsCommandRunnerFactory getJschSessionFactory() {
+		return vcsCommandRunnerFactory;
+	}
+
+	public MessageSource getMessageSource() {
+		return messageSource;
+	}
+	
+	
+
 }

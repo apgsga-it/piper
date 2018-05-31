@@ -7,7 +7,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -71,7 +71,7 @@ public class MicroServicePatchConfig {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource dbStorabe = rl.getResource(dbLocation);
 		Resource workDir = rl.getResource(workDirLocation);
-		final PatchPersistence per = new FilebasedPatchPersistence(dbStorabe, workDir);
+		final PatchPersistence per = new FilebasedPatchPersistence(dbStorabe, workDir, messageSource());
 		per.init();
 		return per;
 	}
@@ -123,13 +123,11 @@ public class MicroServicePatchConfig {
 	public PatchActionExecutorFactory groovyPatchActionFactory() {
 		return new GroovyScriptActionExecutorFactory(configCommon, targetSystemFile, groovyScriptFile);
 	}
-	
+
 	@Bean
-    public MessageSource messageSource() {
-    	ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setDefaultEncoding("UTF-8");
-        return messageSource;
-    }
-	
+	public MessageSource messageSource() {
+		MessageSource messageSource = new ReloadableResourceBundleMessageSource();
+		return messageSource;
+	}
 
 }

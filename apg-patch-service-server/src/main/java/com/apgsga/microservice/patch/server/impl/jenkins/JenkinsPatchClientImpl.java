@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.offbytwo.jenkins.JenkinsServer;
@@ -60,7 +61,7 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 							true);
 					if (!patchBuilderResult.getResult().equals(BuildResult.SUCCESS)) {
 						LOGGER.error("PatchBuilder failed: " + patchBuilderResult.getResult().toString());
-						throw new RuntimeException("PatchBuilder failed: " + patchBuilderResult.getResult().toString());
+						throw new PatchServiceRuntimeException("PatchBuilder failed: " + patchBuilderResult.getResult().toString());
 					}
 					LOGGER.info(patchBuilderResult.getConsoleOutputText().toString());
 				} catch (Throwable e) {

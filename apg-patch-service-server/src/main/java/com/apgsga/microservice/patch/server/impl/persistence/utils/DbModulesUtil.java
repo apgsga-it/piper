@@ -2,6 +2,8 @@ package com.apgsga.microservice.patch.server.impl.persistence.utils;
 
 import java.util.List;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
@@ -17,7 +19,8 @@ public class DbModulesUtil {
 
 	public static void main(String[] args) {
 		final ResourceLoader rl = new FileSystemResourceLoader();
-		final PatchPersistence db = new FilebasedPatchPersistence(rl.getResource("db"),rl.getResource("work"));
+		MessageSource messageSource = new ResourceBundleMessageSource();
+		final PatchPersistence db = new FilebasedPatchPersistence(rl.getResource("db"),rl.getResource("work"), messageSource);
 		DbModules intialLoad = new DbModules(dbModulesList);
 		db.saveDbModules(intialLoad);
 		DbModules dbModules = db.getDbModules();

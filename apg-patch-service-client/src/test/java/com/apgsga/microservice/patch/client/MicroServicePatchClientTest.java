@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -53,13 +54,16 @@ public class MicroServicePatchClientTest {
 	
 	@Value("${json.db.work.location:work}")
 	private String dbWorkLocation;
+	
+	@Autowired 
+	private MessageSource messageSource;
 
 	@Before
 	public void setUp() {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource testResources = rl.getResource("src/test/resources/json");
 		Resource workDir = rl.getResource(dbWorkLocation);
-		final PatchPersistence per = new FilebasedPatchPersistence(testResources, workDir);
+		final PatchPersistence per = new FilebasedPatchPersistence(testResources, workDir,messageSource);
 		Patch testPatch5401 = per.findById("5401");
 		Patch testPatch5402 = per.findById("5402");
 		repo.clean();
