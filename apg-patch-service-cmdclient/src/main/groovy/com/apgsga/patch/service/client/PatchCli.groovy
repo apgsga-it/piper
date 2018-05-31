@@ -573,7 +573,7 @@ class PatchCli {
 		def revision = options.rrs[2]
 		
 		// TODO JHE: get this from property file
-		def revisionFileName = "${env.JENKINS_HOME}/userContent/PatchPipeline/data/Revisions.json"
+		def revisionFileName = "/var/jenkins/userContent/PatchPipeline/data/Revisions.json"
 		
 		def revisionFile = new File(revisionFileName)
 		def currentRevision = [P:1,T:10000]
@@ -611,7 +611,7 @@ class PatchCli {
 		def revision = options.srs[2]
 		
 		// TODO JHE: Get this from a configuration file
-		def revisionFileName = "${env.JENKINS_HOME}/userContent/PatchPipeline/data/Revisions.json"
+		def revisionFileName = "/var/jenkins/userContent/PatchPipeline/data/Revisions.json"
 		
 		def revisionFile = new File(revisionFileName)
 		def currentRevision = [P:1,T:10000]
