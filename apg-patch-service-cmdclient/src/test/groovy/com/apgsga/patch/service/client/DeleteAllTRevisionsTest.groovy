@@ -24,3 +24,4 @@ class DeleteAllTRevisionsTest extends Specification {
 			notThrown(RuntimeException)
 	}
 }
+
