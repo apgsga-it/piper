@@ -19,8 +19,7 @@ public class DbModulesUtil {
 
 	public static void main(String[] args) {
 		final ResourceLoader rl = new FileSystemResourceLoader();
-		MessageSource messageSource = new ResourceBundleMessageSource();
-		final PatchPersistence db = new FilebasedPatchPersistence(rl.getResource("db"),rl.getResource("work"), messageSource);
+		final PatchPersistence db = new FilebasedPatchPersistence(rl.getResource("db"),rl.getResource("work"));
 		DbModules intialLoad = new DbModules(dbModulesList);
 		db.saveDbModules(intialLoad);
 		DbModules dbModules = db.getDbModules();

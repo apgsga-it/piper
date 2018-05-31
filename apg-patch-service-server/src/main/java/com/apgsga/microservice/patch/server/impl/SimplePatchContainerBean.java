@@ -2,7 +2,6 @@ package com.apgsga.microservice.patch.server.impl;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -14,12 +13,10 @@ import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.DbModules;
@@ -31,7 +28,8 @@ import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.PatchService;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
-import com.apgsga.microservice.patch.exceptions.ExceptionUtils;
+import com.apgsga.microservice.patch.exceptions.Asserts;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
 import com.apgsga.microservice.patch.server.impl.targets.InstallTargetsUtil;
 import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
@@ -62,9 +60,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Autowired
 	private PatchActionExecutorFactory patchActionExecutorFactory;
 
-	@Autowired
-	private MessageSource messageSource;
-
 	@Value("${config.common.location:/etc/opt/apg-patch-common}")
 	private String configCommon;
 
@@ -79,8 +74,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		super();
 		this.repo = repo;
 	}
-	
-	
 
 	@Override
 	public List<String> listDbModules() {
@@ -98,8 +91,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			mavenArtFromStarterList = am
 					.getAllDependencies(data.getBaseVersionNumber() + "." + data.getRevisionMnemoPart() + "-SNAPSHOT");
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
-			ExceptionUtils.throwPatchServiceException("SimplePatchContainerBean.listMavenArtifacts.error",
-					messageSource, new Object[] { patch.toString() }, e);
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"SimplePatchContainerBean.listMavenArtifacts.exception",
+					new Object[] { e.getMessage(), patch.toString() }, e);
 		}
 
 		return mavenArtFromStarterList;
@@ -112,14 +106,16 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public Patch findById(String patchNummer) {
-		Assert.notNull(patchNummer, "Patch Nummer for findById null");
+		Asserts.notNull(patchNummer, "SimplePatchContainerBean.findById.patchnumber.notnull.assert",
+				new Object[] {});
 		return repo.findById(patchNummer);
 	}
 
 	@Override
 	public Patch save(Patch patch) {
-		Assert.notNull(patch, "Patch Null Object for save");
-		Assert.notNull(patch.getPatchNummer(), "Patchnummer null");
+		Asserts.notNull(patch, "SimplePatchContainerBean.save.patchobject.notnull.assert", new Object[] {});
+		Asserts.notNull(patch.getPatchNummer(), "SimplePatchContainerBean.save.patchnumber.notnull.assert",
+				new Object[] { patch.toString() });
 		preProcessSave(patch);
 		repo.savePatch(patch);
 		return patch;
@@ -140,14 +136,15 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 			List<MavenArtifact> wrongNames = getArtifactNameError(Lists.newArrayList(art), cvsBranch);
 			if (!wrongNames.isEmpty()) {
-				ExceptionUtils.throwPatchServiceException("SimplePatchContainerBean.addModuleName.wrongname.error",
-						messageSource, new Object[] { art.toString() });
+				throw ExceptionFactory.createPatchServiceRuntimeException(
+						"SimplePatchContainerBean.addModuleName.validation.error", new Object[] { art.toString() });
 			}
 
 			art.setName(artifactName);
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
-			ExceptionUtils.throwPatchServiceException("SimplePatchContainerBean.addModuleName.wrongname.error",
-					messageSource, new Object[] { art.toString(), cvsBranch }, e);
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"SimplePatchContainerBean.addModuleName.exception",
+					new Object[] { e.getMessage(), art.toString(), cvsBranch }, e);
 
 		}
 		return art;
@@ -155,8 +152,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public void remove(Patch patch) {
-		Assert.notNull(patch, "Patch for remove null");
-		Assert.notNull(patch.getPatchNummer(), "Patchnummer null for Patch: " + patch.toString());
+		Asserts.notNull(patch, "SimplePatchContainerBean.remove.patchobject.notnull.assert", new Object[] {});
+		Asserts.notNull(patch.getPatchNummer(), "SimplePatchContainerBean.remove.patchnumber.notnull.assert",
+				new Object[] { patch.toString() });
+		Asserts.isTrue((repo.patchExists(patch.getPatchNummer())),
+				"SimplePatchContainerBean.remove.patch.exists.assert", new Object[] { patch.toString() });
 		repo.removePatch(patch);
 	}
 
@@ -183,7 +183,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public List<DbObject> listAllObjectsChangedForDbModule(String patchId, String searchString) {
 		Patch patch = findById(patchId);
-		Assert.notNull(patch, "Patch with id: " + patchId + " not found on listing all Changed DbModules");
+		Asserts.notNull(patch, "SimplePatchContainerBean.listAllObjectsChangedForDbModule.patch.exists.assert",
+				new Object[] { patchId });
 		DbModules dbModules = repo.getDbModules();
 		if (dbModules == null) {
 			return Lists.newArrayList();
@@ -214,6 +215,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public synchronized void startInstallPipeline(Patch patch) {
+		Asserts.notNull(patch, "SimplePatchContainerBean.startInstallPipeline.patchobject.notnull.assert",
+				new Object[] {});
+		Asserts.notNull(patch.getPatchNummer(),
+				"SimplePatchContainerBean.startInstallPipeline.patchnumber.notnull.assert",
+				new Object[] { patch.toString() });
+		Asserts.isTrue((repo.patchExists(patch.getPatchNummer())),
+				"SimplePatchContainerBean.startInstallPipeline.patch.exists.assert", new Object[] { patch.toString() });
 		repo.savePatch(patch);
 		jenkinsClient.startInstallPipeline(patch);
 	}
@@ -229,8 +237,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		try {
 			artifactsWithNameFromBom = am.getArtifactsWithNameFromBom(version);
 		} catch (Exception e) {
-			ExceptionUtils.throwPatchServiceException("SimplePatchContainerBean.getArtifactsWithNameFromBom.error",
-					messageSource, new Object[] { version }, e);
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"SimplePatchContainerBean.getArtifactsWithNameFromBom.exception",
+					new Object[] { e.getMessage(), version }, e);
 		}
 
 		return artifactsWithNameFromBom;
@@ -260,8 +269,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					}
 				}
 			} catch (Exception e) {
-				ExceptionUtils.throwPatchServiceException("SimplePatchContainerBean.getArtifactNameError.error",
-						messageSource, new Object[] { ma.toString() }, e);
+				throw ExceptionFactory.createPatchServiceRuntimeException(
+						"SimplePatchContainerBean.getArtifactNameError.exception",
+						new Object[] { e.getMessage(), ma.toString() }, e);
 			}
 		}
 
@@ -273,7 +283,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public List<MavenArtifact> invalidArtifactNames(String version, String cvsBranch) {
 		return getArtifactNameError(getArtifactsWithNameFromBom(version), cvsBranch);
 	}
-	
+
 	public PatchPersistence getRepo() {
 		return repo;
 	}
@@ -293,11 +303,5 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public VcsCommandRunnerFactory getJschSessionFactory() {
 		return vcsCommandRunnerFactory;
 	}
-
-	public MessageSource getMessageSource() {
-		return messageSource;
-	}
-	
-	
 
 }

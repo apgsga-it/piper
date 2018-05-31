@@ -71,7 +71,7 @@ public class MicroServicePatchConfig {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource dbStorabe = rl.getResource(dbLocation);
 		Resource workDir = rl.getResource(workDirLocation);
-		final PatchPersistence per = new FilebasedPatchPersistence(dbStorabe, workDir, messageSource());
+		final PatchPersistence per = new FilebasedPatchPersistence(dbStorabe, workDir);
 		per.init();
 		return per;
 	}
@@ -124,10 +124,6 @@ public class MicroServicePatchConfig {
 		return new GroovyScriptActionExecutorFactory(configCommon, targetSystemFile, groovyScriptFile);
 	}
 
-	@Bean
-	public MessageSource messageSource() {
-		MessageSource messageSource = new ReloadableResourceBundleMessageSource();
-		return messageSource;
-	}
+
 
 }

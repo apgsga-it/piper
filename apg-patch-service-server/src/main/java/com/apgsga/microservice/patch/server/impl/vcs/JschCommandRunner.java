@@ -7,7 +7,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.google.common.collect.Lists;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
@@ -34,7 +34,8 @@ public class JschCommandRunner implements VcsCommandRunner {
 		try {
 			session.connect();
 		} catch (JSchException e) {
-			throw new RuntimeException(e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("JschCommandRunner.preProcess.exception",
+					new Object[] { e.getMessage(), session.getHost()}, e);
 		}
 	}
 
@@ -64,9 +65,14 @@ public class JschCommandRunner implements VcsCommandRunner {
 				} catch (Exception ee) {
 				}
 			}
+			// TODO (che, 31.5) : is this enough? or should we be more restrictive here? 
+			if (channel.getExitStatus() > 0) {
+				LOGGER.warn("Command : " + command + " returning with exit code: " + channel.getExitStatus());
+			}
 			channel.disconnect();
 		} catch (Exception e) {
-			throw new PatchServiceRuntimeException("Error Executeing Jshell Command: " + command, e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("JschCommandRunner.run.exception",
+					new Object[] { e.getMessage(), command }, e);
 		}
 		resultLines.stream().forEach(l -> LOGGER.info(l));
 		LOGGER.info("Done: " + command);

@@ -18,7 +18,7 @@ public class PatchServiceExceptionHandler extends ResponseEntityExceptionHandler
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 
 	@ExceptionHandler(PatchServiceRuntimeException.class)
-	public ResponseEntity<PatchErrorMessage> notFoundException(final PatchServiceRuntimeException e) {
+	public ResponseEntity<PatchErrorMessage> patchServiceRuntimeException(final PatchServiceRuntimeException e) {
 		return error(e);
 	}
 
@@ -31,7 +31,6 @@ public class PatchServiceExceptionHandler extends ResponseEntityExceptionHandler
 		return error(exception, exception.getHttpStatusCode()); 
 	}
 
-	// TODO (che,23.5) : First go, to be discussed
 	private ResponseEntity<PatchErrorMessage> error(final Exception exception, final HttpStatus httpStatus) {
 		final String errorText = Optional.of(exception.getMessage()).orElse(exception.getClass().getSimpleName());
 		Throwable cause = exception.getCause();

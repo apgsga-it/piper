@@ -13,9 +13,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -35,7 +33,7 @@ import com.apgsga.microservice.patch.api.impl.ServiceMetaDataBean;
 import com.apgsga.microservice.patch.api.impl.ServicesMetaDataBean;
 
 @RunWith(SpringRunner.class)
-@TestPropertySource(properties = {"dblocation=db", "dbworkdir=work" })
+@TestPropertySource(properties = { "dblocation=db", "dbworkdir=work" })
 public class FilebasedPersistenceTest {
 
 	private PatchPersistence repo;
@@ -46,18 +44,15 @@ public class FilebasedPersistenceTest {
 	@Value("${dbworkdir}")
 	private String dbWorkLocation;
 
-	@Autowired
-	private MessageSource messageSource;
-
 	@Before
 	public void setUp() {
 		// It self a test ;-)
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource db = rl.getResource(dbLocation);
 		Resource workDir = rl.getResource(dbWorkLocation);
-		repo = new FilebasedPatchPersistence(db, workDir, messageSource);
+		repo = new FilebasedPatchPersistence(db, workDir);
 		Resource testResources = rl.getResource("src/test/resources/json");
-		final PatchPersistence per = new FilebasedPatchPersistence(testResources, workDir, messageSource);
+		final PatchPersistence per = new FilebasedPatchPersistence(testResources, workDir);
 		Patch testPatch5401 = per.findById("5401");
 		Patch testPatch5402 = per.findById("5402");
 		repo.clean();

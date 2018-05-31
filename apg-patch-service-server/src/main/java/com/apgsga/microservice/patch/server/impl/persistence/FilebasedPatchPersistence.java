@@ -9,7 +9,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.MessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -18,8 +17,7 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
-import com.apgsga.microservice.patch.exceptions.ExceptionUtils;
-import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
@@ -36,13 +34,10 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	private Resource tempStoragePath;
 
-	private MessageSource messageSource;
-
-	public FilebasedPatchPersistence(Resource storagePath, Resource workDir, MessageSource messageSource) {
+	public FilebasedPatchPersistence(Resource storagePath, Resource workDir) {
 		super();
 		this.storagePath = storagePath;
 		this.tempStoragePath = workDir;
-		this.messageSource = messageSource;
 	}
 
 	public void init() throws IOException {
@@ -70,9 +65,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			Patch patchData = mapper.readValue(patchFile, Patch.class);
 			return patchData;
 		} catch (IOException e) {
-			ExceptionUtils.throwPatchServiceException("FilebasedPatchPersistence.findById.error",
-					messageSource, new Object[] {patchNummer }, e);
-			return null; 
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.findById.exception",
+					new Object[] { e.getMessage(), patchNummer }, e);
 		}
 	}
 
@@ -85,10 +79,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			}
 			return false;
 		} catch (IOException e) {
-			ExceptionUtils.throwPatchServiceException("FilebasedPatchPersistence.findById.error",
-					messageSource, new Object[] {patchNumber }, e);
-			throw new PatchServiceRuntimeException("Persistence Error on patchExists for Patchnumber: " + patchNumber,
-					e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.patchExists.exception",
+					new Object[] { e.getMessage(), patchNumber }, e);
 		}
 
 	}
@@ -100,7 +92,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			return Lists.newArrayList(files).stream().map(f -> FilenameUtils.getBaseName(f.getName()).substring(5))
 					.collect(Collectors.toList());
 		} catch (IOException e) {
-			throw new PatchServiceRuntimeException("Persistence Error for finding all Patch ids", e);
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"FilebasedPatchPersistence.findAllPatchIds.exception", new Object[] { e.getMessage() }, e);
 		}
 
 	}
@@ -120,7 +113,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			LOGGER.info("Deleting patch: " + patch.toString());
 
 		} catch (IOException e) {
-			throw new PatchServiceRuntimeException("Persistence Error for removing Patch: " + patch.toString(), e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.removePatch.exception",
+					new Object[] { e.getMessage(), patch.toString() }, e);
 		}
 	}
 
@@ -140,7 +134,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			ServicesMetaData result = mapper.readValue(serviceMetaDataFile, ServicesMetaData.class);
 			return result;
 		} catch (IOException e) {
-			throw new PatchServiceRuntimeException("Persistence Error getting ServiceMetadata", e);
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"FilebasedPatchPersistence.getServicesMetaData.exception", new Object[] { e.getMessage() }, e);
 		}
 	}
 
@@ -160,7 +155,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			DbModules result = mapper.readValue(dbModulesFile, DbModules.class);
 			return result;
 		} catch (IOException e) {
-			throw new PatchServiceRuntimeException("Persistence Error getting DbModules", e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.getDbModules.exception",
+					new Object[] { e.getMessage() }, e);
 		}
 	}
 
@@ -170,7 +166,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			File[] listFiles = storagePath.getFile().listFiles();
 			return Lists.newArrayList(listFiles).stream().map(f -> f.getName()).collect(Collectors.toList());
 		} catch (IOException e) {
-			throw new PatchServiceRuntimeException("Persistence Error listing all Files", e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.listAllFiles.exception",
+					new Object[] { e.getMessage() }, e);
 		}
 	}
 
@@ -181,7 +178,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			return Lists.newArrayList(listFiles).stream().filter(f -> f.getName().startsWith(prefix))
 					.map(f -> f.getName()).collect(Collectors.toList());
 		} catch (IOException e) {
-			throw new PatchServiceRuntimeException("Persistence Error listing all Files with prefix: " + prefix, e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.listFiles.exception",
+					new Object[] { e.getMessage(), prefix }, e);
 		}
 	}
 
@@ -191,7 +189,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			File parentDir = storagePath.getFile();
 			FileUtils.cleanDirectory(parentDir);
 		} catch (IOException e) {
-			throw new PatchServiceRuntimeException("Persistence Error on clean", e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.clean.exception",
+					new Object[] { e.getMessage() }, e);
 		}
 
 	}
@@ -211,8 +210,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		try {
 			jsonRequestString = mapper.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
-			throw new PatchServiceRuntimeException("Json Processing Error, before Atomic write of File: " + filename,
-					e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.writeToFile.exception",
+					new Object[] { e.getMessage(), filename }, e);
 		}
 		AtomicFileWriteManager.create(this).write(jsonRequestString, filename);
 
@@ -230,10 +229,6 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	public Resource getTempStoragePath() {
 		return tempStoragePath;
-	}
-
-	public MessageSource getMessageSource() {
-		return messageSource;
 	}
 
 }

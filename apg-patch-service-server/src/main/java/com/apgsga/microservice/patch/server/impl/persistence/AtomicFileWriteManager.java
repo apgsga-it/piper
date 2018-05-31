@@ -9,7 +9,7 @@ import org.apache.commons.transaction.file.FileResourceManager;
 import org.apache.commons.transaction.util.CommonsLoggingLogger;
 import org.apache.commons.transaction.util.LoggerFacade;
 
-import com.apgsga.microservice.patch.exceptions.ExceptionUtils;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 
 /**
  * "Simple" File Write Manager Attempts to implement a "Atomic" File write:
@@ -59,8 +59,8 @@ public class AtomicFileWriteManager {
 			LOGGER.info("Commited File write Transaction with: " + txId.toString());
 
 		} catch (Throwable e) {
-			ExceptionUtils.throwPatchServiceException("AtomicFileWriteManager.write.error",
-					fileBasedPersistenance.getMessageSource(), new Object[] { outputString, fileName }, e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("AtomicFileWriteManager.write.exception",
+					new Object[] { e.getMessage(), outputString, fileName }, e);
 		}
 
 	}
