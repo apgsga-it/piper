@@ -319,6 +319,12 @@ class PatchCli {
 				error = true
 			}
 		}
+		if (options.rtr) {
+			if(options.rtr.size() != 1) {
+				println "No parameter has been set, only a dryRun will be done. To delete all T artifact, please explicitely set dryRun to 0."
+				error = true
+			}
+		} 
 		if (error) {
 			cli.usage()
 			return null
@@ -499,7 +505,7 @@ class PatchCli {
 		def cmdResult = new Expando()
 		def data =  patchClient.getServicesMetaData()
 		if (data == null) {
-			cmdResult.exists = false;
+			cmdResult.exists = false; 
 			return cmdResult
 		}
 		def dataFile = new File(options.dm,"ServicesMetaData.json")
@@ -532,5 +538,19 @@ class PatchCli {
 		// 			 will/should be improved as soon as JAVA8MIG-363 will be done. 
 		def onCloneClient = new PatchCloneClient("/var/jenkins/userContent/PatchPipeline/data/Revisions.json","/var/opt/apg-patch-common/TargetSystemMappings.json")
 		onCloneClient.onClone(options.ocs[0])
+	}
+	
+	def removeAllTRevisions(def options) {
+		println "Removing all T Artifact from Artifactory."
+		boolean dryRun = true
+		if(options.rtr.size() > 0) {
+			if(options.rtr[0] == "0") {
+				dryRun = false
+			}
+		}
+		// TODO JHE: get the path to Revision file from a configuration file, or via parameter on command line?
+		// 			 will/should be improved as soon as JAVA8MIG-363 will be done.
+		def cloneClient = new PatchCloneClient("/var/jenkins/userContent/PatchPipeline/data/Revisions.json","/var/opt/apg-patch-common/TargetSystemMappings.json")
+		cloneClient.deleteAllTRevisions(dryRun)
 	}
 }
