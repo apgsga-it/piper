@@ -2,6 +2,6 @@
 	"dbModules": [
 		"testdbmodule",
 		"testdbAnotherdbModule",
-		"AndSomeOther"
+		"test.apgsga.jenkins-pipeline.it21-patch"
 	]
 }

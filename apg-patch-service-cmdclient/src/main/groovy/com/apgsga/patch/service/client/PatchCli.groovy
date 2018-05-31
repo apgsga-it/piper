@@ -102,6 +102,10 @@ class PatchCli {
 			def result = onClone(options,patchClient)
 			cmdResults.results['oc'] = result
 		}
+		if (options.rtr) {
+			def result = removeAllTRevisions(options)
+			cmdResults.results['rtr'] = result
+		}
 		cmdResults.returnCode = 0
 		return cmdResults
 	}
@@ -131,6 +135,7 @@ class PatchCli {
 			c longOpt: 'configDir', args:1, argName: 'directory', 'Configuration Directory', required: false
 			vv longOpt: 'validateArtifactNamesForVersion', args:2, valueSeparator: ",", argName: 'version,cvsBranch', 'Validate all artifact names for a given version on a given CVS branch', required: false
 			oc longOpt: 'onclone', args:1, argName: 'target', 'Clean Artifactory Repo and reset Revision file while cloning', required: false
+			rtr longOpt: 'removeTRevisions', args:1, argName: 'dryRun', 'Remove all T Revision from Artifactory. dryRun=1 -> simulation only, dryRun=0 -> artifact will be deleted', required: false
 		}
 
 		def options = cli.parse(args)

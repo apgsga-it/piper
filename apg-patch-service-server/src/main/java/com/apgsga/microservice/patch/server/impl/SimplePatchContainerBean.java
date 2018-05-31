@@ -213,35 +213,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public void onCloneOf(String clonedTarget) {
-
-		/*
-		 * The logic has been implemented within the patchCli. Here we don't
-		 * have to do anything else than - calling the patchCli command - Wait
-		 * for the command to be finished.
-		 */
-
-		String cmd = "sh -c apscli.sh -oc" + clonedTarget;
-		Long waitTimeout = 180L;
-		try {
-			Process proc = Runtime.getRuntime().exec(cmd);
-			boolean isFinished = proc.waitFor(waitTimeout, TimeUnit.SECONDS);
-
-			if (!isFinished || !(proc.exitValue() == 0)) {
-				// TODO JHE: what to do in this situation?
-				// TODO JHE: probably take Runtime Exception done for
-				// https://github.com/apgsga-it/piper/pull/11
-				throw new RuntimeException("Problem while cloning for " + clonedTarget);
-			}
-
-		} catch (IOException | InterruptedException e) {
-			// TODO JHE: probably take Runtime Exception done for
-			// https://github.com/apgsga-it/piper/pull/11
-			throw new RuntimeException("Error while cloning for " + clonedTarget + "." + e.getMessage());
-		}
-	}
-
-	@Override
 	public synchronized void startInstallPipeline(Patch patch) {
 		repo.savePatch(patch);
 		jenkinsClient.startInstallPipeline(patch);
