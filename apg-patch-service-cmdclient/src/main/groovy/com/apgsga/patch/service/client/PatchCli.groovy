@@ -112,6 +112,10 @@ class PatchCli {
 			def result = retrieveRevisions(options)
 			cmdResults.results['rr'] = result
 		}
+		if (options.rtr) {
+			def result = removeAllTRevisions(options)
+			cmdResults.results['rtr'] = result
+		}
 		cmdResults.returnCode = 0
 		return cmdResults
 	}
@@ -143,6 +147,7 @@ class PatchCli {
 			oc longOpt: 'onclone', args:1, argName: 'target', 'Clean Artifactory Repo and reset Revision file while cloning', required: false
 			sr longOpt: 'saveRevision', args:3, valueSeparator: ",", argName: 'targetInd,installationTarget,revision', 'Update revision with new value for given target', required: false
 			rr longOpt: 'retrieveRevision', args:3, valueSeparator: ",", argName: 'targetInd,installationTarget,revision', 'Save revision file with new value for a given target', required: false
+			rtr longOpt: 'removeTRevisions', args:1, argName: 'dryRun', 'Remove all T Revision from Artifactory. dryRun=1 -> simulation only, dryRun=0 -> artifact will be deleted', required: false
 		}
 
 		def options = cli.parse(args)
@@ -326,6 +331,12 @@ class PatchCli {
 				error = true
 			}
 		}
+		if (options.rtr) {
+			if(options.rtr.size() != 1) {
+				println "No parameter has been set, only a dryRun will be done. To delete all T artifact, please explicitely set dryRun to 0."
+				error = true
+			}
+		} 
 		if (error) {
 			cli.usage()
 			return null
@@ -602,5 +613,19 @@ class PatchCli {
 		revisions.lastRevisions[patchConfig.installationTarget] = patchConfig.revision
 		new File(revisionFileName).write(new JsonBuilder(revisions).toPrettyString())
 	
+	}
+	
+	def removeAllTRevisions(def options) {
+		println "Removing all T Artifact from Artifactory."
+		boolean dryRun = true
+		if(options.rtr.size() > 0) {
+			if(options.rtr[0] == "0") {
+				dryRun = false
+			}
+		}
+		// TODO JHE: get the path to Revision file from a configuration file, or via parameter on command line?
+		// 			 will/should be improved as soon as JAVA8MIG-363 will be done.
+		def cloneClient = new PatchCloneClient("/var/jenkins/userContent/PatchPipeline/data/Revisions.json","/var/opt/apg-patch-common/TargetSystemMappings.json")
+		cloneClient.deleteAllTRevisions(dryRun)
 	}
 }

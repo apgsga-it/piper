@@ -1,5 +1,6 @@
 package com.apgsga.patch.service.client
 
+import java.text.SimpleDateFormat
 import java.util.List
 import org.jfrog.artifactory.client.Artifactory
 import org.jfrog.artifactory.client.ArtifactoryClientBuilder
@@ -12,6 +13,8 @@ class PatchCloneClient {
 	private final String FIRST_PART_FOR_ARTIFACT_SEARCH = "T-"
 	
 	private final String RELEASE_REPO = "releases"
+	
+	private final String DB_PATCH_REPO = "dbpatch"
 	
 	private Artifactory artifactory;
 	
@@ -42,6 +45,19 @@ class PatchCloneClient {
 		}
 	}
 	
+	public void deleteAllTRevisions(boolean dryRun) {
+		removeArtifacts("*-T-*", dryRun);
+		if(!dryRun) {
+			renameRevisionFile()
+		}
+	}
+	
+	private void renameRevisionFile() {
+		def revisionFile = new File(revisionFilePath)
+		def fileSuffix = new Date().format("yyyyMMdd_HHmmss")
+		revisionFile.renameTo(revisionFilePath + "." + fileSuffix)
+	}
+	
 	private Long getLastRevisionForTarget(String target) {
 		
 		def revisions = getParsedRevisionFile()
@@ -61,7 +77,7 @@ class PatchCloneClient {
 		// TODO JHE: We can probably improve (remove) this loop by using a more sophisticated Regex
 		while(from <= lastRevision) {
 			// TODO JHE: do we want to search in more repos? Is "realeases" enough?
-			removeArtifacts(RELEASE_REPO, "*${FIRST_PART_FOR_ARTIFACT_SEARCH}${from}*", false)
+			removeArtifacts("*${FIRST_PART_FOR_ARTIFACT_SEARCH}${from}*", false)
 			from++
 		}
 	}
@@ -116,14 +132,14 @@ class PatchCloneClient {
 		return revisions
 	}
 	
-	private void removeArtifacts(String repo, String regex, boolean dryRun) {
-		List<RepoPath> searchItems = artifactory.searches().repositories(repo).artifactsByName(regex).doSearch();
+	private void removeArtifacts(String regex, boolean dryRun) {
+		List<RepoPath> searchItems = artifactory.searches().repositories(RELEASE_REPO,DB_PATCH_REPO).artifactsByName(regex).doSearch();
 		searchItems.each{repoPath ->
 			if(dryRun) {
 				println "${repoPath} would have been deleted."
 			}
 			else {
-				artifactory.repository(repo).delete(repoPath.getItemPath());
+				artifactory.repository(repoPath.getRepoKey()).delete(repoPath.getItemPath());
 			}
 		};
 	}

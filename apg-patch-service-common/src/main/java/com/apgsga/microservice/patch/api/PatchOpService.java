@@ -31,13 +31,4 @@ public interface PatchOpService {
 	 * @return: List of MavenArtifact for Artifacts having a wrong name
 	 */
 	public List<MavenArtifact> invalidArtifactNames(String version, String cvsBranch);
-
-	/**
-	 * This method , is intended to be integrated into the "Clone" Process of
-	 * Apg. And triggers resp. implements all for the Patch Service relevant
-	 * functionality, which needs to be done after a target has been cloned.
-	 * 
-	 * @param clonedTarget the Id of the cloned System
-	 */
-	public void onCloneOf(String clonedTarget);
 }

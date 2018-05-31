@@ -205,20 +205,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public void onCloneOf(String clonedTarget) {
-
-		/**
-		 * JHE (30.05.2018)
-		 * In the future we'll eventually support the clone API also here with probably:
-		 * 		REST API > Patch Service > Job > apscli
-		 * But for now, the clone job is only supported via the apscli.
-		 * 
-		 */
-		
-		LOGGER.info("onClone not supported yet via the patch service, use apscli instead.");
-	}
-
-	@Override
 	public synchronized void startInstallPipeline(Patch patch) {
 		repo.savePatch(patch);
 		jenkinsClient.startInstallPipeline(patch);
