@@ -625,7 +625,7 @@ class PatchCli {
 			}
 		}
 		revisions.lastRevisions[installationTarget] = revision
-		new File(revisionFileName).write(new JsonBuilder(revisions).toPrettyString())
+		new File(revisionFilePath).write(new JsonBuilder(revisions).toPrettyString())
 	
 	}
 	
