@@ -32,6 +32,7 @@ class PatchCli {
 	def validToStates
 	def configDir
 	def defaultConfig
+	def revisionFilePath = "/var/opt/apg-patch-cli/Revisions.json"
 
 	def process(def args) {
 		println args
@@ -562,7 +563,7 @@ class PatchCli {
 		println "Performing onClone for ${options.ocs[0]}"
 		// TODO JHE: get the path to Revision file from a configuration file, or via parameter on command line?
 		// 			 will/should be improved as soon as JAVA8MIG-363 will be done. 
-		def onCloneClient = new PatchCloneClient("/var/jenkins/userContent/PatchPipeline/data/Revisions.json","/var/opt/apg-patch-common/TargetSystemMappings.json")
+		def onCloneClient = new PatchCloneClient(revisionFilePath,"${configDir}/TargetSystemMappings.json")
 		onCloneClient.onClone(options.ocs[0])
 	}
 	
@@ -572,10 +573,7 @@ class PatchCli {
 		def installationTarget = options.rrs[1]
 		def revision = options.rrs[2]
 		
-		// TODO JHE: get this from property file
-		def revisionFileName = "/var/jenkins/userContent/PatchPipeline/data/Revisions.json"
-		
-		def revisionFile = new File(revisionFileName)
+		def revisionFile = new File(revisionFilePath)
 		def currentRevision = [P:1,T:10000]
 		def lastRevision = [:]
 		def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
@@ -610,10 +608,7 @@ class PatchCli {
 		def installationTarget = options.srs[1]
 		def revision = options.srs[2]
 		
-		// TODO JHE: Get this from a configuration file
-		def revisionFileName = "/var/jenkins/userContent/PatchPipeline/data/Revisions.json"
-		
-		def revisionFile = new File(revisionFileName)
+		def revisionFile = new File(revisionFilePath)
 		def currentRevision = [P:1,T:10000]
 		def lastRevision = [:]
 		def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
@@ -644,7 +639,7 @@ class PatchCli {
 		}
 		// TODO JHE: get the path to Revision file from a configuration file, or via parameter on command line?
 		// 			 will/should be improved as soon as JAVA8MIG-363 will be done.
-		def cloneClient = new PatchCloneClient("/var/jenkins/userContent/PatchPipeline/data/Revisions.json","/var/opt/apg-patch-common/TargetSystemMappings.json")
+		def cloneClient = new PatchCloneClient(revisionFilePath,"${configDir}/TargetSystemMappings.json")
 		cloneClient.deleteAllTRevisions(dryRun)
 	}
 }
