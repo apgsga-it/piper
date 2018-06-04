@@ -6,6 +6,8 @@ import groovy.json.JsonSlurper
 import org.jfrog.artifactory.client.Artifactory
 import org.jfrog.artifactory.client.ArtifactoryClientBuilder
 import org.jfrog.artifactory.client.model.RepoPath
+
+import spock.lang.Ignore
 import spock.lang.Specification
 
 class PatchCloneClientTest extends Specification {
@@ -14,6 +16,7 @@ class PatchCloneClientTest extends Specification {
 	
 	def testTargetSystemFilePath = "src/test/resources/config/TargetSystemMappings.json"
 	
+	@Ignore
 	def "Test onClone method for a non-valid target, shouldn't get an excpetion"() {
 		setup:
 			def client = new PatchCloneClient(testRevisionFilePath,testTargetSystemFilePath)
@@ -24,6 +27,7 @@ class PatchCloneClientTest extends Specification {
 			notThrown(RuntimeException)
 	}
 	
+	@Ignore
 	def "Test onClone method, validate that Artifact are effectively deleted from Artifactory and that revision has been reset"() {
 		setup:
 			def url = "https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga"

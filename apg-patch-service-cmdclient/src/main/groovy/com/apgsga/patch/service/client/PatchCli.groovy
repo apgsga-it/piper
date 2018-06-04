@@ -2,6 +2,7 @@ package com.apgsga.patch.service.client
 
 
 import org.springframework.core.io.FileSystemResourceLoader
+
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 
@@ -11,6 +12,8 @@ import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.fasterxml.jackson.databind.ObjectMapper
 
 import groovy.json.JsonSlurper
+import groovy.json.JsonBuilder
+import groovy.json.JsonOutput
 
 class PatchCli {
 
@@ -29,6 +32,7 @@ class PatchCli {
 	def validToStates
 	def configDir
 	def defaultConfig
+	def revisionFilePath = "/var/opt/apg-patch-cli/Revisions.json"
 
 	def process(def args) {
 		println args
@@ -102,6 +106,14 @@ class PatchCli {
 			def result = onClone(options,patchClient)
 			cmdResults.results['oc'] = result
 		}
+		if (options.sr) {
+			def result = saveRevisions(options)
+			cmdResults.results['sr'] = result
+		}
+		if (options.rr) {
+			def result = retrieveRevisions(options)
+			cmdResults.results['rr'] = result
+		}
 		if (options.rtr) {
 			def result = removeAllTRevisions(options)
 			cmdResults.results['rtr'] = result
@@ -110,6 +122,7 @@ class PatchCli {
 		return cmdResults
 	}
 	def validateOpts(args) {
+		// TODO JHE: Add oc, sr, rr and rtr description here.
 		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-[l|d|dd|dm] <directory>]  [-[e|r] <patchnumber>] [-[s|sa|ud|um] <file>] [-f <patchnumber,directory>] [-sta <patchnumber,toState,[aps,db,nil]]')
 		cli.formatter.setDescPadding(0)
 		cli.formatter.setLeftPadding(0)
@@ -135,6 +148,8 @@ class PatchCli {
 			c longOpt: 'configDir', args:1, argName: 'directory', 'Configuration Directory', required: false
 			vv longOpt: 'validateArtifactNamesForVersion', args:2, valueSeparator: ",", argName: 'version,cvsBranch', 'Validate all artifact names for a given version on a given CVS branch', required: false
 			oc longOpt: 'onclone', args:1, argName: 'target', 'Clean Artifactory Repo and reset Revision file while cloning', required: false
+			sr longOpt: 'saveRevision', args:3, valueSeparator: ",", argName: 'targetInd,installationTarget,revision', 'Update revision with new value for given target', required: false
+			rr longOpt: 'retrieveRevision', args:3, valueSeparator: ",", argName: 'targetInd,installationTarget,revision', 'Save revision file with new value for a given target', required: false
 			rtr longOpt: 'removeTRevisions', args:1, argName: 'dryRun', 'Remove all T Revision from Artifactory. dryRun=1 -> simulation only, dryRun=0 -> artifact will be deleted', required: false
 		}
 
@@ -325,6 +340,18 @@ class PatchCli {
 				error = true
 			}
 		} 
+		if (options.rr) {
+			if(options.rrs.size() != 3) {
+				println "3 parameters are required for the retrieveRevision command."
+				error = true
+			}
+		}
+		if (options.sr) {
+			if(options.srs.size() != 3) {
+				println "3 parameters are required for the saveRevision command."
+				error = true
+			}
+		}
 		if (error) {
 			cli.usage()
 			return null
@@ -536,8 +563,70 @@ class PatchCli {
 		println "Performing onClone for ${options.ocs[0]}"
 		// TODO JHE: get the path to Revision file from a configuration file, or via parameter on command line?
 		// 			 will/should be improved as soon as JAVA8MIG-363 will be done. 
-		def onCloneClient = new PatchCloneClient("/var/jenkins/userContent/PatchPipeline/data/Revisions.json","/var/opt/apg-patch-common/TargetSystemMappings.json")
+		def onCloneClient = new PatchCloneClient(revisionFilePath,"${configDir}/TargetSystemMappings.json")
 		onCloneClient.onClone(options.ocs[0])
+	}
+	
+	def retrieveRevisions(def options) {
+		
+		def targetInd = options.rrs[0]
+		def installationTarget = options.rrs[1]
+		def revision = options.rrs[2]
+		
+		def revisionFile = new File(revisionFilePath)
+		def currentRevision = [P:1,T:10000]
+		def lastRevision = [:]
+		def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
+		def patchRevision
+		def patchLastRevision
+		if (revisionFile.exists()) {
+			revisions = new JsonSlurper().parseText(revisionFile.text)
+		}
+		
+		if(targetInd.equals("P")) {
+			revision = revisions.currentRevision[targetInd]
+		}
+		else {
+			if(revisions.lastRevisions.get(installationTarget) == null) {
+				patchRevision = revisions.currentRevision[targetInd]
+			}
+			else {
+				patchRevision = revisions.lastRevisions.get(installationTarget) + 1
+			}
+		}
+	
+		patchLastRevision = revisions.lastRevisions.get(installationTarget,'SNAPSHOT')
+		
+		// JHE (31.05.2018) : we print the json on stdout so that the pipeline can get and parse it. Unfortunately there is currently no supported alternative: https://issues.jenkins-ci.org/browse/JENKINS-26133
+		def json = JsonOutput.toJson([fromRetrieveRevision:[revision: patchRevision, lastRevision: patchLastRevision]])
+		println json
+	}
+	
+	def saveRevisions(def options) {
+
+		def targetInd = options.srs[0]
+		def installationTarget = options.srs[1]
+		def revision = options.srs[2]
+		
+		def revisionFile = new File(revisionFilePath)
+		def currentRevision = [P:1,T:10000]
+		def lastRevision = [:]
+		def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
+		if (revisionFile.exists()) {
+			revisions = new JsonSlurper().parseText(revisionFile.text)
+		}
+		if(targetInd.equals("P")) {
+			revisions.currentRevision[targetInd]++
+		}
+		else {
+			// We increase it only when saving a new Target
+			if(revisions.lastRevisions.get(installationTarget) == null) {
+				revisions.currentRevision[targetInd] = revisions.currentRevision[targetInd] + 10000
+			}
+		}
+		revisions.lastRevisions[installationTarget] = revision
+		new File(revisionFilePath).write(new JsonBuilder(revisions).toPrettyString())
+	
 	}
 	
 	def removeAllTRevisions(def options) {
@@ -550,7 +639,7 @@ class PatchCli {
 		}
 		// TODO JHE: get the path to Revision file from a configuration file, or via parameter on command line?
 		// 			 will/should be improved as soon as JAVA8MIG-363 will be done.
-		def cloneClient = new PatchCloneClient("/var/jenkins/userContent/PatchPipeline/data/Revisions.json","/var/opt/apg-patch-common/TargetSystemMappings.json")
+		def cloneClient = new PatchCloneClient(revisionFilePath,"${configDir}/TargetSystemMappings.json")
 		cloneClient.deleteAllTRevisions(dryRun)
 	}
 }

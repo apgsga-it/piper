@@ -1,11 +1,12 @@
 {
     "currentRevision": {
         "P": 3,
-        "T": 30000
+        "T": 40000
     },
     "lastRevisions": {
-        "CHEI211": 2,
-        "CHEI212": 10056,
-        "CHTI211": 20001
+        "CHEI211": 20002,
+        "CHEI212": 10003,
+        "CHPI211": 2,
+        "CHTI211": 30001
     }
 }
