@@ -22,7 +22,7 @@ import com.google.common.collect.Lists;
 
 public class RepositorySystemFactory {
 	// TODO (che, 9.3 ) : Temporory fix
-	private static final String REPO_PASSWD = "dev1234";
+	private static final String REPO_PASSWD = "dev2345";
 	private static final String REPO_USER = "dev";
 	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = "https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/repo";
 	//private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_SNAPSHOT = "http://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/public-snapshot";

@@ -29,7 +29,7 @@ class PatchCloneClient {
 		//			 										 name of the file is still to be determined.
 		def url = "https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga"
 		def user = "dev"
-		def password = "dev1234"
+		def password = "dev2345"
 		artifactory = ArtifactoryClientBuilder.create().setUrl(url).setUsername(user).setPassword(password).build();
 		revisionFilePath = p_revisionFilePath
 		targetSystemFilePath = p_targetSystemFilePath
