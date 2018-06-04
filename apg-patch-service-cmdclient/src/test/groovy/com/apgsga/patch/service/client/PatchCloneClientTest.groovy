@@ -28,7 +28,7 @@ class PatchCloneClientTest extends Specification {
 		setup:
 			def url = "https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga"
 			def user = "dev"
-			def password = "dev2345"
+			def password = "dev1234"
 			def artifactory = ArtifactoryClientBuilder.create().setUrl(url).setUsername(user).setPassword(password).build()
 			def client = new PatchCloneClient(testRevisionFilePath,testTargetSystemFilePath)
 			def jarFile1 = new File("src/test/resources/forArtifactoryTest/patchCloneTest-T-10001.jar")
