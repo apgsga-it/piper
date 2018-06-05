@@ -24,6 +24,7 @@ import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.api.impl.PatchBean;
+import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutor;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
 import com.apgsga.microservice.patch.server.impl.SimplePatchContainerBean;
@@ -82,9 +83,9 @@ public class MicroServicePatchServerTest {
 		try {
 			patchService.save(patch);
 			fail();
-		} catch (Throwable e) {
-			// TODO Detail , Exception Handling
-			// Ok
+		} catch (PatchServiceRuntimeException e) {
+			LOGGER.info(e.toString());
+			Assert.assertEquals("SimplePatchContainerBean.save.patchnumber.notnull.assert", e.getMessageKey());
 		}
 	}
 

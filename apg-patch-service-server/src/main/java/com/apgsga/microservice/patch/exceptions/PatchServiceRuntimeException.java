@@ -7,28 +7,36 @@ public class PatchServiceRuntimeException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 	
 	private HttpStatus httpStatusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+	
+	private String messageKey; 
 
-	public PatchServiceRuntimeException(String message, Throwable cause) {
+	public PatchServiceRuntimeException(String messageKey,String message, Throwable cause) {
 		super(message, cause);
+		this.messageKey = messageKey;
 	}
 
-	public PatchServiceRuntimeException(String message) {
+	public PatchServiceRuntimeException(String messageKey, String message) {
 		super(message);
+		this.messageKey = messageKey;
 	}
 	
-	public PatchServiceRuntimeException(HttpStatus httpStatusCode,String message, Throwable cause) {
-		this(message, cause);
+	public PatchServiceRuntimeException(String messageKey,HttpStatus httpStatusCode,String message, Throwable cause) {
+		this(messageKey,message, cause);
 		this.httpStatusCode = httpStatusCode;
 	}
 
-	public PatchServiceRuntimeException(HttpStatus httpStatusCode,String message) {
-		this(message);
+	public PatchServiceRuntimeException(String messageKey,HttpStatus httpStatusCode,String message) {
+		this(messageKey,message);
 		this.httpStatusCode = httpStatusCode;
 	}
 	
 
 	public HttpStatus getHttpStatusCode() {
 		return httpStatusCode;
+	}
+
+	public String getMessageKey() {
+		return messageKey;
 	}
 	
 
