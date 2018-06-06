@@ -77,17 +77,6 @@ public class MicroServicePatchServerTest {
 		Assert.assertNull(result);
 	}
 
-	@Test
-	public void testSaveEmptyWithOutId() {
-		Patch patch = new PatchBean();
-		try {
-			patchService.save(patch);
-			fail();
-		} catch (PatchServiceRuntimeException e) {
-			LOGGER.info(e.toString());
-			Assert.assertEquals("SimplePatchContainerBean.save.patchnumber.notnull.assert", e.getMessageKey());
-		}
-	}
 
 	@Test
 	public void testSaveWithArtifacts() {
@@ -145,23 +134,7 @@ public class MicroServicePatchServerTest {
 		patchActionExecutor.execute("SomeUnqiueNumber3", "Entwicklung");
 	}
 	
-	@Test
-	public void testPatchInvalidToState() {
-		Patch patch = new PatchBean();
-		patch.setPatchNummer("SomeUnqiueNumber3");
-		patch.setServiceName("It21ui");
-		patch.setMicroServiceBranch("SomeBaseBranch");
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId1", "GroupId1", "Version1"));
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId2", "GroupId2", "Version2"));
-		patchService.save(patch);
-		PatchActionExecutor patchActionExecutor = patchActionFactory.create(patchService); 
-		try {
-			patchActionExecutor.execute("SomeUnqiueNumber3", "xxxxxxx");
-			fail("Expected Runtime Exception");
-		} catch (Throwable e) {
-			LOGGER.info("Fine with: " + e.getMessage());
-		}
-	}
+
 
 
 }

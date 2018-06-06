@@ -1,6 +1,9 @@
-package com.apgsga.patch.service.client
+package com.apgsga.patch.service.revision
 
 import org.springframework.boot.test.context.SpringBootTest
+
+import com.apgsga.patch.service.client.PatchCloneClient
+
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import org.jfrog.artifactory.client.Artifactory

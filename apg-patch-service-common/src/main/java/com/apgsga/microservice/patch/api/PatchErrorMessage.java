@@ -1,23 +1,21 @@
 package com.apgsga.microservice.patch.api;
 
-import java.time.LocalDateTime;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 public class PatchErrorMessage {
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-	private LocalDateTime timestamp;
+	private String timestamp;
+	private String errorKey;
 	private String errorText;
 	private String causeExceptionMsg;
 	private String stackTrace;
 
 	public PatchErrorMessage() {
-		timestamp = LocalDateTime.now();
 	}
 
-	public PatchErrorMessage(String errorText, String causeExceptionMsg, String stackTrace) {
+	public PatchErrorMessage(String timeStamp, String errorKey, String errorText, String causeExceptionMsg,
+			String stackTrace) {
 		super();
+		this.timestamp = timeStamp;
+		this.errorKey = errorKey;
 		this.errorText = errorText;
 		this.causeExceptionMsg = causeExceptionMsg;
 		this.stackTrace = stackTrace;
@@ -45,6 +43,28 @@ public class PatchErrorMessage {
 
 	public void setStackTrace(String stackTrace) {
 		this.stackTrace = stackTrace;
+	}
+
+	public String getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(String timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	public String getErrorKey() {
+		return errorKey;
+	}
+
+	public void setErrorKey(String errorKey) {
+		this.errorKey = errorKey;
+	}
+
+	@Override
+	public String toString() {
+		return "PatchErrorMessage [timestamp=" + timestamp + ", errorKey=" + errorKey + ", errorText=" + errorText
+				+ ", causeExceptionMsg=" + causeExceptionMsg + ", stackTrace=" + stackTrace + "]";
 	}
 
 }

@@ -11,6 +11,7 @@ import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
+import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 
 import groovy.lang.Binding;
@@ -53,9 +54,23 @@ public class GroovyScriptActionExecutor implements PatchActionExecutor {
 	public void setGroovyScriptFile(String groovyScriptFile) {
 		this.groovyScriptFile = groovyScriptFile;
 	}
+	
+	
+
+	public String getConfigFileName() {
+		return configFileName;
+	}
+
+	public void setConfigFileName(String configFileName) {
+		this.configFileName = configFileName;
+	}
 
 	@Override
 	public void execute(String patchNumber, String toStatus) {
+		Asserts.notNullOrEmpty(patchNumber, "GroovyScriptActionExecutor.execute.patchnumber.notnullorempty.assert",
+				new Object[] {toStatus });
+		Asserts.isTrue((patchContainer.getRepo().patchExists(patchNumber)),
+				"GroovyScriptActionExecutor.execute.patch.exists.assert", new Object[] { patchNumber });
 		final Binding sharedData = new Binding();
 		final GroovyShell shell = new GroovyShell(sharedData);
 		sharedData.setProperty("configDir", configDir);
@@ -67,6 +82,7 @@ public class GroovyScriptActionExecutor implements PatchActionExecutor {
 		Resource scriptResource = rl.getResource(groovyScriptFile);
 		try {
 			File scriptFile = scriptResource.getFile();
+			Asserts.isTrue(scriptFile.exists(), "GroovyScriptActionExecutor.execute.scriptfileexists.assert", new Object[] {groovyScriptFile,patchNumber, toStatus});
 			LOGGER.info(
 					"About to execute script file: " + scriptFile.getAbsolutePath() + ", with toStatus: " + toStatus);
 			String script = FileUtils.readFileToString(scriptFile, "UTF-8");

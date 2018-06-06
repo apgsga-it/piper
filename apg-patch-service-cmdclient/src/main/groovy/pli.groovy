@@ -1,3 +1,3 @@
 import com.apgsga.patch.service.client.PatchCli
 
-PatchCli.create().process(args)
+System.exit(PatchCli.create().process(args).returnCode)

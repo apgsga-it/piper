@@ -106,15 +106,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public Patch findById(String patchNummer) {
-		Asserts.notNull(patchNummer, "SimplePatchContainerBean.findById.patchnumber.notnull.assert",
-				new Object[] {});
 		return repo.findById(patchNummer);
 	}
 
 	@Override
 	public Patch save(Patch patch) {
 		Asserts.notNull(patch, "SimplePatchContainerBean.save.patchobject.notnull.assert", new Object[] {});
-		Asserts.notNull(patch.getPatchNummer(), "SimplePatchContainerBean.save.patchnumber.notnull.assert",
+		Asserts.notNullOrEmpty(patch.getPatchNummer(), "SimplePatchContainerBean.save.patchnumber.notnullorempty.assert",
 				new Object[] { patch.toString() });
 		preProcessSave(patch);
 		repo.savePatch(patch);
@@ -152,11 +150,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public void remove(Patch patch) {
-		Asserts.notNull(patch, "SimplePatchContainerBean.remove.patchobject.notnull.assert", new Object[] {});
-		Asserts.notNull(patch.getPatchNummer(), "SimplePatchContainerBean.remove.patchnumber.notnull.assert",
-				new Object[] { patch.toString() });
-		Asserts.isTrue((repo.patchExists(patch.getPatchNummer())),
-				"SimplePatchContainerBean.remove.patch.exists.assert", new Object[] { patch.toString() });
 		repo.removePatch(patch);
 	}
 

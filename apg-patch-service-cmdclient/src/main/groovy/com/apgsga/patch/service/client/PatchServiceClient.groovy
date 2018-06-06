@@ -1,5 +1,9 @@
 package com.apgsga.patch.service.client
 
+import java.io.IOException
+
+import org.springframework.http.client.ClientHttpResponse
+import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 
 import com.apgsga.microservice.patch.api.DbModules
@@ -23,6 +27,7 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 	public PatchServiceClient(String url) {
 		this.baseUrl = url;
 		this.restTemplate = new RestTemplate();
+		restTemplate.setErrorHandler(new PatchCliExceptionHandler())
 	}
 
 
@@ -141,5 +146,26 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 	public List<MavenArtifact> invalidArtifactNames(String version,String cvsBranch) {
 		def invalidArtifacts = restTemplate.getForObject(getRestBaseUri() + "/validateArtifactNamesFromVersion?version=${version}&cvsbranch=${cvsBranch}", List.class)
 		return invalidArtifacts;
+	}
+
+	class PatchServiceErrorHandler implements ResponseErrorHandler {
+
+
+
+		public PatchServiceErrorHandler() {
+		}
+
+		@Override
+		public boolean hasError(ClientHttpResponse response) throws IOException {
+		
+			return false;
+		}
+
+		@Override
+		public void handleError(ClientHttpResponse response) throws IOException {
+			System.err.println "Recieved Error from Server with Http Code: ${response.getStatusText()}"
+			System.err.println "Error output : " + response.body.getText("UTF-8")
+			
+		}
 	}
 }

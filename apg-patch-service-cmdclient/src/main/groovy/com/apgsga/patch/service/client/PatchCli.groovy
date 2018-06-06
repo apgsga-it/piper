@@ -1,8 +1,8 @@
 package com.apgsga.patch.service.client
 
 
+import org.codehaus.groovy.runtime.StackTraceUtils
 import org.springframework.core.io.FileSystemResourceLoader
-
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 
@@ -11,9 +11,9 @@ import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.fasterxml.jackson.databind.ObjectMapper
 
-import groovy.json.JsonSlurper
 import groovy.json.JsonBuilder
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 
 class PatchCli {
 
@@ -33,6 +33,7 @@ class PatchCli {
 	def configDir
 	def defaultConfig
 	def revisionFilePath = "/var/opt/apg-patch-cli/Revisions.json"
+	def validate = true
 
 	def process(def args) {
 		println args
@@ -41,85 +42,103 @@ class PatchCli {
 			def cmdResults = new Expando();
 		cmdResults.results = [:]
 		cmdResults.returnCode = 1
-		def patchClient = new PatchServiceClient(!options.u ? defaultHost : options.u)
-		if (options.l) {
-			def result = uploadPatchFiles(options,patchClient)
-			cmdResults.results['l'] = result
+		try {
+			def patchClient = new PatchServiceClient(!options.u ? defaultHost : options.u)
+			if (options.l) {
+				def result = uploadPatchFiles(options,patchClient)
+				cmdResults.results['l'] = result
+			}
+			if (options.d) {
+				def result = downloadPatchFiles(options, patchClient)
+				cmdResults.results['d'] =  result
+			}
+			if (options.e) {
+				def result = patchExists(options,patchClient)
+				cmdResults.results['e'] =  result
+			}
+			if (options.fs) {
+				def result = findById(options, patchClient)
+				cmdResults.results['f'] = result
+			}
+			if (options.a) {
+				def result = findAndPrintAllPatchIds(patchClient)
+				cmdResults.results['a'] =  result
+			}
+			if (options.r) {
+				def result = removePatch(options,patchClient)
+				cmdResults.results['r'] =  result
+			}
+			if (options.s) {
+				def result = uploadPatch(options,patchClient)
+				cmdResults.results['s']=  result
+			}
+			if (options.sa) {
+				def result = savePatch(options,patchClient)
+				cmdResults.results['sa']=  result
+			}
+			if (options.dd) {
+				def result = downloadDbModules(options,patchClient)
+				cmdResults.results['dd'] = result
+			}
+			if (options.ud) {
+				def result = uploadDbModules(options,patchClient)
+				cmdResults.results['ud'] = result
+			}
+			if (options.dm) {
+				def result = downloadServiceMetaData(options,patchClient)
+				cmdResults.results['dm'] = result
+			}
+			if (options.um) {
+				def result = uploadServiceMetaData(options,patchClient)
+				cmdResults.results['um'] = result
+			}
+			if (options.sta) {
+				def result = stateChangeAction(options,patchClient)
+				cmdResults.results['sta'] = result
+			}
+			if (options.la) {
+				def result = listAllFiles(options,patchClient)
+				cmdResults.results['la'] = result
+			}
+			if (options.lf) {
+				def result = listFiles(options,patchClient)
+				cmdResults.results['lf'] = result
+			}
+			if (options.oc) {
+				def result = onClone(options,patchClient)
+				cmdResults.results['oc'] = result
+			}
+			if (options.sr) {
+				def result = saveRevisions(options)
+				cmdResults.results['sr'] = result
+			}
+			if (options.rr) {
+				def result = retrieveRevisions(options)
+				cmdResults.results['rr'] = result
+			}
+			if (options.rtr) {
+				def result = removeAllTRevisions(options)
+				cmdResults.results['rtr'] = result
+			}
+			cmdResults.returnCode = 0
+			return cmdResults
+		} catch (PatchClientServerException e) {
+			System.err.println "Server Error ccurred on ${e.errorMessage.timestamp} : ${e.errorMessage.errorText} "
+			cmdResults.results['error'] = e.errorMessage
+			return cmdResults
+
+		} catch (AssertionError e) {
+			System.err.println "Client Error ccurred ${e.message} "
+			cmdResults.results['error'] = e.message
+			return cmdResults
+
+		} catch (Exception e) {
+			System.err.println " Unhandling Exception occurred "
+			System.err.println e.toString()
+			StackTraceUtils.printSanitizedStackTrace(e,new PrintWriter(System.err))
+			cmdResults.results['error'] = e
+			return cmdResults
 		}
-		if (options.d) {
-			def result = downloadPatchFiles(options, patchClient)
-			cmdResults.results['d'] =  result
-		}
-		if (options.e) {
-			def result = patchExists(options,patchClient)
-			cmdResults.results['e'] =  result
-		}
-		if (options.fs) {
-			def result = findById(options, patchClient)
-			cmdResults.results['f'] = result
-		}
-		if (options.a) {
-			def result = findAndPrintAllPatchIds(patchClient)
-			cmdResults.results['a'] =  result
-		}
-		if (options.r) {
-			def result = removePatch(options,patchClient)
-			cmdResults.results['r'] =  result
-		}
-		if (options.s) {
-			def result = uploadPatch(options,patchClient)
-			cmdResults.results['s']=  result
-		}
-		if (options.sa) {
-			def result = savePatch(options,patchClient)
-			cmdResults.results['sa']=  result
-		}
-		if (options.dd) {
-			def result = downloadDbModules(options,patchClient)
-			cmdResults.results['dd'] = result
-		}
-		if (options.ud) {
-			def result = uploadDbModules(options,patchClient)
-			cmdResults.results['ud'] = result
-		}
-		if (options.dm) {
-			def result = downloadServiceMetaData(options,patchClient)
-			cmdResults.results['dm'] = result
-		}
-		if (options.um) {
-			def result = uploadServiceMetaData(options,patchClient)
-			cmdResults.results['um'] = result
-		}
-		if (options.sta) {
-			def result = stateChangeAction(options,patchClient)
-			cmdResults.results['sta'] = result
-		}
-		if (options.la) {
-			def result = listAllFiles(options,patchClient)
-			cmdResults.results['la'] = result
-		}
-		if (options.lf) {
-			def result = listFiles(options,patchClient)
-			cmdResults.results['lf'] = result
-		}
-		if (options.oc) {
-			def result = onClone(options,patchClient)
-			cmdResults.results['oc'] = result
-		}
-		if (options.sr) {
-			def result = saveRevisions(options)
-			cmdResults.results['sr'] = result
-		}
-		if (options.rr) {
-			def result = retrieveRevisions(options)
-			cmdResults.results['rr'] = result
-		}
-		if (options.rtr) {
-			def result = removeAllTRevisions(options)
-			cmdResults.results['rtr'] = result
-		}
-		cmdResults.returnCode = 0
-		return cmdResults
 	}
 	def validateOpts(args) {
 		// TODO JHE: Add oc, sr, rr and rtr description here.
@@ -160,6 +179,10 @@ class PatchCli {
 			println "Wrong parameters"
 			cli.usage()
 			return null
+		}
+
+		if (!validate) {
+			return options
 		}
 
 		if (!options.u) {
@@ -339,7 +362,7 @@ class PatchCli {
 				println "No parameter has been set, only a dryRun will be done. To delete all T artifact, please explicitely set dryRun to 0."
 				error = true
 			}
-		} 
+		}
 		if (options.rr) {
 			if(options.rrs.size() != 3) {
 				println "3 parameters are required for the retrieveRevision command."
@@ -460,10 +483,11 @@ class PatchCli {
 	}
 
 
-	def removePatch(def options, def patchClient) {
+	def removePatch(def options, PatchServiceClient patchClient) {
 		println "Reading: ${options.r} to remove from server"
-		def patchData = patchClient.findById(options.r)
+		Patch patchData = patchClient.findById(options.r)
 		println "Removing Patch ${options.r}"
+	    assert patchData != null : "Patch ${options.r} to remove not found"
 		patchClient.removePatch(patchData)
 		println "Remove Patch ${options.r} done."
 		def cmdResult = new Expando();
@@ -532,7 +556,7 @@ class PatchCli {
 		def cmdResult = new Expando()
 		def data =  patchClient.getServicesMetaData()
 		if (data == null) {
-			cmdResult.exists = false; 
+			cmdResult.exists = false;
 			return cmdResult
 		}
 		def dataFile = new File(options.dm,"ServicesMetaData.json")
@@ -558,21 +582,21 @@ class PatchCli {
 		def invalidArtifacts = patchClient.invalidArtifactNames(options.vvs[0],options.vvs[1])
 		println invalidArtifacts
 	}
-	
+
 	def onClone(def options, PatchServiceClient patchClient) {
 		println "Performing onClone for ${options.ocs[0]}"
 		// TODO JHE: get the path to Revision file from a configuration file, or via parameter on command line?
-		// 			 will/should be improved as soon as JAVA8MIG-363 will be done. 
+		// 			 will/should be improved as soon as JAVA8MIG-363 will be done.
 		def onCloneClient = new PatchCloneClient(revisionFilePath,"${configDir}/TargetSystemMappings.json")
 		onCloneClient.onClone(options.ocs[0])
 	}
-	
+
 	def retrieveRevisions(def options) {
-		
+
 		def targetInd = options.rrs[0]
 		def installationTarget = options.rrs[1]
 		def revision = options.rrs[2]
-		
+
 		def revisionFile = new File(revisionFilePath)
 		def currentRevision = [P:1,T:10000]
 		def lastRevision = [:]
@@ -582,7 +606,7 @@ class PatchCli {
 		if (revisionFile.exists()) {
 			revisions = new JsonSlurper().parseText(revisionFile.text)
 		}
-		
+
 		if(targetInd.equals("P")) {
 			revision = revisions.currentRevision[targetInd]
 		}
@@ -594,20 +618,20 @@ class PatchCli {
 				patchRevision = revisions.lastRevisions.get(installationTarget) + 1
 			}
 		}
-	
+
 		patchLastRevision = revisions.lastRevisions.get(installationTarget,'SNAPSHOT')
-		
+
 		// JHE (31.05.2018) : we print the json on stdout so that the pipeline can get and parse it. Unfortunately there is currently no supported alternative: https://issues.jenkins-ci.org/browse/JENKINS-26133
 		def json = JsonOutput.toJson([fromRetrieveRevision:[revision: patchRevision, lastRevision: patchLastRevision]])
 		println json
 	}
-	
+
 	def saveRevisions(def options) {
 
 		def targetInd = options.srs[0]
 		def installationTarget = options.srs[1]
 		def revision = options.srs[2]
-		
+
 		def revisionFile = new File(revisionFilePath)
 		def currentRevision = [P:1,T:10000]
 		def lastRevision = [:]
@@ -626,9 +650,9 @@ class PatchCli {
 		}
 		revisions.lastRevisions[installationTarget] = revision
 		new File(revisionFilePath).write(new JsonBuilder(revisions).toPrettyString())
-	
+
 	}
-	
+
 	def removeAllTRevisions(def options) {
 		println "Removing all T Artifact from Artifactory."
 		boolean dryRun = true

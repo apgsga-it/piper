@@ -17,6 +17,7 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
+import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,6 +57,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	@Override
 	public synchronized Patch findById(String patchNummer) {
+		Asserts.notNullOrEmpty(patchNummer, "FilebasedPatchPersistence.findById.patchnumber.notnullorempty.assert",
+				new Object[] {});
 		try {
 			File patchFile = createFile("Patch" + patchNummer + ".json");
 			if (!patchFile.exists()) {
@@ -72,6 +75,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	@Override
 	public synchronized Boolean patchExists(String patchNumber) {
+		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.patchExists.patchnumber.notnullorempty.assert",
+				new Object[] {});
 		try {
 			File patchFile = createFile("Patch" + patchNumber + ".json");
 			if (patchFile.exists()) {
@@ -100,12 +105,20 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	@Override
 	public synchronized void savePatch(Patch patch) {
+		Asserts.notNull(patch, "FilebasedPatchPersistence.save.patchobject.notnull.assert", new Object[] {});
+		Asserts.notNullOrEmpty(patch.getPatchNummer(), "FilebasedPatchPersistence.save.patchnumber.notnullorempty.assert",
+				new Object[] { patch.toString() });
 		writeToFile(patch, "Patch" + patch.getPatchNummer() + ".json");
 	}
 
 	// TODO (che, 8.5) Do we want remove also "Atomic"
 	@Override
 	public synchronized void removePatch(Patch patch) {
+		Asserts.notNull(patch, "FilebasedPatchPersistence.remove.patchobject.notnull.assert", new Object[] {});
+		Asserts.notNullOrEmpty(patch.getPatchNummer(), "FilebasedPatchPersistence.remove.patchnumber.notnullorempty.assert",
+				new Object[] { patch.toString() });
+		Asserts.isTrue((patchExists(patch.getPatchNummer())),
+				"FilebasedPatchPersistence.remove.patch.exists.assert", new Object[] { patch.toString() });
 		try {
 			LOGGER.info("Deleting patch: " + patch.toString());
 			File patchFile = createFile("Patch" + patch.getPatchNummer() + ".json");
