@@ -70,7 +70,7 @@ public class GroovyScriptActionExecutor implements PatchActionExecutor {
 		Asserts.notNullOrEmpty(patchNumber, "GroovyScriptActionExecutor.execute.patchnumber.notnullorempty.assert",
 				new Object[] {toStatus });
 		Asserts.isTrue((patchContainer.getRepo().patchExists(patchNumber)),
-				"GroovyScriptActionExecutor.execute.patch.exists.assert", new Object[] { patchNumber });
+				"GroovyScriptActionExecutor.execute.patch.exists.assert", new Object[] { patchNumber, toStatus });
 		final Binding sharedData = new Binding();
 		final GroovyShell shell = new GroovyShell(sharedData);
 		sharedData.setProperty("configDir", configDir);
