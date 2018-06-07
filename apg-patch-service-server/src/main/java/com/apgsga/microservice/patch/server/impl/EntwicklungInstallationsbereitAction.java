@@ -6,10 +6,10 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.util.Assert;
 
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
+import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
 import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
@@ -32,10 +32,12 @@ public class EntwicklungInstallationsbereitAction implements PatchAction {
 	}
 
 	@Override
-	public String executeToStateAction(String patchNumber, String toAction,  Map<String,String> parameter) {
-		LOGGER.info("Running EntwicklungInstallationsbereitAction, with: " + patchNumber + ", " + toAction + ", and parameters: " + parameter.toString()); 
+	public String executeToStateAction(String patchNumber, String toAction, Map<String, String> parameter) {
+		LOGGER.info("Running EntwicklungInstallationsbereitAction, with: " + patchNumber + ", " + toAction
+				+ ", and parameters: " + parameter.toString());
 		Patch patch = repo.findById(patchNumber);
-		Assert.notNull(patch, "Patch : <" + patchNumber + "> not found");
+		Asserts.notNull(patch, "EntwicklungInstallationsbereitAction.patch.exists.assert",
+				new Object[] { patchNumber, toAction });
 		createAndSaveTagForPatch(patch);
 		VcsCommandRunner jschSession = jschSessionFactory.create();
 		ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -43,14 +45,14 @@ public class EntwicklungInstallationsbereitAction implements PatchAction {
 
 			@Override
 			public void run() {
-				LOGGER.info("Running EntwicklungInstallationsbereitAction PatchVcsCommands"); 
+				LOGGER.info("Running EntwicklungInstallationsbereitAction PatchVcsCommands");
 				jschSession.preProcess();
 				jschSession.run(PatchVcsCommand.createTagPatchModulesCmd(patch.getPatchTag(), patch.getDbPatchBranch(),
 						patch.getDbObjectsAsVcsPath()));
 				jschSession.run(PatchVcsCommand.createTagPatchModulesCmd(patch.getPatchTag(),
 						patch.getMicroServiceBranch(), patch.getMavenArtifactsAsVcsPath()));
 				jschSession.postProcess();
-				LOGGER.info("Running EntwicklungInstallationsbereitAction startProdPatchPipeline"); 
+				LOGGER.info("Running EntwicklungInstallationsbereitAction startProdPatchPipeline");
 				jenkinsPatchClient.startProdPatchPipeline(patch);
 			}
 

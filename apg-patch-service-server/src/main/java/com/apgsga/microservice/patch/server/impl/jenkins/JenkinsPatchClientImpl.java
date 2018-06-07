@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.offbytwo.jenkins.JenkinsServer;
@@ -44,6 +45,8 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 		// TODO (che. jhe ) : What happens , when the job fails? And when
 		// somebody is
 		// really fast with a patch?
+		// TODO (che, 31.5 ) : The following thrown exceptions will not reach
+		// the Client
 		ExecutorService executorService = Executors.newSingleThreadExecutor();
 		executorService.execute(new Runnable() {
 
@@ -60,11 +63,15 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 							true);
 					if (!patchBuilderResult.getResult().equals(BuildResult.SUCCESS)) {
 						LOGGER.error("PatchBuilder failed: " + patchBuilderResult.getResult().toString());
-						throw new RuntimeException("PatchBuilder failed: " + patchBuilderResult.getResult().toString());
+						throw ExceptionFactory.createPatchServiceRuntimeException(
+								"JenkinsPatchClientImpl.createPatchPipelines.error",
+								new Object[] { patch.toString(), patchBuilderResult.getResult().toString() });
 					}
 					LOGGER.info(patchBuilderResult.getConsoleOutputText().toString());
 				} catch (Throwable e) {
-					throw new RuntimeException(e);
+					throw ExceptionFactory.createPatchServiceRuntimeException(
+							"JenkinsPatchClientImpl.createPatchPipelines.exception",
+							new Object[] { e.getMessage(), patch.toString() }, e);
 				}
 			}
 		});
@@ -108,12 +115,13 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 				LOGGER.info(jobName + " Is Building");
 				LOGGER.info("Buildnumber: " + details.getNumber());
 			} else {
-				throw new RuntimeException(
-						"Start Install Pipeline Job: " + jobName + " failed with: " + details.getConsoleOutputText());
+				throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startPipeline.error",
+						new Object[] { patch.toString(), jobName, details.getConsoleOutputText() });
 			}
 
 		} catch (URISyntaxException | IOException | InterruptedException e) {
-			throw new RuntimeException(e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startPipeline.exception",
+					new Object[] { e.getMessage(), patch.toString() }, e);
 		}
 	}
 
@@ -146,8 +154,9 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 			inputActionForPipeline(patch, action, lastBuild);
 
 		} catch (URISyntaxException | IOException | InterruptedException e) {
-			throw new RuntimeException(e);
-		} finally {
+			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.processInputAction.exception",
+					new Object[] { e.getMessage(), patch.toString() }, e);
+		} finally { 
 			if (jenkinsServer != null) {
 				jenkinsServer.close();
 			}
@@ -181,7 +190,9 @@ public class JenkinsPatchClientImpl implements JenkinsPatchClient {
 				}
 				if (!actionFound) {
 					// TODO (che, 28.12 ) : specific Exception
-					throw new RuntimeException("Input Action: " + action + " not found for patch: " + patch.toString());
+					throw ExceptionFactory.createPatchServiceRuntimeException(
+							"JenkinsPatchClientImpl.inputActionForPipeline.error",
+							new Object[] { patch.toString(), action });
 				}
 				break;
 			}

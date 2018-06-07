@@ -2,6 +2,8 @@ package com.apgsga.microservice.patch.server.impl.persistence.utils;
 
 import java.util.List;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;

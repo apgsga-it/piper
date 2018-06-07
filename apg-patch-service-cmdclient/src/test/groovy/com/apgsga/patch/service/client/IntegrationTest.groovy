@@ -252,23 +252,6 @@ public class IntegrationTest extends Specification {
 		result == null
 	}
 
-	def "Patch Cli Missing configuration for State Change Action"() {
-		setup:
-		def client = PatchCli.create()
-		when:
-		def result = client.process(["-u", baseUrl, "-sta", "9999,EntwicklungInstallationsbereit"]+ DEFAULT_CONFIG_OPT)
-		then:
-		result == null
-	}
-
-	def "Patch Cli Invalid configuration for State Change Action"() {
-		setup:
-		def client = PatchCli.create()
-		when:
-		def result = client.process(["-u", baseUrl, "-sta", "9999,EntwicklungInstallationsbereit,xxxxx"]+ DEFAULT_CONFIG_OPT)
-		then:
-		result == null
-	}
 
 	def "Patch Cli valid State Change Action for config aps"() {
 		setup:
@@ -299,6 +282,16 @@ public class IntegrationTest extends Specification {
 		cleanup:
 		repo.clean()
 	}
+	
+	def "Patch Cli Missing configuration for State Change Action"() {
+		setup:
+		def client = PatchCli.create()
+		when:
+		def result = client.process(["-u", baseUrl, "-sta", "9999,EntwicklungInstallationsbereit"]+ DEFAULT_CONFIG_OPT)
+		then:
+		result == null
+	}
+
 
 	def "Patch Cli valid State Change Action for config db with config file"() {
 		setup:

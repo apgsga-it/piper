@@ -17,6 +17,8 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
+import com.apgsga.microservice.patch.exceptions.Asserts;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
@@ -55,6 +57,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	@Override
 	public synchronized Patch findById(String patchNummer) {
+		Asserts.notNullOrEmpty(patchNummer, "FilebasedPatchPersistence.findById.patchnumber.notnullorempty.assert",
+				new Object[] {});
 		try {
 			File patchFile = createFile("Patch" + patchNummer + ".json");
 			if (!patchFile.exists()) {
@@ -64,12 +68,15 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			Patch patchData = mapper.readValue(patchFile, Patch.class);
 			return patchData;
 		} catch (IOException e) {
-			throw new RuntimeException("Persistence Error", e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.findById.exception",
+					new Object[] { e.getMessage(), patchNummer }, e);
 		}
 	}
 
 	@Override
 	public synchronized Boolean patchExists(String patchNumber) {
+		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.patchExists.patchnumber.notnullorempty.assert",
+				new Object[] {});
 		try {
 			File patchFile = createFile("Patch" + patchNumber + ".json");
 			if (patchFile.exists()) {
@@ -77,7 +84,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			}
 			return false;
 		} catch (IOException e) {
-			throw new RuntimeException("Persistence Error", e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.patchExists.exception",
+					new Object[] { e.getMessage(), patchNumber }, e);
 		}
 
 	}
@@ -89,19 +97,28 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			return Lists.newArrayList(files).stream().map(f -> FilenameUtils.getBaseName(f.getName()).substring(5))
 					.collect(Collectors.toList());
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"FilebasedPatchPersistence.findAllPatchIds.exception", new Object[] { e.getMessage() }, e);
 		}
 
 	}
 
 	@Override
 	public synchronized void savePatch(Patch patch) {
+		Asserts.notNull(patch, "FilebasedPatchPersistence.save.patchobject.notnull.assert", new Object[] {});
+		Asserts.notNullOrEmpty(patch.getPatchNummer(), "FilebasedPatchPersistence.save.patchnumber.notnullorempty.assert",
+				new Object[] { patch.toString() });
 		writeToFile(patch, "Patch" + patch.getPatchNummer() + ".json");
 	}
 
 	// TODO (che, 8.5) Do we want remove also "Atomic"
 	@Override
 	public synchronized void removePatch(Patch patch) {
+		Asserts.notNull(patch, "FilebasedPatchPersistence.remove.patchobject.notnull.assert", new Object[] {});
+		Asserts.notNullOrEmpty(patch.getPatchNummer(), "FilebasedPatchPersistence.remove.patchnumber.notnullorempty.assert",
+				new Object[] { patch.toString() });
+		Asserts.isTrue((patchExists(patch.getPatchNummer())),
+				"FilebasedPatchPersistence.remove.patch.exists.assert", new Object[] { patch.toString() });
 		try {
 			LOGGER.info("Deleting patch: " + patch.toString());
 			File patchFile = createFile("Patch" + patch.getPatchNummer() + ".json");
@@ -109,7 +126,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			LOGGER.info("Deleting patch: " + patch.toString());
 
 		} catch (IOException e) {
-			throw new RuntimeException("Persistence Error", e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.removePatch.exception",
+					new Object[] { e.getMessage(), patch.toString() }, e);
 		}
 	}
 
@@ -129,7 +147,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			ServicesMetaData result = mapper.readValue(serviceMetaDataFile, ServicesMetaData.class);
 			return result;
 		} catch (IOException e) {
-			throw new RuntimeException("Persistence Error", e);
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"FilebasedPatchPersistence.getServicesMetaData.exception", new Object[] { e.getMessage() }, e);
 		}
 	}
 
@@ -149,7 +168,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			DbModules result = mapper.readValue(dbModulesFile, DbModules.class);
 			return result;
 		} catch (IOException e) {
-			throw new RuntimeException("Persistence Error", e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.getDbModules.exception",
+					new Object[] { e.getMessage() }, e);
 		}
 	}
 
@@ -159,7 +179,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			File[] listFiles = storagePath.getFile().listFiles();
 			return Lists.newArrayList(listFiles).stream().map(f -> f.getName()).collect(Collectors.toList());
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.listAllFiles.exception",
+					new Object[] { e.getMessage() }, e);
 		}
 	}
 
@@ -170,7 +191,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			return Lists.newArrayList(listFiles).stream().filter(f -> f.getName().startsWith(prefix))
 					.map(f -> f.getName()).collect(Collectors.toList());
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.listFiles.exception",
+					new Object[] { e.getMessage(), prefix }, e);
 		}
 	}
 
@@ -180,7 +202,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			File parentDir = storagePath.getFile();
 			FileUtils.cleanDirectory(parentDir);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.clean.exception",
+					new Object[] { e.getMessage() }, e);
 		}
 
 	}
@@ -200,9 +223,10 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		try {
 			jsonRequestString = mapper.writeValueAsString(object);
 		} catch (JsonProcessingException e) {
-			throw new RuntimeException("Json Processing Error, before File write", e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.writeToFile.exception",
+					new Object[] { e.getMessage(), filename }, e);
 		}
-		AtomicFileWriteManager.create(storagePath, tempStoragePath).write(jsonRequestString, filename);
+		AtomicFileWriteManager.create(this).write(jsonRequestString, filename);
 
 	}
 
@@ -210,6 +234,14 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		File parentDir = storagePath.getFile();
 		File revisions = new File(parentDir, fileName);
 		return revisions;
+	}
+
+	public Resource getStoragePath() {
+		return storagePath;
+	}
+
+	public Resource getTempStoragePath() {
+		return tempStoragePath;
 	}
 
 }

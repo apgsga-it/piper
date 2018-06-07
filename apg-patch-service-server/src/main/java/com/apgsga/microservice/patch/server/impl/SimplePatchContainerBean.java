@@ -2,11 +2,9 @@ package com.apgsga.microservice.patch.server.impl;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -30,13 +28,14 @@ import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.PatchService;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
+import com.apgsga.microservice.patch.exceptions.Asserts;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
 import com.apgsga.microservice.patch.server.impl.targets.InstallTargetsUtil;
 import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
@@ -92,8 +91,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			mavenArtFromStarterList = am
 					.getAllDependencies(data.getBaseVersionNumber() + "." + data.getRevisionMnemoPart() + "-SNAPSHOT");
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
-
-			new RuntimeException(e);
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"SimplePatchContainerBean.listMavenArtifacts.exception",
+					new Object[] { e.getMessage(), patch.toString() }, e);
 		}
 
 		return mavenArtFromStarterList;
@@ -106,13 +106,14 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public Patch findById(String patchNummer) {
-		Preconditions.checkNotNull(patchNummer, "No Patchnummer");
 		return repo.findById(patchNummer);
 	}
 
 	@Override
 	public Patch save(Patch patch) {
-		Preconditions.checkNotNull(patch.getPatchNummer(), "Patchnummer null");
+		Asserts.notNull(patch, "SimplePatchContainerBean.save.patchobject.notnull.assert", new Object[] {});
+		Asserts.notNullOrEmpty(patch.getPatchNummer(), "SimplePatchContainerBean.save.patchnumber.notnullorempty.assert",
+				new Object[] { patch.toString() });
 		preProcessSave(patch);
 		repo.savePatch(patch);
 		return patch;
@@ -133,20 +134,22 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 			List<MavenArtifact> wrongNames = getArtifactNameError(Lists.newArrayList(art), cvsBranch);
 			if (!wrongNames.isEmpty()) {
-				throw new RuntimeException(
-						"Patch cannot be saved as it contains module(s) with invalid name: " + wrongNames);
+				throw ExceptionFactory.createPatchServiceRuntimeException(
+						"SimplePatchContainerBean.addModuleName.validation.error", new Object[] { art.toString() });
 			}
 
 			art.setName(artifactName);
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
-			new RuntimeException(e);
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"SimplePatchContainerBean.addModuleName.exception",
+					new Object[] { e.getMessage(), art.toString(), cvsBranch }, e);
+
 		}
 		return art;
 	}
 
 	@Override
 	public void remove(Patch patch) {
-		Preconditions.checkNotNull(patch.getPatchNummer(), "Patchnummer null");
 		repo.removePatch(patch);
 	}
 
@@ -173,9 +176,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public List<DbObject> listAllObjectsChangedForDbModule(String patchId, String searchString) {
 		Patch patch = findById(patchId);
-		if (patch == null) {
-			throw new RuntimeException("Patch with Id: " + patchId + " not found");
-		}
+		Asserts.notNull(patch, "SimplePatchContainerBean.listAllObjectsChangedForDbModule.patch.exists.assert",
+				new Object[] { patchId });
 		DbModules dbModules = repo.getDbModules();
 		if (dbModules == null) {
 			return Lists.newArrayList();
@@ -206,6 +208,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public synchronized void startInstallPipeline(Patch patch) {
+		Asserts.notNull(patch, "SimplePatchContainerBean.startInstallPipeline.patchobject.notnull.assert",
+				new Object[] {});
+		Asserts.notNull(patch.getPatchNummer(),
+				"SimplePatchContainerBean.startInstallPipeline.patchnumber.notnull.assert",
+				new Object[] { patch.toString() });
+		Asserts.isTrue((repo.patchExists(patch.getPatchNummer())),
+				"SimplePatchContainerBean.startInstallPipeline.patch.exists.assert", new Object[] { patch.toString() });
 		repo.savePatch(patch);
 		jenkinsClient.startInstallPipeline(patch);
 	}
@@ -216,35 +225,14 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		patchActionExecutor.execute(patchNumber, toStatus);
 	}
 
-	public PatchPersistence getRepo() {
-		return repo;
-	}
-
-	protected void setRepo(PatchPersistence repo) {
-		this.repo = repo;
-	}
-
-	public JenkinsPatchClient getJenkinsClient() {
-		return jenkinsClient;
-	}
-
-	protected void setJenkinsClient(JenkinsPatchClient jenkinsClient) {
-		this.jenkinsClient = jenkinsClient;
-	}
-
-	public VcsCommandRunnerFactory getJschSessionFactory() {
-		return vcsCommandRunnerFactory;
-	}
-
 	private List<MavenArtifact> getArtifactsWithNameFromBom(String version) {
 		List<MavenArtifact> artifactsWithNameFromBom = null;
 		try {
 			artifactsWithNameFromBom = am.getArtifactsWithNameFromBom(version);
-		} catch (Exception ex) {
-			LOGGER.error("Error when trying to get Artifact name from Bom for version " + version);
-			LOGGER.error(ex.getMessage());
-			LOGGER.error(ExceptionUtils.getStackTrace(ex));
-			throw new RuntimeException("Error when trying to get Artifact name from Bom for version " + version);
+		} catch (Exception e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"SimplePatchContainerBean.getArtifactsWithNameFromBom.exception",
+					new Object[] { e.getMessage(), version }, e);
 		}
 
 		return artifactsWithNameFromBom;
@@ -273,11 +261,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 						artifactWihInvalidNames.add(ma);
 					}
 				}
-			} catch (Exception ex) {
-				LOGGER.error("Error when trying to list Artifact having error in their names.");
-				LOGGER.error(ex.getMessage());
-				LOGGER.error(ExceptionUtils.getStackTrace(ex));
-				throw new RuntimeException("Error when trying to list Artifact having error in their names");
+			} catch (Exception e) {
+				throw ExceptionFactory.createPatchServiceRuntimeException(
+						"SimplePatchContainerBean.getArtifactNameError.exception",
+						new Object[] { e.getMessage(), ma.toString() }, e);
 			}
 		}
 
@@ -289,4 +276,25 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public List<MavenArtifact> invalidArtifactNames(String version, String cvsBranch) {
 		return getArtifactNameError(getArtifactsWithNameFromBom(version), cvsBranch);
 	}
+
+	public PatchPersistence getRepo() {
+		return repo;
+	}
+
+	protected void setRepo(PatchPersistence repo) {
+		this.repo = repo;
+	}
+
+	public JenkinsPatchClient getJenkinsClient() {
+		return jenkinsClient;
+	}
+
+	protected void setJenkinsClient(JenkinsPatchClient jenkinsClient) {
+		this.jenkinsClient = jenkinsClient;
+	}
+
+	public VcsCommandRunnerFactory getJschSessionFactory() {
+		return vcsCommandRunnerFactory;
+	}
+
 }

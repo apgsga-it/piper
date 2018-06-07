@@ -13,15 +13,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileCopyUtils;
@@ -38,26 +33,25 @@ import com.apgsga.microservice.patch.api.impl.ServiceMetaDataBean;
 import com.apgsga.microservice.patch.api.impl.ServicesMetaDataBean;
 
 @RunWith(SpringRunner.class)
-@TestPropertySource(locations = "test.properties")
-@ContextConfiguration(classes = { FilebasedPersistenceTest.TestConfiguration.class })
+@TestPropertySource(properties = { "dblocation=db", "dbworkdir=work" })
 public class FilebasedPersistenceTest {
 
-	@Autowired
-	@Qualifier("patchPersistence")
 	private PatchPersistence repo;
 
-	@Value("${json.db.location:db}")
+	@Value("${dblocation}")
 	private String dbLocation;
 
-	@Value("${json.db.work.location:work}")
+	@Value("${dbworkdir}")
 	private String dbWorkLocation;
 
 	@Before
 	public void setUp() {
 		// It self a test ;-)
 		final ResourceLoader rl = new FileSystemResourceLoader();
-		Resource testResources = rl.getResource("src/test/resources/json");
+		Resource db = rl.getResource(dbLocation);
 		Resource workDir = rl.getResource(dbWorkLocation);
+		repo = new FilebasedPatchPersistence(db, workDir);
+		Resource testResources = rl.getResource("src/test/resources/json");
 		final PatchPersistence per = new FilebasedPatchPersistence(testResources, workDir);
 		Patch testPatch5401 = per.findById("5401");
 		Patch testPatch5402 = per.findById("5402");
@@ -94,18 +88,14 @@ public class FilebasedPersistenceTest {
 
 	@Test
 	public void testUpdate() {
-		ResourceLoader rl = new FileSystemResourceLoader();
-		Resource storagePath = rl.getResource(dbLocation);
-		Resource workPath = rl.getResource(dbWorkLocation);
-		FilebasedPatchPersistence persistence = new FilebasedPatchPersistence(storagePath, workPath);
-		Patch result = persistence.findById("5402");
+		Patch result = repo.findById("5402");
 		assertNotNull(result);
 		result.setBaseVersionNumber("XXXX");
 		List<DbObject> dbOList = Lists.newArrayList();
 		dbOList.add(new DbObjectBean("FileName1", "FilePath1"));
 		result.setDbObjects(dbOList);
-		persistence.savePatch(result);
-		Patch upDatedresult = persistence.findById("5402");
+		repo.savePatch(result);
+		Patch upDatedresult = repo.findById("5402");
 		assertNotNull(upDatedresult);
 		assertEquals("XXXX", upDatedresult.getBaseVersionNumber());
 		List<DbObject> dbObjects = upDatedresult.getDbObjects();
@@ -125,11 +115,9 @@ public class FilebasedPersistenceTest {
 	@Test
 	public void testSaveModules() {
 		List<String> dbModulesList = Lists.newArrayList("testdbmodule", "testdbAnotherdbModule");
-		final ResourceLoader rl = new FileSystemResourceLoader();
-		final PatchPersistence db = new FilebasedPatchPersistence(rl.getResource("db"), rl.getResource("work"));
 		DbModules intialLoad = new DbModules(dbModulesList);
-		db.saveDbModules(intialLoad);
-		DbModules dbModules = db.getDbModules();
+		repo.saveDbModules(intialLoad);
+		DbModules dbModules = repo.getDbModules();
 		List<String> dbModulesRead = dbModules.getDbModules();
 		assertTrue(dbModulesRead.size() == 2);
 		dbModulesRead.forEach(m -> {
@@ -158,30 +146,9 @@ public class FilebasedPersistenceTest {
 		serviceList.add(someOtherService);
 		final ServicesMetaData data = new ServicesMetaDataBean();
 		data.setServicesMetaData(serviceList);
-		final ResourceLoader rl = new FileSystemResourceLoader();
-		final PatchPersistence db = new FilebasedPatchPersistence(rl.getResource("db"), rl.getResource("work"));
-		db.saveServicesMetaData(data);
-		ServicesMetaData serviceData = db.getServicesMetaData();
+		repo.saveServicesMetaData(data);
+		ServicesMetaData serviceData = repo.getServicesMetaData();
 		assertEquals(data, serviceData);
-	}
-
-	@Configurable
-	static class TestConfiguration {
-		@Value("${json.db.location:db}")
-		private String dbLocation;
-
-		@Value("${json.db.work.location:work}")
-		private String dbWorkLocation;
-
-		@Bean(name = "patchPersistence")
-		public PatchPersistence patchFilebasePersistence() throws IOException {
-			final ResourceLoader rl = new FileSystemResourceLoader();
-			Resource storagePath = rl.getResource(dbLocation);
-			Resource workPath = rl.getResource(dbWorkLocation);
-			final PatchPersistence per = new FilebasedPatchPersistence(storagePath, workPath);
-			per.init();
-			return per;
-		}
 	}
 
 }

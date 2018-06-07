@@ -50,7 +50,7 @@ public class MicroServicePatchClientTest {
 
 	@Value("${json.db.location:target/testdb}")
 	private String dbLocation;
-	
+
 	@Value("${json.db.work.location:work}")
 	private String dbWorkLocation;
 
