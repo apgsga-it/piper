@@ -46,15 +46,19 @@ public class IntegrationTest extends Specification {
 	}
 
 	def "Patch Cli should print out help without errors"() {
-		def opts = PatchCli.create().process(["-h"])
+		def result = PatchCli.create().process(["-h"])
 		expect: "PatchCli returns null in case of help only (-h)"
-		opts == null
+		result != null
+		result.returnCode == 0
+		result.results.size() == 0
 	}
 
 	def "Patch Cli should print out help without errors in case of no options "() {
-		def opts = PatchCli.create().process([])
+		def result = PatchCli.create().process([])
 		expect: "PatchCli returns null in case no options entered"
-		opts == null
+		result != null
+		result.returnCode == 0
+		result.results.size() == 0
 	}
 
 	def "Patch Cli queries existance of not existing Patch and returns false"() {
@@ -249,7 +253,8 @@ public class IntegrationTest extends Specification {
 		when:
 		def result = client.process(["-u", baseUrl, "-sta", "9999,XXXXXX,aps"]+ DEFAULT_CONFIG_OPT)
 		then:
-		result == null
+		result != null
+		result.returnCode == 0
 	}
 
 
@@ -289,7 +294,8 @@ public class IntegrationTest extends Specification {
 		when:
 		def result = client.process(["-u", baseUrl, "-sta", "9999,EntwicklungInstallationsbereit"]+ DEFAULT_CONFIG_OPT)
 		then:
-		result == null
+		result != null
+		result.returnCode == 0
 	}
 
 
