@@ -1,7 +1,5 @@
 package com.apgsga.microservice.patch.exceptions;
 
-import static org.mockito.Mockito.RETURNS_DEFAULTS;
-
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Properties;
@@ -15,18 +13,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 public class ErrorMessages {
-	
+
 	private static final String NO_SUCH_MESSAGE_ERROR_MSG = "No Message found for key #key# with Variables: ";
-	
+
 	private static final String SPACE = " ";
-	
+
 	protected static final Log LOGGER = LogFactory.getLog(ErrorMessages.class.getName());
 
-
-	
 	private static ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
 
-	
 	static {
 		ResourceLoader rl = new FileSystemResourceLoader();
 		Resource resource = rl.getResource("classpath:messages.properties");
@@ -38,7 +33,7 @@ public class ErrorMessages {
 		}
 		messageSource.setCommonMessages(properties);
 	}
-	
+
 	public static String getErrorMsg(String key, Object[] variables) {
 		String errorMsg = "";
 		try {
