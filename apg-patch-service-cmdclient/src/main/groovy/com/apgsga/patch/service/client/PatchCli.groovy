@@ -37,11 +37,14 @@ class PatchCli {
 
 	def process(def args) {
 		println args
-		def options = validateOpts(args)
-		if (!options) return
-			def cmdResults = new Expando();
-		cmdResults.results = [:]
+		def cmdResults = new Expando();
 		cmdResults.returnCode = 1
+		cmdResults.results = [:]
+		def options = validateOpts(args)
+		if (!options) {
+			cmdResults.returnCode = 0
+			return cmdResults
+		}
 		try {
 			def patchClient = new PatchServiceClient(!options.u ? defaultHost : options.u)
 			if (options.l) {
