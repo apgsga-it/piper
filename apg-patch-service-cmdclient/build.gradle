@@ -116,7 +116,8 @@ ospackage {
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
-
+	
+	postInstall file("packaging/rpm/post-install.sh")
 
 	into "${homeDir}"
 	
@@ -153,19 +154,7 @@ ospackage {
 
 	}
 	
-	from("packaging/dummy") {
-		into "/var/opt/apg-patch-cli"
-		fileType CONFIG | NOREPLACE
-		include ".ignore"
-		user 'jenkins'
-		permissionGroup 'jenkins'
-		addParentDirs false
-		fileMode 0760
-	}
-
 }
-
-
 
 assemble { dependsOn copyLib,pkgAsGTar}
 build {dependsOn assemble }
