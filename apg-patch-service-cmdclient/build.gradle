@@ -153,17 +153,15 @@ ospackage {
 
 	}
 	
-	directory("/var/opt/apg-patch-cli", 0760 )
-	
-//	from("packaging/dummy") {
-//		into "/var/opt/apg-patch-cli"
-//		fileType CONFIG | NOREPLACE
-//		include ".ignore"
-//		user 'jenkins'
-//		permissionGroup 'jenkins'
-//		addParentDirs false
-//		fileMode 0755
-//	}
+	from("packaging/dummy") {
+		into "/var/opt/apg-patch-cli"
+		fileType CONFIG | NOREPLACE
+		include ".ignore"
+		user 'jenkins'
+		permissionGroup 'jenkins'
+		addParentDirs false
+		fileMode 0760
+	}
 
 }
 
