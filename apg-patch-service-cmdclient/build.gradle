@@ -152,6 +152,16 @@ ospackage {
 		fileMode 0777
 
 	}
+	
+	from("packaging/dummy") {
+		into "/var/opt/apg-patch-cli"
+		fileType CONFIG | NOREPLACE
+		include ".ignore"
+		user 'jenkins'
+		permissionGroup 'jenkins'
+		addParentDirs false
+		fileMode 0755
+	}
 }
 
 

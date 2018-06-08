@@ -618,7 +618,7 @@ class PatchCli {
 				patchRevision = revisions.currentRevision[targetInd]
 			}
 			else {
-				patchRevision = revisions.lastRevisions.get(installationTarget) + 1
+				patchRevision = (revisions.lastRevisions.get(installationTarget)).toInteger() + 1
 			}
 		}
 
