@@ -163,7 +163,7 @@ ospackage {
 		fileMode 0755
 	}
 	
-	directory("/var/opt/apg-patch-cli", 0755 )
+	directory("/var/opt/apg-patch-cli", 0760 )
 }
 
 
