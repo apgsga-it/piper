@@ -2,9 +2,12 @@ package com.apgsga.patch.service.client
 
 
 import org.codehaus.groovy.runtime.StackTraceUtils
+import org.springframework.context.annotation.ClassPathBeanDefinitionScanner
+import org.springframework.context.support.GenericApplicationContext
 import org.springframework.core.io.FileSystemResourceLoader
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
+import org.springframework.stereotype.Component
 
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
@@ -18,12 +21,22 @@ import groovy.json.JsonSlurper
 class PatchCli {
 
 	public static PatchCli create() {
-		return new PatchCli()
+		
+		def ctx = new GenericApplicationContext()
+		new ClassPathBeanDefinitionScanner(ctx).scan("com.apgsga.patch.service.client.config")
+		ctx.refresh()
+		
+		def config = ctx.getBean("patchCliConfig")
+		revisionFilePath = config.getRevisionFilePath()
+		
+		def patchCli = new PatchCli()
+		return patchCli
 	}
 
 	private PatchCli() {
 		super();
 	}
+	
 	def validComponents = ["db", "aps", "mockdb", "nil"]
 	def defaultHost = "localhost:9010"
 	// TODO (che,19.4) better a common directory for apg-patch-service? To be discussed
@@ -32,7 +45,7 @@ class PatchCli {
 	def validToStates
 	def configDir
 	def defaultConfig
-	def revisionFilePath = "/var/opt/apg-patch-cli/Revisions.json"
+	def static revisionFilePath
 	def validate = true
 
 	def process(def args) {
