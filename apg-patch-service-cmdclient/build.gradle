@@ -112,10 +112,11 @@ def homeDir = "/opt/${finalName}"
 ospackage {
 	packageName = "${finalName}"
 	version = "${savedVersion}"
-	release = 2
+	release = 1
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
+	requires('aps' , "${savedVersion}", GREATER | EQUAL)
 	
 	postInstall file("packaging/rpm/post-install.sh")
 

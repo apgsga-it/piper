@@ -66,10 +66,11 @@ def homeDir = "/opt/${project.name}"
 ospackage {
 	packageName = "${project.name}"
 	version = "${pkgVersion}"
-	release = 1
+	release = 3
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
+	provides('aps')
 
 	preInstall file("packaging/rpm/pre-install.sh")
 	postInstall file("packaging/rpm/post-install.sh")
