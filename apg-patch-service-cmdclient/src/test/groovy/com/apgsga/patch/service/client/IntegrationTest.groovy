@@ -27,6 +27,7 @@ public class IntegrationTest extends Specification {
 
 	private static def DEFAULT_CONFIG_OPT = ["-c", "src/test/resources/config"]
 
+	// TODO JHE: Will be deleted?
 	@Value('${baseUrl}')
 	private String baseUrl;
 
@@ -46,7 +47,7 @@ public class IntegrationTest extends Specification {
 	}
 
 	def "Patch Cli should print out help without errors"() {
-		def result = PatchCli.create().process(["-h"])
+		def result = PatchCli.create("test").process(["-h"])
 		expect: "PatchCli returns null in case of help only (-h)"
 		result != null
 		result.returnCode == 0
@@ -54,7 +55,7 @@ public class IntegrationTest extends Specification {
 	}
 
 	def "Patch Cli should print out help without errors in case of no options "() {
-		def result = PatchCli.create().process([])
+		def result = PatchCli.create("test").process([])
 		expect: "PatchCli returns null in case no options entered"
 		result != null
 		result.returnCode == 0
@@ -63,9 +64,9 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli queries existance of not existing Patch and returns false"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-e", "9999"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-e", "9999"]+ DEFAULT_CONFIG_OPT)
 		then:
 		result != null
 		result.returnCode == 0
@@ -74,11 +75,11 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli copies Patch File to server and queries before and after existence"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preCondResult = client.process(["-u", baseUrl, "-e", "5401"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
-		def postCondResult = client.process(["-u", baseUrl, "-e", "5401"]+ DEFAULT_CONFIG_OPT)
+		def preCondResult = client.process(["-e", "5401"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
+		def postCondResult = client.process(["-e", "5401"]+ DEFAULT_CONFIG_OPT)
 
 		then:
 		preCondResult != null
@@ -99,10 +100,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli return found = false on findById of non existing Patch"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preCondResult = client.process(["-u", baseUrl, "-e", "5401"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-f", "5401,build"]+ DEFAULT_CONFIG_OPT)
+		def preCondResult = client.process(["-e", "5401"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-f", "5401,build"]+ DEFAULT_CONFIG_OPT)
 
 		then:
 		preCondResult != null
@@ -115,10 +116,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli return found on findById on Patch, which been copied before"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-f", "5401,build"]+ DEFAULT_CONFIG_OPT)
+		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-f", "5401,build"]+ DEFAULT_CONFIG_OPT)
 
 		then:
 		preCondResult != null
@@ -137,11 +138,11 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli removes Patch, which been copied before"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-r", "5401"]+ DEFAULT_CONFIG_OPT)
-		def postCondResult = client.process(["-u", baseUrl, "-e", "5401"]+ DEFAULT_CONFIG_OPT)
+		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-r", "5401"]+ DEFAULT_CONFIG_OPT)
+		def postCondResult = client.process(["-e", "5401"]+ DEFAULT_CONFIG_OPT)
 		then:
 		preCondResult != null
 		preCondResult.returnCode == 0
@@ -156,9 +157,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli upload DbModules to server"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-ud", "src/test/resources/DbModules.json"]+ DEFAULT_CONFIG_OPT)
+		//def result = client.process(["-u", baseUrl, "-ud", "src/test/resources/DbModules.json"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-ud", "src/test/resources/DbModules.json"]+ DEFAULT_CONFIG_OPT)
 		then:
 		result != null
 		result.returnCode == 0
@@ -172,10 +174,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli download DbModules from server"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preConResult = client.process(["-u", baseUrl, "-ud", "src/test/resources/DbModules.json"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-dd", "build"]+ DEFAULT_CONFIG_OPT)
+		def preConResult = client.process(["-ud", "src/test/resources/DbModules.json"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-dd", "build"]+ DEFAULT_CONFIG_OPT)
 		then:
 		preConResult != null
 		preConResult.returnCode == 0
@@ -191,9 +193,9 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli download DbModules from server, where it does'nt exist"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-dd", "build"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-dd", "build"]+ DEFAULT_CONFIG_OPT)
 		then:
 		result != null
 		result.returnCode == 0
@@ -202,9 +204,9 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli upload ServiceMetaData to server"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-um", "src/test/resources/ServicesMetaData.json"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-um", "src/test/resources/ServicesMetaData.json"]+ DEFAULT_CONFIG_OPT)
 		then:
 		result != null
 		result.returnCode == 0
@@ -218,10 +220,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli download ServiceMetaData from server"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preConResult = client.process(["-u", baseUrl, "-um", "src/test/resources/ServicesMetaData.json"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-dm", "build"]+ DEFAULT_CONFIG_OPT)
+		def preConResult = client.process(["-um", "src/test/resources/ServicesMetaData.json"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-dm", "build"]+ DEFAULT_CONFIG_OPT)
 		then:
 		preConResult != null
 		preConResult.returnCode == 0
@@ -238,9 +240,9 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli download ServiceMetaData from server, where it does'nt exist"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-dm", "build"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-dm", "build"]+ DEFAULT_CONFIG_OPT)
 		then:
 		result != null
 		result.returnCode == 0
@@ -249,9 +251,9 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli invalid State Change Action"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-sta", "9999,XXXXXX,aps"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-sta", "9999,XXXXXX,aps"]+ DEFAULT_CONFIG_OPT)
 		then:
 		result != null
 		result.returnCode == 0
@@ -260,10 +262,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli valid State Change Action for config aps"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-sta", '5401,EntwicklungInstallationsbereit,aps']+ DEFAULT_CONFIG_OPT)
+		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-sta", '5401,EntwicklungInstallationsbereit,aps']+ DEFAULT_CONFIG_OPT)
 		then:
 		preCondResult != null
 		preCondResult.returnCode == 0
@@ -275,10 +277,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli valid State Change Action for config nil"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-sta", '5401,EntwicklungInstallationsbereit,nil']+ DEFAULT_CONFIG_OPT)
+		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-sta", '5401,EntwicklungInstallationsbereit,nil']+ DEFAULT_CONFIG_OPT)
 		then:
 		preCondResult != null
 		preCondResult.returnCode == 0
@@ -290,9 +292,9 @@ public class IntegrationTest extends Specification {
 	
 	def "Patch Cli Missing configuration for State Change Action"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-sta", "9999,EntwicklungInstallationsbereit"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-sta", "9999,EntwicklungInstallationsbereit"]+ DEFAULT_CONFIG_OPT)
 		then:
 		result != null
 		result.returnCode == 0
@@ -301,10 +303,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli valid State Change Action for config db with config file"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit,mockdb"]+ DEFAULT_CONFIG_OPT)
+		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-sta", "5401,EntwicklungInstallationsbereit,mockdb"]+ DEFAULT_CONFIG_OPT)
 		then:
 		preCondResult != null
 		preCondResult.returnCode == 0
@@ -316,9 +318,9 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli validate Artifact names from version"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-vv", "9.0.6.ADMIN-UIMIG-SNAPSHOT,it21_release_9_0_6_admin_uimig"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-vv", "9.0.6.ADMIN-UIMIG-SNAPSHOT,it21_release_9_0_6_admin_uimig"]+ DEFAULT_CONFIG_OPT)
 		then:
 		result != null
 		result.returnCode == 0

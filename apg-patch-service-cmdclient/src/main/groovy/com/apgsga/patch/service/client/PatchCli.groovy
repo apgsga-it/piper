@@ -2,12 +2,10 @@ package com.apgsga.patch.service.client
 
 
 import org.codehaus.groovy.runtime.StackTraceUtils
-import org.springframework.context.annotation.ClassPathBeanDefinitionScanner
-import org.springframework.context.support.GenericApplicationContext
+import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.FileSystemResourceLoader
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
-import org.springframework.stereotype.Component
 
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
@@ -19,20 +17,20 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 class PatchCli {
-	
-	public static PatchCli create(def environment) {
-		env = environment
+
+	// TODO JHE (12.06.2018) : can we change this with a setter? Not sure as we bootstrap the profile within create() ... if we assign a profile afterwards, obviously it will be too late.
+	public static PatchCli create(String p_profile) {
+		profile = p_profile
 		create()
 	}
-
+		
 	public static PatchCli create() {
-
-		def url = getClass().getResource('/apscli.properties')
-		def file = new File(url.toURI())
-		assert file.exists() : "apscli.properties doesn't exist or is not accessible!"
-		ConfigObject conf = new ConfigSlurper(env).parse(url);
-		final Map config = conf.flatten();
-		revisionFilePath = config.get("revision.file.path")
+		ClassPathResource res = new ClassPathResource('apscli.properties')
+		assert res.exists() : "apscli.properties doesn't exist or is not accessible!"
+		ConfigObject conf = new ConfigSlurper(profile).parse(res.URL);
+		revisionFilePath = conf.revision.file.path
+		defaultHost = conf.host.default
+		configDir = conf.config.dir
 		
 		def patchCli = new PatchCli()
 		return patchCli
@@ -43,15 +41,16 @@ class PatchCli {
 	}
 	
 	def validComponents = ["db", "aps", "mockdb", "nil"]
-	def defaultHost = "localhost:9010"
+	def static defaultHost
 	// TODO (che,19.4) better a common directory for apg-patch-service? To be discussed
-	def linuxConfigDir = 'file:///var/opt/apg-patch-common'
+	//def linuxConfigDir = 'file:///var/opt/apg-patch-common'
 	def targetSystemMappings
 	def validToStates
-	def configDir
+	def static configDir
 	def defaultConfig
 	def static revisionFilePath
-	def static env = "production"
+	def static profile = "production"
+	
 	def validate = true
 
 	def process(def args) {
@@ -170,7 +169,8 @@ class PatchCli {
 		cli.formatter.setWidth(100)
 		cli.with {
 			h longOpt: 'help', 'Show usage information', required: false
-			u longOpt: 'host', args:1 , argName: 'hostBaseUrl', 'The Base Url of the Patch Service', required: false
+			// TODO JHE: "u" option will be deleted as soon as configuration file will be done
+//			u longOpt: 'host', args:1 , argName: 'hostBaseUrl', 'The Base Url of the Patch Service', required: false
 			l longOpt: 'upload', args:1 , argName: 'directory', 'Upload all Patch files <directory> ', required: false
 			d longOpt: 'download', args:1 , argName: 'directory', 'Download all Patch files to a <directory>', required: false
 			e longOpt: "exists", args:1, argName: 'patchNumber', 'True resp. false if Patch of the <patchNumber> exists or not', required: false
@@ -186,7 +186,8 @@ class PatchCli {
 			la longOpt: 'listAllFiles', 'List all files on server', required: false
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
-			c longOpt: 'configDir', args:1, argName: 'directory', 'Configuration Directory', required: false
+			// TODO JHE: "c" option will be deleted as soon as configuration file will be done
+//			c longOpt: 'configDir', args:1, argName: 'directory', 'Configuration Directory', required: false
 			vv longOpt: 'validateArtifactNamesForVersion', args:2, valueSeparator: ",", argName: 'version,cvsBranch', 'Validate all artifact names for a given version on a given CVS branch', required: false
 			oc longOpt: 'onclone', args:1, argName: 'target', 'Clean Artifactory Repo and reset Revision file while cloning', required: false
 			sr longOpt: 'saveRevision', args:3, valueSeparator: ",", argName: 'targetInd,installationTarget,revision', 'Update revision with new value for given target', required: false
@@ -206,39 +207,42 @@ class PatchCli {
 		if (!validate) {
 			return options
 		}
+		
+		valdidateAndLoadConfigFiles()
 
-		if (!options.u) {
-			println "Assuming default value for u option: ${defaultHost}"
-		}
-		if (options.c) {
-			configDir = new File(options.c)
-			if (!configDir.exists() | !configDir.directory) {
-				println "Configuration Directory ${options.c} not valid: either not a directory or it doesn't exist"
-				error = true
-				return
-			}
-			valdidateAndLoadConfigFiles()
-		} else {
-			// Guessing Config Directory
-			ResourceLoader rl = new FileSystemResourceLoader();
-			Resource rs = rl.getResource("${linuxConfigDir}");
-			println "Checking on ${linuxConfigDir} as config dir"
-			if (rs.exists()) {
-				configDir = rs.getFile()
-			} else {
-				println "${linuxConfigDir} doesn't exist or is not readable"
-				// Assuming Eclipse Workspace
-				rs = rl.getResource("src/main/resources/config")
-				if (!rs.exists() | !rs.getFile().isDirectory()) {
-					println "Could'nt determine Default Config Directory, use -c option"
-					error = true
-					return
-				} else {
-					configDir = rs.getFile()
-				}
-			}
-			valdidateAndLoadConfigFiles()
-		}
+//		if (!options.u) {
+//			println "Assuming default value for u option: ${defaultHost}"
+//		}
+		
+//		if (options.c) {
+//			configDir = new File(options.c)
+//			if (!configDir.exists() | !configDir.directory) {
+//				println "Configuration Directory ${options.c} not valid: either not a directory or it doesn't exist"
+//				error = true
+//				return
+//			}
+//			valdidateAndLoadConfigFiles()
+//		} else {
+//			// Guessing Config Directory
+//			ResourceLoader rl = new FileSystemResourceLoader();
+//			Resource rs = rl.getResource("${linuxConfigDir}");
+//			println "Checking on ${linuxConfigDir} as config dir"
+//			if (rs.exists()) {
+//				configDir = rs.getFile()
+//			} else {
+//				println "${linuxConfigDir} doesn't exist or is not readable"
+//				// Assuming Eclipse Workspace
+//				rs = rl.getResource("src/main/resources/config")
+//				if (!rs.exists() | !rs.getFile().isDirectory()) {
+//					println "Could'nt determine Default Config Directory, use -c option"
+//					error = true
+//					return
+//				} else {
+//					configDir = rs.getFile()
+//				}
+//			}
+//			valdidateAndLoadConfigFiles()
+//		}
 		if (!options | options.h| options.getOptions().size() == 0) {
 			cli.usage()
 			println "Valid toStates are: ${validToStates}"
