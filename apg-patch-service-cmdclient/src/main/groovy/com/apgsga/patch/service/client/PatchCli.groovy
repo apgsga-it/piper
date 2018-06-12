@@ -19,15 +19,20 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 class PatchCli {
+	
+	public static PatchCli create(def environment) {
+		env = environment
+		create()
+	}
 
 	public static PatchCli create() {
-		
-		def ctx = new GenericApplicationContext()
-		new ClassPathBeanDefinitionScanner(ctx).scan("com.apgsga.patch.service.client.config")
-		ctx.refresh()
-		
-		def config = ctx.getBean("patchCliConfig")
-		revisionFilePath = config.getRevisionFilePath()
+
+		def url = getClass().getResource('/apscli.properties')
+		def file = new File(url.toURI())
+		assert file.exists() : "apscli.properties doesn't exist or is not accessible!"
+		ConfigObject conf = new ConfigSlurper(env).parse(url);
+		final Map config = conf.flatten();
+		revisionFilePath = config.get("revision.file.path")
 		
 		def patchCli = new PatchCli()
 		return patchCli
@@ -46,6 +51,7 @@ class PatchCli {
 	def configDir
 	def defaultConfig
 	def static revisionFilePath
+	def static env = "production"
 	def validate = true
 
 	def process(def args) {
