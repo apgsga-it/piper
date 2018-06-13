@@ -2,12 +2,16 @@ import org.apache.tools.ant.filters.*;
 plugins {
   	id 'groovy'
     id 'application'
-	id "com.github.johnrengelman.shadow" version "2.0.2"
-  	id "nebula.ospackage" version "4.6.0"
+	id 'com.github.johnrengelman.shadow' version '2.0.2'
+  	id 'nebula.ospackage' version '4.6.0'
+    id 'com.jfrog.artifactory'
+  	id 'ivy-publish'
 }
 apply plugin: 'groovy'
-apply plugin: "com.github.johnrengelman.shadow"
-apply plugin: "nebula.ospackage"
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'nebula.ospackage'
+apply plugin: 'com.jfrog.artifactory'
+apply plugin: 'ivy-publish'
 
 description = 'Cli Programm, which provides  Patch Service API through Command Line Interface  '
 
@@ -64,7 +68,7 @@ sourceSets {
 
 task pkgAsGTar(type: Tar) {
 	from "$project.buildDir/${finalName}"
-	archiveName = "${finalName}.tar.gz"
+	archiveName = "${finalName}-${version}.tar.gz"
 	compression = Compression.GZIP
 }
 
@@ -77,33 +81,6 @@ task copyLib( type: Copy ) {
 }
 
 
-publishing {
-	publications {
-		cligtar(MavenPublication) {
-			artifact source: pkgAsGTar, extension: 'tar.gz'
-			artifactId = "${finalName}"
-			pom.withXml { asNode().appendNode('description', 'From versions.properties generated dependency management pom.xml') }
-		}
-		withRpm(MavenPublication) {
-			artifact buildRpm  {
-				extension "rpm"
-				classifier "centos"
-			}
-		}
-	}
-	repositories {
-		maven {
-			name ='deployRepo'
-			url  "${mavenRepoBaseUrl}/${repoTarget}/"
-			credentials {
-				username = repoUser
-				password = repoPassword
-			}
-		}
-
-	}
-
-}
 
 def homeDir = "/opt/${finalName}"
 
@@ -118,7 +95,8 @@ ospackage {
 	arch = NOARCH
 	requires('aps' , "${savedVersion}",  EQUAL)
 	
-	postInstall file("packaging/rpm/post-install.sh")
+	// Since Package while be used from Jenkins pipeline for writting and reading revision file
+	postInstall 'chown -R jenkins:jenkins /var/opt/apg-patch-cli'
 
 	into "${homeDir}"
 	
@@ -156,11 +134,59 @@ ospackage {
 	}
 	
 }
+ buildRpm {
+ 	directory ("/var/opt/${finalName}", 0755)
+	
+}
+
+
+
+publishing {
+	publications {
+	    targz(MavenPublication) {
+			artifact source: pkgAsGTar, extension: 'tar.gz'
+			artifactId = "${finalName}"
+		}
+		yumRpm(IvyPublication) {
+			artifact buildRpm.outputs.getFiles().getSingleFile()
+		}
+	}
+	repositories {
+		maven {
+			name ='deployRepo'
+			url  "${mavenRepoBaseUrl}/${repoTarget}/"
+			credentials {
+				username = repoUser
+				password = repoPassword
+			}
+		}
+	}
+}
+
+artifactoryPublish {}.dependsOn(buildRpm)
+artifactory {
+    contextUrl = "${mavenRepoBaseUrl}"  
+    publish {
+
+        repository {
+            repoKey = 'yumrepo'   
+            username ="${repoUser}"
+            password = "${repoPassword}"
+            ivy {
+                 artifactLayout = "${buildRpm.outputs.getFiles().getSingleFile().getName()}"
+            }
+        }
+        defaults {
+            publications ('yumRpm')
+            publishBuildInfo = false  
+            publishArtifacts = true   
+            publishPom = false   
+            publishIvy = false  
+        }
+    }
+}
 
 assemble { dependsOn copyLib,pkgAsGTar}
-build {dependsOn assemble }
-publish {dependsOn build }
-publishToMavenLocal {dependsOn build }
-buildRpm {dependsOn processResources}
+buildRpm {dependsOn processResources, assemble}
 
 
