@@ -116,7 +116,7 @@ ospackage {
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
-	requires('aps' , "${savedVersion}", GREATER | EQUAL)
+	requires('aps' , "${savedVersion}",  EQUAL)
 	
 	postInstall file("packaging/rpm/post-install.sh")
 
