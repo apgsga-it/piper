@@ -190,8 +190,8 @@ class PatchCli {
 //			c longOpt: 'configDir', args:1, argName: 'directory', 'Configuration Directory', required: false
 			vv longOpt: 'validateArtifactNamesForVersion', args:2, valueSeparator: ",", argName: 'version,cvsBranch', 'Validate all artifact names for a given version on a given CVS branch', required: false
 			oc longOpt: 'onclone', args:1, argName: 'target', 'Clean Artifactory Repo and reset Revision file while cloning', required: false
-			sr longOpt: 'saveRevision', args:3, valueSeparator: ",", argName: 'targetInd,installationTarget,revision', 'Update revision with new value for given target', required: false
-			rr longOpt: 'retrieveRevision', args:3, valueSeparator: ",", argName: 'targetInd,installationTarget,revision', 'Save revision file with new value for a given target', required: false
+			sr longOpt: 'saveRevision', args:3, valueSeparator: ",", argName: 'targetInd,installationTarget,revision', 'Save revision file with new value for a given target', required: false
+			rr longOpt: 'retrieveRevision', args:2, valueSeparator: ",", argName: 'targetInd,installationTarget', 'Update revision with new value for given target', required: false
 			rtr longOpt: 'removeTRevisions', args:1, argName: 'dryRun', 'Remove all T Revision from Artifactory. dryRun=1 -> simulation only, dryRun=0 -> artifact will be deleted', required: false
 		}
 
@@ -390,8 +390,8 @@ class PatchCli {
 			}
 		}
 		if (options.rr) {
-			if(options.rrs.size() != 3) {
-				println "3 parameters are required for the retrieveRevision command."
+			if(options.rrs.size() != 2) {
+				println "2 parameters are required for the retrieveRevision command."
 				error = true
 			}
 		}
@@ -621,7 +621,6 @@ class PatchCli {
 
 		def targetInd = options.rrs[0]
 		def installationTarget = options.rrs[1]
-		def revision = options.rrs[2]
 
 		def revisionFile = new File(revisionFilePath)
 		def currentRevision = [P:1,T:10000]
@@ -634,7 +633,7 @@ class PatchCli {
 		}
 
 		if(targetInd.equals("P")) {
-			revision = revisions.currentRevision[targetInd]
+			patchRevision = revisions.currentRevision[targetInd]
 		}
 		else {
 			if(revisions.lastRevisions.get(installationTarget) == null) {
