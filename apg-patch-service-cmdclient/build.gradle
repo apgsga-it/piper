@@ -157,6 +157,11 @@ ospackage {
 	}
 	
 }
+ buildRpm {
+ 	directory ("/var/opt/${finalName}", 0755)
+	
+}
+
 
 assemble { dependsOn copyLib,pkgAsGTar}
 build {dependsOn assemble }
