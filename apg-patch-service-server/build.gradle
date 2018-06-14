@@ -70,6 +70,7 @@ ospackage {
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
+	provides('aps')
 
 	preInstall file("packaging/rpm/pre-install.sh")
 	postInstall file("packaging/rpm/post-install.sh")

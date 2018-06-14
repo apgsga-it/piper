@@ -64,7 +64,7 @@ sourceSets {
 
 task pkgAsGTar(type: Tar) {
 	from "$project.buildDir/${finalName}"
-	archiveName = "${finalName}.tar.gz"
+	archiveName = "${finalName}-${version}.tar.gz"
 	compression = Compression.GZIP
 }
 
@@ -116,8 +116,10 @@ ospackage {
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
+	requires('aps' , "${savedVersion}",  EQUAL)
 	
-	postInstall file("packaging/rpm/post-install.sh")
+	// Since Package while be used from Jenkins pipeline for writeing and reading revision file
+	postInstall 'chown -R jenkins:jenkins /var/opt/apg-patch-cli'
 
 	into "${homeDir}"
 	
