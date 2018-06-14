@@ -44,10 +44,10 @@ public class IntegrationExceptionHandlingTests extends Specification {
 
 	def "Patch Cli should print Server Exception and return returnCode > 0 for invalid findById"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		client.validate = false
 		when:
-		def result = client.process(["-u", baseUrl, "-f", " ,build"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-f", " ,build"])
 		then:
 		result != null
 		result.returnCode >  0
@@ -57,9 +57,9 @@ public class IntegrationExceptionHandlingTests extends Specification {
 	
 	def "Patch Cli should be ok with returnCode == 0 for nonexisting findById"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-f", "99999999,build"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-f", "99999999,build"])
 		then:
 		result != null
 		result.returnCode ==  0
@@ -68,10 +68,10 @@ public class IntegrationExceptionHandlingTests extends Specification {
 	
 	def "Patch Cli should print Server Exception and return returnCode > 0 for remove of notexisting Patch"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		client.validate = false
 		when:
-		def result = client.process(["-u", baseUrl, "-r", "XXXXX"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-r", "XXXXX"])
 		then:
 		result != null
 		result.returnCode >  0
@@ -82,10 +82,10 @@ public class IntegrationExceptionHandlingTests extends Specification {
 	
 	def "Patch Cli should print Server Exception and return returnCode > 0 for Saven of Patch with empty Patch Number"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		client.validate = false
 		when:
-		def result = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5403ErrorTest.json"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-s", "src/test/resources/Patch5403ErrorTest.json"])
 		then:
 		result != null
 		result.returnCode >  0
@@ -95,10 +95,10 @@ public class IntegrationExceptionHandlingTests extends Specification {
 	
 	def "Patch Cli should print Server Exception and return returnCode > 0  with Patchnumber empty for State Change Action"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		client.validate = false
 		when:
-		def result = client.process(["-u", baseUrl, "-sta", "   ,EntwicklungInstallationsbereit,aps"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-sta", "   ,EntwicklungInstallationsbereit,aps"])
 		then:
 		result.returnCode >  0
 		result.results.containsKey('error') == true
@@ -108,9 +108,9 @@ public class IntegrationExceptionHandlingTests extends Specification {
 
 	def "Patch Cli should print Server Exception and return returnCode > 0  with Patch for for State Change Action does not exist"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-sta", "9999,EntwicklungInstallationsbereit,aps"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-sta", "9999,EntwicklungInstallationsbereit,aps"])
 		then:
 		result.returnCode >  0
 		result.results.containsKey('error') == true
