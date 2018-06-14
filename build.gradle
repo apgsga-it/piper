@@ -2,7 +2,7 @@ plugins {
   id "io.spring.dependency-management" version "1.0.4.RELEASE"
   id 'com.jfrog.artifactory' version '4.7.3'
 }
-
+// TODO Branch for JAVA8MIG-319
 description = 'Parent Project for all Patch Service modules'
 project.ext {
 	mavenLocalRepo = repositories.mavenLocal().url
