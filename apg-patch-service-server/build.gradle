@@ -1,17 +1,13 @@
 plugins {
   	id 'groovy'
    	id 'application'
- 	id 'org.springframework.boot' version '1.5.9.RELEASE'
-  	id 'nebula.ospackage' version '4.6.0'
-  	id 'com.jfrog.artifactory'
-  	id 'ivy-publish' 
+ 	id "org.springframework.boot" version "1.5.9.RELEASE"
+  	id "nebula.ospackage" version "4.6.0"
   
 }
-apply plugin: 'nebula.ospackage'
-apply plugin: 'org.springframework.boot'
+apply plugin: "nebula.ospackage"
+apply plugin: "org.springframework.boot"
 apply plugin: 'groovy'
-apply plugin: 'ivy-publish'
-apply plugin: 'com.jfrog.artifactory'
 
 description = 'Server, which provides  Patch Functionality through a Restful Controller  '
 jar {
@@ -148,6 +144,11 @@ ospackage {
 		fileMode 0755 
 	}
 	
+	
+
+	
+
+	
 }
 
  buildRpm {
@@ -166,34 +167,25 @@ ospackage {
 
 
 
-
 publishing {
 	publications {
-		yumRpm(IvyPublication) {
-			artifact buildRpm.outputs.getFiles().getSingleFile()
+		mavenJava(MavenPublication) {
+			artifact buildRpm  {
+				extension "rpm"
+				classifier "centos"
+			}
+		}
+	}
+	repositories {
+		maven {
+			name ='deployRepo'
+			url  "${mavenRepoBaseUrl}/${repoTarget}/"
+			credentials {
+				username = repoUser
+				password = repoPassword
+			}
 		}
 	}
 }
 
-artifactoryPublish {}.dependsOn(buildRpm)
-artifactory {
-    contextUrl = "${mavenRepoBaseUrl}/"  
-    publish {
-
-        repository {
-            repoKey = 'yumrepo'   
-            username ="${repoUser}"
-            password = "${repoPassword}"
-            ivy {
-                 artifactLayout = "${buildRpm.outputs.getFiles().getSingleFile().getName()}"
-            }
-        }
-        defaults {
-            publications ('yumRpm')
-            publishBuildInfo = false  
-            publishArtifacts = true   
-            publishPom = false   
-            publishIvy = false  
-        }
-    }
-}
+	
