@@ -16,7 +16,7 @@ import com.apgsga.microservice.patch.api.PatchPersistence
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.fasterxml.jackson.databind.ObjectMapper
-
+import groovy.json.JsonSlurper
 import spock.lang.Specification;
 
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
@@ -25,10 +25,9 @@ import spock.lang.Specification;
 @ActiveProfiles("test,mock,groovyactions")
 public class IntegrationTest extends Specification {
 
-	private static def DEFAULT_CONFIG_OPT = ["-c", "src/test/resources/config"]
-
-	@Value('${baseUrl}')
-	private String baseUrl;
+	// TODO JHE: Will be deleted?
+//	@Value('${baseUrl}')
+//	private String baseUrl;
 
 	@Value('${json.db.location}')
 	private String dbLocation;
@@ -46,7 +45,7 @@ public class IntegrationTest extends Specification {
 	}
 
 	def "Patch Cli should print out help without errors"() {
-		def result = PatchCli.create().process(["-h"])
+		def result = PatchCli.create("test").process(["-h"])
 		expect: "PatchCli returns null in case of help only (-h)"
 		result != null
 		result.returnCode == 0
@@ -54,7 +53,7 @@ public class IntegrationTest extends Specification {
 	}
 
 	def "Patch Cli should print out help without errors in case of no options "() {
-		def result = PatchCli.create().process([])
+		def result = PatchCli.create("test").process([])
 		expect: "PatchCli returns null in case no options entered"
 		result != null
 		result.returnCode == 0
@@ -63,9 +62,9 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli queries existance of not existing Patch and returns false"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-e", "9999"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-e", "9999"])
 		then:
 		result != null
 		result.returnCode == 0
@@ -74,11 +73,11 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli copies Patch File to server and queries before and after existence"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preCondResult = client.process(["-u", baseUrl, "-e", "5401"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
-		def postCondResult = client.process(["-u", baseUrl, "-e", "5401"]+ DEFAULT_CONFIG_OPT)
+		def preCondResult = client.process(["-e", "5401"])
+		def result = client.process(["-s", "src/test/resources/Patch5401.json"])
+		def postCondResult = client.process(["-e", "5401"])
 
 		then:
 		preCondResult != null
@@ -99,10 +98,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli return found = false on findById of non existing Patch"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preCondResult = client.process(["-u", baseUrl, "-e", "5401"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-f", "5401,build"]+ DEFAULT_CONFIG_OPT)
+		def preCondResult = client.process(["-e", "5401"])
+		def result = client.process(["-f", "5401,build"])
 
 		then:
 		preCondResult != null
@@ -115,10 +114,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli return found on findById on Patch, which been copied before"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-f", "5401,build"]+ DEFAULT_CONFIG_OPT)
+		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"])
+		def result = client.process(["-f", "5401,build"])
 
 		then:
 		preCondResult != null
@@ -137,11 +136,11 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli removes Patch, which been copied before"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-r", "5401"]+ DEFAULT_CONFIG_OPT)
-		def postCondResult = client.process(["-u", baseUrl, "-e", "5401"]+ DEFAULT_CONFIG_OPT)
+		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"])
+		def result = client.process(["-r", "5401"])
+		def postCondResult = client.process(["-e", "5401"])
 		then:
 		preCondResult != null
 		preCondResult.returnCode == 0
@@ -156,9 +155,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli upload DbModules to server"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-ud", "src/test/resources/DbModules.json"]+ DEFAULT_CONFIG_OPT)
+		//def result = client.process(["-u", baseUrl, "-ud", "src/test/resources/DbModules.json"])
+		def result = client.process(["-ud", "src/test/resources/DbModules.json"])
 		then:
 		result != null
 		result.returnCode == 0
@@ -172,10 +172,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli download DbModules from server"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preConResult = client.process(["-u", baseUrl, "-ud", "src/test/resources/DbModules.json"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-dd", "build"]+ DEFAULT_CONFIG_OPT)
+		def preConResult = client.process(["-ud", "src/test/resources/DbModules.json"])
+		def result = client.process(["-dd", "build"])
 		then:
 		preConResult != null
 		preConResult.returnCode == 0
@@ -191,9 +191,9 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli download DbModules from server, where it does'nt exist"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-dd", "build"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-dd", "build"])
 		then:
 		result != null
 		result.returnCode == 0
@@ -202,9 +202,9 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli upload ServiceMetaData to server"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-um", "src/test/resources/ServicesMetaData.json"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-um", "src/test/resources/ServicesMetaData.json"])
 		then:
 		result != null
 		result.returnCode == 0
@@ -218,10 +218,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli download ServiceMetaData from server"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preConResult = client.process(["-u", baseUrl, "-um", "src/test/resources/ServicesMetaData.json"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-dm", "build"]+ DEFAULT_CONFIG_OPT)
+		def preConResult = client.process(["-um", "src/test/resources/ServicesMetaData.json"])
+		def result = client.process(["-dm", "build"])
 		then:
 		preConResult != null
 		preConResult.returnCode == 0
@@ -238,9 +238,9 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli download ServiceMetaData from server, where it does'nt exist"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-dm", "build"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-dm", "build"])
 		then:
 		result != null
 		result.returnCode == 0
@@ -249,9 +249,9 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli invalid State Change Action"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-sta", "9999,XXXXXX,aps"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-sta", "9999,XXXXXX,aps"])
 		then:
 		result != null
 		result.returnCode == 0
@@ -260,10 +260,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli valid State Change Action for config aps"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-sta", '5401,EntwicklungInstallationsbereit,aps']+ DEFAULT_CONFIG_OPT)
+		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"])
+		def result = client.process(["-sta", '5401,EntwicklungInstallationsbereit,aps'])
 		then:
 		preCondResult != null
 		preCondResult.returnCode == 0
@@ -275,10 +275,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli valid State Change Action for config nil"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-sta", '5401,EntwicklungInstallationsbereit,nil']+ DEFAULT_CONFIG_OPT)
+		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"])
+		def result = client.process(["-sta", '5401,EntwicklungInstallationsbereit,nil'])
 		then:
 		preCondResult != null
 		preCondResult.returnCode == 0
@@ -290,9 +290,9 @@ public class IntegrationTest extends Specification {
 	
 	def "Patch Cli Missing configuration for State Change Action"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-sta", "9999,EntwicklungInstallationsbereit"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-sta", "9999,EntwicklungInstallationsbereit"])
 		then:
 		result != null
 		result.returnCode == 0
@@ -301,10 +301,10 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli valid State Change Action for config db with config file"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def preCondResult = client.process(["-u", baseUrl, "-s", "src/test/resources/Patch5401.json"]+ DEFAULT_CONFIG_OPT)
-		def result = client.process(["-u", baseUrl, "-sta", "5401,EntwicklungInstallationsbereit,mockdb"]+ DEFAULT_CONFIG_OPT)
+		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"])
+		def result = client.process(["-sta", "5401,EntwicklungInstallationsbereit,mockdb"])
 		then:
 		preCondResult != null
 		preCondResult.returnCode == 0
@@ -316,23 +316,194 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli validate Artifact names from version"() {
 		setup:
-		def client = PatchCli.create()
+		def client = PatchCli.create("test")
 		when:
-		def result = client.process(["-u", baseUrl, "-vv", "9.0.6.ADMIN-UIMIG-SNAPSHOT,it21_release_9_0_6_admin_uimig"]+ DEFAULT_CONFIG_OPT)
+		def result = client.process(["-vv", "9.0.6.ADMIN-UIMIG-SNAPSHOT,it21_release_9_0_6_admin_uimig"])
 		then:
 		result != null
 		result.returnCode == 0
 	}
 	
-	// JHE (29.05.2018): commenting for now because of PatchCli.onClone method. The method there has for now 2 hardcoded value for 2 files, which naturally causes issue while testing
-	/*
-	def "Patch Cli start onClone method"() {
+	def "Patch cli validate retrieve and save revision"() {
 		setup:
-			def client = PatchCli.create()
+			def client = PatchCli.create("test")
+			PrintStream oldStream
+			def buffer
+			def revisionAsJson
+			def revisionsFromRRCall
+			def revisionsFromFile
+			def revisionsFile = new File("src/test/resources/Revisions.json")
 		when:
-			def result = client.process(["-u", baseUrl, "-oc", "CHEI212"]+ DEFAULT_CONFIG_OPT)
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			client.process(["-rr", "T,CHEI212"])
+			System.setOut(oldStream)
+			revisionAsJson = getRetrieveRevisionLine(buffer.toString())
+			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
 		then:
-			result.returnCode == 0
+			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 10000
+			revisionsFromRRCall.fromRetrieveRevision.lastRevision == "SNAPSHOT"
+			!revisionsFile.exists()
+		when:
+			client.process(["-sr", "T,CHEI212,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
+			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
+		then: 
+			revisionsFile.exists()
+			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10000
+			revisionsFromFile.lastRevisions["CHEI211"] == null
+			revisionsFromFile.currentRevision["P"].toInteger() == 1
+			revisionsFromFile.currentRevision["T"].toInteger() == 20000
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			client.process(["-rr", "T,CHEI211"])
+			System.setOut(oldStream)
+			revisionAsJson = getRetrieveRevisionLine(buffer.toString())
+			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
+			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
+		then:
+			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 20000
+			revisionsFromRRCall.fromRetrieveRevision.lastRevision == "SNAPSHOT"
+			revisionsFile.exists()
+			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10000
+			revisionsFromFile.lastRevisions["CHEI211"] == null
+			revisionsFromFile.currentRevision["P"].toInteger() == 1
+			revisionsFromFile.currentRevision["T"].toInteger() == 20000
+		when:
+			client.process(["-sr", "T,CHEI211,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
+			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
+		then:
+			revisionsFile.exists()
+			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10000
+			revisionsFromFile.lastRevisions["CHEI211"].toInteger() == 20000
+			revisionsFromFile.currentRevision["P"].toInteger() == 1
+			revisionsFromFile.currentRevision["T"].toInteger() == 30000
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			client.process(["-rr", "T,CHEI212"])
+			System.setOut(oldStream)
+			revisionAsJson = getRetrieveRevisionLine(buffer.toString())
+			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
+		then:
+			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 10001
+			revisionsFromRRCall.fromRetrieveRevision.lastRevision.toInteger() == 10000
+			revisionsFile.exists()
+		when:
+			client.process(["-sr", "T,CHEI212,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
+			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
+		then:
+			revisionsFile.exists()
+			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10001
+			revisionsFromFile.lastRevisions["CHEI211"].toInteger() == 20000
+			revisionsFromFile.currentRevision["P"].toInteger() == 1
+			revisionsFromFile.currentRevision["T"].toInteger() == 30000
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			client.process(["-rr", "P,CHPI211"])
+			System.setOut(oldStream)
+			revisionAsJson = getRetrieveRevisionLine(buffer.toString())
+			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
+		then:
+			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 1
+			revisionsFromRRCall.fromRetrieveRevision.lastRevision == "SNAPSHOT" 
+			revisionsFile.exists()
+		when:
+			client.process(["-sr", "P,CHPI211,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
+			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
+		then:
+			revisionsFile.exists()
+			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10001
+			revisionsFromFile.lastRevisions["CHEI211"].toInteger() == 20000
+			revisionsFromFile.lastRevisions["CHPI211"].toInteger() == 1
+			revisionsFromFile.currentRevision["P"].toInteger() == 2
+			revisionsFromFile.currentRevision["T"].toInteger() == 30000
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			client.process(["-rr", "T,CHEI211"])
+			System.setOut(oldStream)
+			revisionAsJson = getRetrieveRevisionLine(buffer.toString())
+			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
+		then:
+			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 20001
+			revisionsFromRRCall.fromRetrieveRevision.lastRevision.toInteger() == 20000
+			revisionsFile.exists()
+		when:
+			client.process(["-sr", "T,CHEI211,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
+			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
+		then:
+			revisionsFile.exists()
+			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10001
+			revisionsFromFile.lastRevisions["CHEI211"].toInteger() == 20001
+			revisionsFromFile.lastRevisions["CHPI211"].toInteger() == 1
+			revisionsFromFile.currentRevision["P"].toInteger() == 2
+			revisionsFromFile.currentRevision["T"].toInteger() == 30000
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			client.process(["-rr", "P,CHPI211"])
+			System.setOut(oldStream)
+			revisionAsJson = getRetrieveRevisionLine(buffer.toString())
+			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
+		then:
+			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 2
+			revisionsFromRRCall.fromRetrieveRevision.lastRevision.toInteger() == 1
+			revisionsFile.exists()
+		when:
+			client.process(["-sr", "P,CHPI211,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
+			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
+		then:
+			revisionsFile.exists()
+			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10001
+			revisionsFromFile.lastRevisions["CHEI211"].toInteger() == 20001
+			revisionsFromFile.lastRevisions["CHPI211"].toInteger() == 2
+			revisionsFromFile.currentRevision["P"].toInteger() == 3
+			revisionsFromFile.currentRevision["T"].toInteger() == 30000
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			client.process(["-rr", "T,CHEI213"])
+			System.setOut(oldStream)
+			revisionAsJson = getRetrieveRevisionLine(buffer.toString())
+			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
+		then:
+			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 30000
+			revisionsFromRRCall.fromRetrieveRevision.lastRevision == "SNAPSHOT"
+			revisionsFile.exists()
+		when:
+			client.process(["-sr", "T,CHEI213,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
+			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
+		then:
+			revisionsFile.exists()
+			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10001
+			revisionsFromFile.lastRevisions["CHEI211"].toInteger() == 20001
+			revisionsFromFile.lastRevisions["CHEI213"].toInteger() == 30000
+			revisionsFromFile.lastRevisions["CHPI211"].toInteger() == 2
+			revisionsFromFile.currentRevision["P"].toInteger() == 3
+			revisionsFromFile.currentRevision["T"].toInteger() == 40000
+		cleanup:
+			revisionsFile.delete()
 	}
-	*/
+	
+	def getRetrieveRevisionLine(String lines) {
+		// Looking for the line which is for us interesting -> should contain "fromRetrieveRevision"
+		def searchedLine = null
+		lines.eachLine{ line ->
+			if (line != null) {
+				if(line.contains("fromRetrieveRevision")) {
+					searchedLine = line
+				}
+			}
+		}
+		return searchedLine
+	}
 }

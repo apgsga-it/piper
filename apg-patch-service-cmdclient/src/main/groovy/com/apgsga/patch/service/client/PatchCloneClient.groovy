@@ -77,6 +77,7 @@ class PatchCloneClient {
 		// TODO JHE: We can probably improve (remove) this loop by using a more sophisticated Regex
 		while(from <= lastRevision) {
 			// TODO JHE: do we want to search in more repos? Is "realeases" enough?
+			// TODO JHE: get dryRun from a property within apscli.properties -> will help for the integration test
 			removeArtifacts("*${FIRST_PART_FOR_ARTIFACT_SEARCH}${from}*", false)
 			from++
 		}
