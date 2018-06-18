@@ -16,6 +16,8 @@ class PatchCloneClient {
 	
 	private final String DB_PATCH_REPO = "dbpatch"
 	
+	private final int rangeStep = 10000
+	
 	private Artifactory artifactory;
 	
 	private revisionFilePath
@@ -45,6 +47,7 @@ class PatchCloneClient {
 		}
 	}
 	
+	// TODO JHE(15.06.2018): not sur this method is at the right place ... should rather be part of PatchCli (and PatchCli should have a PatchCloneClient instance)
 	public void deleteAllTRevisions(boolean dryRun) {
 		removeArtifacts("*-T-*", dryRun);
 		if(!dryRun) {
@@ -69,16 +72,13 @@ class PatchCloneClient {
 	
 	private void deleteRevisionWithinRange(Long lastRevision) {
 		
-		// TODO JHE: Ideally the range step should be centralized somewhere
-		//			 Might be improved when/if we decide to implement JAVA8MIG-365.
-		def rangeStep = 10000
 		def from = ((int) (lastRevision / rangeStep)) * rangeStep
 		
 		// TODO JHE: We can probably improve (remove) this loop by using a more sophisticated Regex
 		while(from <= lastRevision) {
 			// TODO JHE: do we want to search in more repos? Is "realeases" enough?
 			// TODO JHE: get dryRun from a property within apscli.properties -> will help for the integration test
-			removeArtifacts("*${FIRST_PART_FOR_ARTIFACT_SEARCH}${from}*", false)
+			removeArtifacts("*${FIRST_PART_FOR_ARTIFACT_SEARCH}${from}*", PatchCli.dryRunOnClone)
 			from++
 		}
 	}
@@ -89,17 +89,12 @@ class PatchCloneClient {
 		
 		def prodTarget = getProdTarget()
 		
-		// TODO JHE: Is this part really correct? I mean that we eventually set it to SNAPSHOT? Not sure it will even happen, but ...
-		def currentProdRev = revisions.lastRevisions[prodTarget]
-		if(currentProdRev == null) {
-			currentProdRev = "SNAPSHOT"
-		}
-		
-		revisions.lastRevisions[target] = currentProdRev
+		// For the cloned target, we reset its version (eg.: 10045 will be 10000), and we add the @P indicator
+		def initialRevision = ((int) (revisions.lastRevisions[target].toInteger() / rangeStep)) * rangeStep
+		revisions.lastRevisions[target] = initialRevision + "@P"
 		new File(revisionFilePath).write(new JsonBuilder(revisions).toPrettyString())
 	}
 	
-
 	private String getProdTarget() {
 		File targetSystemFileName = new File(targetSystemFilePath)
 		def targetSystems = [:]

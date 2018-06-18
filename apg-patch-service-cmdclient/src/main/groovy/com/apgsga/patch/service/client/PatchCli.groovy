@@ -31,6 +31,7 @@ class PatchCli {
 		revisionFilePath = conf.revision.file.path
 		defaultHost = conf.host.default
 		configDir = conf.config.dir
+		dryRunOnClone = conf.onclone.delete.artifact.dryrun
 		
 		def patchCli = new PatchCli()
 		return patchCli
@@ -50,6 +51,7 @@ class PatchCli {
 	def defaultConfig
 	def static revisionFilePath
 	def static profile = "production"
+	def static dryRunOnClone = true
 	
 	def validate = true
 
@@ -141,6 +143,10 @@ class PatchCli {
 				def result = removeAllTRevisions(options)
 				cmdResults.results['rtr'] = result
 			}
+			if (options.pr) {
+				def result = retrieveLastProdRevision()
+				cmdResults.results['pr'] = result
+			}
 			cmdResults.returnCode = 0
 			return cmdResults
 		} catch (PatchClientServerException e) {
@@ -169,8 +175,6 @@ class PatchCli {
 		cli.formatter.setWidth(100)
 		cli.with {
 			h longOpt: 'help', 'Show usage information', required: false
-			// TODO JHE: "u" option will be deleted as soon as configuration file will be done
-//			u longOpt: 'host', args:1 , argName: 'hostBaseUrl', 'The Base Url of the Patch Service', required: false
 			l longOpt: 'upload', args:1 , argName: 'directory', 'Upload all Patch files <directory> ', required: false
 			d longOpt: 'download', args:1 , argName: 'directory', 'Download all Patch files to a <directory>', required: false
 			e longOpt: "exists", args:1, argName: 'patchNumber', 'True resp. false if Patch of the <patchNumber> exists or not', required: false
@@ -186,13 +190,12 @@ class PatchCli {
 			la longOpt: 'listAllFiles', 'List all files on server', required: false
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
-			// TODO JHE: "c" option will be deleted as soon as configuration file will be done
-//			c longOpt: 'configDir', args:1, argName: 'directory', 'Configuration Directory', required: false
 			vv longOpt: 'validateArtifactNamesForVersion', args:2, valueSeparator: ",", argName: 'version,cvsBranch', 'Validate all artifact names for a given version on a given CVS branch', required: false
 			oc longOpt: 'onclone', args:1, argName: 'target', 'Clean Artifactory Repo and reset Revision file while cloning', required: false
 			sr longOpt: 'saveRevision', args:3, valueSeparator: ",", argName: 'targetInd,installationTarget,revision', 'Save revision file with new value for a given target', required: false
 			rr longOpt: 'retrieveRevision', args:2, valueSeparator: ",", argName: 'targetInd,installationTarget', 'Update revision with new value for given target', required: false
 			rtr longOpt: 'removeTRevisions', args:1, argName: 'dryRun', 'Remove all T Revision from Artifactory. dryRun=1 -> simulation only, dryRun=0 -> artifact will be deleted', required: false
+			pr longOpt: 'prodRevision', args:0, 'Retrieve last revision for the production target', required: false
 		}
 
 		def options = cli.parse(args)
@@ -210,39 +213,6 @@ class PatchCli {
 		
 		valdidateAndLoadConfigFiles()
 
-//		if (!options.u) {
-//			println "Assuming default value for u option: ${defaultHost}"
-//		}
-		
-//		if (options.c) {
-//			configDir = new File(options.c)
-//			if (!configDir.exists() | !configDir.directory) {
-//				println "Configuration Directory ${options.c} not valid: either not a directory or it doesn't exist"
-//				error = true
-//				return
-//			}
-//			valdidateAndLoadConfigFiles()
-//		} else {
-//			// Guessing Config Directory
-//			ResourceLoader rl = new FileSystemResourceLoader();
-//			Resource rs = rl.getResource("${linuxConfigDir}");
-//			println "Checking on ${linuxConfigDir} as config dir"
-//			if (rs.exists()) {
-//				configDir = rs.getFile()
-//			} else {
-//				println "${linuxConfigDir} doesn't exist or is not readable"
-//				// Assuming Eclipse Workspace
-//				rs = rl.getResource("src/main/resources/config")
-//				if (!rs.exists() | !rs.getFile().isDirectory()) {
-//					println "Could'nt determine Default Config Directory, use -c option"
-//					error = true
-//					return
-//				} else {
-//					configDir = rs.getFile()
-//				}
-//			}
-//			valdidateAndLoadConfigFiles()
-//		}
 		if (!options | options.h| options.getOptions().size() == 0) {
 			cli.usage()
 			println "Valid toStates are: ${validToStates}"
@@ -640,14 +610,40 @@ class PatchCli {
 				patchRevision = revisions.currentRevision[targetInd]
 			}
 			else {
-				patchRevision = (revisions.lastRevisions.get(installationTarget)).toInteger() + 1
+				def currentLastRevision = revisions.lastRevisions.get(installationTarget) 
+				if(currentLastRevision.endsWith("@P")) {
+					patchRevision = currentLastRevision.substring(0, currentLastRevision.size()-2)
+					patchLastRevision = "CLONED"
+				} 
+				else { 
+					patchRevision = (revisions.lastRevisions.get(installationTarget)).toInteger() + 1
+				}
 			}
 		}
-
-		patchLastRevision = revisions.lastRevisions.get(installationTarget,'SNAPSHOT')
+		
+		if(patchLastRevision == null) {
+			patchLastRevision = revisions.lastRevisions.get(installationTarget,'SNAPSHOT')
+		}
 
 		// JHE (31.05.2018) : we print the json on stdout so that the pipeline can get and parse it. Unfortunately there is currently no supported alternative: https://issues.jenkins-ci.org/browse/JENKINS-26133
 		def json = JsonOutput.toJson([fromRetrieveRevision:[revision: patchRevision, lastRevision: patchLastRevision]])
+		println json
+	}
+	
+	def retrieveLastProdRevision() {
+		def targetSystemFile = new File(configDir, "TargetSystemMappings.json")
+		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
+		def prodTarget 
+		jsonSystemTargets.targetSystems.each{ target ->
+			if(target.typeInd == "P") {
+				prodTarget = target.target 
+			}
+		}
+		def revisions = new JsonSlurper().parseText(new File(revisionFilePath).text)
+		def prodRev = revisions.lastRevisions[prodTarget]
+		
+		// JHE (15.06.2018) : we print the json on stdout so that the pipeline can get and parse it. Unfortunately there is currently no supported alternative: https://issues.jenkins-ci.org/browse/JENKINS-26133
+		def json = JsonOutput.toJson([lastProdRevision:prodRev])
 		println json
 	}
 

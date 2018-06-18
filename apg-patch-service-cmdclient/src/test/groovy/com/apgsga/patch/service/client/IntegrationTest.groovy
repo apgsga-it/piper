@@ -16,7 +16,9 @@ import com.apgsga.microservice.patch.api.PatchPersistence
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.fasterxml.jackson.databind.ObjectMapper
+import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
+import spock.lang.Ignore
 import spock.lang.Specification;
 
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
@@ -324,7 +326,7 @@ public class IntegrationTest extends Specification {
 		result.returnCode == 0
 	}
 	
-	def "Patch cli validate retrieve and save revision"() {
+	def "Patch Cli validate retrieve and save revision"() {
 		setup:
 			def client = PatchCli.create("test")
 			PrintStream oldStream
@@ -492,6 +494,121 @@ public class IntegrationTest extends Specification {
 			revisionsFromFile.currentRevision["T"].toInteger() == 40000
 		cleanup:
 			revisionsFile.delete()
+	}
+	
+	def "Patch Cli validate onClone mechanism"() {
+		setup:
+			/*
+			 * For our tests, within src/test/resources/TargetSystemMappings.json, CHEI211 is configured as the
+			 * production target.
+			 * 
+			 */
+			def client = PatchCli.create("test")
+			def revisionsFile = new File("src/test/resources/Revisions.json")
+			def currentRevision = [P:5,T:30000]
+			def lastRevision = [CHEI212:10036,CHEI211:4,CHEI213:20025]
+			def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
+			revisionsFile.write(new JsonBuilder(revisions).toPrettyString())
+			def revisionsAfterClone
+			def result
+			def oldStream
+			def buffer
+			def revisionAsJson
+			def revisionsFromRRCall
+			def revisionsFromFile
+		when:
+			result = client.process(["-oc", "CHEI212"])
+			revisionsAfterClone = new JsonSlurper().parseText(revisionsFile.text)
+		then:
+			result != null
+			revisionsFile.exists()
+			revisionsAfterClone.currentRevision["P"].toInteger() == 5
+			revisionsAfterClone.currentRevision["T"].toInteger() == 30000
+			revisionsAfterClone.lastRevisions["CHEI211"].toInteger() == 4
+			revisionsAfterClone.lastRevisions["CHEI213"].toInteger() == 20025
+			revisionsAfterClone.lastRevisions["CHEI212"] == "10000@P"
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			client.process(["-rr", "T,CHEI212"])
+			System.setOut(oldStream)
+			revisionAsJson = getRetrieveRevisionLine(buffer.toString())
+			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
+		then:
+			result != null
+			revisionsFile.exists()
+			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 10000
+			revisionsFromRRCall.fromRetrieveRevision.lastRevision == "CLONED"
+		when:
+			client.process(["-sr", "T,CHEI212,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
+			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
+		then:
+			revisionsFile.exists()
+			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10000
+			revisionsFromFile.lastRevisions["CHEI211"].toInteger() == 4
+			revisionsFromFile.lastRevisions["CHEI213"].toInteger() == 20025
+			revisionsFromFile.currentRevision["P"].toInteger() == 5
+			revisionsFromFile.currentRevision["T"].toInteger() == 30000
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			client.process(["-rr", "T,CHEI212"])
+			System.setOut(oldStream)
+			revisionAsJson = getRetrieveRevisionLine(buffer.toString())
+			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
+		then:
+			result != null
+			revisionsFile.exists()
+			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 10001
+			revisionsFromRRCall.fromRetrieveRevision.lastRevision.toInteger() == 10000
+		cleanup:
+			revisionsFile.delete()
+	}
+	
+	def "Patch Cli validate retrieve last prod revision"() {
+		setup:
+			/*
+			 * For our tests, within src/test/resources/TargetSystemMappings.json, CHEI211 is configured as the
+			 * production target.
+			 *
+			 */
+			def client = PatchCli.create("test")
+			def revisionsFile = new File("src/test/resources/Revisions.json")
+			def currentRevision = [P:5,T:30000]
+			def lastRevision = [CHEI212:10036,CHEI211:4,CHEI213:20025]
+			def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
+			revisionsFile.write(new JsonBuilder(revisions).toPrettyString())
+			def oldStream
+			def buffer
+			def revisionAsJson
+			def revisionsFromRRCall
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			client.process(["-pr"])
+			System.setOut(oldStream)
+			revisionAsJson = getLastProdRevisionLine(buffer.toString())
+			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
+		then:
+			revisionsFromRRCall.lastProdRevision.toInteger() == 4
+		cleanup:
+			revisionsFile.delete()
+	}
+	
+	def getLastProdRevisionLine(String lines) {
+		// Looking for the line which is for us interesting -> should contain "fromRetrieveRevision"
+		def searchedLine = null
+		lines.eachLine{ line ->
+			if (line != null) {
+				if(line.contains("lastProdRevision")) {
+					searchedLine = line
+				}
+			}
+		}
+		return searchedLine
 	}
 	
 	def getRetrieveRevisionLine(String lines) {
