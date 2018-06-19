@@ -597,7 +597,7 @@ class PatchCli {
 		def targetInd = options.rrs[0]
 		def installationTarget = options.rrs[1]
 		
-		LOGGER.info("Retrieving revision for target ${installationTarget} (${targetInd})")
+		LOGGER.info("(retrieveRevisions) Retrieving revision for target ${installationTarget} (${targetInd})")
 
 		def revisionFile = new File(revisionFilePath)
 		def currentRevision = [P:1,T:10000]
@@ -607,31 +607,30 @@ class PatchCli {
 		def patchLastRevision
 		if (revisionFile.exists()) {
 			revisions = new JsonSlurper().parseText(revisionFile.text)
-			LOGGER.info("Revision file exist and following content has been parsed")
-			LOGGER.info(revisions)
+			LOGGER.info("(retrieveRevisions) Revision file exist and following content has been parsed: ${revisions}")
 		}
 
 		if(targetInd.equals("P")) {
 			patchRevision = revisions.currentRevision[targetInd]
-			LOGGER.info("targetInd = P ... patchRevision = ${patchRevision}")
+			LOGGER.info("(retrieveRevisions) targetInd = P ... patchRevision = ${patchRevision}")
 		}
 		else {
 			if(revisions.lastRevisions.get(installationTarget) == null) {
 				patchRevision = revisions.currentRevision[targetInd]
-				LOGGER.info("Revision for ${installationTarget} was null, patchRevision will be ${patchRevision}")
+				LOGGER.info("(retrieveRevisions) Revision for ${installationTarget} was null, patchRevision will be ${patchRevision}")
 			}
 			else {
 				def currentLastRevision = revisions.lastRevisions.get(installationTarget) 
-				LOGGER.info("currentLastRevision = ${currentLastRevision}")
+				LOGGER.info("(retrieveRevisions) currentLastRevision = ${currentLastRevision}")
 				if(currentLastRevision.endsWith("@P")) {
 					patchRevision = currentLastRevision.substring(0, currentLastRevision.size()-2)
 					patchLastRevision = "CLONED"
-					LOGGER.info("New patch for ${installationTarget} after clone")
-					LOGGER.info("patchRevision = ${patchRevision} / patchLastRevision = ${patchLastRevision}")
+					LOGGER.info("(retrieveRevisions) New patch for ${installationTarget} after clone")
+					LOGGER.info("(retrieveRevisions) patchRevision = ${patchRevision} / patchLastRevision = ${patchLastRevision}")
 				} 
 				else { 
 					patchRevision = (revisions.lastRevisions.get(installationTarget)).toInteger() + 1
-					LOGGER.info("patchRevision = ${patchRevision}")
+					LOGGER.info("(retrieveRevisions) patchRevision = ${patchRevision}")
 				}
 			}
 		}
@@ -640,10 +639,10 @@ class PatchCli {
 			patchLastRevision = revisions.lastRevisions.get(installationTarget,'SNAPSHOT')
 		}
 
-		LOGGER.info("patchLastRevision = ${patchLastRevision}")
+		LOGGER.info("(retrieveRevisions) patchLastRevision = ${patchLastRevision}")
 		// JHE (31.05.2018) : we print the json on stdout so that the pipeline can get and parse it. Unfortunately there is currently no supported alternative: https://issues.jenkins-ci.org/browse/JENKINS-26133
 		def json = JsonOutput.toJson([fromRetrieveRevision:[revision: patchRevision, lastRevision: patchLastRevision]])
-		LOGGER.info("Following json will be returned : ${json}")
+		LOGGER.info("(retrieveRevisions) Following json will be returned : ${json}")
 		println json
 	}
 	
@@ -670,7 +669,7 @@ class PatchCli {
 		def installationTarget = options.srs[1]
 		def revision = options.srs[2]
 		
-		LOGGER.info("Saving revisions for targetInd=${targetInd}, installationTarget=${installationTarget}, revision=${revision}")
+		LOGGER.info("(saveRevisions) Saving revisions for targetInd=${targetInd}, installationTarget=${installationTarget}, revision=${revision}")
 
 		def revisionFile = new File(revisionFilePath)
 		def currentRevision = [P:1,T:10000]
@@ -678,23 +677,21 @@ class PatchCli {
 		def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
 		if (revisionFile.exists()) {
 			revisions = new JsonSlurper().parseText(revisionFile.text)
-			LOGGER.info("Current revisions are:")
-			LOGGER.info(revisions)
+			LOGGER.info("(saveRevisions) Current revisions are: ${revisions}")
 		}
 		if(targetInd.equals("P")) {
-			LOGGER.info("Increasing Prod revision ...")
+			LOGGER.info("(saveRevisions) Increasing Prod revision ...")
 			revisions.currentRevision[targetInd]++
 		}
 		else {
 			// We increase it only when saving a new Target
 			if(revisions.lastRevisions.get(installationTarget) == null) {
 				revisions.currentRevision[targetInd] = revisions.currentRevision[targetInd] + 10000
-				LOGGER.info("${installationTarget} was new, next test range revision will start at ${revisions.currentRevision[targetInd]}")
+				LOGGER.info("(saveRevisions) ${installationTarget} was new, next test range revision will start at ${revisions.currentRevision[targetInd]}")
 			}
 		}
 		revisions.lastRevisions[installationTarget] = revision
-		LOGGER.info("Following revisions will be save:")
-		LOGGER.info(revisions)
+		LOGGER.info("(saveRevisions) Following revisions will be save: ${revisions}")
 		new File(revisionFilePath).write(new JsonBuilder(revisions).toPrettyString())
 
 	}
