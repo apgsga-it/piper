@@ -1,6 +1,8 @@
 package com.apgsga.patch.service.client
 
 
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.runtime.StackTraceUtils
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.FileSystemResourceLoader
@@ -17,6 +19,8 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 class PatchCli {
+	
+	protected final static Log LOGGER = LogFactory.getLog(PatchCli.class);
 
 	// TODO JHE (12.06.2018) : can we change this with a setter? Not sure as we bootstrap the profile within create() ... if we assign a profile afterwards, obviously it will be too late.
 	public static PatchCli create(String p_profile) {
@@ -25,6 +29,7 @@ class PatchCli {
 	}
 		
 	public static PatchCli create() {
+		System.setProperty("logback.configurationFile", new ClassPathResource('logback.xml').path);
 		ClassPathResource res = new ClassPathResource('apscli.properties')
 		assert res.exists() : "apscli.properties doesn't exist or is not accessible!"
 		ConfigObject conf = new ConfigSlurper(profile).parse(res.URL);
@@ -591,6 +596,8 @@ class PatchCli {
 
 		def targetInd = options.rrs[0]
 		def installationTarget = options.rrs[1]
+		
+		LOGGER.info("Retrieving revision for target ${installationTarget} (${targetInd})")
 
 		def revisionFile = new File(revisionFilePath)
 		def currentRevision = [P:1,T:10000]
@@ -600,23 +607,31 @@ class PatchCli {
 		def patchLastRevision
 		if (revisionFile.exists()) {
 			revisions = new JsonSlurper().parseText(revisionFile.text)
+			LOGGER.info("Revision file exist and following content has been parsed")
+			LOGGER.info(revisions)
 		}
 
 		if(targetInd.equals("P")) {
 			patchRevision = revisions.currentRevision[targetInd]
+			LOGGER.info("targetInd = P ... patchRevision = ${patchRevision}")
 		}
 		else {
 			if(revisions.lastRevisions.get(installationTarget) == null) {
 				patchRevision = revisions.currentRevision[targetInd]
+				LOGGER.info("Revision for ${installationTarget} was null, patchRevision will be ${patchRevision}")
 			}
 			else {
 				def currentLastRevision = revisions.lastRevisions.get(installationTarget) 
+				LOGGER.info("currentLastRevision = ${currentLastRevision}")
 				if(currentLastRevision.endsWith("@P")) {
 					patchRevision = currentLastRevision.substring(0, currentLastRevision.size()-2)
 					patchLastRevision = "CLONED"
+					LOGGER.info("New patch for ${installationTarget} after clone")
+					LOGGER.info("patchRevision = ${patchRevision} / patchLastRevision = ${patchLastRevision}")
 				} 
 				else { 
 					patchRevision = (revisions.lastRevisions.get(installationTarget)).toInteger() + 1
+					LOGGER.info("patchRevision = ${patchRevision}")
 				}
 			}
 		}
@@ -625,8 +640,10 @@ class PatchCli {
 			patchLastRevision = revisions.lastRevisions.get(installationTarget,'SNAPSHOT')
 		}
 
+		LOGGER.info("patchLastRevision = ${patchLastRevision}")
 		// JHE (31.05.2018) : we print the json on stdout so that the pipeline can get and parse it. Unfortunately there is currently no supported alternative: https://issues.jenkins-ci.org/browse/JENKINS-26133
 		def json = JsonOutput.toJson([fromRetrieveRevision:[revision: patchRevision, lastRevision: patchLastRevision]])
+		LOGGER.info("Following json will be returned : ${json}")
 		println json
 	}
 	
@@ -652,6 +669,8 @@ class PatchCli {
 		def targetInd = options.srs[0]
 		def installationTarget = options.srs[1]
 		def revision = options.srs[2]
+		
+		LOGGER.info("Saving revisions for targetInd=${targetInd}, installationTarget=${installationTarget}, revision=${revision}")
 
 		def revisionFile = new File(revisionFilePath)
 		def currentRevision = [P:1,T:10000]
@@ -659,17 +678,23 @@ class PatchCli {
 		def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
 		if (revisionFile.exists()) {
 			revisions = new JsonSlurper().parseText(revisionFile.text)
+			LOGGER.info("Current revisions are:")
+			LOGGER.info(revisions)
 		}
 		if(targetInd.equals("P")) {
+			LOGGER.info("Increasing Prod revision ...")
 			revisions.currentRevision[targetInd]++
 		}
 		else {
 			// We increase it only when saving a new Target
 			if(revisions.lastRevisions.get(installationTarget) == null) {
 				revisions.currentRevision[targetInd] = revisions.currentRevision[targetInd] + 10000
+				LOGGER.info("${installationTarget} is new, its revision will be ${revisions.currentRevision[targetInd]}")
 			}
 		}
 		revisions.lastRevisions[installationTarget] = revision
+		LOGGER.info("Following revisions will be save:")
+		LOGGER.info(revisions)
 		new File(revisionFilePath).write(new JsonBuilder(revisions).toPrettyString())
 
 	}
