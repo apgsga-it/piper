@@ -77,7 +77,7 @@ class PatchCloneClient {
 		
 		def lastRevisionForTarget = revisions.lastRevisions[target]
 		
-		return lastRevisionForTarget	
+		return Long.valueOf(lastRevisionForTarget)	
 	}
 	
 	private void deleteRevisionWithinRange(Long lastRevision) {
