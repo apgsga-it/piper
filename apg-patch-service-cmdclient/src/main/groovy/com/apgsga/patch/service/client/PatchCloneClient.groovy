@@ -2,6 +2,9 @@ package com.apgsga.patch.service.client
 
 import java.text.SimpleDateFormat
 import java.util.List
+
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.jfrog.artifactory.client.Artifactory
 import org.jfrog.artifactory.client.ArtifactoryClientBuilder
 import org.jfrog.artifactory.client.model.RepoPath
@@ -9,6 +12,8 @@ import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 
 class PatchCloneClient {
+	
+	protected final static Log LOGGER = LogFactory.getLog(PatchCloneClient.class);
 	
 	private final String FIRST_PART_FOR_ARTIFACT_SEARCH = "T-"
 	
@@ -38,7 +43,12 @@ class PatchCloneClient {
 	}
 	
 	public void onClone(String target) {
+		
+		LOGGER.info("Starting clone process for ${target}.")
+		
 		Long lastRevision = getLastRevisionForTarget(target)
+		
+		LOGGER.info("Last revision for ${target} was ${lastRevision}")
 		
 		// If the target doesn't exit, we don't have anything to delete, and don't have any revision to reset. It simply means that so far no patch has been installed on this target.
 		if(lastRevision != null) {
@@ -74,6 +84,8 @@ class PatchCloneClient {
 		
 		def from = ((int) (lastRevision / rangeStep)) * rangeStep
 		
+		LOGGER.info("Artifact from ${from} to ${lastRevision} will be deleted from Artifactory.")
+		
 		// TODO JHE: We can probably improve (remove) this loop by using a more sophisticated Regex
 		while(from <= lastRevision) {
 			// TODO JHE: do we want to search in more repos? Is "realeases" enough?
@@ -89,9 +101,16 @@ class PatchCloneClient {
 		
 		def prodTarget = getProdTarget()
 		
+		LOGGER.info("Resetting last revision for ${target}")
+		LOGGER.info("Current revisions are: ${revisions}")
+		LOGGER.info("Prod target = ${prodTarget}")
+		
 		// For the cloned target, we reset its version (eg.: 10045 will be 10000), and we add the @P indicator
 		def initialRevision = ((int) (revisions.lastRevisions[target].toInteger() / rangeStep)) * rangeStep
 		revisions.lastRevisions[target] = initialRevision + "@P"
+		
+		LOGGER.info("Following revisions will be written to ${revisionFilePath} : ${revisions}")
+		
 		new File(revisionFilePath).write(new JsonBuilder(revisions).toPrettyString())
 	}
 	
