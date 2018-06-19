@@ -689,7 +689,7 @@ class PatchCli {
 			// We increase it only when saving a new Target
 			if(revisions.lastRevisions.get(installationTarget) == null) {
 				revisions.currentRevision[targetInd] = revisions.currentRevision[targetInd] + 10000
-				LOGGER.info("${installationTarget} is new, its revision will be ${revisions.currentRevision[targetInd]}")
+				LOGGER.info("${installationTarget} was new, next test range revision will start at ${revisions.currentRevision[targetInd]}")
 			}
 		}
 		revisions.lastRevisions[installationTarget] = revision
