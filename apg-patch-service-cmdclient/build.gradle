@@ -5,7 +5,7 @@ plugins {
 	id 'com.github.johnrengelman.shadow' version '2.0.2'
   	id 'nebula.ospackage' version '4.6.0'
     id 'com.jfrog.artifactory'
-  	id 'ivy-publish'
+  	id 'ivy-publish' 
 }
 apply plugin: 'groovy'
 apply plugin: 'com.github.johnrengelman.shadow'
