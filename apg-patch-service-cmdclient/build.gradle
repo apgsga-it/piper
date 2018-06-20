@@ -89,13 +89,13 @@ def homeDir = "/opt/${finalName}"
 ospackage {
 	packageName = "${finalName}"
 	version = "${savedVersion}"
-	release = 1
+	release = 2
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
 	requires('aps' , "${savedVersion}",  EQUAL)
 	
-	// Since Package while be used from Jenkins pipeline for writting and reading revision file
+	// Since Package while be used from Jenkins pipeline for writeing and reading revision file
 	postInstall 'chown -R jenkins:jenkins /var/opt/apg-patch-cli'
 
 	into "${homeDir}"
