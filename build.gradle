@@ -1,6 +1,5 @@
 plugins {
   id 'io.spring.dependency-management' version '1.0.4.RELEASE'
-  id 'com.jfrog.artifactory' version '4.7.3'
 }
 description = 'Parent Project for all Patch Service modules'
 project.ext {
