@@ -43,7 +43,7 @@ class PatchArtifactoryClient {
 		
 		removeArtifacts("*-T-*", dryRun);
 		if(!dryRun) {
-			patchRevisionClient.renameRevisionFile(revisionFilePath)
+			new File(revisionFilePath).delete()
 		}
 	}
 	

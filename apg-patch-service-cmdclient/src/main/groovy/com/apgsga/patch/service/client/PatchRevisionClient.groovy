@@ -123,10 +123,4 @@ class PatchRevisionClient {
 		def cloneClient = new PatchCloneClient(revisionFilePath,targetSystemMappingFilePath)
 		cloneClient.deleteAllTRevisions(dryRun)
 	}
-	
-	def renameRevisionFile(def revisionFilePath) {
-		def revisionFile = new File(revisionFilePath)
-		def fileSuffix = new Date().format("yyyyMMdd_HHmmss")
-		revisionFile.renameTo(revisionFilePath + "." + fileSuffix)
-	}
 }
