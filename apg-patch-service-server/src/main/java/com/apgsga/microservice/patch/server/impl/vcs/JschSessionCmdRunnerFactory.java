@@ -40,6 +40,11 @@ public class JschSessionCmdRunnerFactory implements VcsCommandRunnerFactory {
 		} catch (JSchException e) {
 			throw new RuntimeException(e);
 		}
+		try {
+			jsch.addIdentity("/home/apg-patch-service-server/.ssh/id_rsa");
+		} catch (JSchException e) {
+			throw new RuntimeException(e);
+		}
 		java.util.Properties config = new java.util.Properties();
 		config.put("StrictHostKeyChecking", "no");
 		session.setConfig(config);
