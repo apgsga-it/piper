@@ -160,9 +160,9 @@ class PatchCli {
 	private getProfile() {
 		def apsCliEnv = System.getenv("apscli.env")
 		// If apscli.env is not define, we assume we're testing
-		def profile =  apsCliEnv ?: "test"
-		println "apscli running with ${profile} profile"
-		return profile
+		def prof =  apsCliEnv ?: "test"
+		println "apscli running with ${prof} profile"
+		return prof
 	}
 	
 	private def getRevisionFilePath() {
