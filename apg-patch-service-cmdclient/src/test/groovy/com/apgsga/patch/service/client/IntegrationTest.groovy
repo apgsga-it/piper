@@ -598,6 +598,16 @@ public class IntegrationTest extends Specification {
 			revisionsFile.delete()
 	}
 	
+	def "Patch Cli delete all T revision with dryRun"() {
+		setup:
+			def client = PatchCli.create("test")
+		when:
+			client.process(["-rtr", "1"]) // 1 -> dryRun
+		then:
+			// Simply nothing should happen.
+			notThrown(RuntimeException)
+	}
+	
 	def getLastProdRevisionLine(String lines) {
 		// Looking for the line which is for us interesting -> should contain "fromRetrieveRevision"
 		def searchedLine = null

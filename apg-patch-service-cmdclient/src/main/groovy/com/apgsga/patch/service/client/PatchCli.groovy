@@ -5,23 +5,16 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.runtime.StackTraceUtils
 import org.springframework.core.io.ClassPathResource
-import org.springframework.core.io.FileSystemResourceLoader
-import org.springframework.core.io.Resource
-import org.springframework.core.io.ResourceLoader
 
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.fasterxml.jackson.databind.ObjectMapper
 
-import groovy.json.JsonBuilder
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 class PatchCli {
 	
-	protected final static Log LOGGER = LogFactory.getLog(PatchCli.class);
-
 	// TODO JHE (12.06.2018) : can we change this with a setter? Not sure as we bootstrap the profile within create() ... if we assign a profile afterwards, obviously it will be too late.
 	public static PatchCli create(String p_profile) {
 		profile = p_profile
@@ -29,15 +22,6 @@ class PatchCli {
 	}
 		
 	public static PatchCli create() {
-		System.setProperty("logback.configurationFile", new ClassPathResource('logback.xml').path);
-		ClassPathResource res = new ClassPathResource('apscli.properties')
-		assert res.exists() : "apscli.properties doesn't exist or is not accessible!"
-		ConfigObject conf = new ConfigSlurper(profile).parse(res.URL);
-		revisionFilePath = conf.revision.file.path
-		defaultHost = conf.host.default
-		configDir = conf.config.dir
-		dryRunOnClone = conf.onclone.delete.artifact.dryrun
-		
 		def patchCli = new PatchCli()
 		return patchCli
 	}
@@ -47,16 +31,12 @@ class PatchCli {
 	}
 	
 	def validComponents = ["db", "aps", "mockdb", "nil"]
-	def static defaultHost
 	// TODO (che,19.4) better a common directory for apg-patch-service? To be discussed
 	//def linuxConfigDir = 'file:///var/opt/apg-patch-common'
 	def targetSystemMappings
 	def validToStates
-	def static configDir
 	def defaultConfig
-	def static revisionFilePath
 	def static profile = "production"
-	def static dryRunOnClone = true
 	
 	def validate = true
 
@@ -71,7 +51,12 @@ class PatchCli {
 			return cmdResults
 		}
 		try {
-			def patchClient = new PatchServiceClient(!options.u ? defaultHost : options.u)
+			def defaultHost = getParsedConfiguration().host.default
+			assert defaultHost != null : "host.default property not found."
+			def patchClient = new PatchServiceClient(defaultHost)
+			def patchRevisionsClient = new PatchRevisionClient()
+			def patchCloneClient = new PatchCloneClient()
+			def patchArtifactoryClient = new PatchArtifactoryClient()
 			if (options.l) {
 				def result = uploadPatchFiles(options,patchClient)
 				cmdResults.results['l'] = result
@@ -133,23 +118,23 @@ class PatchCli {
 				cmdResults.results['lf'] = result
 			}
 			if (options.oc) {
-				def result = onClone(options,patchClient)
+				def result = onClone(options,patchCloneClient)
 				cmdResults.results['oc'] = result
 			}
 			if (options.sr) {
-				def result = saveRevisions(options)
+				def result = saveRevisions(options,patchRevisionsClient)
 				cmdResults.results['sr'] = result
 			}
 			if (options.rr) {
-				def result = retrieveRevisions(options)
+				def result = retrieveRevisions(options,patchRevisionsClient)
 				cmdResults.results['rr'] = result
 			}
 			if (options.rtr) {
-				def result = removeAllTRevisions(options)
+				def result = removeAllTRevisions(options,patchArtifactoryClient,patchRevisionsClient)
 				cmdResults.results['rtr'] = result
 			}
 			if (options.pr) {
-				def result = retrieveLastProdRevision()
+				def result = retrieveLastProdRevision(patchRevisionsClient)
 				cmdResults.results['pr'] = result
 			}
 			cmdResults.returnCode = 0
@@ -172,6 +157,28 @@ class PatchCli {
 			return cmdResults
 		}
 	}
+	
+	private def getParsedConfiguration() {
+		ClassPathResource res = new ClassPathResource('apscli.properties')
+		assert res.exists() : "apscli.properties doesn't exist or is not accessible!"
+		ConfigObject conf = new ConfigSlurper(profile).parse(res.URL);
+		return conf
+	}
+	
+	private def getRevisionFilePath() {
+		def conf = getParsedConfiguration()
+		def revFilePath = conf.revision.file.path
+		assert revFilePath != null : "revision.file.patch property not found"
+		return revFilePath
+	}
+	
+	private def getTargetSystemMappingsFilePath() {
+		def conf = getParsedConfiguration()
+		def mappingFileName = conf.target.system.mapping.file.name
+		assert mappingFileName != null : "target.system.mapping.file.name property not found"
+		return "${configDir}/${mappingFileName}"
+	}
+	
 	def validateOpts(args) {
 		// TODO JHE: Add oc, sr, rr and rtr description here.
 		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-[l|d|dd|dm] <directory>]  [-[e|r] <patchnumber>] [-[s|sa|ud|um] <file>] [-f <patchnumber,directory>] [-sta <patchnumber,toState,[aps,db,nil]]')
@@ -382,10 +389,24 @@ class PatchCli {
 		}
 		options
 	}
+	
+	def private getConfigDir() {
+		def conf = getParsedConfiguration()
+		def configDir = conf.config.dir
+		assert configDir != null : "config.dir property not found"
+		return configDir
+	}
+	
+	def private getDryRunOnClone() {
+		def conf = getParsedConfiguration()
+		def dryRun = conf.onclone.delete.artifact.dryrun
+		assert dryRun != null : "onclone.delete.artifact.dryrun property not found"
+		return dryRun
+	}
 
 	def valdidateAndLoadConfigFiles() {
 		// TODO (che, 1.5 ) Make File name Configurable
-		def targetSystemFile = new File(configDir, "TargetSystemMappings.json")
+		def targetSystemFile = new File(targetSystemMappingsFilePath)
 		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
 		targetSystemMappings = [:]
 		jsonSystemTargets.targetSystems.find( { a ->  a.stages.find( { targetSystemMappings.put("${a.name}${it.toState}".toString(),"${it.code}") })} )
@@ -584,129 +605,24 @@ class PatchCli {
 		println invalidArtifacts
 	}
 
-	def onClone(def options, PatchServiceClient patchClient) {
+	def onClone(def options, PatchCloneClient patchCloneClient) {
 		println "Performing onClone for ${options.ocs[0]}"
-		// TODO JHE: get the path to Revision file from a configuration file, or via parameter on command line?
-		// 			 will/should be improved as soon as JAVA8MIG-363 will be done.
-		def onCloneClient = new PatchCloneClient(revisionFilePath,"${configDir}/TargetSystemMappings.json")
-		onCloneClient.onClone(options.ocs[0])
+		patchCloneClient.onClone(options.ocs[0],dryRunOnClone,revisionFilePath,targetSystemMappingsFilePath)
 	}
 
-	def retrieveRevisions(def options) {
-
-		def targetInd = options.rrs[0]
-		def installationTarget = options.rrs[1]
-		
-		LOGGER.info("(retrieveRevisions) Retrieving revision for target ${installationTarget} (${targetInd})")
-
-		def revisionFile = new File(revisionFilePath)
-		def currentRevision = [P:1,T:10000]
-		def lastRevision = [:]
-		def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
-		def patchRevision
-		def patchLastRevision
-		if (revisionFile.exists()) {
-			revisions = new JsonSlurper().parseText(revisionFile.text)
-			LOGGER.info("(retrieveRevisions) Revision file exist and following content has been parsed: ${revisions}")
-		}
-
-		if(targetInd.equals("P")) {
-			patchRevision = revisions.currentRevision[targetInd]
-			LOGGER.info("(retrieveRevisions) targetInd = P ... patchRevision = ${patchRevision}")
-		}
-		else {
-			if(revisions.lastRevisions.get(installationTarget) == null) {
-				patchRevision = revisions.currentRevision[targetInd]
-				LOGGER.info("(retrieveRevisions) Revision for ${installationTarget} was null, patchRevision will be ${patchRevision}")
-			}
-			else {
-				def currentLastRevision = revisions.lastRevisions.get(installationTarget) 
-				LOGGER.info("(retrieveRevisions) currentLastRevision = ${currentLastRevision}")
-				if(currentLastRevision.endsWith("@P")) {
-					patchRevision = currentLastRevision.substring(0, currentLastRevision.size()-2)
-					patchLastRevision = "CLONED"
-					LOGGER.info("(retrieveRevisions) New patch for ${installationTarget} after clone")
-					LOGGER.info("(retrieveRevisions) patchRevision = ${patchRevision} / patchLastRevision = ${patchLastRevision}")
-				} 
-				else { 
-					patchRevision = (revisions.lastRevisions.get(installationTarget)).toInteger() + 1
-					LOGGER.info("(retrieveRevisions) patchRevision = ${patchRevision}")
-				}
-			}
-		}
-		
-		if(patchLastRevision == null) {
-			patchLastRevision = revisions.lastRevisions.get(installationTarget,'SNAPSHOT')
-		}
-
-		LOGGER.info("(retrieveRevisions) patchLastRevision = ${patchLastRevision}")
-		// JHE (31.05.2018) : we print the json on stdout so that the pipeline can get and parse it. Unfortunately there is currently no supported alternative: https://issues.jenkins-ci.org/browse/JENKINS-26133
-		def json = JsonOutput.toJson([fromRetrieveRevision:[revision: patchRevision, lastRevision: patchLastRevision]])
-		LOGGER.info("(retrieveRevisions) Following json will be returned : ${json}")
-		println json
+	def retrieveRevisions(def options, def patchRevisionClient) {
+		patchRevisionClient.retrieveRevisions(options,revisionFilePath)
 	}
 	
-	def retrieveLastProdRevision() {
-		def targetSystemFile = new File(configDir, "TargetSystemMappings.json")
-		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
-		def prodTarget 
-		jsonSystemTargets.targetSystems.each{ target ->
-			if(target.typeInd == "P") {
-				prodTarget = target.target 
-			}
-		}
-		def revisions = new JsonSlurper().parseText(new File(revisionFilePath).text)
-		def prodRev = revisions.lastRevisions[prodTarget]
-		
-		// JHE (15.06.2018) : we print the json on stdout so that the pipeline can get and parse it. Unfortunately there is currently no supported alternative: https://issues.jenkins-ci.org/browse/JENKINS-26133
-		def json = JsonOutput.toJson([lastProdRevision:prodRev])
-		println json
+	def retrieveLastProdRevision(def patchRevisionClient) {
+		patchRevisionClient.retrieveLastProdRevision(targetSystemMappingsFilePath,revisionFilePath)
 	}
 
-	def saveRevisions(def options) {
-
-		def targetInd = options.srs[0]
-		def installationTarget = options.srs[1]
-		def revision = options.srs[2]
-		
-		LOGGER.info("(saveRevisions) Saving revisions for targetInd=${targetInd}, installationTarget=${installationTarget}, revision=${revision}")
-
-		def revisionFile = new File(revisionFilePath)
-		def currentRevision = [P:1,T:10000]
-		def lastRevision = [:]
-		def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
-		if (revisionFile.exists()) {
-			revisions = new JsonSlurper().parseText(revisionFile.text)
-			LOGGER.info("(saveRevisions) Current revisions are: ${revisions}")
-		}
-		if(targetInd.equals("P")) {
-			LOGGER.info("(saveRevisions) Increasing Prod revision ...")
-			revisions.currentRevision[targetInd]++
-		}
-		else {
-			// We increase it only when saving a new Target
-			if(revisions.lastRevisions.get(installationTarget) == null) {
-				revisions.currentRevision[targetInd] = revisions.currentRevision[targetInd] + 10000
-				LOGGER.info("(saveRevisions) ${installationTarget} was new, next test range revision will start at ${revisions.currentRevision[targetInd]}")
-			}
-		}
-		revisions.lastRevisions[installationTarget] = revision
-		LOGGER.info("(saveRevisions) Following revisions will be save: ${revisions}")
-		new File(revisionFilePath).write(new JsonBuilder(revisions).toPrettyString())
-
+	def saveRevisions(def options, def patchRevisionClient) {
+		patchRevisionClient.saveRevisions(options,revisionFilePath)
 	}
 
-	def removeAllTRevisions(def options) {
-		println "Removing all T Artifact from Artifactory."
-		boolean dryRun = true
-		if(options.rtr.size() > 0) {
-			if(options.rtr[0] == "0") {
-				dryRun = false
-			}
-		}
-		// TODO JHE: get the path to Revision file from a configuration file, or via parameter on command line?
-		// 			 will/should be improved as soon as JAVA8MIG-363 will be done.
-		def cloneClient = new PatchCloneClient(revisionFilePath,"${configDir}/TargetSystemMappings.json")
-		cloneClient.deleteAllTRevisions(dryRun)
+	def removeAllTRevisions(def options, def patchArtifactoryClient, def patchRevisionClient) {
+		patchArtifactoryClient.deleteAllTRevisions(options,revisionFilePath,patchRevisionClient)
 	}
 }
