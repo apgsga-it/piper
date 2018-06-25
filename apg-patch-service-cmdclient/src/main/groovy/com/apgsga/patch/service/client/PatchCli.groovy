@@ -33,6 +33,7 @@ class PatchCli {
 	def validate = true
 
 	def process(def args) {
+		println "apscli running with ${profile} profile"
 		println args
 		def cmdResults = new Expando();
 		cmdResults.returnCode = 1
@@ -161,7 +162,6 @@ class PatchCli {
 		def apsCliEnv = System.getProperty("apscli.env")
 		// If apscli.env is not define, we assume we're testing
 		def prof =  apsCliEnv ?: "test"
-		println "apscli running with ${prof} profile"
 		return prof
 	}
 	
