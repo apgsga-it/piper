@@ -3,11 +3,9 @@ package com.apgsga.microservice.patch.server.config;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -35,9 +33,6 @@ public class MicroServicePatchConfig {
 
 	@Value("${vcs.user:}")
 	private String vcsUser;
-
-	@Value("${vcs.password:}")
-	private String vcsPassword;
 
 	@Value("${json.db.location:db}")
 	private String dbLocation;
@@ -97,7 +92,7 @@ public class MicroServicePatchConfig {
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile({ "live", "remotecvs" })
 	public VcsCommandRunnerFactory jsessionFactory() {
-		return new JschSessionCmdRunnerFactory(vcsUser, vcsPassword, vcsHost);
+		return new JschSessionCmdRunnerFactory(vcsUser, vcsHost);
 	}
 
 	@Bean(name = "vcsCmdRunnerFactory")

@@ -14,23 +14,19 @@ public class JschSessionCmdRunnerFactory implements VcsCommandRunnerFactory {
 
 	private final String user;
 
-	private final String password;
-
 	private final String host;
 	
 	private boolean noEncryption = false; 
 
-	public JschSessionCmdRunnerFactory(String user, String password, String host) {
+	public JschSessionCmdRunnerFactory(String user, String host) {
 		super();
 		this.user = user;
-		this.password = password;
 		this.host = host;
 	}
 	
-	public JschSessionCmdRunnerFactory(String user, String password, String host, boolean noEncryption) {
+	public JschSessionCmdRunnerFactory(String user, String host, boolean noEncryption) {
 		super();
 		this.user = user;
-		this.password = password;
 		this.host = host;
 		this.noEncryption = noEncryption;
 	}
@@ -44,7 +40,6 @@ public class JschSessionCmdRunnerFactory implements VcsCommandRunnerFactory {
 		} catch (JSchException e) {
 			throw new RuntimeException(e);
 		}
-		session.setPassword(noEncryption ? password : decrypt(password));
 		java.util.Properties config = new java.util.Properties();
 		config.put("StrictHostKeyChecking", "no");
 		session.setConfig(config);
