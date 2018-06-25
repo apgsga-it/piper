@@ -1,5 +1,6 @@
 package com.apgsga.patch.service.client;
 
+import org.junit.Rule
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -27,17 +28,13 @@ import spock.lang.Specification;
 @ActiveProfiles("test,mock,groovyactions")
 public class IntegrationTest extends Specification {
 
-	// TODO JHE: Will be deleted?
-//	@Value('${baseUrl}')
-//	private String baseUrl;
-
 	@Value('${json.db.location}')
 	private String dbLocation;
 
 	@Autowired
 	@Qualifier("patchPersistence")
 	private PatchPersistence repo;
-
+	
 	def setup() {
 		def buildFolder = new File("build")
 		if (!buildFolder.exists()) {
@@ -47,7 +44,7 @@ public class IntegrationTest extends Specification {
 	}
 
 	def "Patch Cli should print out help without errors"() {
-		def result = PatchCli.create("test").process(["-h"])
+		def result = PatchCli.create().process(["-h"])
 		expect: "PatchCli returns null in case of help only (-h)"
 		result != null
 		result.returnCode == 0
@@ -55,7 +52,7 @@ public class IntegrationTest extends Specification {
 	}
 
 	def "Patch Cli should print out help without errors in case of no options "() {
-		def result = PatchCli.create("test").process([])
+		def result = PatchCli.create().process([])
 		expect: "PatchCli returns null in case no options entered"
 		result != null
 		result.returnCode == 0
@@ -64,7 +61,7 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli queries existance of not existing Patch and returns false"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def result = client.process(["-e", "9999"])
 		then:
@@ -75,7 +72,7 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli copies Patch File to server and queries before and after existence"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def preCondResult = client.process(["-e", "5401"])
 		def result = client.process(["-s", "src/test/resources/Patch5401.json"])
@@ -100,7 +97,7 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli return found = false on findById of non existing Patch"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def preCondResult = client.process(["-e", "5401"])
 		def result = client.process(["-f", "5401,build"])
@@ -116,7 +113,7 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli return found on findById on Patch, which been copied before"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"])
 		def result = client.process(["-f", "5401,build"])
@@ -138,7 +135,7 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli removes Patch, which been copied before"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"])
 		def result = client.process(["-r", "5401"])
@@ -157,9 +154,8 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli upload DbModules to server"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
-		//def result = client.process(["-u", baseUrl, "-ud", "src/test/resources/DbModules.json"])
 		def result = client.process(["-ud", "src/test/resources/DbModules.json"])
 		then:
 		result != null
@@ -174,7 +170,7 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli download DbModules from server"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def preConResult = client.process(["-ud", "src/test/resources/DbModules.json"])
 		def result = client.process(["-dd", "build"])
@@ -193,7 +189,7 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli download DbModules from server, where it does'nt exist"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def result = client.process(["-dd", "build"])
 		then:
@@ -204,7 +200,7 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli upload ServiceMetaData to server"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def result = client.process(["-um", "src/test/resources/ServicesMetaData.json"])
 		then:
@@ -220,7 +216,7 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli download ServiceMetaData from server"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def preConResult = client.process(["-um", "src/test/resources/ServicesMetaData.json"])
 		def result = client.process(["-dm", "build"])
@@ -240,7 +236,7 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli download ServiceMetaData from server, where it does'nt exist"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def result = client.process(["-dm", "build"])
 		then:
@@ -251,7 +247,7 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli invalid State Change Action"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def result = client.process(["-sta", "9999,XXXXXX,aps"])
 		then:
@@ -262,7 +258,7 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli valid State Change Action for config aps"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"])
 		def result = client.process(["-sta", '5401,EntwicklungInstallationsbereit,aps'])
@@ -277,7 +273,7 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli valid State Change Action for config nil"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"])
 		def result = client.process(["-sta", '5401,EntwicklungInstallationsbereit,nil'])
@@ -292,7 +288,7 @@ public class IntegrationTest extends Specification {
 	
 	def "Patch Cli Missing configuration for State Change Action"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def result = client.process(["-sta", "9999,EntwicklungInstallationsbereit"])
 		then:
@@ -303,7 +299,7 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli valid State Change Action for config db with config file"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"])
 		def result = client.process(["-sta", "5401,EntwicklungInstallationsbereit,mockdb"])
@@ -318,7 +314,7 @@ public class IntegrationTest extends Specification {
 
 	def "Patch Cli validate Artifact names from version"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def result = client.process(["-vv", "9.0.6.ADMIN-UIMIG-SNAPSHOT,it21_release_9_0_6_admin_uimig"])
 		then:
@@ -328,7 +324,7 @@ public class IntegrationTest extends Specification {
 	
 	def "Patch Cli validate retrieve and save revision"() {
 		setup:
-			def client = PatchCli.create("test")
+			def client = PatchCli.create()
 			PrintStream oldStream
 			def buffer
 			def revisionAsJson
@@ -503,7 +499,7 @@ public class IntegrationTest extends Specification {
 			 * production target.
 			 * 
 			 */
-			def client = PatchCli.create("test")
+			def client = PatchCli.create()
 			def revisionsFile = new File("src/test/resources/Revisions.json")
 			def currentRevision = [P:5,T:30000]
 			def lastRevision = [CHEI212:10036,CHEI211:4,CHEI213:20025]
@@ -574,7 +570,7 @@ public class IntegrationTest extends Specification {
 			 * production target.
 			 *
 			 */
-			def client = PatchCli.create("test")
+			def client = PatchCli.create()
 			def revisionsFile = new File("src/test/resources/Revisions.json")
 			def currentRevision = [P:5,T:30000]
 			def lastRevision = [CHEI212:10036,CHEI211:4,CHEI213:20025]
@@ -600,7 +596,7 @@ public class IntegrationTest extends Specification {
 	
 	def "Patch Cli delete all T revision with dryRun"() {
 		setup:
-			def client = PatchCli.create("test")
+			def client = PatchCli.create()
 		when:
 			client.process(["-rtr", "1"]) // 1 -> dryRun
 		then:

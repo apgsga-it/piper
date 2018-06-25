@@ -15,12 +15,6 @@ import groovy.json.JsonSlurper
 
 class PatchCli {
 	
-	// TODO JHE (12.06.2018) : can we change this with a setter? Not sure as we bootstrap the profile within create() ... if we assign a profile afterwards, obviously it will be too late.
-	public static PatchCli create(String p_profile) {
-		profile = p_profile
-		create()
-	}
-		
 	public static PatchCli create() {
 		def patchCli = new PatchCli()
 		return patchCli
@@ -36,8 +30,6 @@ class PatchCli {
 	def targetSystemMappings
 	def validToStates
 	def defaultConfig
-	def static profile = "production"
-	
 	def validate = true
 
 	def process(def args) {
@@ -163,6 +155,14 @@ class PatchCli {
 		assert res.exists() : "apscli.properties doesn't exist or is not accessible!"
 		ConfigObject conf = new ConfigSlurper(profile).parse(res.URL);
 		return conf
+	}
+	
+	private getProfile() {
+		def apsCliEnv = System.getenv("apscli.env")
+		// If apscli.env is not define, we assume we're testing
+		def profile =  apsCliEnv ?: "test"
+		println "apscli running with ${profile} profile"
+		return profile
 	}
 	
 	private def getRevisionFilePath() {
