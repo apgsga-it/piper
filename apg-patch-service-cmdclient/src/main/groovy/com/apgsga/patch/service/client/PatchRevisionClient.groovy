@@ -58,7 +58,6 @@ class PatchRevisionClient {
 		println("(retrieveRevisions) patchLastRevision = ${patchLastRevision}")
 		// JHE (31.05.2018) : we print the json on stdout so that the pipeline can get and parse it. Unfortunately there is currently no supported alternative: https://issues.jenkins-ci.org/browse/JENKINS-26133
 		def json = JsonOutput.toJson([fromRetrieveRevision:[revision: patchRevision, lastRevision: patchLastRevision]])
-		println("(retrieveRevisions) Following json will be returned : ${json}")
 		println json
 	}
 	
