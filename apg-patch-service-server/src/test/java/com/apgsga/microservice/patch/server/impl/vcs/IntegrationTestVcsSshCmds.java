@@ -12,7 +12,7 @@ public class IntegrationTestVcsSshCmds {
 	@Test
 	public void testCreatePatchBranch() throws Exception {
 		// JHE (25.06.2018): Within JAVA8MIG-386, we removed vcs.password, probably this test would noe fail
-		VcsCommandRunner runner = new JschSessionCmdRunnerFactory("che","192.168.17.129", true).create();
+		VcsCommandRunner runner = new JschSessionCmdRunnerFactory("che","192.168.17.129").create();
 		runner.preProcess();
 		VcsCommand cmd = PatchVcsCommand.createCreatePatchBranchCmd("someBranch" + RandomUtils.nextInt(), "HEAD", "-d /home/che/local/cvs ",
 				Lists.newArrayList("module1", "module2"));
@@ -25,7 +25,7 @@ public class IntegrationTestVcsSshCmds {
 	@Test
 	public void testCreatePatchTag() throws Exception {
 		// JHE (25.06.2018): Within JAVA8MIG-386, we removed vcs.password, probably this test would noe fail		
-		VcsCommandRunner runner = new JschSessionCmdRunnerFactory("che","192.168.17.129", true).create();
+		VcsCommandRunner runner = new JschSessionCmdRunnerFactory("che","192.168.17.129").create();
 		runner.preProcess();
 		VcsCommand cmd = PatchVcsCommand.createTagPatchModulesCmd("someTag" + RandomUtils.nextInt(), "HEAD", "-d /home/che/local/cvs ",
 				Lists.newArrayList("module1", "module2"));
@@ -38,7 +38,7 @@ public class IntegrationTestVcsSshCmds {
 	@Test
 	public void testDiff() throws Exception {
 		// JHE (25.06.2018): Within JAVA8MIG-386, we removed vcs.password, probably this test would noe fail		
-		VcsCommandRunner runner = new JschSessionCmdRunnerFactory("che","192.168.17.129", true).create();
+		VcsCommandRunner runner = new JschSessionCmdRunnerFactory("che","192.168.17.129").create();
 		runner.preProcess();
 		VcsCommand cmd = PatchVcsCommand.createDiffPatchModulesCmd("testBranch", "HEAD", "-d /home/che/local/cvs ",
 				Lists.newArrayList("module1", "module2"));
