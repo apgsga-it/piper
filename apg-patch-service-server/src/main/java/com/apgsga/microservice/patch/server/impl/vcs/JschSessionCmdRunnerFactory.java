@@ -15,8 +15,6 @@ public class JschSessionCmdRunnerFactory implements VcsCommandRunnerFactory {
 	private final String user;
 
 	private final String host;
-	
-	private boolean noEncryption = false; 
 
 	public JschSessionCmdRunnerFactory(String user, String host) {
 		super();
@@ -24,12 +22,6 @@ public class JschSessionCmdRunnerFactory implements VcsCommandRunnerFactory {
 		this.host = host;
 	}
 	
-	public JschSessionCmdRunnerFactory(String user, String host, boolean noEncryption) {
-		super();
-		this.user = user;
-		this.host = host;
-		this.noEncryption = noEncryption;
-	}
 
 	@Override
 	public VcsCommandRunner create() {
@@ -42,7 +34,7 @@ public class JschSessionCmdRunnerFactory implements VcsCommandRunnerFactory {
 		}
 		try {
 			// TODO JHE (25.06.2018) : this path should be set into ops.properties ?!?
-			jsch.addIdentity("/home/apg-patch-service-server/.ssh/id_rsa");
+			jsch.addIdentity("~/.ssh/id_rsa");
 		} catch (JSchException e) {
 			throw new RuntimeException(e);
 		}
@@ -53,10 +45,6 @@ public class JschSessionCmdRunnerFactory implements VcsCommandRunnerFactory {
 		return jschSession;
 	}
 
-	private String decrypt(String input) {
-		BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-		textEncryptor.setPassword("test");
-		return textEncryptor.decrypt(input);
-	}
+
 
 }
