@@ -33,7 +33,6 @@ public class JschSessionCmdRunnerFactory implements VcsCommandRunnerFactory {
 			throw new RuntimeException(e);
 		}
 		try {
-			// TODO JHE (25.06.2018) : this path should be set into ops.properties ?!?
 			jsch.addIdentity("~/.ssh/id_rsa");
 		} catch (JSchException e) {
 			throw new RuntimeException(e);
