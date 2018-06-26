@@ -6,30 +6,40 @@ import org.apache.commons.logging.LogFactory
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 
+// JHE (26.06.2018): will be removed with JAVA8MIG-384
+
 class PatchCloneClient {
+	
+	private config
 	
 	private final String FIRST_PART_FOR_ARTIFACT_SEARCH = "T-"
 	
 	private final int rangeStep = 10000
 	
-	public void onClone(def target, def dryRun, def revisionFilePath, def targetSystemFilePath) {
+	public PatchCloneClient(def configuration) {
+		config = configuration
+	}
+	
+	public void onClone(def target) {
+		
+		def dryRun = config.onclone.delete.artifact.dryrun
 		
 		println("Starting clone process for ${target}.")
 		
-		Long lastRevision = getLastRevisionForTarget(target,revisionFilePath)
+		Long lastRevision = getLastRevisionForTarget(target)
 		
 		println("Last revision for ${target} was ${lastRevision}")
 		
 		// If the target doesn't exit, we don't have anything to delete, and don't have any revision to reset. It simply means that so far no patch has been installed on this target.
 		if(lastRevision != null) {
 			deleteRevisionWithinRange(lastRevision,dryRun)
-			resetLastRevision(target,revisionFilePath,targetSystemFilePath)
+			resetLastRevision(target)
 		}
 	}
 	
-	private Long getLastRevisionForTarget(String target, def revisionFilePath) {
+	private Long getLastRevisionForTarget(String target) {
 		
-		def revisions = getParsedRevisionFile(revisionFilePath)
+		def revisions = getParsedRevisionFile()
 		
 		def lastRevisionForTarget = revisions.lastRevisions[target]
 		
@@ -42,7 +52,7 @@ class PatchCloneClient {
 		
 		println("Artifact from ${from} to ${lastRevision} will be deleted from Artifactory.")
 		
-		PatchArtifactoryClient patchArtifactoryClient = new PatchArtifactoryClient()
+		PatchArtifactoryClient patchArtifactoryClient = new PatchArtifactoryClient(config)
 		
 		// TODO JHE: We can probably improve (remove) this loop by using a more sophisticated Regex
 		while(from <= lastRevision) {
@@ -52,11 +62,11 @@ class PatchCloneClient {
 		}
 	}
 	
-	private void resetLastRevision(def target, def revisionFilePath, def targetSystemFilePath) {
+	private void resetLastRevision(def target) {
 		
-		def revisions = getParsedRevisionFile(revisionFilePath)
+		def revisions = getParsedRevisionFile()
 		
-		def prodTarget = getProdTarget(targetSystemFilePath)
+		def prodTarget = getProdTarget()
 		
 		println("Resetting last revision for ${target}")
 		println("Current revisions are: ${revisions}")
@@ -66,17 +76,19 @@ class PatchCloneClient {
 		def initialRevision = ((int) (revisions.lastRevisions[target].toInteger() / rangeStep)) * rangeStep
 		revisions.lastRevisions[target] = initialRevision + "@P"
 		
-		println("Following revisions will be written to ${revisionFilePath} : ${revisions}")
+		println("Following revisions will be written to ${config.revision.file.path} : ${revisions}")
 		
-		new File(revisionFilePath).write(new JsonBuilder(revisions).toPrettyString())
+		new File(config.revision.file.path).write(new JsonBuilder(revisions).toPrettyString())
 	}
 	
-	private String getProdTarget(def targetSystemFilePath) {
-		File targetSystemFileName = new File(targetSystemFilePath)
+	private String getProdTarget() {
+		def targetSystemFileName = config.target.system.mapping.file.name
+		def configDir = config.config.dir
+		def targetSystemFile = new File("${configDir}/${targetSystemFileName}")
 		def targetSystems = [:]
 		
-		if (targetSystemFileName.exists()) {
-			targetSystems = new JsonSlurper().parseText(targetSystemFileName.text)
+		if (targetSystemFile.exists()) {
+			targetSystems = new JsonSlurper().parseText(targetSystemFile.text)
 		}
 				
 		def prodTarget = ""
@@ -90,8 +102,8 @@ class PatchCloneClient {
 		return prodTarget
 	}
 	
-	private Object getParsedRevisionFile(String revisionFilePath) {
-		File revisionFile = new File(revisionFilePath)
+	private Object getParsedRevisionFile() {
+		File revisionFile = new File(config.revision.file.path)
 		def revisions = [:]
 		
 		if (revisionFile.exists()) {

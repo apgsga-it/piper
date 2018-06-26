@@ -6,18 +6,17 @@ import org.jfrog.artifactory.client.ArtifactoryClientBuilder
 
 class PatchArtifactoryClient {
 	
+	private def config
+	
 	private Artifactory artifactory;
 	
 	private final String RELEASE_REPO = "releases"
 	
 	private final String DB_PATCH_REPO = "dbpatch"
 	
-	def PatchArtifactoryClient() {
-		// JHE (25.06.2018): apscli.properties was ainly thought to store properties which are different for test and prod. Do we want the 3 below also there? Or rather in a property file which will not be packaged, but accessible from outside?
-		def url = "https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga"
-		def user = "dev"
-		def password = "dev1234"
-		artifactory = ArtifactoryClientBuilder.create().setUrl(url).setUsername(user).setPassword(password).build();
+	def PatchArtifactoryClient(def configuration) {
+		config = configuration
+		artifactory = ArtifactoryClientBuilder.create().setUrl(config.artifactory.url).setUsername(config.artifactory.user).setPassword(config.artifactory.password).build();
 	}
 	
 	public def removeArtifacts(String regex, boolean dryRun) {
@@ -32,18 +31,12 @@ class PatchArtifactoryClient {
 		};
 	}
 	
-	public def deleteAllTRevisions(def options, def revisionFilePath, def patchRevisionClient) {
+	// TODO JHE (26.06.2018): will be remove with JAVA8MIG-389 
+	public def deleteAllTRevisions(def dryRun) {
 		println "Removing all T Artifact from Artifactory."
-		boolean dryRun = true
-		if(options.rtr.size() > 0) {
-			if(options.rtr[0] == "0") {
-				dryRun = false
-			}
-		}
-		
 		removeArtifacts("*-T-*", dryRun);
 		if(!dryRun) {
-			new File(revisionFilePath).delete()
+			new File(config.revision.file.path).delete()
 		}
 	}
 	

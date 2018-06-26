@@ -6,16 +6,17 @@ import groovy.json.JsonOutput
 
 class PatchRevisionClient {
 	
-	def retrieveRevisions(def options, def revisionFilePath) {
-		
-		// TODO JHE: move to PatchRevisionClient
-
-		def targetInd = options.rrs[0]
-		def installationTarget = options.rrs[1]
+	private config
+	
+	public PatchRevisionClient(def configuration) {
+		config = configuration
+	}
+	
+	def retrieveRevisions(def targetInd, def installationTarget) {
 		
 		println("(retrieveRevisions) Retrieving revision for target ${installationTarget} (${targetInd})")
 
-		def revisionFile = new File(revisionFilePath)
+		def revisionFile = new File(config.revision.file.path)
 		def currentRevision = [P:1,T:10000]
 		def lastRevision = [:]
 		def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
@@ -61,8 +62,10 @@ class PatchRevisionClient {
 		println json
 	}
 	
-	def retrieveLastProdRevision(def targetSystemMappingsFilePath, def revisionFilePath) {
-		def targetSystemFile = new File(targetSystemMappingsFilePath)
+	def retrieveLastProdRevision() {
+		def targetSytemFileName = config.target.system.mapping.file.name
+		def configDir = config.config.dir
+		def targetSystemFile = new File("${configDir}/${targetSytemFileName}")
 		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
 		def prodTarget
 		jsonSystemTargets.targetSystems.each{ target ->
@@ -70,7 +73,7 @@ class PatchRevisionClient {
 				prodTarget = target.target
 			}
 		}
-		def revisions = new JsonSlurper().parseText(new File(revisionFilePath).text)
+		def revisions = new JsonSlurper().parseText(new File(config.revision.file.path).text)
 		def prodRev = revisions.lastRevisions[prodTarget]
 		
 		// JHE (15.06.2018) : we print the json on stdout so that the pipeline can get and parse it. Unfortunately there is currently no supported alternative: https://issues.jenkins-ci.org/browse/JENKINS-26133
@@ -78,15 +81,11 @@ class PatchRevisionClient {
 		println json
 	}
 	
-	def saveRevisions(def options, def revisionFilePath) {
+	def saveRevisions(def targetInd, def installationTarget, def revision) {
 		
-		def targetInd = options.srs[0]
-		def installationTarget = options.srs[1]
-		def revision = options.srs[2]
-				
 		println("(saveRevisions) Saving revisions for targetInd=${targetInd}, installationTarget=${installationTarget}, revision=${revision}")
 		
-		def revisionFile = new File(revisionFilePath)
+		def revisionFile = new File(config.revision.file.path)
 		def currentRevision = [P:1,T:10000]
 		def lastRevision = [:]
 		def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
@@ -107,19 +106,7 @@ class PatchRevisionClient {
 		}
 		revisions.lastRevisions[installationTarget] = revision
 		println("(saveRevisions) Following revisions will be save: ${revisions}")
-		new File(revisionFilePath).write(new JsonBuilder(revisions).toPrettyString())
+		new File(config.revision.file.path).write(new JsonBuilder(revisions).toPrettyString())
 		
-	}
-	
-	def removeAllTRevisions(def options, def revisionFilePath, def targetSystemMappingFilePath) {
-		println "Removing all T Artifact from Artifactory."
-		boolean dryRun = true
-		if(options.rtr.size() > 0) {
-			if(options.rtr[0] == "0") {
-				dryRun = false
-			}
-		}
-		def cloneClient = new PatchCloneClient(revisionFilePath,targetSystemMappingFilePath)
-		cloneClient.deleteAllTRevisions(dryRun)
 	}
 }
