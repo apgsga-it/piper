@@ -2,7 +2,6 @@ package com.apgsga.microservice.patch.server.impl.vcs;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jasypt.util.text.BasicTextEncryptor;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -21,7 +20,6 @@ public class JschSessionCmdRunnerFactory implements VcsCommandRunnerFactory {
 		this.user = user;
 		this.host = host;
 	}
-	
 
 	@Override
 	public VcsCommandRunner create() {
@@ -43,7 +41,5 @@ public class JschSessionCmdRunnerFactory implements VcsCommandRunnerFactory {
 		final VcsCommandRunner jschSession = new JschCommandRunner(session);
 		return jschSession;
 	}
-
-
 
 }
