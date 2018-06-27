@@ -30,6 +30,8 @@ import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsAdminClient;
+import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsAdminClientImpl;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
 import com.apgsga.microservice.patch.server.impl.targets.InstallTargetsUtil;
 import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
@@ -51,6 +53,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Autowired
 	private JenkinsPatchClient jenkinsClient;
 
+	@Autowired
+	private JenkinsAdminClient jenkinsAdminClient;
+	
 	@Autowired
 	private ArtifactManager am;
 
@@ -275,6 +280,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public List<MavenArtifact> invalidArtifactNames(String version, String cvsBranch) {
 		return getArtifactNameError(getArtifactsWithNameFromBom(version), cvsBranch);
+	}
+	
+	@Override
+	public void onClone(String target) {
+		jenkinsAdminClient.onClone(target);
 	}
 
 	public PatchPersistence getRepo() {

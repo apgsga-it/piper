@@ -593,10 +593,11 @@ class PatchCli {
 	}
 
 	def onClone(def options) {
-		def patchCloneClient = new PatchCloneClient(config)
+//		def patchCloneClient = new PatchCloneClient(config)
+		def patchClient = new PatchServiceClient(config)
 		println "Performing onClone for ${options.ocs[0]}"
 		def target = options.ocs[0]
-		patchCloneClient.onClone(target)
+		patchClient.onClone(target)
 	}
 
 	def retrieveRevisions(def options) {

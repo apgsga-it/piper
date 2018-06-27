@@ -15,6 +15,9 @@ import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.server.impl.GroovyScriptActionExecutorFactory;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
+import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsAdminClient;
+import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsAdminClientImpl;
+import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsAdminMockClient;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClientImpl;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchMockClient;
@@ -88,6 +91,12 @@ public class MicroServicePatchConfig {
 	public JenkinsPatchClient jenkinsPatchClient() {
 		return new JenkinsPatchClientImpl(jenkinsHost, jenkinsUser, jenkinsAuthKey);
 	}
+	
+	@Bean(name = "jenkinsAdminBean")
+	@Profile("live")
+	public JenkinsAdminClient jenkinsAdminClient() {
+		return new JenkinsAdminClientImpl(jenkinsHost, jenkinsUser, jenkinsAuthKey);
+	}	
 
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile({ "live", "remotecvs" })
@@ -106,6 +115,12 @@ public class MicroServicePatchConfig {
 	public JenkinsPatchClient jenkinsPatchClientMock() {
 		return new JenkinsPatchMockClient();
 	}
+	
+	@Bean(name = "jenkinsAdminBean")
+	@Profile("mock")
+	public JenkinsAdminClient jenkinsAdminClientMock() {
+		return new JenkinsAdminMockClient();
+	}	
 
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile("mock")

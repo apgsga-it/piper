@@ -162,4 +162,12 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 			@RequestParam("cvsbranch") String cvsBranch) {
 		return patchService.invalidArtifactNames(version, cvsBranch);
 	}
+	
+	@RequestMapping(value = "/onClone", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
+	@Override
+	public void onClone(@RequestParam("target") String target) {
+		patchService.onClone(target);
+	}
 }
