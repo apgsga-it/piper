@@ -42,7 +42,7 @@ public class JenkinsAdminClientImpl implements JenkinsAdminClient {
 			JenkinsTriggerHelper jth = new JenkinsTriggerHelper(jenkinsServer, 2000L);
 			Map<String, String> jobParm = Maps.newHashMap();
 			jobParm.put("token", jobName);
-			jobParm.put("PARAMETER", target);
+			jobParm.put("target", target);
 			PipelineBuild result = jth.triggerPipelineJobAndWaitUntilBuilding(jobName, jobParm, true);
 			BuildWithDetails details = result.details();
 			if (details.isBuilding()) {
