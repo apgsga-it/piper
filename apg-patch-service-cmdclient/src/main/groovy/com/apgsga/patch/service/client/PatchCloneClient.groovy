@@ -62,58 +62,58 @@ class PatchCloneClient {
 		}
 	}
 	
-	private void resetLastRevision(def target) {
-		
-		def revisions = getParsedRevisionFile()
-		
-		def prodTarget = getProdTarget()
-		
-		println("Resetting last revision for ${target}")
-		println("Current revisions are: ${revisions}")
-		println("Prod target = ${prodTarget}")
-		
-		// For the cloned target, we reset its version (eg.: 10045 will be 10000), and we add the @P indicator
-		def initialRevision = ((int) (revisions.lastRevisions[target].toInteger() / rangeStep)) * rangeStep
-		revisions.lastRevisions[target] = initialRevision + "@P"
-		
-		println("Following revisions will be written to ${config.revision.file.path} : ${revisions}")
-		
-		new File(config.revision.file.path).write(new JsonBuilder(revisions).toPrettyString())
-	}
+//	private void resetLastRevision(def target) {
+//		
+//		def revisions = getParsedRevisionFile()
+//		
+//		def prodTarget = getProdTarget()
+//		
+//		println("Resetting last revision for ${target}")
+//		println("Current revisions are: ${revisions}")
+//		println("Prod target = ${prodTarget}")
+//		
+//		// For the cloned target, we reset its version (eg.: 10045 will be 10000), and we add the @P indicator
+//		def initialRevision = ((int) (revisions.lastRevisions[target].toInteger() / rangeStep)) * rangeStep
+//		revisions.lastRevisions[target] = initialRevision + "@P"
+//		
+//		println("Following revisions will be written to ${config.revision.file.path} : ${revisions}")
+//		
+//		new File(config.revision.file.path).write(new JsonBuilder(revisions).toPrettyString())
+//	}
 	
-	private String getProdTarget() {
-		def targetSystemFileName = config.target.system.mapping.file.name
-		def configDir = config.config.dir
-		def targetSystemFile = new File("${configDir}/${targetSystemFileName}")
-		def targetSystems = [:]
-		
-		if (targetSystemFile.exists()) {
-			targetSystems = new JsonSlurper().parseText(targetSystemFile.text)
-		}
-				
-		def prodTarget = ""
-				
-		targetSystems.targetSystems.each{targetSystem ->
-			if(targetSystem.typeInd.equalsIgnoreCase("P")) {
-				prodTarget = targetSystem.target
-			}
-		}
-				
-		return prodTarget
-	}
+//	private String getProdTarget() {
+//		def targetSystemFileName = config.target.system.mapping.file.name
+//		def configDir = config.config.dir
+//		def targetSystemFile = new File("${configDir}/${targetSystemFileName}")
+//		def targetSystems = [:]
+//		
+//		if (targetSystemFile.exists()) {
+//			targetSystems = new JsonSlurper().parseText(targetSystemFile.text)
+//		}
+//				
+//		def prodTarget = ""
+//				
+//		targetSystems.targetSystems.each{targetSystem ->
+//			if(targetSystem.typeInd.equalsIgnoreCase("P")) {
+//				prodTarget = targetSystem.target
+//			}
+//		}
+//				
+//		return prodTarget
+//	}
 	
-	private Object getParsedRevisionFile() {
-		File revisionFile = new File(config.revision.file.path)
-		def revisions = [:]
-		
-		if (revisionFile.exists()) {
-			revisions = new JsonSlurper().parseText(revisionFile.text)
-		}
-		else {
-			throw new RuntimeException("Error while parsing Revision file. ${revisionFile} not found.")
-		}
-		
-		return revisions
-	}
+//	private Object getParsedRevisionFile() {
+//		File revisionFile = new File(config.revision.file.path)
+//		def revisions = [:]
+//		
+//		if (revisionFile.exists()) {
+//			revisions = new JsonSlurper().parseText(revisionFile.text)
+//		}
+//		else {
+//			throw new RuntimeException("Error while parsing Revision file. ${revisionFile} not found.")
+//		}
+//		
+//		return revisions
+//	}
 
 }

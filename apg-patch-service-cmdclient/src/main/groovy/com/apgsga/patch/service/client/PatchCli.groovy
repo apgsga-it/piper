@@ -125,6 +125,10 @@ class PatchCli {
 				def result = retrieveLastProdRevision()
 				cmdResults.results['pr'] = result
 			}
+			if (options.resr) {
+				def result = resetRevision(options)
+				cmdResults.results['resr'] = result
+			}
 			cmdResults.returnCode = 0
 			return cmdResults
 		} catch (PatchClientServerException e) {
@@ -184,12 +188,13 @@ class PatchCli {
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
 			vv longOpt: 'validateArtifactNamesForVersion', args:2, valueSeparator: ",", argName: 'version,cvsBranch', 'Validate all artifact names for a given version on a given CVS branch', required: false
-			oc longOpt: 'onclone', args:1, argName: 'target', 'Clean Artifactory Repo and reset Revision file while cloning', required: false
+			oc longOpt: 'onclone', args:1, argName: 'target', 'Call Patch Service onClone REST API', required: false
 			sr longOpt: 'saveRevision', args:3, valueSeparator: ",", argName: 'targetInd,installationTarget,revision', 'Save revision file with new value for a given target', required: false
 			rr longOpt: 'retrieveRevision', args:2, valueSeparator: ",", argName: 'targetInd,installationTarget', 'Update revision with new value for given target', required: false
 			// TODO JHE (26.06.2018): will be removed with JAVA8MIG-389
 			rtr longOpt: 'removeTRevisions', args:1, argName: 'dryRun', 'Remove all T Revision from Artifactory. dryRun=1 -> simulation only, dryRun=0 -> artifact will be deleted', required: false
 			pr longOpt: 'prodRevision', args:0, 'Retrieve last revision for the production target', required: false
+			resr longOpt: 'resetRevision', args:1, argName: 'target', 'Reset revision number for a given target', required: false
 		}
 
 		def options = cli.parse(args)
@@ -363,6 +368,12 @@ class PatchCli {
 		if (options.sr) {
 			if(options.srs.size() != 3) {
 				println "3 parameters are required for the saveRevision command."
+				error = true
+			}
+		}
+		if (options.resr) {
+			if(options.resrs.size() != 1) {
+				println "target parameter is required when resetting revision."
 				error = true
 			}
 		}
@@ -623,5 +634,11 @@ class PatchCli {
 			dryRun = false
 		}
 		patchArtifactoryClient.deleteAllTRevisions(dryRun)
+	}
+	
+	def resetRevision(def options) {
+		def patchRevisionClient = new PatchRevisionClient(config)
+		def target = options.resrs[0]
+		patchRevisionClient.resetLastRevision(target)
 	}
 }
