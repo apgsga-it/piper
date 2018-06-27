@@ -1,61 +1,40 @@
 package com.apgsga.patch.service.client
 
-import java.text.SimpleDateFormat
-import java.util.List
-import org.jfrog.artifactory.client.Artifactory
-import org.jfrog.artifactory.client.ArtifactoryClientBuilder
-import org.jfrog.artifactory.client.model.RepoPath
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 
+// JHE (26.06.2018): will be removed with JAVA8MIG-384
+
 class PatchCloneClient {
+	
+	private config
 	
 	private final String FIRST_PART_FOR_ARTIFACT_SEARCH = "T-"
 	
-	private final String RELEASE_REPO = "releases"
+	private final int rangeStep = 10000
 	
-	private final String DB_PATCH_REPO = "dbpatch"
-	
-	private Artifactory artifactory;
-	
-	private revisionFilePath
-	
-	private targetSystemFilePath
-	
-	//TODO JHE: As soon as JAVA8MIG-363 will be done, p_revisionFilePatch will probably be removed
-	//TODO JHE: As soon as JAVA8MIG-363 will be done, we'll probably also have a property within cmdCli configuration file which will contain path to targetSystemFilePath
-	public PatchCloneClient(String p_revisionFilePath, String p_targetSystemFilePath) {
-		// TODO JHE: As soon as JAVA8MIG-363 will be done -> read properties from /etc/opt/apg-patch-cli.
-		//			 										 name of the file is still to be determined.
-		def url = "https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga"
-		def user = "dev"
-		def password = "dev1234"
-		artifactory = ArtifactoryClientBuilder.create().setUrl(url).setUsername(user).setPassword(password).build();
-		revisionFilePath = p_revisionFilePath
-		targetSystemFilePath = p_targetSystemFilePath
+	public PatchCloneClient(def configuration) {
+		config = configuration
 	}
 	
-	public void onClone(String target) {
+	public void onClone(def target) {
+		
+		def dryRun = config.onclone.delete.artifact.dryrun
+		
+		println("Starting clone process for ${target}.")
+		
 		Long lastRevision = getLastRevisionForTarget(target)
+		
+		println("Last revision for ${target} was ${lastRevision}")
 		
 		// If the target doesn't exit, we don't have anything to delete, and don't have any revision to reset. It simply means that so far no patch has been installed on this target.
 		if(lastRevision != null) {
-			deleteRevisionWithinRange(lastRevision)
+			deleteRevisionWithinRange(lastRevision,dryRun)
 			resetLastRevision(target)
 		}
-	}
-	
-	public void deleteAllTRevisions(boolean dryRun) {
-		removeArtifacts("*-T-*", dryRun);
-		if(!dryRun) {
-			renameRevisionFile()
-		}
-	}
-	
-	private void renameRevisionFile() {
-		def revisionFile = new File(revisionFilePath)
-		def fileSuffix = new Date().format("yyyyMMdd_HHmmss")
-		revisionFile.renameTo(revisionFilePath + "." + fileSuffix)
 	}
 	
 	private Long getLastRevisionForTarget(String target) {
@@ -64,48 +43,52 @@ class PatchCloneClient {
 		
 		def lastRevisionForTarget = revisions.lastRevisions[target]
 		
-		return lastRevisionForTarget	
+		return Long.valueOf(lastRevisionForTarget)	
 	}
 	
-	private void deleteRevisionWithinRange(Long lastRevision) {
+	private void deleteRevisionWithinRange(Long lastRevision, def dryRun) {
 		
-		// TODO JHE: Ideally the range step should be centralized somewhere
-		//			 Might be improved when/if we decide to implement JAVA8MIG-365.
-		def rangeStep = 10000
 		def from = ((int) (lastRevision / rangeStep)) * rangeStep
+		
+		println("Artifact from ${from} to ${lastRevision} will be deleted from Artifactory.")
+		
+		PatchArtifactoryClient patchArtifactoryClient = new PatchArtifactoryClient(config)
 		
 		// TODO JHE: We can probably improve (remove) this loop by using a more sophisticated Regex
 		while(from <= lastRevision) {
 			// TODO JHE: do we want to search in more repos? Is "realeases" enough?
-			// TODO JHE: get dryRun from a property within apscli.properties -> will help for the integration test
-			removeArtifacts("*${FIRST_PART_FOR_ARTIFACT_SEARCH}${from}*", false)
+			patchArtifactoryClient.removeArtifacts("*${FIRST_PART_FOR_ARTIFACT_SEARCH}${from}*", dryRun)
 			from++
 		}
 	}
 	
-	private void resetLastRevision(String target) {
+	private void resetLastRevision(def target) {
 		
 		def revisions = getParsedRevisionFile()
 		
 		def prodTarget = getProdTarget()
 		
-		// TODO JHE: Is this part really correct? I mean that we eventually set it to SNAPSHOT? Not sure it will even happen, but ...
-		def currentProdRev = revisions.lastRevisions[prodTarget]
-		if(currentProdRev == null) {
-			currentProdRev = "SNAPSHOT"
-		}
+		println("Resetting last revision for ${target}")
+		println("Current revisions are: ${revisions}")
+		println("Prod target = ${prodTarget}")
 		
-		revisions.lastRevisions[target] = currentProdRev
-		new File(revisionFilePath).write(new JsonBuilder(revisions).toPrettyString())
+		// For the cloned target, we reset its version (eg.: 10045 will be 10000), and we add the @P indicator
+		def initialRevision = ((int) (revisions.lastRevisions[target].toInteger() / rangeStep)) * rangeStep
+		revisions.lastRevisions[target] = initialRevision + "@P"
+		
+		println("Following revisions will be written to ${config.revision.file.path} : ${revisions}")
+		
+		new File(config.revision.file.path).write(new JsonBuilder(revisions).toPrettyString())
 	}
 	
-
 	private String getProdTarget() {
-		File targetSystemFileName = new File(targetSystemFilePath)
+		def targetSystemFileName = config.target.system.mapping.file.name
+		def configDir = config.config.dir
+		def targetSystemFile = new File("${configDir}/${targetSystemFileName}")
 		def targetSystems = [:]
 		
-		if (targetSystemFileName.exists()) {
-			targetSystems = new JsonSlurper().parseText(targetSystemFileName.text)
+		if (targetSystemFile.exists()) {
+			targetSystems = new JsonSlurper().parseText(targetSystemFile.text)
 		}
 				
 		def prodTarget = ""
@@ -120,7 +103,7 @@ class PatchCloneClient {
 	}
 	
 	private Object getParsedRevisionFile() {
-		File revisionFile = new File(revisionFilePath)
+		File revisionFile = new File(config.revision.file.path)
 		def revisions = [:]
 		
 		if (revisionFile.exists()) {
@@ -132,16 +115,5 @@ class PatchCloneClient {
 		
 		return revisions
 	}
-	
-	private void removeArtifacts(String regex, boolean dryRun) {
-		List<RepoPath> searchItems = artifactory.searches().repositories(RELEASE_REPO,DB_PATCH_REPO).artifactsByName(regex).doSearch();
-		searchItems.each{repoPath ->
-			if(dryRun) {
-				println "${repoPath} would have been deleted."
-			}
-			else {
-				artifactory.repository(repoPath.getRepoKey()).delete(repoPath.getItemPath());
-			}
-		};
-	}
+
 }

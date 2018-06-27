@@ -44,7 +44,7 @@ public class IntegrationExceptionHandlingTests extends Specification {
 
 	def "Patch Cli should print Server Exception and return returnCode > 0 for invalid findById"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		client.validate = false
 		when:
 		def result = client.process(["-f", " ,build"])
@@ -57,7 +57,7 @@ public class IntegrationExceptionHandlingTests extends Specification {
 	
 	def "Patch Cli should be ok with returnCode == 0 for nonexisting findById"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def result = client.process(["-f", "99999999,build"])
 		then:
@@ -68,7 +68,7 @@ public class IntegrationExceptionHandlingTests extends Specification {
 	
 	def "Patch Cli should print Server Exception and return returnCode > 0 for remove of notexisting Patch"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		client.validate = false
 		when:
 		def result = client.process(["-r", "XXXXX"])
@@ -82,7 +82,7 @@ public class IntegrationExceptionHandlingTests extends Specification {
 	
 	def "Patch Cli should print Server Exception and return returnCode > 0 for Saven of Patch with empty Patch Number"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		client.validate = false
 		when:
 		def result = client.process(["-s", "src/test/resources/Patch5403ErrorTest.json"])
@@ -95,7 +95,7 @@ public class IntegrationExceptionHandlingTests extends Specification {
 	
 	def "Patch Cli should print Server Exception and return returnCode > 0  with Patchnumber empty for State Change Action"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		client.validate = false
 		when:
 		def result = client.process(["-sta", "   ,EntwicklungInstallationsbereit,aps"])
@@ -108,7 +108,7 @@ public class IntegrationExceptionHandlingTests extends Specification {
 
 	def "Patch Cli should print Server Exception and return returnCode > 0  with Patch for for State Change Action does not exist"() {
 		setup:
-		def client = PatchCli.create("test")
+		def client = PatchCli.create()
 		when:
 		def result = client.process(["-sta", "9999,EntwicklungInstallationsbereit,aps"])
 		then:

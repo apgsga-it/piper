@@ -1,37 +1,21 @@
 package com.apgsga.patch.service.client
 
 
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.runtime.StackTraceUtils
 import org.springframework.core.io.ClassPathResource
-import org.springframework.core.io.FileSystemResourceLoader
-import org.springframework.core.io.Resource
-import org.springframework.core.io.ResourceLoader
 
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.fasterxml.jackson.databind.ObjectMapper
 
-import groovy.json.JsonBuilder
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
 class PatchCli {
-
-	// TODO JHE (12.06.2018) : can we change this with a setter? Not sure as we bootstrap the profile within create() ... if we assign a profile afterwards, obviously it will be too late.
-	public static PatchCli create(String p_profile) {
-		profile = p_profile
-		create()
-	}
-		
+	
 	public static PatchCli create() {
-		ClassPathResource res = new ClassPathResource('apscli.properties')
-		assert res.exists() : "apscli.properties doesn't exist or is not accessible!"
-		ConfigObject conf = new ConfigSlurper(profile).parse(res.URL);
-		revisionFilePath = conf.revision.file.path
-		defaultHost = conf.host.default
-		configDir = conf.config.dir
-		
 		def patchCli = new PatchCli()
 		return patchCli
 	}
@@ -41,20 +25,16 @@ class PatchCli {
 	}
 	
 	def validComponents = ["db", "aps", "mockdb", "nil"]
-	def static defaultHost
-	// TODO (che,19.4) better a common directory for apg-patch-service? To be discussed
-	//def linuxConfigDir = 'file:///var/opt/apg-patch-common'
 	def targetSystemMappings
 	def validToStates
-	def static configDir
-	def defaultConfig
-	def static revisionFilePath
-	def static profile = "production"
-	
+	def defaultJdbcConfig
 	def validate = true
+	def config
 
 	def process(def args) {
+		println "apscli running with ${profile} profile"
 		println args
+		config = parseConfig()
 		def cmdResults = new Expando();
 		cmdResults.returnCode = 1
 		cmdResults.results = [:]
@@ -64,69 +44,68 @@ class PatchCli {
 			return cmdResults
 		}
 		try {
-			def patchClient = new PatchServiceClient(!options.u ? defaultHost : options.u)
 			if (options.l) {
-				def result = uploadPatchFiles(options,patchClient)
+				def result = uploadPatchFiles(options)
 				cmdResults.results['l'] = result
 			}
 			if (options.d) {
-				def result = downloadPatchFiles(options, patchClient)
+				def result = downloadPatchFiles(options)
 				cmdResults.results['d'] =  result
 			}
 			if (options.e) {
-				def result = patchExists(options,patchClient)
+				def result = patchExists(options)
 				cmdResults.results['e'] =  result
 			}
 			if (options.fs) {
-				def result = findById(options, patchClient)
+				def result = findById(options)
 				cmdResults.results['f'] = result
 			}
 			if (options.a) {
-				def result = findAndPrintAllPatchIds(patchClient)
+				def result = findAndPrintAllPatchIds()
 				cmdResults.results['a'] =  result
 			}
 			if (options.r) {
-				def result = removePatch(options,patchClient)
+				def result = removePatch(options)
 				cmdResults.results['r'] =  result
 			}
 			if (options.s) {
-				def result = uploadPatch(options,patchClient)
+				def result = uploadPatch(options)
 				cmdResults.results['s']=  result
 			}
 			if (options.sa) {
-				def result = savePatch(options,patchClient)
+				def result = savePatch(options)
 				cmdResults.results['sa']=  result
 			}
 			if (options.dd) {
-				def result = downloadDbModules(options,patchClient)
+				def result = downloadDbModules(options)
 				cmdResults.results['dd'] = result
 			}
 			if (options.ud) {
-				def result = uploadDbModules(options,patchClient)
+				def result = uploadDbModules(options)
 				cmdResults.results['ud'] = result
 			}
 			if (options.dm) {
-				def result = downloadServiceMetaData(options,patchClient)
+				def result = downloadServiceMetaData(options)
 				cmdResults.results['dm'] = result
 			}
 			if (options.um) {
-				def result = uploadServiceMetaData(options,patchClient)
+				def result = uploadServiceMetaData(options)
 				cmdResults.results['um'] = result
 			}
 			if (options.sta) {
-				def result = stateChangeAction(options,patchClient)
+				def result = stateChangeAction(options)
 				cmdResults.results['sta'] = result
 			}
 			if (options.la) {
-				def result = listAllFiles(options,patchClient)
+				def result = listAllFiles(options)
 				cmdResults.results['la'] = result
 			}
 			if (options.lf) {
-				def result = listFiles(options,patchClient)
+				def result = listFiles(options)
 				cmdResults.results['lf'] = result
 			}
 			if (options.oc) {
-				def result = onClone(options,patchClient)
+				def result = onClone(options)
 				cmdResults.results['oc'] = result
 			}
 			if (options.sr) {
@@ -137,9 +116,14 @@ class PatchCli {
 				def result = retrieveRevisions(options)
 				cmdResults.results['rr'] = result
 			}
+			// TODO JHE (26.06.2018): will be removed with JAVA8MIG-389
 			if (options.rtr) {
 				def result = removeAllTRevisions(options)
 				cmdResults.results['rtr'] = result
+			}
+			if (options.pr) {
+				def result = retrieveLastProdRevision()
+				cmdResults.results['pr'] = result
 			}
 			cmdResults.returnCode = 0
 			return cmdResults
@@ -161,6 +145,21 @@ class PatchCli {
 			return cmdResults
 		}
 	}
+	
+	private def parseConfig() {
+		ClassPathResource res = new ClassPathResource('apscli.properties')
+		assert res.exists() : "apscli.properties doesn't exist or is not accessible!"
+		ConfigObject conf = new ConfigSlurper(profile).parse(res.URL);
+		return conf
+	}
+	
+	private getProfile() {
+		def apsCliEnv = System.getProperty("apscli.env")
+		// If apscli.env is not define, we assume we're testing
+		def prof =  apsCliEnv ?: "test"
+		return prof
+	}
+	
 	def validateOpts(args) {
 		// TODO JHE: Add oc, sr, rr and rtr description here.
 		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-[l|d|dd|dm] <directory>]  [-[e|r] <patchnumber>] [-[s|sa|ud|um] <file>] [-f <patchnumber,directory>] [-sta <patchnumber,toState,[aps,db,nil]]')
@@ -169,8 +168,6 @@ class PatchCli {
 		cli.formatter.setWidth(100)
 		cli.with {
 			h longOpt: 'help', 'Show usage information', required: false
-			// TODO JHE: "u" option will be deleted as soon as configuration file will be done
-//			u longOpt: 'host', args:1 , argName: 'hostBaseUrl', 'The Base Url of the Patch Service', required: false
 			l longOpt: 'upload', args:1 , argName: 'directory', 'Upload all Patch files <directory> ', required: false
 			d longOpt: 'download', args:1 , argName: 'directory', 'Download all Patch files to a <directory>', required: false
 			e longOpt: "exists", args:1, argName: 'patchNumber', 'True resp. false if Patch of the <patchNumber> exists or not', required: false
@@ -186,13 +183,13 @@ class PatchCli {
 			la longOpt: 'listAllFiles', 'List all files on server', required: false
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
-			// TODO JHE: "c" option will be deleted as soon as configuration file will be done
-//			c longOpt: 'configDir', args:1, argName: 'directory', 'Configuration Directory', required: false
 			vv longOpt: 'validateArtifactNamesForVersion', args:2, valueSeparator: ",", argName: 'version,cvsBranch', 'Validate all artifact names for a given version on a given CVS branch', required: false
 			oc longOpt: 'onclone', args:1, argName: 'target', 'Clean Artifactory Repo and reset Revision file while cloning', required: false
 			sr longOpt: 'saveRevision', args:3, valueSeparator: ",", argName: 'targetInd,installationTarget,revision', 'Save revision file with new value for a given target', required: false
 			rr longOpt: 'retrieveRevision', args:2, valueSeparator: ",", argName: 'targetInd,installationTarget', 'Update revision with new value for given target', required: false
+			// TODO JHE (26.06.2018): will be removed with JAVA8MIG-389
 			rtr longOpt: 'removeTRevisions', args:1, argName: 'dryRun', 'Remove all T Revision from Artifactory. dryRun=1 -> simulation only, dryRun=0 -> artifact will be deleted', required: false
+			pr longOpt: 'prodRevision', args:0, 'Retrieve last revision for the production target', required: false
 		}
 
 		def options = cli.parse(args)
@@ -210,39 +207,6 @@ class PatchCli {
 		
 		valdidateAndLoadConfigFiles()
 
-//		if (!options.u) {
-//			println "Assuming default value for u option: ${defaultHost}"
-//		}
-		
-//		if (options.c) {
-//			configDir = new File(options.c)
-//			if (!configDir.exists() | !configDir.directory) {
-//				println "Configuration Directory ${options.c} not valid: either not a directory or it doesn't exist"
-//				error = true
-//				return
-//			}
-//			valdidateAndLoadConfigFiles()
-//		} else {
-//			// Guessing Config Directory
-//			ResourceLoader rl = new FileSystemResourceLoader();
-//			Resource rs = rl.getResource("${linuxConfigDir}");
-//			println "Checking on ${linuxConfigDir} as config dir"
-//			if (rs.exists()) {
-//				configDir = rs.getFile()
-//			} else {
-//				println "${linuxConfigDir} doesn't exist or is not readable"
-//				// Assuming Eclipse Workspace
-//				rs = rl.getResource("src/main/resources/config")
-//				if (!rs.exists() | !rs.getFile().isDirectory()) {
-//					println "Could'nt determine Default Config Directory, use -c option"
-//					error = true
-//					return
-//				} else {
-//					configDir = rs.getFile()
-//				}
-//			}
-//			valdidateAndLoadConfigFiles()
-//		}
 		if (!options | options.h| options.getOptions().size() == 0) {
 			cli.usage()
 			println "Valid toStates are: ${validToStates}"
@@ -383,6 +347,7 @@ class PatchCli {
 				error = true
 			}
 		}
+		// TODO JHE (26.06.2018): will be removed with JAVA8MIG-389
 		if (options.rtr) {
 			if(options.rtr.size() != 1) {
 				println "No parameter has been set, only a dryRun will be done. To delete all T artifact, please explicitely set dryRun to 0."
@@ -407,10 +372,13 @@ class PatchCli {
 		}
 		options
 	}
-
+	
 	def valdidateAndLoadConfigFiles() {
 		// TODO (che, 1.5 ) Make File name Configurable
-		def targetSystemFile = new File(configDir, "TargetSystemMappings.json")
+		def mappingFileName = config.target.system.mapping.file.name
+		def configDir = config.config.dir
+		def targetSystemMappingsFilePath = "${configDir}/${mappingFileName}"
+		def targetSystemFile = new File(targetSystemMappingsFilePath)
 		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
 		targetSystemMappings = [:]
 		jsonSystemTargets.targetSystems.find( { a ->  a.stages.find( { targetSystemMappings.put("${a.name}${it.toState}".toString(),"${it.code}") })} )
@@ -419,11 +387,12 @@ class PatchCli {
 		// TODO validate
 		validToStates = targetSystemMappings.keySet()
 		def jdbcConfigFule = new File(configDir, "jdbc.groovy")
-		defaultConfig = new ConfigSlurper().parse(jdbcConfigFule.toURI().toURL())
+		defaultJdbcConfig = new ConfigSlurper().parse(jdbcConfigFule.toURI().toURL())
 		// TODO validate
 	}
 
-	def stateChangeAction(def options, def patchClient) {
+	def stateChangeAction(def options) {
+		def patchClient = new PatchServiceClient(config)
 		def cmdResult = new Expando()
 		def patchNumber = options.stas[0]
 		def toState = options.stas[1]
@@ -435,57 +404,61 @@ class PatchCli {
 			patchClient.executeStateTransitionAction(patchNumber,toState)
 		} else if (component.equals("db") || component.equals("mockdb")) {
 			def dbcli = new PatchDbClient(component,targetSystemMappings)
-			dbcli.executeStateTransitionAction(defaultConfig, patchNumber, toState)
+			dbcli.executeStateTransitionAction(defaultJdbcConfig, patchNumber, toState)
 		} else {
 			println "Skipping State change Processing for ${patchNumber}"
 		}
 		return cmdResult
 	}
 
-	def findById(def options, def patchClient) {
+	def findById(def options) {
 		def cmdResult = new Expando()
 		def patchNumber = options.fs[0]
 		def dirName = options.fs[1]
-		def found = retrieveAndWritePatch(patchNumber, dirName, patchClient)
+		def found = retrieveAndWritePatch(patchNumber, dirName)
 		cmdResult.patchNumber = patchNumber
 		cmdResult.dirName = dirName
 		cmdResult.exists = found
 		return cmdResult
 	}
 
-	def downloadPatchFiles(def options, def patchClient) {
+	def downloadPatchFiles(def options) {
 		def cmdResult = new Expando()
 		List<String> ids =  patchClient.findAllPatchIds()
 		ids.each { id ->
-			retrieveAndWritePatch(id,options.d, patchClient)
+			retrieveAndWritePatch(id,options.d)
 		}
 		cmdResult.patchNumbers = ids
 		cmdResult.directory = options.d
 		return cmdResult
 	}
 
-	def findAndPrintAllPatchIds(def patchClient) {
+	def findAndPrintAllPatchIds() {
+		def patchClient = new PatchServiceClient(config)
 		List<String> ids =  patchClient.findAllPatchIds()
 		println "All Patch Ids: ${ids}"
 		def cmdResult = new Expando()
 		cmdResult.patchNumbers = ids
 	}
 
-	def listAllFiles(def options,def patchClient) {
+	def listAllFiles(def options) {
+		def patchClient = new PatchServiceClient(config)
 		List<String> files =  patchClient.listAllFiles()
 		println "All Files on server: ${files}"
 		def cmdResult = new Expando()
 		cmdResult.files = files
 	}
 
-	def listFiles(def options,def patchClient) {
+	def listFiles(def options) {
+		def patchClient = new PatchServiceClient(config)
 		List<String> files =  patchClient.listFiles(options.lf)
 		println "Files with ${options.lf} as prefix on server: ${files}"
 		def cmdResult = new Expando()
 		cmdResult.files = files
 	}
 
-	def patchExists(def options, def patchClient) {
+	def patchExists(def options) {
+		def patchClient = new PatchServiceClient(config)
 		def exists = patchClient.patchExists(options.e)
 		println "Patch ${options.e} exists is: ${exists} "
 		def cmdResult = new Expando()
@@ -493,7 +466,8 @@ class PatchCli {
 		return cmdResult
 	}
 
-	def savePatch(def options, def patchClient) {
+	def savePatch(def options) {
+		def patchClient = new PatchServiceClient(config)
 		patchClient.save(new File(options.sa), Patch.class)
 		def cmdResult = new Expando()
 		cmdResult.patchFile = options.sa
@@ -501,7 +475,8 @@ class PatchCli {
 	}
 
 
-	def uploadPatch(def options, def patchClient) {
+	def uploadPatch(def options) {
+		def patchClient = new PatchServiceClient(config)
 		patchClient.savePatch(new File(options.s), Patch.class)
 		def cmdResult = new Expando()
 		cmdResult.patchFile = options.s
@@ -509,7 +484,8 @@ class PatchCli {
 	}
 
 
-	def removePatch(def options, PatchServiceClient patchClient) {
+	def removePatch(def options) {
+		def patchClient = new PatchServiceClient(config)
 		println "Reading: ${options.r} to remove from server"
 		Patch patchData = patchClient.findById(options.r)
 		println "Removing Patch ${options.r}"
@@ -522,7 +498,8 @@ class PatchCli {
 		return cmdResult
 	}
 
-	def retrieveAndWritePatch(def id, def file, def patchClient) {
+	def retrieveAndWritePatch(def id, def file) {
+		def patchClient = new PatchServiceClient(config)
 		println "Writting: ${id} to ${file}"
 		def patchData = patchClient.findById(id)
 		if (patchData == null) {
@@ -534,7 +511,8 @@ class PatchCli {
 		return true
 	}
 
-	def uploadPatchFiles(def options, def patchClient) {
+	def uploadPatchFiles(def options) {
+		def patchClient = new PatchServiceClient(config)
 		def found = false
 		def cmdResult = new Expando()
 		cmdResult.fileNames = []
@@ -552,7 +530,8 @@ class PatchCli {
 		return cmdResult
 	}
 
-	def downloadDbModules(def options, def patchClient) {
+	def downloadDbModules(def options) {
+		def patchClient = new PatchServiceClient(config)
 		println "Downloading Dbmodules to ${options.dd}"
 		def cmdResult = new Expando()
 		def dbmodules =  patchClient.getDbModules()
@@ -570,14 +549,16 @@ class PatchCli {
 		return cmdResult
 	}
 
-	def uploadDbModules(def options, def patchClient) {
+	def uploadDbModules(def options) {
+		def patchClient = new PatchServiceClient(config)
 		println "Uploading Dbmodules from ${options.ud}"
 		ObjectMapper mapper = new ObjectMapper();
 		def dbModules = mapper.readValue(new File("${options.ud}"), DbModules.class)
 		patchClient.saveDbModules(dbModules)
 	}
 
-	def downloadServiceMetaData(def options, def patchClient) {
+	def downloadServiceMetaData(def options) {
+		def patchClient = new PatchServiceClient(config)
 		println "Downloading ServiceMetaData to ${options.dm}"
 		def cmdResult = new Expando()
 		def data =  patchClient.getServicesMetaData()
@@ -595,7 +576,8 @@ class PatchCli {
 		return cmdResult
 	}
 
-	def uploadServiceMetaData(def options, def patchClient) {
+	def uploadServiceMetaData(def options) {
+		def patchClient = new PatchServiceClient(config)
 		println "Uploading ServiceMetaData from ${options.um}"
 		ObjectMapper mapper = new ObjectMapper();
 		def serviceMetaData = mapper.readValue(new File("${options.um}"), ServicesMetaData.class)
@@ -603,92 +585,42 @@ class PatchCli {
 	}
 
 
-	def validateArtifactNamesForVersion(def options, PatchServiceClient patchClient) {
+	def validateArtifactNamesForVersion(def options) {
+		def patchClient = new PatchServiceClient(config)
 		println("Validating all Artifact names for version ${options.vvs[0]} on branch ${options.vvs[1]}")
 		def invalidArtifacts = patchClient.invalidArtifactNames(options.vvs[0],options.vvs[1])
 		println invalidArtifacts
 	}
 
-	def onClone(def options, PatchServiceClient patchClient) {
+	def onClone(def options) {
+		def patchCloneClient = new PatchCloneClient(config)
 		println "Performing onClone for ${options.ocs[0]}"
-		// TODO JHE: get the path to Revision file from a configuration file, or via parameter on command line?
-		// 			 will/should be improved as soon as JAVA8MIG-363 will be done.
-		def onCloneClient = new PatchCloneClient(revisionFilePath,"${configDir}/TargetSystemMappings.json")
-		onCloneClient.onClone(options.ocs[0])
+		def target = options.ocs[0]
+		patchCloneClient.onClone(target)
 	}
 
 	def retrieveRevisions(def options) {
-
-		def targetInd = options.rrs[0]
-		def installationTarget = options.rrs[1]
-
-		def revisionFile = new File(revisionFilePath)
-		def currentRevision = [P:1,T:10000]
-		def lastRevision = [:]
-		def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
-		def patchRevision
-		def patchLastRevision
-		if (revisionFile.exists()) {
-			revisions = new JsonSlurper().parseText(revisionFile.text)
-		}
-
-		if(targetInd.equals("P")) {
-			patchRevision = revisions.currentRevision[targetInd]
-		}
-		else {
-			if(revisions.lastRevisions.get(installationTarget) == null) {
-				patchRevision = revisions.currentRevision[targetInd]
-			}
-			else {
-				patchRevision = (revisions.lastRevisions.get(installationTarget)).toInteger() + 1
-			}
-		}
-
-		patchLastRevision = revisions.lastRevisions.get(installationTarget,'SNAPSHOT')
-
-		// JHE (31.05.2018) : we print the json on stdout so that the pipeline can get and parse it. Unfortunately there is currently no supported alternative: https://issues.jenkins-ci.org/browse/JENKINS-26133
-		def json = JsonOutput.toJson([fromRetrieveRevision:[revision: patchRevision, lastRevision: patchLastRevision]])
-		println json
+		def patchRevisionClient = new PatchRevisionClient(config)
+		patchRevisionClient.retrieveRevisions(options.rrs[0],options.rrs[1])
+	}
+	
+	def retrieveLastProdRevision() {
+		def patchRevisionClient = new PatchRevisionClient(config)
+		patchRevisionClient.retrieveLastProdRevision()
 	}
 
 	def saveRevisions(def options) {
-
-		def targetInd = options.srs[0]
-		def installationTarget = options.srs[1]
-		def revision = options.srs[2]
-
-		def revisionFile = new File(revisionFilePath)
-		def currentRevision = [P:1,T:10000]
-		def lastRevision = [:]
-		def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
-		if (revisionFile.exists()) {
-			revisions = new JsonSlurper().parseText(revisionFile.text)
-		}
-		if(targetInd.equals("P")) {
-			revisions.currentRevision[targetInd]++
-		}
-		else {
-			// We increase it only when saving a new Target
-			if(revisions.lastRevisions.get(installationTarget) == null) {
-				revisions.currentRevision[targetInd] = revisions.currentRevision[targetInd] + 10000
-			}
-		}
-		revisions.lastRevisions[installationTarget] = revision
-		new File(revisionFilePath).write(new JsonBuilder(revisions).toPrettyString())
-
+		def patchRevisionClient = new PatchRevisionClient(config)
+		patchRevisionClient.saveRevisions(options.srs[0],options.srs[1],options.srs[2])
 	}
 
+	// TODO JHE (26.06.2018): will be removed with JAVA8MIG-389
 	def removeAllTRevisions(def options) {
-		println "Removing all T Artifact from Artifactory."
-		boolean dryRun = true
-		if(options.rtr.size() > 0) {
-			if(options.rtr[0] == "0") {
-				dryRun = false
-			}
+		def patchArtifactoryClient = new PatchArtifactoryClient(config)
+		def dryRun = true
+		if(options.rtrs[0] == 0) {
+			dryRun = false
 		}
-		// TODO JHE: get the path to Revision file from a configuration file, or via parameter on command line?
-		// 			 will/should be improved as soon as JAVA8MIG-363 will be done.
-		def cloneClient = new PatchCloneClient(revisionFilePath,"${configDir}/TargetSystemMappings.json")
-		cloneClient.deleteAllTRevisions(dryRun)
+		patchArtifactoryClient.deleteAllTRevisions(dryRun)
 	}
 }
