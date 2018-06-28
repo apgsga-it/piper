@@ -8,8 +8,6 @@ class PatchRevisionClient {
 	
 	private config
 	
-	private final int rangeStep = 10000
-	
 	public PatchRevisionClient(def configuration) {
 		config = configuration
 	}
@@ -114,6 +112,8 @@ class PatchRevisionClient {
 	
 	def resetLastRevision(def target) {
 		
+		def rangeStep = config.revision.range.step
+		
 		def revisions = getParsedRevisionFile()
 		
 		def prodTarget = getProdTarget()
@@ -164,5 +164,14 @@ class PatchRevisionClient {
 		}
 				
 		return prodTarget
+	}
+	
+	public Long getLastRevisionForTarget(String target) {
+		
+		def revisions = getParsedRevisionFile()
+		
+		def lastRevisionForTarget = revisions.lastRevisions[target]
+		
+		return Long.valueOf(lastRevisionForTarget)
 	}
 }

@@ -129,6 +129,10 @@ class PatchCli {
 				def result = resetRevision(options)
 				cmdResults.results['resr'] = result
 			}
+			if (options.cr) {
+				def result = cleanReleases(options)
+				cmdResults.results['cr'] = result
+			}
 			cmdResults.returnCode = 0
 			return cmdResults
 		} catch (PatchClientServerException e) {
@@ -195,6 +199,7 @@ class PatchCli {
 			rtr longOpt: 'removeTRevisions', args:1, argName: 'dryRun', 'Remove all T Revision from Artifactory. dryRun=1 -> simulation only, dryRun=0 -> artifact will be deleted', required: false
 			pr longOpt: 'prodRevision', args:0, 'Retrieve last revision for the production target', required: false
 			resr longOpt: 'resetRevision', args:1, argName: 'target', 'Reset revision number for a given target', required: false
+			cr longOpt: 'cleanReleases', args:1, argName: 'target', 'Clean release Artifacts for a given target on Artifactory', required: false
 		}
 
 		def options = cli.parse(args)
@@ -373,7 +378,13 @@ class PatchCli {
 		}
 		if (options.resr) {
 			if(options.resrs.size() != 1) {
-				println "target parameter is required when resetting revision."
+				println "target parameter is required when reseting revision."
+				error = true
+			}
+		}
+		if (options.cr) {
+			if(options.crc.size() != 1) {
+				println "target parameter is required when cleaning Artifactory releases."
 				error = true
 			}
 		}
@@ -640,5 +651,11 @@ class PatchCli {
 		def patchRevisionClient = new PatchRevisionClient(config)
 		def target = options.resrs[0]
 		patchRevisionClient.resetLastRevision(target)
+	}
+	
+	def cleanReleases(def options) {
+		def target = options.crs[0]
+		def patchArtifactoryClient = new PatchArtifactoryClient(config)
+		patchArtifactoryClient.cleanReleases(target)
 	}
 }

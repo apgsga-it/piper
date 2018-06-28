@@ -14,6 +14,8 @@ class PatchArtifactoryClient {
 	
 	private final String DB_PATCH_REPO = "dbpatch"
 	
+	private final String FIRST_PART_FOR_ARTIFACT_SEARCH = "T-"
+	
 	def PatchArtifactoryClient(def configuration) {
 		config = configuration
 		artifactory = ArtifactoryClientBuilder.create().setUrl(config.artifactory.url).setUsername(config.artifactory.user).setPassword(config.artifactory.password).build();
@@ -27,6 +29,7 @@ class PatchArtifactoryClient {
 			}
 			else {
 				artifactory.repository(repoPath.getRepoKey()).delete(repoPath.getItemPath());
+				println "${repoPath} removed!"
 			}
 		};
 	}
@@ -40,4 +43,22 @@ class PatchArtifactoryClient {
 		}
 	}
 	
+	def cleanReleases(def target) {
+		
+		def PatchRevisionClient patchRevisionClient = new PatchRevisionClient(config)
+		def lastRevision = patchRevisionClient.getLastRevisionForTarget(target)
+		
+		def rangeStep = config.revision.range.step
+		def from = ((int) (lastRevision / rangeStep)) * rangeStep
+		def dryRun = config.onclone.delete.artifact.dryrun
+		
+		println("Artifact from ${from} to ${lastRevision} will be deleted from Artifactory.")
+		
+		// TODO JHE: We can probably improve (remove) this loop by using a more sophisticated Regex
+		while(from <= lastRevision) {
+			// TODO JHE: do we want to search in more repos? Is "realeases" enough?
+			removeArtifacts("*${FIRST_PART_FOR_ARTIFACT_SEARCH}${from}*", dryRun)
+			from++
+		}
+	}
 }
