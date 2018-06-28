@@ -383,7 +383,7 @@ class PatchCli {
 			}
 		}
 		if (options.cr) {
-			if(options.crc.size() != 1) {
+			if(options.crs.size() != 1) {
 				println "target parameter is required when cleaning Artifactory releases."
 				error = true
 			}
