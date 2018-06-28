@@ -53,8 +53,8 @@ public class JenkinsAdminClientImpl implements JenkinsAdminClient {
 						new Object[] { target, jobName, details.getConsoleOutputText() });
 			}
 		} catch (URISyntaxException | IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsAdminClientImpl.startPipeline.error",
+					new Object[] { e.getMessage(), target }, e);
 		}
 		
 	}
