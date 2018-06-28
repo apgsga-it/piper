@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.exceptions.Asserts;
-import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
+import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
@@ -22,7 +22,7 @@ public class EntwicklungInstallationsbereitAction implements PatchAction {
 
 	private VcsCommandRunnerFactory jschSessionFactory;
 
-	private final JenkinsPatchClient jenkinsPatchClient;
+	private final JenkinsClient jenkinsPatchClient;
 
 	public EntwicklungInstallationsbereitAction(SimplePatchContainerBean patchContainer) {
 		super();

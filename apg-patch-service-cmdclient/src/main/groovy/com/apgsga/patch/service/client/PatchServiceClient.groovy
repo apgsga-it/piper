@@ -147,6 +147,11 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 		def invalidArtifacts = restTemplate.getForObject(getRestBaseUri() + "/validateArtifactNamesFromVersion?version=${version}&cvsbranch=${cvsBranch}", List.class)
 		return invalidArtifacts;
 	}
+	
+	@Override
+	public void onClone(String target) {
+		restTemplate.postForLocation(getRestBaseUri() + "/onClone?target=${target}", null)
+	}
 
 	class PatchServiceErrorHandler implements ResponseErrorHandler {
 

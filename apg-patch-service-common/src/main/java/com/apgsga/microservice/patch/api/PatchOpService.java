@@ -31,4 +31,12 @@ public interface PatchOpService {
 	 * @return: List of MavenArtifact for Artifacts having a wrong name
 	 */
 	public List<MavenArtifact> invalidArtifactNames(String version, String cvsBranch);
+	
+	/**
+	 * Clone a specific target
+	 * 
+	 * @param target
+	 * 			eg.: CHEI212
+	 */
+	public void onClone(String target);
 }

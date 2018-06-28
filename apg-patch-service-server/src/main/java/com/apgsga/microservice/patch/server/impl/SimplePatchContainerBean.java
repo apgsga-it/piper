@@ -30,7 +30,7 @@ import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
-import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
+import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.server.impl.targets.InstallTargetsUtil;
 import com.apgsga.microservice.patch.server.impl.vcs.PatchVcsCommand;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommand;
@@ -49,7 +49,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private PatchPersistence repo;
 
 	@Autowired
-	private JenkinsPatchClient jenkinsClient;
+	private JenkinsClient jenkinsClient;
 
 	@Autowired
 	private ArtifactManager am;
@@ -276,6 +276,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public List<MavenArtifact> invalidArtifactNames(String version, String cvsBranch) {
 		return getArtifactNameError(getArtifactsWithNameFromBom(version), cvsBranch);
 	}
+	
+	@Override
+	public void onClone(String target) {
+		jenkinsClient.onClone(target);
+	}
 
 	public PatchPersistence getRepo() {
 		return repo;
@@ -285,11 +290,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		this.repo = repo;
 	}
 
-	public JenkinsPatchClient getJenkinsClient() {
+	public JenkinsClient getJenkinsClient() {
 		return jenkinsClient;
 	}
 
-	protected void setJenkinsClient(JenkinsPatchClient jenkinsClient) {
+	protected void setJenkinsClient(JenkinsClient jenkinsClient) {
 		this.jenkinsClient = jenkinsClient;
 	}
 

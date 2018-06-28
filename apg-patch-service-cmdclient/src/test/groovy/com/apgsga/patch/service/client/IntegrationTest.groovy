@@ -498,6 +498,9 @@ public class IntegrationTest extends Specification {
 			 * For our tests, within src/test/resources/TargetSystemMappings.json, CHEI211 is configured as the
 			 * production target.
 			 * 
+			 * In order to test the onClone, we don't start the apscli with "oc" option, but rather simulate that the "oc*
+			 * option itself will do -> "apscli resr ${target}" and "apscli cr ${apscli}"
+			 * 
 			 */
 			def client = PatchCli.create()
 			def revisionsFile = new File("src/test/resources/Revisions.json")
@@ -507,16 +510,21 @@ public class IntegrationTest extends Specification {
 			revisionsFile.write(new JsonBuilder(revisions).toPrettyString())
 			def revisionsAfterClone
 			def result
+			def crResult
+			def resrResult
 			def oldStream
 			def buffer
 			def revisionAsJson
 			def revisionsFromRRCall
 			def revisionsFromFile
 		when:
-			result = client.process(["-oc", "CHEI212"])
+			// This is actually that the "oc" would do
+			crResult = client.process(["-cr", "CHEI212"])
+			resrResult = client.process(["-resr", "CHEI212"])
 			revisionsAfterClone = new JsonSlurper().parseText(revisionsFile.text)
 		then:
-			result != null
+			resrResult.returnCode == 0
+			crResult.returnCode == 0
 			revisionsFile.exists()
 			revisionsAfterClone.currentRevision["P"].toInteger() == 5
 			revisionsAfterClone.currentRevision["T"].toInteger() == 30000
@@ -527,17 +535,17 @@ public class IntegrationTest extends Specification {
 			oldStream = System.out;
 			buffer = new ByteArrayOutputStream()
 			System.setOut(new PrintStream(buffer))
-			client.process(["-rr", "T,CHEI212"])
+			result = client.process(["-rr", "T,CHEI212"])
 			System.setOut(oldStream)
 			revisionAsJson = getRetrieveRevisionLine(buffer.toString())
 			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
 		then:
-			result != null
+			result.returnCode == 0
 			revisionsFile.exists()
 			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 10000
 			revisionsFromRRCall.fromRetrieveRevision.lastRevision == "CLONED"
 		when:
-			client.process(["-sr", "T,CHEI212,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
+			result = client.process(["-sr", "T,CHEI212,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
 			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
 		then:
 			revisionsFile.exists()
@@ -550,12 +558,12 @@ public class IntegrationTest extends Specification {
 			oldStream = System.out;
 			buffer = new ByteArrayOutputStream()
 			System.setOut(new PrintStream(buffer))
-			client.process(["-rr", "T,CHEI212"])
+			result = client.process(["-rr", "T,CHEI212"])
 			System.setOut(oldStream)
 			revisionAsJson = getRetrieveRevisionLine(buffer.toString())
 			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
 		then:
-			result != null
+			result.returnCode == 0
 			revisionsFile.exists()
 			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 10001
 			revisionsFromRRCall.fromRetrieveRevision.lastRevision.toInteger() == 10000
