@@ -9,13 +9,13 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
-import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
+import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsClient;
 
 public class PipelineInputAction implements PatchAction {
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 
 	private final PatchPersistence repo;
-	private final JenkinsPatchClient jenkinsPatchClient;
+	private final JenkinsClient jenkinsPatchClient;
 
 	public PipelineInputAction(SimplePatchContainerBean patchContainer) {
 		this.repo = patchContainer.getRepo();

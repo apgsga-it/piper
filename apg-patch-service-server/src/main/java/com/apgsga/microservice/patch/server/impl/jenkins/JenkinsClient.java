@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.apgsga.microservice.patch.api.Patch;
 
-public interface JenkinsPatchClient {
+public interface JenkinsClient {
 	public void createPatchPipelines(Patch patch);
 
 	public void startInstallPipeline(Patch patch);
@@ -16,5 +16,7 @@ public interface JenkinsPatchClient {
 	public void processInputAction(Patch patch, Map<String, String> parameter);
 
 	public void processInputAction(Patch patch, String target, String stage);
+	
+	public void onClone(String target);
 
 }

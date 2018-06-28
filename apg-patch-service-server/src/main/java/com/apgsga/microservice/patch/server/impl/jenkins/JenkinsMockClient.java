@@ -7,7 +7,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.apgsga.microservice.patch.api.Patch;
 
-public class JenkinsPatchMockClient implements JenkinsPatchClient {
+public class JenkinsMockClient implements JenkinsClient {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 
@@ -45,6 +45,10 @@ public class JenkinsPatchMockClient implements JenkinsPatchClient {
 		LOGGER.info("cancelPatchPipeline for : " + patch.toString());
 
 	}
-
+	
+	@Override
+	public void onClone(String target) {
+		LOGGER.info("onClone for " + target);		
+	}	
 
 }

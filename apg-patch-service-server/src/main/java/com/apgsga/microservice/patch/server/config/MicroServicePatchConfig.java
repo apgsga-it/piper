@@ -15,12 +15,9 @@ import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.server.impl.GroovyScriptActionExecutorFactory;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
-import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsAdminClient;
-import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsAdminClientImpl;
-import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsAdminMockClient;
-import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClient;
-import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchClientImpl;
-import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsPatchMockClient;
+import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsClient;
+import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsClientImpl;
+import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsMockClient;
 import com.apgsga.microservice.patch.server.impl.persistence.FilebasedPatchPersistence;
 import com.apgsga.microservice.patch.server.impl.vcs.JschSessionCmdRunnerFactory;
 import com.apgsga.microservice.patch.server.impl.vcs.LoggingMockVcsRunnerFactory;
@@ -88,16 +85,10 @@ public class MicroServicePatchConfig {
 
 	@Bean(name = "jenkinsBean")
 	@Profile("live")
-	public JenkinsPatchClient jenkinsPatchClient() {
-		return new JenkinsPatchClientImpl(jenkinsHost, jenkinsUser, jenkinsAuthKey);
+	public JenkinsClient jenkinsPatchClient() {
+		return new JenkinsClientImpl(jenkinsHost, jenkinsUser, jenkinsAuthKey);
 	}
 	
-	@Bean(name = "jenkinsAdminBean")
-	@Profile("live")
-	public JenkinsAdminClient jenkinsAdminClient() {
-		return new JenkinsAdminClientImpl(jenkinsHost, jenkinsUser, jenkinsAuthKey);
-	}	
-
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile({ "live", "remotecvs" })
 	public VcsCommandRunnerFactory jsessionFactory() {
@@ -112,16 +103,10 @@ public class MicroServicePatchConfig {
 
 	@Bean(name = "jenkinsBean")
 	@Profile("mock")
-	public JenkinsPatchClient jenkinsPatchClientMock() {
-		return new JenkinsPatchMockClient();
+	public JenkinsClient jenkinsPatchClientMock() {
+		return new JenkinsMockClient();
 	}
 	
-	@Bean(name = "jenkinsAdminBean")
-	@Profile("mock")
-	public JenkinsAdminClient jenkinsAdminClientMock() {
-		return new JenkinsAdminMockClient();
-	}	
-
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile("mock")
 	public VcsCommandRunnerFactory jsessionFactoryMock() {
