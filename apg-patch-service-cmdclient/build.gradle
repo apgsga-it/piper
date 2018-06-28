@@ -134,8 +134,7 @@ ospackage {
 	
 }
  buildRpm {
- 	// TODO JHE (19.06.2018): change to 0755 when done with testing ... more convenient for now.
- 	directory ("/var/opt/${finalName}", 0777)
+ 	directory ("/var/opt/${finalName}", 0755)
 	
 }
 
