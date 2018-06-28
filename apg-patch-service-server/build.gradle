@@ -116,7 +116,7 @@ ospackage {
 	}
 	
 	from("packaging/common") {
-	   	into "/var/opt/apg-patch-common"
+	   	into "/etc/opt/apg-patch-common"
 		user "root"
 		permissionGroup "root"
 		// TODO (che 22.5) :  we need a common group for this directory

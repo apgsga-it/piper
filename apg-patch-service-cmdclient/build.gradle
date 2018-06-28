@@ -121,7 +121,7 @@ ospackage {
 	}
 	
 	from("packaging/conf") {
-		into "/var/opt/apg-patch-common"
+		into "/etc/opt/apg-patch-cli"
 		fileType CONFIG | NOREPLACE
 		include 'jdbc.groovy'
 		user 'root'
