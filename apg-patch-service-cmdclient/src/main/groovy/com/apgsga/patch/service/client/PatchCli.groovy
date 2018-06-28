@@ -408,7 +408,7 @@ class PatchCli {
 		//println JsonOutput.prettyPrint(targetSystemFile.text)
 		// TODO validate
 		validToStates = targetSystemMappings.keySet()
-		def jdbcConfigFule = new File(configDir, "jdbc.groovy")
+		def jdbcConfigFule = new File(config.ops.groovy.file.path)
 		defaultJdbcConfig = new ConfigSlurper().parse(jdbcConfigFule.toURI().toURL())
 		// TODO validate
 	}
