@@ -25,8 +25,6 @@ class PatchCli {
 	}
 	
 	def validComponents = ["db", "aps", "mockdb", "nil"]
-	def targetSystemMappings
-	def validToStates
 	def validate = true
 	def config
 
@@ -214,10 +212,9 @@ class PatchCli {
 			return options
 		}
 		
-		valdidateAndLoadConfigFiles()
-
 		if (!options | options.h| options.getOptions().size() == 0) {
 			cli.usage()
+			def validToStates = getTargetSystemMappings().keySet()
 			println "Valid toStates are: ${validToStates}"
 			println "Valid components are: ${validComponents}"
 			return null
@@ -320,6 +317,7 @@ class PatchCli {
 				error = true
 			}
 			def toState = options.stas[1]
+			def validToStates = getTargetSystemMappings().keySet()
 			if (!validToStates.contains(toState) ) {
 				println "ToState ${toState} not valid: needs to be one of ${validToStates}"
 				error = true
@@ -394,22 +392,17 @@ class PatchCli {
 		options
 	}
 	
-	def valdidateAndLoadConfigFiles() {
-		// TODO (che, 1.5 ) Make File name Configurable
+	def getTargetSystemMappings() {
 		def mappingFileName = config.target.system.mapping.file.name
 		def configDir = config.config.dir
 		def targetSystemMappingsFilePath = "${configDir}/${mappingFileName}"
 		def targetSystemFile = new File(targetSystemMappingsFilePath)
 		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
-		targetSystemMappings = [:]
+		def targetSystemMappings = [:]
 		jsonSystemTargets.targetSystems.find( { a ->  a.stages.find( { targetSystemMappings.put("${a.name}${it.toState}".toString(),"${it.code}") })} )
-		//println "Running with TargetSystemMappings: "
-		//println JsonOutput.prettyPrint(targetSystemFile.text)
-		// TODO validate
-		validToStates = targetSystemMappings.keySet()
-		// TODO validate
+		return targetSystemMappings
 	}
-
+	
 	def stateChangeAction(def options) {
 		def patchClient = new PatchServiceClient(config)
 		def cmdResult = new Expando()
@@ -422,7 +415,7 @@ class PatchCli {
 		if (component.equals("aps")) {
 			patchClient.executeStateTransitionAction(patchNumber,toState)
 		} else if (component.equals("db") || component.equals("mockdb")) {
-			def dbcli = new PatchDbClient(component,targetSystemMappings)
+			def dbcli = new PatchDbClient(component,getTargetSystemMappings())
 			def jdbcConfigFule = new File(config.ops.groovy.file.path)
 			def defaultJdbcConfig = new ConfigSlurper().parse(jdbcConfigFule.toURI().toURL())
 			dbcli.executeStateTransitionAction(defaultJdbcConfig, patchNumber, toState)
