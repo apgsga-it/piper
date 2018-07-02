@@ -27,7 +27,6 @@ class PatchCli {
 	def validComponents = ["db", "aps", "mockdb", "nil"]
 	def targetSystemMappings
 	def validToStates
-	def defaultJdbcConfig
 	def validate = true
 	def config
 
@@ -408,8 +407,6 @@ class PatchCli {
 		//println JsonOutput.prettyPrint(targetSystemFile.text)
 		// TODO validate
 		validToStates = targetSystemMappings.keySet()
-		def jdbcConfigFule = new File(config.ops.groovy.file.path)
-		defaultJdbcConfig = new ConfigSlurper().parse(jdbcConfigFule.toURI().toURL())
 		// TODO validate
 	}
 
@@ -426,6 +423,8 @@ class PatchCli {
 			patchClient.executeStateTransitionAction(patchNumber,toState)
 		} else if (component.equals("db") || component.equals("mockdb")) {
 			def dbcli = new PatchDbClient(component,targetSystemMappings)
+			def jdbcConfigFule = new File(config.ops.groovy.file.path)
+			def defaultJdbcConfig = new ConfigSlurper().parse(jdbcConfigFule.toURI().toURL())
 			dbcli.executeStateTransitionAction(defaultJdbcConfig, patchNumber, toState)
 		} else {
 			println "Skipping State change Processing for ${patchNumber}"
