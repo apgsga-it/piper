@@ -133,7 +133,7 @@ ospackage {
 }
  buildRpm {
  	// Parameter are as follow: directory(String path, int permissions, String user, String permissionGroup, boolean addParents)
- 	directory ("/var/opt/${finalName}", 0755, "root", "jenkins", false)
+ 	directory ("/var/opt/${finalName}", 0775, "root", "jenkins", false)
 }
 
 
