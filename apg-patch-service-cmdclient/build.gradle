@@ -121,21 +121,19 @@ ospackage {
 	}
 	
 	from("packaging/conf") {
-		into "/etc/opt/apg-patch-cli"
+		into "/etc/opt/${finalName}"
 		fileType CONFIG | NOREPLACE
 		include 'ops.groovy'
 		user 'root'
-		permissionGroup 'root'
+		permissionGroup 'jenkins'
 		addParentDirs false
-		// TODO (che,11.4)
-		fileMode 0777
-
+		fileMode 0740
 	}
 	
 }
  buildRpm {
- 	directory ("/var/opt/${finalName}", 0755)
-	
+ 	// Parameter are as follow: directory(String path, int permissions, String user, String permissionGroup, boolean addParents)
+ 	directory ("/var/opt/${finalName}", 0754, "root", "jenkins", false)
 }
 
 
