@@ -120,7 +120,7 @@ ospackage {
 		user "root"
 		permissionGroup "root"
 		// TODO (che 22.5) :  we need a common group for this directory
-		fileMode 0666 
+		fileMode 0644 
 	}
 	
 
