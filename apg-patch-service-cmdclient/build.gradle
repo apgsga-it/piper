@@ -97,9 +97,6 @@ ospackage {
 	arch = NOARCH
 	requires('aps' , "${savedVersion}",  EQUAL)
 	
-	// Since Package while be used from Jenkins pipeline for writeing and reading revision file
-	postInstall 'chown -R jenkins:jenkins /var/opt/apg-patch-cli'
-
 	into "${homeDir}"
 	
 	from(shadowJar.outputs.files) {
