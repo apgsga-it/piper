@@ -91,7 +91,7 @@ def homeDir = "/opt/${finalName}"
 ospackage {
 	packageName = "${finalName}"
 	version = "${savedVersion}"
-	release = 2
+	release = 3
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -136,7 +136,7 @@ ospackage {
 }
  buildRpm {
  	// Parameter are as follow: directory(String path, int permissions, String user, String permissionGroup, boolean addParents)
- 	directory ("/var/opt/${finalName}", 0754, "root", "jenkins", false)
+ 	directory ("/var/opt/${finalName}", 0755, "root", "jenkins", false)
 }
 
 
