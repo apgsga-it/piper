@@ -23,7 +23,10 @@ mainClassName = 'pli'
 def repoTarget= version.endsWith("SNAPSHOT") ? "snapshots" : "releases"
 jar {
 	baseName = "${finalName}"
+ // TODO (jhe, 3.7) 
+ //	exclude('**/apscli.properties')
 } 
+
 
 def savedVersion = version
 

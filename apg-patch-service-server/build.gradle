@@ -112,7 +112,7 @@ ospackage {
 		user 'root'
 		permissionGroup 'root'
 		// TODO (che,11.4)
-		fileMode 0777
+		fileMode 0775
 	}
 	
 	from("packaging/common") {
