@@ -91,7 +91,7 @@ def homeDir = "/opt/${finalName}"
 ospackage {
 	packageName = "${finalName}"
 	version = "${savedVersion}"
-	release = 3
+	release = 1
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
