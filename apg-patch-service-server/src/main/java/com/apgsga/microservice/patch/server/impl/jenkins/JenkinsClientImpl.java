@@ -1,5 +1,6 @@
 package com.apgsga.microservice.patch.server.impl.jenkins;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -10,6 +11,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.core.io.Resource;
 
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
@@ -28,13 +30,16 @@ import com.offbytwo.jenkins.model.WorkflowRun;
 public class JenkinsClientImpl implements JenkinsClient {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());
-
+	// TODO  (che, 9.7) When JENKINS-27413 is resolved
+	// Passing Patch File Path , because of JAVA8MIG-395 / JENKINS-27413;
+	private Resource dbLocation; 
 	private String jenkinsUrl;
 	private String jenkinsUser;
 	private String jenkinsUserAuthKey;
 
-	public JenkinsClientImpl(String jenkinsUrl, String jenkinsUser, String jenkinsUserAuthKey) {
+	public JenkinsClientImpl(Resource dbLocation,String jenkinsUrl, String jenkinsUser, String jenkinsUserAuthKey) {
 		super();
+		this.dbLocation = dbLocation;
 		this.jenkinsUrl = jenkinsUrl;
 		this.jenkinsUser = jenkinsUser;
 		this.jenkinsUserAuthKey = jenkinsUserAuthKey;
@@ -93,17 +98,17 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	private void startPipeline(Patch patch, String jobSuffix) {
 		try {
-			ObjectMapper mapper = new ObjectMapper();
-			String jsonRequestString = mapper.writeValueAsString(patch);
-			LOGGER.info("Jenkins request: " + jsonRequestString.toString());
-			String jobName = "Patch" + patch.getPatchNummer() + jobSuffix;
-
+			// TODO  (che, 9.7) When JENKINS-27413 is resolved
+			// Passing Patch File Path , because of JAVA8MIG-395 / JENKINS-27413;
+			String patchName = "Patch" + patch.getPatchNummer();
+			String jobName = patchName + jobSuffix;
+			File patchFile = new File(dbLocation.getFile(),patchName + ".json"); 
 			JenkinsServer jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
 			LOGGER.info("Connected to Jenkinsserver with, url: " + jenkinsUrl + " and user: " + jenkinsUser);
 			JenkinsTriggerHelper jth = new JenkinsTriggerHelper(jenkinsServer, 2000L);
 			Map<String, String> jobParm = Maps.newHashMap();
 			jobParm.put("token", jobName);
-			jobParm.put("PARAMETER", jsonRequestString);
+			jobParm.put("PARAMETER", patchFile.getAbsolutePath());
 			// TODO (jhe , che , 12.12. 2017) : hangs, when job fails
 			// immediately
 			LOGGER.info("Triggering Pipeline Job and waiting until Building " + jobName + " with Paramter: "

@@ -86,7 +86,9 @@ public class MicroServicePatchConfig {
 	@Bean(name = "jenkinsBean")
 	@Profile("live")
 	public JenkinsClient jenkinsPatchClient() {
-		return new JenkinsClientImpl(jenkinsHost, jenkinsUser, jenkinsAuthKey);
+		final ResourceLoader rl = new FileSystemResourceLoader();
+		Resource rDbLocation = rl.getResource(dbLocation);
+		return new JenkinsClientImpl(rDbLocation,jenkinsHost, jenkinsUser, jenkinsAuthKey);
 	}
 	
 	@Bean(name = "vcsCmdRunnerFactory")
