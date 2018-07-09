@@ -15,7 +15,6 @@ import org.springframework.core.io.Resource;
 
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.JenkinsTriggerHelper;
@@ -25,19 +24,24 @@ import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.PendingInputActions;
 import com.offbytwo.jenkins.model.PipelineBuild;
 import com.offbytwo.jenkins.model.PipelineJobWithDetails;
+import com.offbytwo.jenkins.model.QueueItem;
+import com.offbytwo.jenkins.model.QueueReference;
 import com.offbytwo.jenkins.model.WorkflowRun;
 
 public class JenkinsClientImpl implements JenkinsClient {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());
-	// TODO  (che, 9.7) When JENKINS-27413 is resolved
+	
+    private static final Long DEFAULT_RETRY_INTERVAL = 200L;
+    private static final int DEFAULT_RETRY_COUNTS = 6;
+	// TODO (che, 9.7) When JENKINS-27413 is resolved
 	// Passing Patch File Path , because of JAVA8MIG-395 / JENKINS-27413;
-	private Resource dbLocation; 
+	private Resource dbLocation;
 	private String jenkinsUrl;
 	private String jenkinsUser;
 	private String jenkinsUserAuthKey;
 
-	public JenkinsClientImpl(Resource dbLocation,String jenkinsUrl, String jenkinsUser, String jenkinsUserAuthKey) {
+	public JenkinsClientImpl(Resource dbLocation, String jenkinsUrl, String jenkinsUser, String jenkinsUserAuthKey) {
 		super();
 		this.dbLocation = dbLocation;
 		this.jenkinsUrl = jenkinsUrl;
@@ -98,14 +102,14 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	private void startPipeline(Patch patch, String jobSuffix) {
 		try {
-			// TODO  (che, 9.7) When JENKINS-27413 is resolved
-			// Passing Patch File Path , because of JAVA8MIG-395 / JENKINS-27413;
+			// TODO (che, 9.7) When JENKINS-27413 is resolved
+			// Passing Patch File Path , because of JAVA8MIG-395 /
+			// JENKINS-27413;
 			String patchName = "Patch" + patch.getPatchNummer();
 			String jobName = patchName + jobSuffix;
-			File patchFile = new File(dbLocation.getFile(),patchName + ".json"); 
+			File patchFile = new File(dbLocation.getFile(), patchName + ".json");
 			JenkinsServer jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
 			LOGGER.info("Connected to Jenkinsserver with, url: " + jenkinsUrl + " and user: " + jenkinsUser);
-			JenkinsTriggerHelper jth = new JenkinsTriggerHelper(jenkinsServer, 2000L);
 			Map<String, String> jobParm = Maps.newHashMap();
 			jobParm.put("token", jobName);
 			jobParm.put("PARAMETER", patchFile.getAbsolutePath());
@@ -113,7 +117,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 			// immediately
 			LOGGER.info("Triggering Pipeline Job and waiting until Building " + jobName + " with Paramter: "
 					+ jobParm.toString());
-			PipelineBuild result = jth.triggerPipelineJobAndWaitUntilBuilding(jobName, jobParm, true);
+			PipelineBuild result = triggerPipelineJobAndWaitUntilBuilding(jenkinsServer,jobName, jobParm, true);
 			LOGGER.info("Getting Result of Pipeline Job " + jobName + ", : " + result.toString());
 			BuildWithDetails details = result.details();
 			if (details.isBuilding()) {
@@ -124,7 +128,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 						new Object[] { patch.toString(), jobName, details.getConsoleOutputText() });
 			}
 
-		} catch (URISyntaxException | IOException | InterruptedException e) {
+		} catch (Throwable e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startPipeline.exception",
 					new Object[] { e.getMessage(), patch.toString() }, e);
 		}
@@ -158,10 +162,11 @@ public class JenkinsClientImpl implements JenkinsClient {
 			validateLastPipelineBuilder(patch.getPatchNummer(), lastBuild);
 			inputActionForPipeline(patch, action, lastBuild);
 
-		} catch (URISyntaxException | IOException | InterruptedException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.processInputAction.exception",
+		} catch (Throwable e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"JenkinsPatchClientImpl.processInputAction.exception",
 					new Object[] { e.getMessage(), patch.toString() }, e);
-		} finally { 
+		} finally {
 			if (jenkinsServer != null) {
 				jenkinsServer.close();
 			}
@@ -218,21 +223,20 @@ public class JenkinsClientImpl implements JenkinsClient {
 			return;
 		}
 	}
-	
+
 	@Override
 	public void onClone(String target) {
 		String jobName = "onClone";
-		
+
 		LOGGER.info("Starting onClone process for " + target + ". " + jobName + " pipeline will be started.");
-		
+
 		try {
 			JenkinsServer jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
 			LOGGER.info("Connected to Jenkinsserver with, url: " + jenkinsUrl + " and user: " + jenkinsUser);
-			JenkinsTriggerHelper jth = new JenkinsTriggerHelper(jenkinsServer, 2000L);
 			Map<String, String> jobParm = Maps.newHashMap();
 			jobParm.put("token", jobName);
 			jobParm.put("target", target);
-			PipelineBuild result = jth.triggerPipelineJobAndWaitUntilBuilding(jobName, jobParm, true);
+			PipelineBuild result = triggerPipelineJobAndWaitUntilBuilding(jenkinsServer,jobName, jobParm, true);
 			BuildWithDetails details = result.details();
 			if (details.isBuilding()) {
 				LOGGER.info(jobName + " Is Building");
@@ -241,11 +245,60 @@ public class JenkinsClientImpl implements JenkinsClient {
 				throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsAdminClientImpl.startPipeline.error",
 						new Object[] { target, jobName, details.getConsoleOutputText() });
 			}
-		} catch (URISyntaxException | IOException | InterruptedException e) {
+		} catch (Throwable e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsAdminClientImpl.startPipeline.error",
 					new Object[] { e.getMessage(), target }, e);
 		}
-		
-	}	
+
+	}
+	
+
+	public PipelineBuild triggerPipelineJobAndWaitUntilBuilding(JenkinsServer server, String jobName, Map<String, String> params,
+			boolean crumbFlag) throws IOException, InterruptedException {
+		PipelineJobWithDetails job = server.getPipelineJob(jobName);
+		QueueReference queueRef = job.build(params, crumbFlag);
+		return triggerPipelineJobAndWaitUntilBuilding(server,jobName, queueRef);
+	}
+
+
+	private PipelineBuild triggerPipelineJobAndWaitUntilBuilding(JenkinsServer server, String jobName, QueueReference queueRef)
+			throws IOException, InterruptedException {
+		PipelineJobWithDetails job = server.getPipelineJob(jobName);
+		QueueItem queueItem = server.getQueueItem(queueRef);
+		int retryCnt = 0;
+		while (!queueItem.isCancelled() && (job.isInQueue() || queueItem.getExecutable() == null) && retryCnt < DEFAULT_RETRY_COUNTS) {
+			Thread.sleep(DEFAULT_RETRY_INTERVAL);
+			job = server.getPipelineJob(jobName);
+			queueItem = server.getQueueItem(queueRef);
+			retryCnt++;
+		}
+		if (retryCnt >= DEFAULT_RETRY_COUNTS) {
+			throw new RuntimeException("Could'nt Trigger Job: " + jobName + " and wait until Building"); 
+		}
+		Build build = server.getBuild(queueItem);
+		retryCnt = 0; 
+		while (true && retryCnt < DEFAULT_RETRY_COUNTS) {
+			BuildWithDetails buildWithDetails = build.details();
+			if (	buildWithDetails.isBuilding()) {
+				job = server.getPipelineJob(jobName);
+				return job.getLastBuild();
+			}
+			BuildResult buildResult = buildWithDetails.getResult();
+			if (buildResult != null && (buildResult.equals(BuildResult.ABORTED) 
+					|| buildResult.equals(BuildResult.SUCCESS) || buildResult.equals(BuildResult.CANCELLED)
+					|| buildResult.equals(BuildResult.UNSTABLE))) {
+				job = server.getPipelineJob(jobName);
+				return job.getLastBuild();
+			}
+			Thread.sleep(DEFAULT_RETRY_INTERVAL);
+			retryCnt++;
+		}
+		throw new RuntimeException("Could'nt Trigger Job: " + jobName + " and wait until Building"); 
+
+
+	}
+	
+	
+	
 
 }
