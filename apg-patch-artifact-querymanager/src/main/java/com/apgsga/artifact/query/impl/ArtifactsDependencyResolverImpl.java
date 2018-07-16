@@ -1,8 +1,6 @@
 package com.apgsga.artifact.query.impl;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.List;
 
 import org.eclipse.aether.RepositorySystem;
@@ -16,7 +14,6 @@ import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.util.filter.OrDependencyFilter;
 import org.eclipse.aether.util.filter.PatternInclusionsDependencyFilter;
-import org.eclipse.aether.util.graph.visitor.PreorderNodeListGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResourceLoader;
@@ -24,8 +21,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import com.apgsga.artifact.query.ArtifactDependencyResolver;
-import com.apgsga.artifact.query.util.ConsoleDependencyGraphDumper;
 import com.apgsga.microservice.patch.api.MavenArtifact;
+import com.google.common.collect.Lists;
 
 public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolver {
 
@@ -59,13 +56,15 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 	}
 
 	@Override
-	public void resolveDependencies(List<MavenArtifact> artifacts) {
+	public List<MavenArtWithDependencies> resolveDependencies(List<MavenArtifact> artifacts) {
+		List<MavenArtWithDependencies> resolvedDep = Lists.newArrayList();
 		for (MavenArtifact art : artifacts) {
-			resolveDependency(art);
+			resolveDependency(art,artifacts, resolvedDep);
 		}
+		return resolvedDep;
 	}
 
-	private void resolveDependency(MavenArtifact artifact) {
+	private void resolveDependency(MavenArtifact artifact, List<MavenArtifact> artifacts, List<MavenArtWithDependencies> resolvedDep) {
 		Dependency dependency = new Dependency(new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), "",
 				"jar", artifact.getVersion()), "compile");
 
@@ -80,14 +79,9 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 		dependencyRequest.setFilter(depFilter);
 		try {
 			DependencyNode rootNode = system.resolveDependencies(session, dependencyRequest).getRoot();
-			StringBuilder dump = new StringBuilder();
-			ByteArrayOutputStream os = new ByteArrayOutputStream( 1024 );
-			rootNode.accept( new ConsoleDependencyGraphDumper( new PrintStream( os ) ) );
-			dump.append( os.toString() );
-			PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
-			rootNode.accept( nlg );
-			LOGGER.info("Root :" + rootNode.toString());
-			nlg.getArtifacts(false).forEach( a -> LOGGER.info( a.toString()) );
+			DependencyBuilder visitor = new DependencyBuilder(artifact, artifacts);
+			rootNode.accept(visitor);
+			resolvedDep.add(visitor.create());			
 
 		} catch (DependencyResolutionException e) {
 			// TODO Auto-generated catch block
