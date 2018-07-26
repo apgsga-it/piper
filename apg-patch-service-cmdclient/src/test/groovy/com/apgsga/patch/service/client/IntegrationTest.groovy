@@ -567,6 +567,23 @@ public class IntegrationTest extends Specification {
 			revisionsFile.exists()
 			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 10001
 			revisionsFromRRCall.fromRetrieveRevision.lastRevision.toInteger() == 10000
+		when:
+			// We shouldn't do anything, and the process shouldn't crash if we try to clone a target which doesn't exist within Revisions.json
+			currentRevision = [P:5,T:30000]
+			lastRevision = [CHEI212:10036,CHEI211:4,CHEI213:20025]
+			revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
+			revisionsFile.write(new JsonBuilder(revisions).toPrettyString())
+			crResult = client.process(["-cr", "CHQI567"])
+			resrResult = client.process(["-resr", "CHQI567"])
+			def revisionsAfterUnvalidClone = new JsonSlurper().parseText(revisionsFile.text)
+		then:
+			result.returnCode == 0
+			revisionsFile.exists()
+			revisionsAfterUnvalidClone.currentRevision["P"].toInteger() == 5
+			revisionsAfterUnvalidClone.currentRevision["T"].toInteger() == 30000
+			revisionsAfterUnvalidClone.lastRevisions["CHEI211"].toInteger() == 4
+			revisionsAfterUnvalidClone.lastRevisions["CHEI213"].toInteger() == 20025
+			revisionsAfterUnvalidClone.lastRevisions["CHEI212"].toInteger() == 10036
 		cleanup:
 			revisionsFile.delete()
 	}

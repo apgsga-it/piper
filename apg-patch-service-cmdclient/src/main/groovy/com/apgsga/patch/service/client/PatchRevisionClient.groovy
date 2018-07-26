@@ -112,23 +112,28 @@ class PatchRevisionClient {
 	
 	def resetLastRevision(def target) {
 		
-		def rangeStep = config.revision.range.step
-		
 		def revisions = getParsedRevisionFile()
 		
-		def prodTarget = getProdTarget()
-		
-		println("Resetting last revision for ${target}")
-		println("Current revisions are: ${revisions}")
-		println("Prod target = ${prodTarget}")
-		
-		// For the cloned target, we reset its version (eg.: 10045 will be 10000), and we add the @P indicator
-		def initialRevision = ((int) (revisions.lastRevisions[target].toInteger() / rangeStep)) * rangeStep
-		revisions.lastRevisions[target] = initialRevision + "@P"
-		
-		println("Following revisions will be written to ${config.revision.file.path} : ${revisions}")
-		
-		new File(config.revision.file.path).write(new JsonBuilder(revisions).toPrettyString())
+		// JHE (26.07.2018): If revisions doesn't contain the target, it means that nothing has ever been patch on the target -> then we don't have to do anything.
+		if(revisions.lastRevisions[target] != null) {
+			def rangeStep = config.revision.range.step
+			def prodTarget = getProdTarget()
+			
+			println("Resetting last revision for ${target}")
+			println("Current revisions are: ${revisions}")
+			println("Prod target = ${prodTarget}")
+			
+			// For the cloned target, we reset its version (eg.: 10045 will be 10000), and we add the @P indicator
+			def initialRevision = ((int) (revisions.lastRevisions[target].toInteger() / rangeStep)) * rangeStep
+			revisions.lastRevisions[target] = initialRevision + "@P"
+			
+			println("Following revisions will be written to ${config.revision.file.path} : ${revisions}")
+			
+			new File(config.revision.file.path).write(new JsonBuilder(revisions).toPrettyString())
+		}
+		else {
+			println("Nothing to reset for ${target} within Revisions.json. We probably never have any patch installed directly on ${target}.")
+		}
 	}
 	
 	private Object getParsedRevisionFile() {
@@ -172,6 +177,11 @@ class PatchRevisionClient {
 		
 		def lastRevisionForTarget = revisions.lastRevisions[target]
 		
-		return Long.valueOf(lastRevisionForTarget)
+		if (lastRevisionForTarget != null) {
+			return Long.valueOf(lastRevisionForTarget)
+		}
+		else {
+			return null
+		}
 	}
 }

@@ -48,17 +48,24 @@ class PatchArtifactoryClient {
 		def PatchRevisionClient patchRevisionClient = new PatchRevisionClient(config)
 		def lastRevision = patchRevisionClient.getLastRevisionForTarget(target)
 		
-		def rangeStep = config.revision.range.step
-		def from = ((int) (lastRevision / rangeStep)) * rangeStep
-		def dryRun = config.onclone.delete.artifact.dryrun
-		
-		println("Artifact from ${from} to ${lastRevision} will be deleted from Artifactory.")
-		
-		// TODO JHE: We can probably improve (remove) this loop by using a more sophisticated Regex
-		while(from <= lastRevision) {
-			// TODO JHE: do we want to search in more repos? Is "realeases" enough?
-			removeArtifacts("*${FIRST_PART_FOR_ARTIFACT_SEARCH}${from}*", dryRun)
-			from++
+		// JHE (26.07.2018): If lastRevision is null, it means that nothing has ever been patch on the target -> then we don't have to do anything.
+		if(lastRevision != null) {
+		 
+			def rangeStep = config.revision.range.step
+			def from = ((int) (lastRevision / rangeStep)) * rangeStep
+			def dryRun = config.onclone.delete.artifact.dryrun
+			
+			println("Artifact from ${from} to ${lastRevision} will be deleted from Artifactory.")
+			
+			// TODO JHE: We can probably improve (remove) this loop by using a more sophisticated Regex
+			while(from <= lastRevision) {
+				// TODO JHE: do we want to search in more repos? Is "realeases" enough?
+				removeArtifacts("*${FIRST_PART_FOR_ARTIFACT_SEARCH}${from}*", dryRun)
+				from++
+			}
+		}
+		else {
+			println("No release to clean for ${target}. We probably never have any patch installed directly on ${target}.")
 		}
 	}
 }
