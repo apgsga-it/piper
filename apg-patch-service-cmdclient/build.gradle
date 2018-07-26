@@ -166,7 +166,7 @@ artifactory {
     publish {
 
         repository {
-            repoKey = 'yumrepo'   
+            repoKey = 'yumrepodev'   
             username ="${repoUser}"
             password = "${repoPassword}"
             ivy {
