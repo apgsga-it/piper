@@ -2,18 +2,23 @@ package com.apgsga.artifact.query.impl;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
@@ -123,6 +128,8 @@ public class ArtifactsDependencyResolverImplTests {
 		depResolver.resolveDependencies(artefacts);
 		artefacts.sort(Comparator.comparing(MavenArtifact::getDependencyLevel).reversed());
 		artefacts.forEach(a -> System.out.println("Dependency Level: " + a.getDependencyLevel() + " for Artefact : " + a.toString()));
+		File newPatchFile = new File("src/test/resources/Patch5708new.json");
+		mapper.writeValue(new FileWriter(newPatchFile),patchData);
 	}
 
 
