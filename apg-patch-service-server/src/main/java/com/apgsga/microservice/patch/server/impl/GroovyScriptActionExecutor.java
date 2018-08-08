@@ -90,7 +90,7 @@ public class GroovyScriptActionExecutor implements PatchActionExecutor {
 			LOGGER.info(script);
 			LOGGER.info("With binding:" + sharedData.getVariables().toString());
 			Object result = shell.evaluate(script);
-			LOGGER.info("Result: " + result == null ? " <Empty> " : result.toString());
+			LOGGER.info("Result: " + (result == null ? " <Empty> " : result.toString()));
 		} catch (CompilationFailedException | IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("GroovyScriptActionExecutor.execute.exception",
 					new Object[] { e.getMessage(), patchNumber, toStatus, configDir, configFileName }, e);

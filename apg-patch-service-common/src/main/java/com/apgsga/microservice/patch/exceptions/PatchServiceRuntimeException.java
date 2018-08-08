@@ -8,7 +8,7 @@ public class PatchServiceRuntimeException extends RuntimeException {
 	
 	private HttpStatus httpStatusCode = HttpStatus.INTERNAL_SERVER_ERROR;
 	
-	private String messageKey; 
+	private final String messageKey; 
 
 	public PatchServiceRuntimeException(String messageKey,String message, Throwable cause) {
 		super(message, cause);

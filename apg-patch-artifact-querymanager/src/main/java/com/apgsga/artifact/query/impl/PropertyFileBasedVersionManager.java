@@ -10,6 +10,7 @@ import org.eclipse.aether.resolution.DependencyResolutionException;
 
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.artifact.query.ArtifactVersionManager;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 
 public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 
@@ -24,13 +25,12 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 
 	@Override
 	public String getVersionFor(String group, String name, String bomVersion) {
-		Properties versionsProperties = getProperties(bomVersion);
+		versionsProperties = getProperties(bomVersion);
 		return versionsProperties.getProperty(group + ":" + name);
 
 	}
 
 	private Properties getProperties(String bomVersion) {
-		Properties versionsProperties = null;
 		if (versionsProperties == null) {
 			versionsProperties = intialLoad(bomVersion);
 		}
@@ -43,8 +43,8 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 			versionsProperties = artifactManager.getVersionsProperties(bomVersion);
 			return versionsProperties;
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
-			throw new RuntimeException(e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("ArtifactsDependencyResolverImpl.init.exception",
+					new Object[] { e.getMessage() }, e);
 		}
 	}
-
 }

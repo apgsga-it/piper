@@ -25,7 +25,6 @@ public class RepositorySystemFactory {
 	private static final String REPO_PASSWD = "dev1234";
 	private static final String REPO_USER = "dev";
 	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = "https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/repo";
-	//private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_SNAPSHOT = "http://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/public-snapshot";
 
 	public static RepositorySystem newRepositorySystem() {
 		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
@@ -55,10 +54,9 @@ public class RepositorySystemFactory {
 		return session;
 	}
 
-	public static List<RemoteRepository> newRepositories(RepositorySystem system, RepositorySystemSession session) {
+	public static List<RemoteRepository> newRepositories() {
 		List<RemoteRepository> remoteRepos = Lists.newArrayList();
 		remoteRepos.add(newCentralRepository("central", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC));
-	//	remoteRepos.add(newCentralRepository("snapshots", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_SNAPSHOT));
 		return new ArrayList<RemoteRepository>(remoteRepos);
 	}
 

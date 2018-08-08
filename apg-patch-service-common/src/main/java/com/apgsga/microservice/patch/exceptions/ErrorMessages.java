@@ -33,13 +33,20 @@ public class ErrorMessages {
 		}
 		messageSource.setCommonMessages(properties);
 	}
+	
+	
+
+	private ErrorMessages() {
+	}
+
+
 
 	public static String getErrorMsg(String key, Object[] variables) {
 		String errorMsg = "";
 		try {
 			errorMsg = messageSource.getMessage(key, variables, Locale.getDefault());
 		} catch (NoSuchMessageException e) {
-			final StringBuffer bf = new StringBuffer();
+			final StringBuilder bf = new StringBuilder();
 			bf.append(NO_SUCH_MESSAGE_ERROR_MSG.replace("#key#", key));
 			for (int i = 0; i < variables.length; i++) {
 				bf.append(variables[i].toString());

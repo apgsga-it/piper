@@ -6,11 +6,6 @@ jar {
 
 println "Maven Local Repo is : ${rootProject.mavenLocalRepo}"
 
-test {
-   onlyIf {
-      project.hasProperty("querytests")
-  }
-}
 
 dependencies {
 	compile project(':apg-patch-service-common')
@@ -34,31 +29,9 @@ dependencies {
 	testCompile group: 'commons-collections', name: 'commons-collections'
 	testCompile group: 'org.springframework', name: 'spring-test'
 	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'	
-	testCompile group: 'org.codehaus.groovy' , name: 'groovy-all', version: '2.0.0'
+	testCompile group: 'org.codehaus.groovy' , name: 'groovy-all', version: '2.4.1'
 }
 
-def propertyFileLocation = "$buildDir/mavenLocal.properties"
-class CreateFile extends DefaultTask {
-	@OutputDirectory 
-	File outputDir
-  	@OutputFile
-    File prorpertiesFile
-}
-task createFile (type: CreateFile) {
-	outputDir = file("$buildDir")
-	prorpertiesFile = file(propertyFileLocation)
-}
-task mavenLocalProp (type : WriteProperties) {
-	encoding = "UTF-8"
-	outputFile= file(propertyFileLocation)
-	property "mavenLocalRepo", "${rootProject.mavenLocalRepo}"
-	println properties
-	doLast() {
-		writeProperties()
-	}
-}
-mavenLocalProp.dependsOn createFile
-test.dependsOn mavenLocalProp
 
 
 		

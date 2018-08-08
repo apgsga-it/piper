@@ -22,6 +22,7 @@ import org.springframework.core.io.ResourceLoader;
 
 import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.microservice.patch.api.MavenArtifact;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.google.common.collect.Lists;
 
 public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolver {
@@ -38,12 +39,11 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource resource = rl.getResource(localRepo);
 		if (!resource.exists()) {
-			// TODO (che, 25.1) : Do we want this? Correct here?
 			try {
 				resource.getFile().mkdir();
 			} catch (IOException e) {
-				throw new RuntimeException("Local Repository directory could'nt be created", e);
-			}
+				throw ExceptionFactory.createPatchServiceRuntimeException("ArtifactsDependencyResolverImpl.init.exception",
+						new Object[] { e.getMessage() }, e);			}
 		}
 	}
 
@@ -51,7 +51,7 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 		init(localRepo);
 		this.system = RepositorySystemFactory.newRepositorySystem();
 		this.session = RepositorySystemFactory.newRepositorySystemSession(system, localRepo);
-		this.repos = RepositorySystemFactory.newRepositories(system, session);
+		this.repos = RepositorySystemFactory.newRepositories();
 
 	}
 
@@ -84,8 +84,7 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 			resolvedDep.add(visitor.create());			
 
 		} catch (DependencyResolutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.warn(e.getMessage());
 		}
 
 	}
