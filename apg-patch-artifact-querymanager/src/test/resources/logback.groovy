@@ -10,5 +10,6 @@ appender("Console-Appender", ConsoleAppender) {
 	}
 }
 
-logger("Aether Query on Local Repo", DEBUG, ["Console-Appender"])
-root(INFO, ["Console-Appender"])
+logger("Aether Query on Local Repo", INFO, ["Console-Appender"])
+logger("Aether Transfer to Local Repo", INFO, ["Console-Appender"])
+root(INFO, ["Console-Appender"]) 

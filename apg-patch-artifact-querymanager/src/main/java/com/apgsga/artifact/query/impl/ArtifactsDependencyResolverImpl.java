@@ -28,6 +28,10 @@ import com.google.common.collect.Lists;
 public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolver {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ArtifactsDependencyResolverImpl.class);
+	
+	private static final PatternInclusionsDependencyFilter filter1 = new PatternInclusionsDependencyFilter("com.apgsga.*");
+	private static final PatternInclusionsDependencyFilter filter2 = new PatternInclusionsDependencyFilter("com.affichage.*");
+	private static final OrDependencyFilter DEPENDENCYFIlTER = new OrDependencyFilter(filter1, filter2);
 
 	private final RepositorySystem system;
 
@@ -54,29 +58,44 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 		this.repos = RepositorySystemFactory.newRepositories();
 
 	}
+ 
 
-	@Override
-	public List<MavenArtWithDependencies> resolveDependencies(List<MavenArtifact> artifacts) {
-		List<MavenArtWithDependencies> resolvedDep = Lists.newArrayList();
+	public List<MavenArtWithDependencies> resolveDependenciesInternal(List<MavenArtifact> artifacts) {
+		List<MavenArtWithDependencies> resolvedDependencies = Lists.newArrayList();
 		for (MavenArtifact art : artifacts) {
-			resolveDependency(art,artifacts, resolvedDep);
+			LOGGER.info("Resolving Dependencies for : " + art.toString());
+			resolveDependencies(art,artifacts, resolvedDependencies);
 		}
-		return resolvedDep;
+		return resolvedDependencies;
 	}
 
-	private void resolveDependency(MavenArtifact artifact, List<MavenArtifact> artifacts, List<MavenArtWithDependencies> resolvedDep) {
+	@Override
+	public void resolveDependencies(List<MavenArtifact> artifacts) {
+		LOGGER.info("Resolving Dependencies");
+		List<MavenArtWithDependencies> resolveDependenciesInternal = resolveDependenciesInternal(artifacts); 
+		LOGGER.info("Analysing Dependency Level");
+		analyseAndSetDependencyLevel(resolveDependenciesInternal); 
+	}
+
+	private void analyseAndSetDependencyLevel(List<MavenArtWithDependencies> resolveDependenciesInternal) {
+		for (MavenArtWithDependencies resolvedDep : resolveDependenciesInternal) {
+			List<MavenArtifact> dependencies = resolvedDep.getDependencies();
+			for (MavenArtifact dependency : dependencies) {
+				dependency.augmentDependencyLevel();
+			}
+		}
+	}
+
+	private void resolveDependencies(MavenArtifact artifact, List<MavenArtifact> artifacts, List<MavenArtWithDependencies> resolvedDep) {
 		Dependency dependency = new Dependency(new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), "",
 				"jar", artifact.getVersion()), "compile");
 
 		CollectRequest collectRequest = new CollectRequest();
 		collectRequest.setRoot(dependency);
 		collectRequest.setRepositories(repos);
-		PatternInclusionsDependencyFilter filter1 = new PatternInclusionsDependencyFilter("com.apgsga.*");
-		PatternInclusionsDependencyFilter filter2 = new PatternInclusionsDependencyFilter("com.affichage.*");
-		OrDependencyFilter depFilter = new OrDependencyFilter(filter1, filter2);
 		DependencyRequest dependencyRequest = new DependencyRequest();
 		dependencyRequest.setCollectRequest(collectRequest);
-		dependencyRequest.setFilter(depFilter);
+		dependencyRequest.setFilter(DEPENDENCYFIlTER);
 		try {
 			DependencyNode rootNode = system.resolveDependencies(session, dependencyRequest).getRoot();
 			DependencyBuilder visitor = new DependencyBuilder(artifact, artifacts);
@@ -84,6 +103,7 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 			resolvedDep.add(visitor.create());			
 
 		} catch (DependencyResolutionException e) {
+			// If something goes wrong here, we may want to know, but we continie
 			LOGGER.warn(e.getMessage());
 		}
 

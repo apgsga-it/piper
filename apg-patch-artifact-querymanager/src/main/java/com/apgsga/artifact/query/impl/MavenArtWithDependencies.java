@@ -61,4 +61,5 @@ public class MavenArtWithDependencies {
 		return "MavenArtWithDependencies [artifact=" + artifact + ", dependencies=" + dependencies + "]";
 	}
 
+
 }

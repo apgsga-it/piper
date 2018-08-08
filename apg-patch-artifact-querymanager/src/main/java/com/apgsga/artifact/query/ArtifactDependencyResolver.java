@@ -18,8 +18,7 @@ public interface ArtifactDependencyResolver {
 	
 	/**
 	 * @param artifacts
-	 * @return TODO (CHE, 16.7 ) for Testing purposes , temporary
 	 */
-	List<MavenArtWithDependencies> resolveDependencies(List<MavenArtifact> artifacts);
+	void resolveDependencies(List<MavenArtifact> artifacts);
 
 }

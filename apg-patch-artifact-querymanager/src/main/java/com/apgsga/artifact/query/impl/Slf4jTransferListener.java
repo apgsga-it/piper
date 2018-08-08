@@ -25,7 +25,7 @@ public class Slf4jTransferListener extends AbstractTransferListener {
 	public void transferInitiated(TransferEvent event) {
 		String message = event.getRequestType() == TransferEvent.RequestType.PUT ? "Uploading" : "Downloading";
 
-		LOGGER.info("{} : {} , {}", message, event.getResource().getRepositoryUrl(),
+		LOGGER.debug("{} : {} , {}", message, event.getResource().getRepositoryUrl(),
 				event.getResource().getResourceName());
 	}
 
@@ -47,7 +47,7 @@ public class Slf4jTransferListener extends AbstractTransferListener {
 		lastLength = buffer.length();
 		pad(buffer, pad);
 		String output = buffer.toString();
-		LOGGER.info(output);
+		LOGGER.debug(output);
 	}
 
 	private String getStatus(long complete, long total) {

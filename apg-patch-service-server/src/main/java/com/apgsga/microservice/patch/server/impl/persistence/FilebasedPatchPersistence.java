@@ -10,7 +10,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
 
 import com.apgsga.microservice.patch.api.DbModules;
 import com.apgsga.microservice.patch.api.Patch;
@@ -25,11 +24,15 @@ import com.google.common.collect.Lists;
 
 public class FilebasedPatchPersistence implements PatchPersistence {
 
+	private static final String JSON = ".json";
+
+	private static final String PATCH = "Patch";
+
 	private static final String SERVICE_META_DATA_JSON = "ServicesMetaData.json";
 
 	private static final String DB_MODULES_JSON = "DbModules.json";
 
-	protected final Log LOGGER = LogFactory.getLog(getClass());
+	protected static final Log LOGGER = LogFactory.getLog(FilebasedPatchPersistence.class.getName());
 
 	private Resource storagePath;
 
@@ -43,13 +46,11 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	public void init() throws IOException {
 		if (!storagePath.exists()) {
-			// TODO (che, 25.1) : Do we want this? Correct here?
 			LOGGER.info("Creating persistence directory: " + storagePath);
 			storagePath.getFile().mkdir();
 		}
 
 		if (!tempStoragePath.exists()) {
-			// TODO (che, 25.1) : Do we want this? Correct here?
 			LOGGER.info("Creating Temporary work directory: " + tempStoragePath);
 			tempStoragePath.getFile().mkdir();
 		}
@@ -60,7 +61,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		Asserts.notNullOrEmpty(patchNummer, "FilebasedPatchPersistence.findById.patchnumber.notnullorempty.assert",
 				new Object[] {});
 		try {
-			File patchFile = createFile("Patch" + patchNummer + ".json");
+			File patchFile = createFile(PATCH + patchNummer + JSON);
 			if (!patchFile.exists()) {
 				return null;
 			}
@@ -78,11 +79,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.patchExists.patchnumber.notnullorempty.assert",
 				new Object[] {});
 		try {
-			File patchFile = createFile("Patch" + patchNumber + ".json");
-			if (patchFile.exists()) {
-				return true;
-			}
-			return false;
+			File patchFile = createFile(PATCH + patchNumber + JSON);
+			return patchFile.exists();
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.patchExists.exception",
 					new Object[] { e.getMessage(), patchNumber }, e);
@@ -93,7 +91,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	@Override
 	public List<String> findAllPatchIds() {
 		try {
-			File[] files = storagePath.getFile().listFiles(file -> file.getName().startsWith("Patch"));
+			File[] files = storagePath.getFile().listFiles(file -> file.getName().startsWith(PATCH));
 			return Lists.newArrayList(files).stream().map(f -> FilenameUtils.getBaseName(f.getName()).substring(5))
 					.collect(Collectors.toList());
 		} catch (IOException e) {
@@ -106,24 +104,24 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	@Override
 	public synchronized void savePatch(Patch patch) {
 		Asserts.notNull(patch, "FilebasedPatchPersistence.save.patchobject.notnull.assert", new Object[] {});
-		Asserts.notNullOrEmpty(patch.getPatchNummer(), "FilebasedPatchPersistence.save.patchnumber.notnullorempty.assert",
-				new Object[] { patch.toString() });
-		writeToFile(patch, "Patch" + patch.getPatchNummer() + ".json");
+		Asserts.notNullOrEmpty(patch.getPatchNummer(),
+				"FilebasedPatchPersistence.save.patchnumber.notnullorempty.assert", new Object[] { patch.toString() });
+		writeToFile(patch, PATCH + patch.getPatchNummer() + JSON);
 	}
 
 	// TODO (che, 8.5) Do we want remove also "Atomic"
 	@Override
 	public synchronized void removePatch(Patch patch) {
 		Asserts.notNull(patch, "FilebasedPatchPersistence.remove.patchobject.notnull.assert", new Object[] {});
-		Asserts.notNullOrEmpty(patch.getPatchNummer(), "FilebasedPatchPersistence.remove.patchnumber.notnullorempty.assert",
+		Asserts.notNullOrEmpty(patch.getPatchNummer(),
+				"FilebasedPatchPersistence.remove.patchnumber.notnullorempty.assert",
 				new Object[] { patch.toString() });
-		Asserts.isTrue((patchExists(patch.getPatchNummer())),
-				"FilebasedPatchPersistence.remove.patch.exists.assert", new Object[] { patch.toString() });
+		Asserts.isTrue((patchExists(patch.getPatchNummer())), "FilebasedPatchPersistence.remove.patch.exists.assert",
+				new Object[] { patch.toString() });
 		try {
 			LOGGER.info("Deleting patch: " + patch.toString());
-			File patchFile = createFile("Patch" + patch.getPatchNummer() + ".json");
-			patchFile.delete();
-			LOGGER.info("Deleting patch: " + patch.toString());
+			File patchFile = createFile(PATCH + patch.getPatchNummer() + JSON);
+			LOGGER.info("Deleting patch: " + patch.toString() + ", result: " + patchFile.delete());
 
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.removePatch.exception",
@@ -168,8 +166,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			DbModules result = mapper.readValue(dbModulesFile, DbModules.class);
 			return result;
 		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.getDbModules.exception",
-					new Object[] { e.getMessage() }, e);
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"FilebasedPatchPersistence.getDbModules.exception", new Object[] { e.getMessage() }, e);
 		}
 	}
 
@@ -179,8 +177,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			File[] listFiles = storagePath.getFile().listFiles();
 			return Lists.newArrayList(listFiles).stream().map(f -> f.getName()).collect(Collectors.toList());
 		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.listAllFiles.exception",
-					new Object[] { e.getMessage() }, e);
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"FilebasedPatchPersistence.listAllFiles.exception", new Object[] { e.getMessage() }, e);
 		}
 	}
 
@@ -213,7 +211,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		List<ServiceMetaData> services = getServicesMetaData().getServicesMetaData();
 		List<ServiceMetaData> result = services.stream().filter(p -> p.getServiceName().equals(serviceName))
 				.collect(Collectors.toList());
-		Assert.isTrue(result.size() == 1);
+		Asserts.isTrue(result.size() == 1, "FilebasedPatchPersistence.findServiceByName.exception", new Object[] {});
 		return result.get(0);
 	}
 
