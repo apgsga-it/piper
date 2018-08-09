@@ -33,9 +33,14 @@ class ArtifactsDependencyResolverTests extends Specification {
 		then:
 		def artsLevelZero = splitLists[0]
 		assert artsLevelZero.size() == 2
+		assert artsLevelZero.contains(mavenArtifactGpUi)
+		assert artsLevelZero.contains(mavenArtifactFakturaDao)
 		def artsLevel2 = splitLists[2]
 		assert artsLevel2.size() == 1
+		assert artsLevel2.contains(mavenArtifactGpDao)
 		def artsLevel3 = splitLists[3]
 		assert artsLevel3.size() == 1
+		assert artsLevel3.contains(mavenArtifactDt)
+		
 	}
 }
