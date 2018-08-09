@@ -1,6 +1,5 @@
 package com.apgsga.artifact.query;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;

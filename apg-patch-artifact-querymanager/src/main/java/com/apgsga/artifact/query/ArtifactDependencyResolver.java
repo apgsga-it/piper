@@ -3,7 +3,6 @@ package com.apgsga.artifact.query;
 import java.util.List;
 
 import com.apgsga.artifact.query.impl.ArtifactsDependencyResolverImpl;
-import com.apgsga.artifact.query.impl.MavenArtWithDependencies;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 
 /**
