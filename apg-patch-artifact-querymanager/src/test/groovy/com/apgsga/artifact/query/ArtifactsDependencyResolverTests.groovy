@@ -55,7 +55,7 @@ class ArtifactsDependencyResolverTests extends Specification {
 		when:
 		depResolver.resolveDependencies(artefacts);
 		artefacts.sort new OrderBy([{it.dependencyLevel}])
-		def listsByDepLevel = artefacts.stream().collect(groupingBy((Function) { MavenArtifactBean b -> return b.dependencyLevel }))
+		def listsByDepLevel = artefacts.stream().collect(groupingBy((Function) {  b -> return b.dependencyLevel }))
 		def depLevels = listsByDepLevel.keySet() as List
 		depLevels.sort()
 		depLevels.reverse(true)
