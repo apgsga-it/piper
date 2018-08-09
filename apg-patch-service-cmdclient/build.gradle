@@ -19,7 +19,7 @@ targetCompatibility = 1.8
 
 def finalName = 'apg-patch-cli'
 
-mainClassName = 'pli'
+mainClassName = 'pliStarter'
 def repoTarget= version.endsWith("SNAPSHOT") ? "snapshots" : "releases"
 jar {
 	baseName = "${finalName}"
@@ -33,7 +33,7 @@ def savedVersion = version
 shadowJar {
 	baseName = "${finalName}"
 	classifier = null
-   	version = null
+    version = null
 	exclude 'cmd.sh'
 	exclude '**/downloads/*'
 	exclude '**/uploads/*'
@@ -105,7 +105,7 @@ ospackage {
 	}
 
 	from('packaging/bin') {
-		include 'apscli.sh'
+		include '*.sh'
 		fileMode 0755
 		into 'bin'
 		//expand project.properties
