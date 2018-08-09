@@ -1,7 +1,13 @@
 package com.apgsga.artifact.query.impl;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -62,9 +68,25 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 
 	public List<MavenArtWithDependencies> resolveDependenciesInternal(List<MavenArtifact> artifacts) {
 		List<MavenArtWithDependencies> resolvedDependencies = Lists.newArrayList();
-		for (MavenArtifact art : artifacts) {
-			LOGGER.info("Resolving Dependencies for : " + art.toString());
-			resolveDependencies(art,artifacts, resolvedDependencies);
+        ExecutorService executorService = Executors.newFixedThreadPool(artifacts.size());
+        List<Callable<MavenArtWithDependencies>> callables = Lists.newArrayList();
+        for (MavenArtifact art : artifacts) {
+        		Callable<MavenArtWithDependencies> callable = () ->  {
+         		return resolveDependencies(art,Collections.unmodifiableList(artifacts));
+        		};
+        		callables.add(callable);
+		}
+        try {
+			List<Future<MavenArtWithDependencies>> futures = executorService.invokeAll(callables);
+			for (Future<MavenArtWithDependencies> future : futures) {
+				resolvedDependencies.add(future.get());
+			}
+		} catch (InterruptedException e) {
+			LOGGER.warn("Interrupted!", e);
+		    Thread.currentThread().interrupt();
+		} catch (ExecutionException e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException("ArtifactsDependencyResolverImpl.resolveDependenciesInternal.exception",
+					new Object[] { e.getMessage() }, e);		
 		}
 		return resolvedDependencies;
 	}
@@ -86,7 +108,7 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 		}
 	}
 
-	private void resolveDependencies(MavenArtifact artifact, List<MavenArtifact> artifacts, List<MavenArtWithDependencies> resolvedDep) {
+	private MavenArtWithDependencies resolveDependencies(MavenArtifact artifact, List<MavenArtifact> artifacts) {
 		Dependency dependency = new Dependency(new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), "",
 				"jar", artifact.getVersion()), "compile");
 
@@ -100,13 +122,16 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 			DependencyNode rootNode = system.resolveDependencies(session, dependencyRequest).getRoot();
 			DependencyBuilder visitor = new DependencyBuilder(artifact, artifacts);
 			rootNode.accept(visitor);
-			resolvedDep.add(visitor.create());			
+			return visitor.create();			
 
 		} catch (DependencyResolutionException e) {
-			// If something goes wrong here, we may want to know, but we continie
-			LOGGER.warn(e.getMessage());
+			throw ExceptionFactory.createPatchServiceRuntimeException("ArtifactsDependencyResolverImpl.resolveDependencies.exception",
+					new Object[] { e.getMessage() }, e);			
 		}
 
 	}
+	
+	
+	
 
 }

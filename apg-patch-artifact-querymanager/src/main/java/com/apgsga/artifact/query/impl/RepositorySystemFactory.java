@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.repository.Authentication;
@@ -25,6 +24,9 @@ public class RepositorySystemFactory {
 	private static final String REPO_PASSWD = "dev1234";
 	private static final String REPO_USER = "dev";
 	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = "https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/repo";
+
+	private RepositorySystemFactory() {
+	}
 
 	public static RepositorySystem newRepositorySystem() {
 		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
