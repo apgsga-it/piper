@@ -41,6 +41,8 @@ class PatchDbCli {
 				def result = listPatchAfterClone(status)
 				cmdResults.results['lpac'] = result
 			}
+			cmdResults.returnCode = 0
+			return cmdResults
 		} catch (PatchClientServerException e) {
 			System.err.println "Server Error ccurred on ${e.errorMessage.timestamp} : ${e.errorMessage.errorText} "
 			cmdResults.results['error'] = e.errorMessage
