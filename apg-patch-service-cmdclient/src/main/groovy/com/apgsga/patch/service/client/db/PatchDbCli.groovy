@@ -37,7 +37,6 @@ class PatchDbCli {
 		}
 		try {
 			if(options.lpac) {
-				// TODO JHE: status should be passed as option ...
 				def status = options.lpacs[0]
 				def result = listPatchAfterClone(status)
 				cmdResults.results['lpac'] = result
@@ -63,17 +62,17 @@ class PatchDbCli {
 	}
 	
 	private def listPatchAfterClone(def status) {
-		//Query db to get list of patch to be installed on the target (target -> corresponds to a specific status, eg.: Informatiktest
+		//Query db to get list of patch to be installed fora given status
 		def jdbcConfigFile = new File(config.ops.groovy.file.path)
 		def defaultJdbcConfig = new ConfigSlurper().parse(jdbcConfigFile.toURI().toURL())
 		// If we don't force sql to be a String, ${status} will be replace with a "?" at the time we run the query.
 		def String sql = "SELECT id FROM cm_patch_install_sequence_f WHERE ${status}=1 AND (produktion = 0 OR chronology > trunc(SYSDATE))"
 		def dbConnection = Sql.newInstance(defaultJdbcConfig.db.url, defaultJdbcConfig.db.user, defaultJdbcConfig.db.passwd)
-		def patchNumber = []
+		def patchNumbers = []
 		dbConnection.eachRow(sql) { row ->
 			def rowId = row.ID
-			println "Row (Patch ID) ${rowId} added to the list of patch to be re-installed."
-			patchNumber.add(rowId)
+			println "Patch ${rowId} added to the list of patch to be re-installed."
+			patchNumbers.add(rowId)
 		}
 		
 		def listPatchFile = new File(config.postclone.list.patch.file.path)
@@ -82,10 +81,10 @@ class PatchDbCli {
 			listPatchFile.delete()
 		}
 		
-		def json = JsonOutput.toJson([patchlist:patchNumber])
+		def json = JsonOutput.toJson([patchlist:patchNumbers])
 		listPatchFile.write(new JsonBuilder(json).toPrettyString())
 		
-		return patchNumber
+		return patchNumbers
 	}
 	
 	private def parseConfig() {
