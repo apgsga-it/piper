@@ -53,13 +53,13 @@ class PatchArtifactoryClient {
 		if(lastRevision != null && !lastRevision.toString().endsWith("@P")) {
 		 
 			def rangeStep = config.revision.range.step
-			def from = ((int) (lastRevision / rangeStep)) * rangeStep
+			def from = ((int) (Long.valueOf(lastRevision) / rangeStep)) * rangeStep
 			def dryRun = config.onclone.delete.artifact.dryrun
 			
 			println("Artifact from ${from} to ${lastRevision} will be deleted from Artifactory.")
 			
 			// TODO JHE: We can probably improve (remove) this loop by using a more sophisticated Regex
-			while(from <= lastRevision) {
+			while(from <= Long.valueOf(lastRevision)) {
 				// TODO JHE: do we want to search in more repos? Is "realeases" enough?
 				removeArtifacts("*${FIRST_PART_FOR_ARTIFACT_SEARCH}${from}*", dryRun)
 				from++

@@ -172,14 +172,14 @@ class PatchRevisionClient {
 		return prodTarget
 	}
 	
-	public Long getLastRevisionForTarget(String target) {
+	def getLastRevisionForTarget(String target) {
 		
 		def revisions = getParsedRevisionFile()
 		
 		def lastRevisionForTarget = revisions.lastRevisions[target]
 		
 		if (lastRevisionForTarget != null) {
-			return Long.valueOf(lastRevisionForTarget)
+			return lastRevisionForTarget
 		}
 		else {
 			return null
