@@ -49,7 +49,8 @@ class PatchArtifactoryClient {
 		def lastRevision = patchRevisionClient.getLastRevisionForTarget(target)
 		
 		// JHE (26.07.2018): If lastRevision is null, it means that nothing has ever been patch on the target -> then we don't have to do anything.
-		if(lastRevision != null) {
+		// JHE (13.08.2018): If lastRevision ends with "@P", it means nothing has been patched since last clone -> then we don't have to do anything.
+		if(lastRevision != null && !lastRevision.toString().endsWith("@P")) {
 		 
 			def rangeStep = config.revision.range.step
 			def from = ((int) (lastRevision / rangeStep)) * rangeStep
@@ -65,7 +66,7 @@ class PatchArtifactoryClient {
 			}
 		}
 		else {
-			println("No release to clean for ${target}. We probably never have any patch installed directly on ${target}.")
+			println("No release to clean for ${target}. We probably never have any patch installed directly on ${target}, or no patch has been newly installed since last clone.")
 		}
 	}
 }

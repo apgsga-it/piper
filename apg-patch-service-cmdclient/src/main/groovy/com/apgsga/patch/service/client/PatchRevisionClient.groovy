@@ -115,7 +115,8 @@ class PatchRevisionClient {
 		def revisions = getParsedRevisionFile()
 		
 		// JHE (26.07.2018): If revisions doesn't contain the target, it means that nothing has ever been patch on the target -> then we don't have to do anything.
-		if(revisions.lastRevisions[target] != null) {
+		// JHE (13.08.2018): If lastRevision ends with "@P", it means nothing has been patched since last clone -> then we don't have to do anything.
+		if(revisions.lastRevisions[target] != null && !revisions.lastRevisions[target].toString().endsWith("@P")) {
 			def rangeStep = config.revision.range.step
 			def prodTarget = getProdTarget()
 			
