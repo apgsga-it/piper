@@ -83,8 +83,7 @@ class PatchDbCli {
 			listPatchFile.delete()
 		}
 		
-		def json = JsonOutput.toJson([patchlist:patchNumbers])
-		listPatchFile.write(new JsonBuilder(json).toPrettyString())
+		listPatchFile.write(new JsonBuilder(patchlist:patchNumbers).toPrettyString())
 		
 		return patchNumbers
 	}
