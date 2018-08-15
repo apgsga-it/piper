@@ -17,6 +17,8 @@ import com.google.common.collect.Maps;
 
 public class MicroservicePatchClient implements PatchService {
 
+	private static final String FIND_BY_IDS = "/findByIds";
+
 	private static final String FIND_BY_ID = "/findById/{id}";
 
 	private static final String START_INSTALL_PIPELINE = "/startInstallationForTarget";
@@ -128,6 +130,12 @@ public class MicroservicePatchClient implements PatchService {
 		params.put("requestingTarget", requestingTarget);
 		String[] result = restTemplate.getForObject(getRestBaseUri() + LIST_INSTALLTARGETS, String[].class, params);
 		return Lists.newArrayList(result);
+	}
+
+	@Override
+	public List<Patch> findByIds(List<String> patchIds) {
+		Patch[] result = restTemplate.postForEntity(getRestBaseUri() + FIND_BY_IDS, patchIds, Patch[].class).getBody();
+		return Lists.newArrayList(result);	
 	}
 
 

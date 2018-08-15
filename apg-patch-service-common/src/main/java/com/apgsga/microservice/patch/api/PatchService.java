@@ -73,5 +73,9 @@ public interface PatchService {
 	 */
 	public void remove(Patch patch);
 	
+	
+	public List<Patch> findByIds(List<String> patchIds);
+	
+	 
 
 }
