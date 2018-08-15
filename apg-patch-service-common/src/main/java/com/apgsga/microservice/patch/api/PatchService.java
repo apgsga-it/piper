@@ -58,6 +58,7 @@ public interface PatchService {
 	 */
 	public Patch findById(String patchNummer);
 	
+	public List<Patch> findByIds(List<String> patchIds);	
 	/**
 	 * All changes on a patch Object need to be saved.
 	 * @param patch a Patch Object
@@ -72,10 +73,5 @@ public interface PatchService {
 	 * @throws PatchContainerException
 	 */
 	public void remove(Patch patch);
-	
-	
-	public List<Patch> findByIds(List<String> patchIds);
-	
-	 
 
 }
