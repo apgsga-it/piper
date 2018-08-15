@@ -75,12 +75,12 @@ public class MicroServicePatchController implements PatchService {
 			@PathVariable("search") String searchString) {
 		return patchService.listAllObjectsChangedForDbModule(patchId, searchString);
 	}
-	
+
 	@RequestMapping(value = "/listMavenArtifacts", method = RequestMethod.POST)
 	@ResponseBody
 	@Override
 	public List<MavenArtifact> listMavenArtifacts(@RequestBody Patch patch) {
-		return patchService.listMavenArtifacts(patch); 
+		return patchService.listMavenArtifacts(patch);
 	}
 
 	@RequestMapping(value = "/listServiceData", method = RequestMethod.GET)
@@ -97,7 +97,11 @@ public class MicroServicePatchController implements PatchService {
 		return patchService.listInstallationTargetsFor(requestingTarget);
 	}
 
+	@RequestMapping(value = "/findByIds", method = RequestMethod.POST)
+	@ResponseBody
+	@Override
+	public List<Patch> findByIds(@RequestBody List<String> patchIds) {
+		return patchService.findByIds(patchIds);
+	}
 
-	
 }
-	

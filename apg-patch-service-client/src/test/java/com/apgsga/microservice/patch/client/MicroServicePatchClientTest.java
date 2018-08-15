@@ -4,6 +4,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,6 +33,7 @@ import com.apgsga.microservice.patch.api.impl.PatchBean;
 import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.apgsga.microservice.patch.server.impl.persistence.FilebasedPatchPersistence;
+import com.google.common.collect.Lists;
 
 @RunWith(SpringRunner.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
@@ -69,7 +71,7 @@ public class MicroServicePatchClientTest {
 			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/ServiceData.json"),
 					new File(persistSt, "ServiceData.json"));
 		} catch (IOException e) {
-			Assert.fail("Unable to copy ServiceData.json test file into testDb folder");
+			Assert.fail("Unable to copy ServiceData.json test file into testDb folder : " + e.getMessage());
 		}
 
 		repo.savePatch(testPatch5401);
@@ -126,6 +128,12 @@ public class MicroServicePatchClientTest {
 		Patch result = patchClient.findById("SomeUnqiueNumber3");
 		Assert.assertNotNull(result);
 		Assert.assertEquals(patch, result);
+	}
+	
+	@Test
+	public void testFindByIds() {
+		List<Patch> patches = patchClient.findByIds(Lists.newArrayList("5401","5402"));
+		Assert.assertEquals(2, patches.size());
 	}
 
 }

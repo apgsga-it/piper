@@ -108,6 +108,16 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public Patch findById(String patchNummer) {
 		return repo.findById(patchNummer);
 	}
+	
+	@Override
+	public List<Patch> findByIds(List<String> patchIds) {
+		List<Patch> patches = Lists.newArrayList();
+		patchIds.forEach(patchId -> {
+			Patch p = findById(patchId);
+			patches.add(p);
+		});
+		return patches;
+	}
 
 	@Override
 	public Patch save(Patch patch) {
@@ -301,5 +311,4 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public VcsCommandRunnerFactory getJschSessionFactory() {
 		return vcsCommandRunnerFactory;
 	}
-
 }
