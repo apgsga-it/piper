@@ -11,6 +11,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.server.impl.GroovyScriptActionExecutorFactory;
@@ -69,6 +70,18 @@ public class MicroServicePatchConfig {
 		final PatchPersistence per = new FilebasedPatchPersistence(dbStorabe, workDir);
 		per.init();
 		return per;
+	}
+	
+	@Bean(name = "dependencyResolver")
+	@Profile("live")
+	public ArtifactDependencyResolver dependencyResolver() {
+		return ArtifactDependencyResolver.create(localRepo);
+	}
+	
+	@Bean(name = "dependencyResolver")
+	@Profile("mock")
+	public ArtifactDependencyResolver mockDependencyResolver() {
+		return ArtifactDependencyResolver.createMock(localRepo);
 	}
 
 	@Bean(name = "artifactManager")

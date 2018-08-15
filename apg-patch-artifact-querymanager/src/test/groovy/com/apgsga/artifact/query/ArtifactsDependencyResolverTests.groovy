@@ -28,7 +28,9 @@ class ArtifactsDependencyResolverTests extends Specification {
 		artefacts.each { 
 			println "Dependency Level: ${it.dependencyLevel} for Artefact: ${it.toString()}"
 		}		
-		def splitLists = artefacts.stream().collect(groupingBy((Function) { MavenArtifactBean b -> return b.dependencyLevel }))
+		def splitLists = artefacts.groupBy {
+			it.dependencyLevel
+		}		
 		println splitLists.toString()
 		then:
 		def artsLevelZero = splitLists[0]

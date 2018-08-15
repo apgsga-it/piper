@@ -121,14 +121,14 @@ public class ArtifactsDependencyResolverImplTests {
 	@Test
 	public void testMegaPatchWithDependencyLevels() throws JsonParseException, JsonMappingException, IOException {
 		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo");
-		File patchFile = new File("src/test/resources/Patch5708.json");
+		File patchFile = new File("src/test/resources/Patch5731.json");
 		ObjectMapper mapper = new ObjectMapper();
 		Patch patchData = mapper.readValue(patchFile, Patch.class);
 		List<MavenArtifact> artefacts = patchData.getMavenArtifacts();
 		depResolver.resolveDependencies(artefacts);
 		artefacts.sort(Comparator.comparing(MavenArtifact::getDependencyLevel).reversed());
 		artefacts.forEach(a -> System.out.println("Dependency Level: " + a.getDependencyLevel() + " for Artefact : " + a.toString()));
-		File newPatchFile = new File("src/test/resources/Patch5708new.json");
+		File newPatchFile = new File("src/test/resources/Patch5731new.json");
 		mapper.writeValue(new FileWriter(newPatchFile),patchData);
 	}
 

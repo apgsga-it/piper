@@ -15,6 +15,10 @@ public interface ArtifactDependencyResolver {
 		return new ArtifactsDependencyResolverImpl(localRep);
 	}
 	
+	public static ArtifactDependencyResolver createMock(String localRep) {
+		return new MockDependencyResolverImpl();
+	}
+	
 	/**
 	 * @param artifacts
 	 */
