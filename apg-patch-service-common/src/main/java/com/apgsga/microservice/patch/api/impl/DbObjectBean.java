@@ -11,7 +11,7 @@ public class DbObjectBean extends AbstractTransientEntity implements DbObject {
 	private String fileName;
 	private String filePath;
 	private String moduleName;
-	private boolean hasConflict = false;
+	private transient boolean hasConflict = false;
 
 	public DbObjectBean() {
 		super();

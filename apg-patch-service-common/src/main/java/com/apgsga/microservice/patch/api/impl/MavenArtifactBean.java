@@ -11,7 +11,7 @@ public class MavenArtifactBean extends AbstractTransientEntity implements MavenA
 	private String groupId;
 	private String name;
 	private String version;
-	private boolean hasConflict = false;
+	private transient boolean hasConflict = false;
 	
 	public MavenArtifactBean() {
 		super();
