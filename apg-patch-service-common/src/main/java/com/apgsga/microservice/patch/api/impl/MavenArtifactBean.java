@@ -11,6 +11,7 @@ public class MavenArtifactBean extends AbstractTransientEntity implements MavenA
 	private String groupId;
 	private String name;
 	private String version;
+	private boolean hasConflict = false;
 	
 	public MavenArtifactBean() {
 		super();
@@ -103,6 +104,16 @@ public class MavenArtifactBean extends AbstractTransientEntity implements MavenA
 	public String toString() {
 		return "MavenArtifactImpl [artifactId=" + artifactId + ", groupId=" + groupId + ", name=" + name + ", version="
 				+ version + "]";
+	}
+
+	@Override
+	public boolean hasConflict() {
+		return this.hasConflict;
+	}
+
+	@Override
+	public void setHasConflict(boolean hasConflict) {
+		this.hasConflict = hasConflict;
 	}
 	
 	

@@ -11,6 +11,7 @@ public class DbObjectBean extends AbstractTransientEntity implements DbObject {
 	private String fileName;
 	private String filePath;
 	private String moduleName;
+	private boolean hasConflict = false;
 
 	public DbObjectBean() {
 		super();
@@ -101,6 +102,16 @@ public class DbObjectBean extends AbstractTransientEntity implements DbObject {
 	@Override
 	public String toString() {
 		return "DbObjectImpl [fileName=" + fileName + ", filePath=" + filePath + ", moduleName=" + moduleName + "]";
+	}
+
+	@Override
+	public boolean hasConflict() {
+		return this.hasConflict; 
+	}
+
+	@Override
+	public void setHasConflict(boolean hasConflict) {
+		this.hasConflict = hasConflict;
 	}
 
 }
