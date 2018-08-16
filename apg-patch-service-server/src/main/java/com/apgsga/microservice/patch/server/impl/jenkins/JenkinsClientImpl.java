@@ -77,7 +77,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 								new Object[] { patch.toString(), patchBuilderResult.getResult().toString() });
 					}
 					LOGGER.info(patchBuilderResult.getConsoleOutputText().toString());
-				} catch (Throwable e) {
+				} catch (Exception e) {
 					throw ExceptionFactory.createPatchServiceRuntimeException(
 							"JenkinsPatchClientImpl.createPatchPipelines.exception",
 							new Object[] { e.getMessage(), patch.toString() }, e);

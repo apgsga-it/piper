@@ -14,6 +14,7 @@ public class MavenArtifactBean extends AbstractTransientEntity implements MavenA
 	private String version;
 	@JsonIgnore
 	private transient boolean hasConflict = false;
+	private Integer dependencyLevel = 0; 
 	
 	public MavenArtifactBean() {
 		super();
@@ -69,6 +70,18 @@ public class MavenArtifactBean extends AbstractTransientEntity implements MavenA
 		final Object oldValue = this.version;
 		this.version = version;
 		firePropertyChangeAndMarkDirty(VERSION, oldValue, version);
+	}
+	
+	
+
+	@Override
+	public Integer getDependencyLevel() {
+		return dependencyLevel;
+	}
+
+	@Override
+	public void augmentDependencyLevel() {
+		dependencyLevel  = dependencyLevel + 1;
 	}
 
 	@Override

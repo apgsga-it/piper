@@ -1,6 +1,5 @@
 package com.apgsga.artifact.query;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -29,14 +28,14 @@ public interface ArtifactManager {
 	}
 
 
-	Properties getVersionsProperties(String version) throws DependencyResolutionException, FileNotFoundException,IOException, XmlPullParserException, ArtifactResolutionException;
+	Properties getVersionsProperties(String version) throws DependencyResolutionException,IOException, XmlPullParserException, ArtifactResolutionException;
 
-	List<MavenArtifact> getAllDependencies(String serviceVersion) throws FileNotFoundException, IOException, XmlPullParserException, DependencyResolutionException,ArtifactResolutionException;
+	List<MavenArtifact> getAllDependencies(String serviceVersion) throws IOException, XmlPullParserException, DependencyResolutionException,ArtifactResolutionException;
 
-	List<MavenArtifact> getArtifactsWithNameFromBom(String bomVersion) throws FileNotFoundException, IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException;
+	List<MavenArtifact> getArtifactsWithNameFromBom(String bomVersion) throws IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException;
 
-	Map<String, String> getArtifactsWithNameAsMap(String version) throws FileNotFoundException, DependencyResolutionException, IOException, XmlPullParserException, ArtifactResolutionException;
+	Map<String, String> getArtifactsWithNameAsMap(String version) throws DependencyResolutionException, IOException, XmlPullParserException, ArtifactResolutionException;
 
-	String getArtifactName(String groupId, String artifactId, String version) throws DependencyResolutionException, ArtifactResolutionException, FileNotFoundException, IOException, XmlPullParserException;
+	String getArtifactName(String groupId, String artifactId, String version) throws DependencyResolutionException, ArtifactResolutionException, IOException, XmlPullParserException;
 
 }

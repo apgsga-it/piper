@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.exceptions.Asserts;
@@ -23,12 +24,15 @@ public class EntwicklungInstallationsbereitAction implements PatchAction {
 	private VcsCommandRunnerFactory jschSessionFactory;
 
 	private final JenkinsClient jenkinsPatchClient;
+	
+	private final ArtifactDependencyResolver dependencyResolver; 
 
 	public EntwicklungInstallationsbereitAction(SimplePatchContainerBean patchContainer) {
 		super();
 		this.repo = patchContainer.getRepo();
 		this.jschSessionFactory = patchContainer.getJschSessionFactory();
 		this.jenkinsPatchClient = patchContainer.getJenkinsClient();
+		this.dependencyResolver = patchContainer.getDependecyResolver();
 	}
 
 	@Override
@@ -52,6 +56,8 @@ public class EntwicklungInstallationsbereitAction implements PatchAction {
 				jschSession.run(PatchVcsCommand.createTagPatchModulesCmd(patch.getPatchTag(),
 						patch.getMicroServiceBranch(), patch.getMavenArtifactsAsVcsPath()));
 				jschSession.postProcess();
+				dependencyResolver.resolveDependencies(patch.getMavenArtifacts());
+				repo.savePatch(patch);
 				LOGGER.info("Running EntwicklungInstallationsbereitAction startProdPatchPipeline");
 				jenkinsPatchClient.startProdPatchPipeline(patch);
 			}

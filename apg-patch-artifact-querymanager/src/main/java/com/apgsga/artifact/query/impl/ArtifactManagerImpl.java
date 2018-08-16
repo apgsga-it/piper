@@ -1,7 +1,6 @@
 package com.apgsga.artifact.query.impl;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
@@ -32,6 +31,8 @@ import org.springframework.core.io.ResourceLoader;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
+import com.apgsga.microservice.patch.exceptions.Asserts;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.google.common.collect.Maps;
 
 public class ArtifactManagerImpl implements ArtifactManager {
@@ -63,11 +64,11 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource resource = rl.getResource(localRepo);
 		if (!resource.exists()) {
-			// TODO (che, 25.1) : Do we want this? Correct here?
 			try {
 				resource.getFile().mkdir();
 			} catch (IOException e) {
-				throw new RuntimeException("Local Repository directory could'nt be created", e);
+				throw ExceptionFactory.createPatchServiceRuntimeException("ArtifactManagerImpl.init.exception",
+						new Object[] { e.getMessage() }, e);
 			}
 		}
 	}
@@ -86,28 +87,31 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	 * java.lang.String)
 	 */
 	@Override
-	public Properties getVersionsProperties(String version) throws DependencyResolutionException, FileNotFoundException,
-			IOException, XmlPullParserException, ArtifactResolutionException {
-		org.eclipse.aether.artifact.Artifact bom = load(bomGroupId, bomArtefactId, version);
-		if (bom == null)
-			throw new RuntimeException("Bom : " + bomGroupId + ", " + bomArtefactId + ", " + version);
+	public Properties getVersionsProperties(String version)
+			throws DependencyResolutionException, IOException, XmlPullParserException, ArtifactResolutionException {
+		org.eclipse.aether.artifact.Artifact bom = loadBom(version);
 		Model model = getModel(bom.getFile());
 		return getVersionsProperties(model);
 	}
 
-	private Artifact load(String groupId, String artifactId, String version)
-			throws DependencyResolutionException, ArtifactResolutionException {
+	private org.eclipse.aether.artifact.Artifact loadBom(String version) throws ArtifactResolutionException {
+		org.eclipse.aether.artifact.Artifact bom = load(bomGroupId, bomArtefactId, version);
+		Asserts.notNull(bom, "ArtifactManagerImpl.loadBom.assert", new Object[] {bomGroupId,bomArtefactId,version});
+		return bom;
+	}
+
+	private Artifact load(String groupId, String artifactId, String version) throws ArtifactResolutionException {
 		Artifact artifact = new DefaultArtifact(groupId, artifactId, "pom", version);
 		ArtifactRequest artifactRequest = new ArtifactRequest();
 		artifactRequest.setArtifact(artifact);
-		artifactRequest.setRepositories(RepositorySystemFactory.newRepositories(system, session));
+		artifactRequest.setRepositories(RepositorySystemFactory.newRepositories());
 		try {
 			ArtifactResult artifactResult = system.resolveArtifact(session, artifactRequest);
 			artifact = artifactResult.getArtifact();
 			return artifact;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			Throwable cause = e.getCause();
-			if (cause != null && cause instanceof ArtifactNotFoundException) {
+			if (cause instanceof ArtifactNotFoundException) {
 				LOGGER.warn("Artifact not found", cause);
 				return null;
 			}
@@ -123,25 +127,20 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	 * List, java.lang.String)
 	 */
 	@Override
-	public List<MavenArtifact> getAllDependencies(String serviceVersion) throws FileNotFoundException, DependencyResolutionException, ArtifactResolutionException, IOException, XmlPullParserException {
+	public List<MavenArtifact> getAllDependencies(String serviceVersion)
+			throws DependencyResolutionException, ArtifactResolutionException, IOException, XmlPullParserException {
 		return getArtifactsWithNameFromBom(serviceVersion);
 	}
 
-	private List<MavenArtifact> getArtifactsWithVersionFromBom(String bomVersion) throws DependencyResolutionException,
-			ArtifactResolutionException, FileNotFoundException, IOException, XmlPullParserException {
-		org.eclipse.aether.artifact.Artifact bom = null;
-		bom = load(bomGroupId, bomArtefactId, bomVersion);
-		if (bom == null)
-			throw new RuntimeException("Bom : " + bomGroupId + ", " + bomArtefactId + ", " + bomVersion);
-		Model model = null;
-		model = getModel(bom.getFile());
+	private List<MavenArtifact> getArtifactsWithVersionFromBom(String bomVersion)
+			throws ArtifactResolutionException, IOException, XmlPullParserException {
+		org.eclipse.aether.artifact.Artifact bom =  loadBom(bomVersion);
+		Model model = getModel(bom.getFile());
 		List<MavenArtifact> artifacts = getArtifacts(model);
 		Properties properties = model.getProperties();
 		List<MavenArtifact> selectedArts = artifacts.stream()
 				.filter(artifact -> (artifact.getGroupId().startsWith("com.apgsga")
 						|| artifact.getGroupId().startsWith("com.affichage"))
-				// TODO (che, jhe, 12.12.2017) : what do we want here?
-				// && artifact.getVersion().equals(bomVersion)
 				).collect(Collectors.toList());
 		normalizeVersions(selectedArts, properties);
 		return selectedArts;
@@ -154,10 +153,9 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	 * getArtifactsWithNameFromBom(java.lang.String)
 	 */
 	@Override
-	public List<MavenArtifact> getArtifactsWithNameFromBom(String bomVersion) throws FileNotFoundException, IOException,
-			XmlPullParserException, DependencyResolutionException, ArtifactResolutionException {
-		List<MavenArtifact> artifacts = getArtifactsWithVersionFromBom(bomVersion);
-		return artifacts;
+	public List<MavenArtifact> getArtifactsWithNameFromBom(String bomVersion)
+			throws IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException {
+		return getArtifactsWithVersionFromBom(bomVersion);
 	}
 
 	/*
@@ -168,28 +166,25 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	 * (java.lang.String)
 	 */
 	@Override
-	public Map<String, String> getArtifactsWithNameAsMap(String version) throws FileNotFoundException,
-			DependencyResolutionException, IOException, XmlPullParserException, ArtifactResolutionException {
+	public Map<String, String> getArtifactsWithNameAsMap(String version)
+			throws DependencyResolutionException, IOException, XmlPullParserException, ArtifactResolutionException {
 		List<MavenArtifact> artifacts = getArtifactsWithNameFromBom(version);
 		Map<String, String> artMap = Maps.newHashMap();
 		for (MavenArtifact art : artifacts) {
-			// TODO (che, 14.9) : Bereinigung pom.xml / cvs
 			artMap.put(art.getName(), art.getGroupId() + ":" + art.getArtifactId());
 		}
 		return artMap;
 	}
 
-	public static Model getModel(File bomFile) throws FileNotFoundException, IOException, XmlPullParserException {
+	public static Model getModel(File bomFile) throws IOException, XmlPullParserException {
 		MavenXpp3Reader mavenreader = new MavenXpp3Reader();
-		Model model = mavenreader.read(new FileReader(bomFile));
-		return model;
+		return mavenreader.read(new FileReader(bomFile));
 	}
 
 	private static List<MavenArtifact> getArtifacts(Model model) {
 		DependencyManagement dependencyManagement = model.getDependencyManagement();
 		List<Dependency> dmDeps = dependencyManagement.getDependencies();
-		List<MavenArtifact> artifacts = dmDeps.stream().map(p -> create(p)).collect(Collectors.toList());
-		return artifacts;
+		return dmDeps.stream().map(p -> create(p)).collect(Collectors.toList());
 	}
 
 	public static MavenArtifact create(Dependency dependency) {
@@ -200,8 +195,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		return art;
 	}
 
-	public static Properties getVersionsProperties(Model model)
-			throws FileNotFoundException, IOException, XmlPullParserException {
+	public static Properties getVersionsProperties(Model model) {
 		final List<MavenArtifact> artifacts = getArtifacts(model);
 		Properties properties = model.getProperties();
 		normalizeVersions(artifacts, properties);
@@ -228,7 +222,9 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		String key = version.substring(2, version.length() - 1);
 		String value = properties.getProperty(key);
 		if (value == null) {
-			LOGGER.warn("Artefact : " + artifact.toString() + " has null Version reference : " + version + ", ignored");
+			String errMsg = String.format("Artefact : %s  has null Version reference : %s, ignored",
+					artifact.toString(), version);
+			LOGGER.warn(errMsg);
 			return;
 		}
 		if (value.startsWith("${") && value.endsWith("}")) {
@@ -247,8 +243,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	 */
 	@Override
 	public String getArtifactName(String groupId, String artifactId, String version)
-			throws DependencyResolutionException, ArtifactResolutionException, FileNotFoundException, IOException,
-			XmlPullParserException {
+			throws DependencyResolutionException, ArtifactResolutionException, IOException, XmlPullParserException {
 		org.eclipse.aether.artifact.Artifact pom = load(groupId, artifactId, version);
 		if (pom != null) {
 			Model model = ArtifactManagerImpl.getModel(pom.getFile());
@@ -256,5 +251,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		}
 		return null;
 	}
+	
+	
 
 }
