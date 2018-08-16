@@ -2,6 +2,7 @@ package com.apgsga.microservice.patch.api.impl;
 
 import com.affichage.persistence.common.client.AbstractTransientEntity;
 import com.apgsga.microservice.patch.api.MavenArtifact;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class MavenArtifactBean extends AbstractTransientEntity implements MavenArtifact {
 
@@ -11,6 +12,8 @@ public class MavenArtifactBean extends AbstractTransientEntity implements MavenA
 	private String groupId;
 	private String name;
 	private String version;
+	@JsonIgnore
+	private transient boolean hasConflict = false;
 	private Integer dependencyLevel = 0; 
 	
 	public MavenArtifactBean() {
@@ -116,6 +119,16 @@ public class MavenArtifactBean extends AbstractTransientEntity implements MavenA
 	public String toString() {
 		return "MavenArtifactImpl [artifactId=" + artifactId + ", groupId=" + groupId + ", name=" + name + ", version="
 				+ version + "]";
+	}
+
+	@Override
+	public boolean hasConflict() {
+		return this.hasConflict;
+	}
+
+	@Override
+	public void setHasConflict(boolean hasConflict) {
+		this.hasConflict = hasConflict;
 	}
 	
 	

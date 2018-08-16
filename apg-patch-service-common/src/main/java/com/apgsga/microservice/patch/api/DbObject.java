@@ -24,6 +24,10 @@ public interface DbObject  {
 
 	void setFilePath(String filePath);
 	
-	String asFullPath(); 
+	String asFullPath();
+	
+	public boolean hasConflict();
+	
+	public void setHasConflict(boolean hasConflict);
 
 }

@@ -4,6 +4,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import com.affichage.persistence.common.client.AbstractTransientEntity;
 import com.apgsga.microservice.patch.api.DbObject;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class DbObjectBean extends AbstractTransientEntity implements DbObject {
 
@@ -11,6 +12,8 @@ public class DbObjectBean extends AbstractTransientEntity implements DbObject {
 	private String fileName;
 	private String filePath;
 	private String moduleName;
+	@JsonIgnore
+	private transient boolean hasConflict = false;
 
 	public DbObjectBean() {
 		super();
@@ -101,6 +104,16 @@ public class DbObjectBean extends AbstractTransientEntity implements DbObject {
 	@Override
 	public String toString() {
 		return "DbObjectImpl [fileName=" + fileName + ", filePath=" + filePath + ", moduleName=" + moduleName + "]";
+	}
+
+	@Override
+	public boolean hasConflict() {
+		return this.hasConflict; 
+	}
+
+	@Override
+	public void setHasConflict(boolean hasConflict) {
+		this.hasConflict = hasConflict;
 	}
 
 }

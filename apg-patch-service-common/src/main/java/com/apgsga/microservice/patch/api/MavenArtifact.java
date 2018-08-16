@@ -14,7 +14,7 @@ public interface MavenArtifact {
 	public static final String NAME = "name";
 
 	public static final String VERSION = "version";
-
+	
 	public String getArtifactId();
 
 	public void setArtifactId(String artefactid);
@@ -31,6 +31,10 @@ public interface MavenArtifact {
 
 	public void setName(String name);
 	
+	public boolean hasConflict();
+	
+	public void setHasConflict(boolean hasConflict);
+
 	public Integer getDependencyLevel(); 
 	
 	public void augmentDependencyLevel();
