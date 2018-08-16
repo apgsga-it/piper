@@ -4,6 +4,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import com.affichage.persistence.common.client.AbstractTransientEntity;
 import com.apgsga.microservice.patch.api.DbObject;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class DbObjectBean extends AbstractTransientEntity implements DbObject {
 
@@ -11,6 +12,7 @@ public class DbObjectBean extends AbstractTransientEntity implements DbObject {
 	private String fileName;
 	private String filePath;
 	private String moduleName;
+	@JsonIgnore
 	private transient boolean hasConflict = false;
 
 	public DbObjectBean() {
