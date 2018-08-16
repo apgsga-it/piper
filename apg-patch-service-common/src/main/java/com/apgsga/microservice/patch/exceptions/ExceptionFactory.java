@@ -5,13 +5,12 @@ public class ExceptionFactory {
 	private ExceptionFactory() {
 	}
 
-	public static PatchServiceRuntimeException createPatchServiceRuntimeException(String key, Object[] variables)
-			throws PatchServiceRuntimeException {
+	public static PatchServiceRuntimeException createPatchServiceRuntimeException(String key, Object[] variables) {
 		return new PatchServiceRuntimeException(key,ErrorMessages.getErrorMsg(key, variables));
 	}
 
 	public static PatchServiceRuntimeException createPatchServiceRuntimeException(String key, Object[] variables,
-			Throwable cause) throws PatchServiceRuntimeException {
+			Throwable cause) {
 		return new PatchServiceRuntimeException(key,ErrorMessages.getErrorMsg(key, variables), cause);
 	}
 

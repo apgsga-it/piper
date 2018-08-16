@@ -1,12 +1,11 @@
 package com.apgsga.microservice.patch.api;
 
 import com.affichage.persistence.common.client.EntityRootInterface;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @EntityRootInterface
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "className")
-public interface MavenArtifact  {
+public interface MavenArtifact {
 
 	public static final String ARTIFACT_ID = "artifactId";
 
@@ -31,5 +30,9 @@ public interface MavenArtifact  {
 	public String getName();
 
 	public void setName(String name);
+	
+	public Integer getDependencyLevel(); 
+	
+	public void augmentDependencyLevel();
 
 }

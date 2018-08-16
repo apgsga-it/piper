@@ -58,7 +58,7 @@ public class AtomicFileWriteManager {
 			frm.commitTransaction(txId);
 			LOGGER.info("Commited File write Transaction with: " + txId.toString());
 
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("AtomicFileWriteManager.write.exception",
 					new Object[] { e.getMessage(), outputString, fileName }, e);
 		}

@@ -1,6 +1,5 @@
 package com.apgsga.artifact.query.impl;
 
-import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -16,20 +15,18 @@ import org.slf4j.LoggerFactory;
 
 public class Slf4jTransferListener extends AbstractTransferListener {
 
-	protected final Logger LOGGER = LoggerFactory.getLogger("Aether Transfer"); 
+	protected static final Logger LOGGER = LoggerFactory.getLogger("Aether Transfer to Local Repo");
 
 	private Map<TransferResource, Long> downloads = new ConcurrentHashMap<TransferResource, Long>();
 
 	private int lastLength;
 
-	public Slf4jTransferListener() {
-	}
-
 	@Override
 	public void transferInitiated(TransferEvent event) {
 		String message = event.getRequestType() == TransferEvent.RequestType.PUT ? "Uploading" : "Downloading";
 
-		LOGGER.info(message + ": " + event.getResource().getRepositoryUrl() + event.getResource().getResourceName());
+		LOGGER.debug("{} : {} , {}", message, event.getResource().getRepositoryUrl(),
+				event.getResource().getResourceName());
 	}
 
 	@Override
@@ -49,9 +46,8 @@ public class Slf4jTransferListener extends AbstractTransferListener {
 		int pad = lastLength - buffer.length();
 		lastLength = buffer.length();
 		pad(buffer, pad);
-		buffer.append('\r');
-
-		LOGGER.info(buffer.toString());
+		String output = buffer.toString();
+		LOGGER.debug(output);
 	}
 
 	private String getStatus(long complete, long total) {
@@ -94,8 +90,8 @@ public class Slf4jTransferListener extends AbstractTransferListener {
 				throughput = " at " + format.format(kbPerSec) + " KB/sec";
 			}
 
-			LOGGER.info(type + ": " + resource.getRepositoryUrl() + resource.getResourceName() + " (" + len + throughput
-					+ ")");
+			LOGGER.info("{}: {} {} ( {} {})", type, resource.getRepositoryUrl(), resource.getResourceName(), len,
+					throughput);
 		}
 	}
 
@@ -113,10 +109,11 @@ public class Slf4jTransferListener extends AbstractTransferListener {
 
 		StringBuilder buffer = new StringBuilder(64);
 		pad(buffer, lastLength);
-		buffer.append('\r');
-		LOGGER.info(buffer.toString());
+		String output = buffer.toString();
+		LOGGER.info(output);
 	}
 
+	@Override
 	public void transferCorrupted(TransferEvent event) {
 		LOGGER.error("Aether Transfer Exception", event.getException());
 	}

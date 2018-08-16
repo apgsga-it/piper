@@ -1,7 +1,5 @@
 package com.apgsga.microservice.patch.server;
 
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
@@ -24,7 +22,6 @@ import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.api.impl.PatchBean;
-import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutor;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
 import com.apgsga.microservice.patch.server.impl.SimplePatchContainerBean;
@@ -35,9 +32,8 @@ import com.apgsga.microservice.patch.server.impl.SimplePatchContainerBean;
 @SpringBootTest(classes = MicroPatchServer.class)
 @ActiveProfiles("test,mock,groovyactions")
 public class MicroServicePatchServerTest {
-	
-	protected final Log LOGGER = LogFactory.getLog(getClass());
 
+	protected final Log LOGGER = LogFactory.getLog(getClass());
 
 	@Autowired
 	private SimplePatchContainerBean patchService;
@@ -45,9 +41,9 @@ public class MicroServicePatchServerTest {
 	@Autowired
 	@Qualifier("patchPersistence")
 	private PatchPersistence repo;
-	
+
 	@Autowired
-	private PatchActionExecutorFactory patchActionFactory; 
+	private PatchActionExecutorFactory patchActionFactory;
 
 	@Before
 	public void setUp() throws IOException {
@@ -77,7 +73,6 @@ public class MicroServicePatchServerTest {
 		Assert.assertNull(result);
 	}
 
-
 	@Test
 	public void testSaveWithArtifacts() {
 		Patch patch = new PatchBean();
@@ -94,7 +89,7 @@ public class MicroServicePatchServerTest {
 		Assert.assertNotNull(result);
 		Assert.assertEquals(patch, result);
 	}
-	
+
 	@Test
 	public void testPatchActionEntwicklungInstallationsbereit() {
 		Patch patch = new PatchBean();
@@ -104,10 +99,10 @@ public class MicroServicePatchServerTest {
 		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId1", "GroupId1", "Version1"));
 		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId2", "GroupId2", "Version2"));
 		patchService.save(patch);
-		PatchActionExecutor patchActionExecutor = patchActionFactory.create(patchService); 
+		PatchActionExecutor patchActionExecutor = patchActionFactory.create(patchService);
 		patchActionExecutor.execute("SomeUnqiueNumber3", "EntwicklungInstallationsbereit");
 	}
-	
+
 	@Test
 	public void testPatchPipelineInputAction() {
 		Patch patch = new PatchBean();
@@ -117,10 +112,10 @@ public class MicroServicePatchServerTest {
 		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId1", "GroupId1", "Version1"));
 		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId2", "GroupId2", "Version2"));
 		patchService.save(patch);
-		PatchActionExecutor patchActionExecutor = patchActionFactory.create(patchService); 
+		PatchActionExecutor patchActionExecutor = patchActionFactory.create(patchService);
 		patchActionExecutor.execute("SomeUnqiueNumber3", "InformatiktestInstallationsbereit");
 	}
-	
+
 	@Test
 	public void testPatchCancelAction() {
 		Patch patch = new PatchBean();
@@ -130,11 +125,8 @@ public class MicroServicePatchServerTest {
 		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId1", "GroupId1", "Version1"));
 		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId2", "GroupId2", "Version2"));
 		patchService.save(patch);
-		PatchActionExecutor patchActionExecutor = patchActionFactory.create(patchService); 
+		PatchActionExecutor patchActionExecutor = patchActionFactory.create(patchService);
 		patchActionExecutor.execute("SomeUnqiueNumber3", "Entwicklung");
 	}
-	
-
-
 
 }

@@ -18,6 +18,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
+import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.DbModules;
 import com.apgsga.microservice.patch.api.DbObject;
@@ -53,6 +54,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Autowired
 	private ArtifactManager am;
+	
+	@Autowired
+	private ArtifactDependencyResolver dependecyResolver;
 
 	@Autowired
 	private VcsCommandRunnerFactory vcsCommandRunnerFactory;
@@ -290,6 +294,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public void onClone(String target) {
 		jenkinsClient.onClone(target);
+	}
+
+
+	public ArtifactDependencyResolver getDependecyResolver() {
+		return dependecyResolver;
 	}
 
 	public PatchPersistence getRepo() {
