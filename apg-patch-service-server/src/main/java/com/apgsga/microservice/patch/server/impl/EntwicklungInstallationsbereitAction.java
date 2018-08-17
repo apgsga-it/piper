@@ -51,10 +51,14 @@ public class EntwicklungInstallationsbereitAction implements PatchAction {
 			public void run() {
 				LOGGER.info("Running EntwicklungInstallationsbereitAction PatchVcsCommands");
 				jschSession.preProcess();
-				jschSession.run(PatchVcsCommand.createTagPatchModulesCmd(patch.getPatchTag(), patch.getDbPatchBranch(),
-						patch.getDbObjectsAsVcsPath()));
-				jschSession.run(PatchVcsCommand.createTagPatchModulesCmd(patch.getPatchTag(),
-						patch.getMicroServiceBranch(), patch.getMavenArtifactsAsVcsPath()));
+				if(!patch.getDbObjectsAsVcsPath().isEmpty()) {
+					jschSession.run(PatchVcsCommand.createTagPatchModulesCmd(patch.getPatchTag(), patch.getDbPatchBranch(),
+							patch.getDbObjectsAsVcsPath()));
+				}
+				if(!patch.getMavenArtifactsAsVcsPath().isEmpty()) {
+					jschSession.run(PatchVcsCommand.createTagPatchModulesCmd(patch.getPatchTag(),
+							patch.getMicroServiceBranch(), patch.getMavenArtifactsAsVcsPath()));
+				}
 				jschSession.postProcess();
 				dependencyResolver.resolveDependencies(patch.getMavenArtifacts());
 				repo.savePatch(patch);
