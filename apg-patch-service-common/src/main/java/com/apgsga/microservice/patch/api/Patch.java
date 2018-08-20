@@ -28,6 +28,8 @@ public interface Patch extends ServiceMetaData {
 	public static final String PATCH_TAG = "patchTag";
 
 	public static final String INSTALLS_TARGET = "installationTarget";
+	
+	public static final String FORCE_JADAS_INSTALLATION = "forceJadasInstallation";
 
 	String getPatchNummer();
 
@@ -94,5 +96,9 @@ public interface Patch extends ServiceMetaData {
 	public String getLastRevisionNumber();
 
 	public void setLastRevisionNumber(String lastRevisionNumber);
+	
+	public boolean getForceJadasInstallation();
+	
+	public void setForceJadasInstallation(boolean forceJadasInstallation);
 
 }

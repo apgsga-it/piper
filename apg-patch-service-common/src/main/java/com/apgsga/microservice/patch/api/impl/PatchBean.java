@@ -29,6 +29,7 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	private String lastRevisionNumber;
 	private List<DbObject> dbObjects = Lists.newArrayList();
 	private List<MavenArtifact> mavenArtifacts = Lists.newArrayList();
+	private boolean forceJadasInstallation = false;
 
 	public PatchBean() {
 		super();
@@ -247,6 +248,16 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	public void setLastRevisionNumber(String lastRevisionNumber) {
 		this.lastRevisionNumber = lastRevisionNumber;
 	}
+	
+	@Override
+	public boolean getForceJadasInstallation() {
+		return forceJadasInstallation;
+	}
+
+	@Override
+	public void setForceJadasInstallation(boolean forceJadasInstallation) {
+		this.forceJadasInstallation = forceJadasInstallation;
+	}	
 
 	@Override
 	public int hashCode() {
@@ -255,6 +266,7 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		result = prime * result + ((baseVersionNumber == null) ? 0 : baseVersionNumber.hashCode());
 		result = prime * result + ((dbObjects == null) ? 0 : dbObjects.hashCode());
 		result = prime * result + ((dbPatchBranch == null) ? 0 : dbPatchBranch.hashCode());
+		result = prime * result + (forceJadasInstallation ? 1231 : 1237);
 		result = prime * result + ((installationTarget == null) ? 0 : installationTarget.hashCode());
 		result = prime * result + ((lastRevisionNumber == null) ? 0 : lastRevisionNumber.hashCode());
 		result = prime * result + ((mavenArtifacts == null) ? 0 : mavenArtifacts.hashCode());
@@ -292,6 +304,8 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 			if (other.dbPatchBranch != null)
 				return false;
 		} else if (!dbPatchBranch.equals(other.dbPatchBranch))
+			return false;
+		if (forceJadasInstallation != other.forceJadasInstallation)
 			return false;
 		if (installationTarget == null) {
 			if (other.installationTarget != null)
@@ -353,11 +367,11 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 
 	@Override
 	public String toString() {
-		return "Patch [patchNummer=" + patchNummer + ", serviceName=" + serviceName + ", microServiceBranch="
+		return "PatchBean [patchNummer=" + patchNummer + ", serviceName=" + serviceName + ", microServiceBranch="
 				+ microServiceBranch + ", dbPatchBranch=" + dbPatchBranch + ", prodBranch=" + prodBranch + ", patchTag="
 				+ patchTag + ", tagNr=" + tagNr + ", installationTarget=" + installationTarget + ", baseVersionNumber="
 				+ baseVersionNumber + ", revisionMnemoPart=" + revisionMnemoPart + ", revisionNumber=" + revisionNumber
 				+ ", lastRevisionNumber=" + lastRevisionNumber + ", dbObjects=" + dbObjects + ", mavenArtifacts="
-				+ mavenArtifacts + "]";
+				+ mavenArtifacts + ", forceJadasInstallation=" + forceJadasInstallation + "]";
 	}
 }
