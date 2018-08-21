@@ -26,6 +26,13 @@ import com.google.common.collect.Lists;
 public class ArtifactsDependencyResolverImplTests {
 
 	@Test
+	public void testNoArtifact() {
+		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo");
+		List<MavenArtWithDependencies> result = depResolver.resolveDependenciesInternal(Lists.newArrayList());
+		assert(result.size() == 0);		
+	}
+	
+	@Test
 	public void testSingleArtifact() {
 		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo");
 		MavenArtifactBean mavenArtifactBean = new MavenArtifactBean("gp-ui","com.affichage.it21.gp","9.0.6.ADMIN-UIMIG-SNAPSHOT");
