@@ -68,6 +68,9 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 
 	public List<MavenArtWithDependencies> resolveDependenciesInternal(List<MavenArtifact> artifacts) {
 		List<MavenArtWithDependencies> resolvedDependencies = Lists.newArrayList();
+		if (artifacts.isEmpty()) {
+			return resolvedDependencies;
+		}
         ExecutorService executorService = Executors.newFixedThreadPool(artifacts.size());
         List<Callable<MavenArtWithDependencies>> callables = Lists.newArrayList();
         for (MavenArtifact art : artifacts) {
