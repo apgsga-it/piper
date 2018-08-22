@@ -250,7 +250,7 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	}
 	
 	@Override
-	public boolean installOnEmptyModules() {
+	public boolean getInstallOnEmptyModules() {
 		return installOnEmptyModules;
 	}
 

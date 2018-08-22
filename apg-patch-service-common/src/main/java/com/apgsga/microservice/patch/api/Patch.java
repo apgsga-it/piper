@@ -97,7 +97,7 @@ public interface Patch extends ServiceMetaData {
 
 	public void setLastRevisionNumber(String lastRevisionNumber);
 	
-	public boolean installOnEmptyModules();
+	public boolean getInstallOnEmptyModules();
 	
 	public void setInstallOnEmptymodules(boolean installOnEmptyModules);
 
