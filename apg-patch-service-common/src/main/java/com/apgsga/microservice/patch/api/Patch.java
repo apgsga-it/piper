@@ -99,6 +99,6 @@ public interface Patch extends ServiceMetaData {
 	
 	public boolean getInstallOnEmptyModules();
 	
-	public void setInstallOnEmptymodules(boolean installOnEmptyModules);
+	public void setInstallOnEmptyModules(boolean installOnEmptyModules);
 
 }
