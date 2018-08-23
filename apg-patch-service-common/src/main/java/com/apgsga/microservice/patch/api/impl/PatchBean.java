@@ -256,7 +256,9 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 
 	@Override
 	public void setInstallOnEmptyModules(boolean installOnEmptymodules) {
+		final Object oldValue = this.installOnEmptyModules;
 		this.installOnEmptyModules = installOnEmptymodules;
+		firePropertyChangeEvent(INSTALL_ON_EMPTY_MODULES, oldValue, installOnEmptyModules);
 	}	
 
 	@Override
