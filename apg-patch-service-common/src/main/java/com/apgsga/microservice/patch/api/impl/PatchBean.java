@@ -152,7 +152,7 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		final Object oldValue = Lists.newArrayList(this.dbObjects);
 		this.mavenArtifacts = mavenArtifacts;
 		firePropertyChangeEvent(MAVEN_ARTEFACTS, oldValue, mavenArtifacts);
-		setInstallJadas();
+//		setInstallJadas();
 		
 	}
 
@@ -161,7 +161,7 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		final Object oldValue = Lists.newArrayList(this.mavenArtifacts);
 		mavenArtifacts.remove(mavenArtifact);
 		firePropertyChangeAndMarkDirty(MAVEN_ARTEFACTS, oldValue, mavenArtifacts);
-		setInstallJadas();
+//		setInstallJadas();
 	}
 
 	@Override
@@ -169,7 +169,7 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		final Object oldValue = Lists.newArrayList(this.mavenArtifacts);
 		mavenArtifacts.add(mavenArtifact);
 		firePropertyChangeAndMarkDirty(MAVEN_ARTEFACTS, oldValue, mavenArtifacts);
-		setInstallJadas();
+//		setInstallJadas();
 	}
 
 	@Override
@@ -264,19 +264,20 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		final Object oldValue = this.installOnEmptyModules;
 		this.installOnEmptyModules = installOnEmptymodules;
 		firePropertyChangeEvent(INSTALL_ON_EMPTY_MODULES, oldValue, installOnEmptyModules);
-		setInstallJadas();
+//		setInstallJadas();
 	}
 	
 	@Override
 	public boolean getInstallJadas() {
-		return installJadas;
+//		return installJadas;
+		return !getMavenArtifacts().isEmpty() || installOnEmptyModules;
 	}
 
 	@Override
 	public void setInstallJadas() {
-		final Object oldValue = this.installJadas;
-		this.installJadas = !getMavenArtifacts().isEmpty() || installOnEmptyModules;
-		firePropertyChange(INSTALL_JADAS, oldValue, installJadas);
+//		final Object oldValue = this.installJadas;
+//		this.installJadas = !getMavenArtifacts().isEmpty() || installOnEmptyModules;
+//		firePropertyChange(INSTALL_JADAS, oldValue, installJadas);
 	}
 
 	@Override
