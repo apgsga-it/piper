@@ -30,6 +30,8 @@ public interface Patch extends ServiceMetaData {
 	public static final String INSTALLS_TARGET = "installationTarget";
 	
 	public static final String INSTALL_ON_EMPTY_MODULES = "installOnEmptyModules";
+	
+	public static final String INSTALL_JADAS = "installJadas";
 
 	String getPatchNummer();
 
@@ -100,5 +102,9 @@ public interface Patch extends ServiceMetaData {
 	public boolean getInstallOnEmptyModules();
 	
 	public void setInstallOnEmptyModules(boolean installOnEmptyModules);
+	
+	public boolean getInstallJadas();
+	
+	public void setInstallJadas();
 
 }

@@ -151,6 +151,7 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		final Object oldValue = Lists.newArrayList(this.dbObjects);
 		this.mavenArtifacts = mavenArtifacts;
 		firePropertyChangeEvent(MAVEN_ARTEFACTS, oldValue, mavenArtifacts);
+		
 	}
 
 	@Override
@@ -259,7 +260,16 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		final Object oldValue = this.installOnEmptyModules;
 		this.installOnEmptyModules = installOnEmptymodules;
 		firePropertyChangeEvent(INSTALL_ON_EMPTY_MODULES, oldValue, installOnEmptyModules);
-	}	
+	}
+	
+	@Override
+	public boolean getInstallJadas() {
+		return !getMavenArtifacts().isEmpty() || installOnEmptyModules;
+	}
+
+	@Override
+	public void setInstallJadas() {
+	}
 
 	@Override
 	public int hashCode() {
@@ -376,4 +386,5 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 				+ ", lastRevisionNumber=" + lastRevisionNumber + ", dbObjects=" + dbObjects + ", mavenArtifacts="
 				+ mavenArtifacts + ", installOnEmptyModules=" + installOnEmptyModules + "]";
 	}
+
 }
