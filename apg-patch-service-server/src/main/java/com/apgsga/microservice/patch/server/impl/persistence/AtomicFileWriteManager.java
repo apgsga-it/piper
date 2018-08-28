@@ -32,7 +32,7 @@ public class AtomicFileWriteManager {
 		return new AtomicFileWriteManager(fileBasedPersistance);
 	}
 
-	protected final Log LOGGER = LogFactory.getLog(getClass());
+	protected static final Log LOGGER = LogFactory.getLog(AtomicFileWriteManager.class.getName());
 	private LoggerFacade loggerFacade = new CommonsLoggingLogger(LOGGER);
 
 	private FilebasedPatchPersistence fileBasedPersistenance;

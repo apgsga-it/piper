@@ -19,7 +19,7 @@ import groovy.lang.GroovyShell;
 
 public class GroovyScriptActionExecutor implements PatchActionExecutor {
 
-	protected final Log LOGGER = LogFactory.getLog(getClass());
+	protected static final Log LOGGER = LogFactory.getLog(GroovyScriptActionExecutor.class.getName());
 
 	private String configDir;
 	private String configFileName;

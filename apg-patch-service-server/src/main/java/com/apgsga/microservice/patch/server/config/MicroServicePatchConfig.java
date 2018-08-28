@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.apgsga.artifact.query.ArtifactDependencyResolver;
@@ -61,6 +63,13 @@ public class MicroServicePatchConfig {
 
 	@Value("${patch.action.script.location:classpath:executePatchAction.groovy}")
 	private String groovyScriptFile;
+	
+	
+	@Value("${taskexecutor.corePoolSize:5}")
+	private Integer corePoolSize; 
+	
+	@Value("${taskexecutor.maxPoolSize:20}")
+	private Integer maxPoolSize; 
 
 	@Bean(name = "patchPersistence")
 	public PatchPersistence patchFilebasePersistence() throws IOException {
@@ -71,13 +80,13 @@ public class MicroServicePatchConfig {
 		per.init();
 		return per;
 	}
-	
+
 	@Bean(name = "dependencyResolver")
 	@Profile("live")
 	public ArtifactDependencyResolver dependencyResolver() {
 		return ArtifactDependencyResolver.create(localRepo);
 	}
-	
+
 	@Bean(name = "dependencyResolver")
 	@Profile("mock")
 	public ArtifactDependencyResolver mockDependencyResolver() {
@@ -101,9 +110,9 @@ public class MicroServicePatchConfig {
 	public JenkinsClient jenkinsPatchClient() {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource rDbLocation = rl.getResource(dbLocation);
-		return new JenkinsClientImpl(rDbLocation,jenkinsHost, jenkinsUser, jenkinsAuthKey);
+		return new JenkinsClientImpl(rDbLocation, jenkinsHost, jenkinsUser, jenkinsAuthKey,threadPoolTaskExecutor());
 	}
-	
+
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile({ "live", "remotecvs" })
 	public VcsCommandRunnerFactory jsessionFactory() {
@@ -121,7 +130,7 @@ public class MicroServicePatchConfig {
 	public JenkinsClient jenkinsPatchClientMock() {
 		return new JenkinsMockClient();
 	}
-	
+
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile("mock")
 	public VcsCommandRunnerFactory jsessionFactoryMock() {
@@ -134,6 +143,15 @@ public class MicroServicePatchConfig {
 		return new GroovyScriptActionExecutorFactory(configCommon, targetSystemFile, groovyScriptFile);
 	}
 
-
+	@Bean(name="taskExecutor")
+	public TaskExecutor threadPoolTaskExecutor() {
+		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		executor.setCorePoolSize(corePoolSize);
+		executor.setMaxPoolSize(maxPoolSize);
+		executor.setThreadNamePrefix("PatchServiceThreadExecutor");
+		executor.setKeepAliveSeconds(1200);
+		executor.initialize();
+		return executor;
+	}
 
 }

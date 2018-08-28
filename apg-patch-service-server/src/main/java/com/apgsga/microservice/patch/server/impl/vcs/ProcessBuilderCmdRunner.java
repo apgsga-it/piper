@@ -14,7 +14,7 @@ import com.google.common.collect.Lists;
 
 public class ProcessBuilderCmdRunner implements VcsCommandRunner {
 	
-	protected final static Log LOGGER = LogFactory.getLog(ProcessBuilderCmdRunner.class.getName());
+	protected static final Log LOGGER = LogFactory.getLog(ProcessBuilderCmdRunner.class.getName());
 
 	public List<String> run(VcsCommand command) {
 		ProcessBuilder pb = new ProcessBuilder().command(command.getCommand());
@@ -57,7 +57,7 @@ public class ProcessBuilderCmdRunner implements VcsCommandRunner {
 					output.add(line);
 				}
 			} catch (IOException ioe) {
-				ioe.printStackTrace();
+				LOGGER.error(ioe);
 			}
 		}
 		public List<String> getOutput() {
