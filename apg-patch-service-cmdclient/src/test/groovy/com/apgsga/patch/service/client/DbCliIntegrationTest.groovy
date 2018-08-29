@@ -11,6 +11,7 @@ import com.apgsga.microservice.patch.server.MicroPatchServer
 import com.apgsga.patch.service.client.db.PatchDbCli
 
 import groovy.json.JsonSlurper
+import spock.lang.Ignore
 import spock.lang.Specification
 
 // TODO JHE: to be verified, probably not all anntations are required here ...
@@ -28,6 +29,7 @@ class DbCliIntegrationTest extends Specification {
 		result.results.size() == 0
 	}
 	
+	@Ignore
 	def "Patch DB Cli returns patch ids to be re-installed after a clone"() {
 		setup:
 			def patchDbCli = PatchDbCli.create()
