@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import com.apgsga.artifact.query.ArtifactDependencyResolver;
@@ -63,6 +64,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Autowired
 	private PatchActionExecutorFactory patchActionExecutorFactory;
+	
+	@Autowired 
+	private TaskExecutor threadExecutor;
+
 
 	@Value("${config.common.location:/etc/opt/apg-patch-common}")
 	private String configCommon;
@@ -320,4 +325,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public VcsCommandRunnerFactory getJschSessionFactory() {
 		return vcsCommandRunnerFactory;
 	}
+
+	public TaskExecutor getThreadExecutor() {
+		return threadExecutor;
+	}
+	
+	
 }

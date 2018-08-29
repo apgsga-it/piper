@@ -21,7 +21,7 @@ import com.jcraft.jsch.Session;
  */
 public class JschCommandRunner implements VcsCommandRunner {
 
-	protected final Log LOGGER = LogFactory.getLog(getClass());
+	protected static final Log LOGGER = LogFactory.getLog(JschCommandRunner.class.getName());
 
 	private final Session session;
 
