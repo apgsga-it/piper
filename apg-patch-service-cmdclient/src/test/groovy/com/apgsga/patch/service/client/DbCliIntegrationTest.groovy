@@ -29,7 +29,7 @@ class DbCliIntegrationTest extends Specification {
 		result.results.size() == 0
 	}
 	
-	@Ignore
+	@Ignore("TODO address db preconditions")
 	def "Patch DB Cli returns patch ids to be re-installed after a clone"() {
 		setup:
 			def patchDbCli = PatchDbCli.create()
