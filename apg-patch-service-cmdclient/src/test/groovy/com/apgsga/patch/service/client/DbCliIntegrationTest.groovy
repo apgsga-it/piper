@@ -1,5 +1,6 @@
 package com.apgsga.patch.service.client
 
+import spock.lang.Ignore
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
 import org.springframework.test.annotation.DirtiesContext
@@ -28,6 +29,7 @@ class DbCliIntegrationTest extends Specification {
 		result.results.size() == 0
 	}
 	
+	@Ignore ("TODO : Address enviroment dependencies")
 	def "Patch DB Cli returns patch ids to be re-installed after a clone"() {
 		setup:
 			def patchDbCli = PatchDbCli.create()
