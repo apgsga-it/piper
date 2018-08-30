@@ -184,7 +184,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 						"JenkinsPatchClientImpl.inputActionForPipeline.error",
 						new Object[] { patch.toString(), action });
 			}
-			return true; 
+			return false; 
 		}
 	}
 
