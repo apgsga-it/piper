@@ -151,36 +151,41 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	private void inputActionForPipeline(Patch patch, String action, PipelineBuild lastBuild)
 			throws IOException, InterruptedException {
-		while (true) {
-			WorkflowRun wfRun = lastBuild.getWorkflowRun();
-			LOGGER.info("Workflow status: " + wfRun.getStatus().toString());
-			if (!wfRun.isPausedPendingInput() && !wfRun.isInProgress()) {
-				LOGGER.warn(PIPELINE_CONS + wfRun.getName() + IS_NOT_BUILDING_CONS);
-				break;
-			} else if (wfRun.isInProgress()) {
-				// TODO (che, 28.12 ) : do what
-				Thread.sleep(1000);
-			} else {
-				boolean actionFound = false;
-				List<PendingInputActions> pendingInputActions = lastBuild.getPendingInputActions();
-				for (PendingInputActions inputAction : pendingInputActions) {
-					if (CANCEL_CONS.equals(action)) {
-						inputAction.abort();
-						actionFound = true;
-					}
-					if (inputAction.getId().equals(action)) {
-						actionFound = true;
-						inputAction.proceed();
-						break;
-					}
+		while (waitForAndProcessInput(patch, action, lastBuild)) {
+			
+		}
+	}
+
+	private boolean waitForAndProcessInput(Patch patch, String action, PipelineBuild lastBuild)
+			throws IOException, InterruptedException {
+		WorkflowRun wfRun = lastBuild.getWorkflowRun();
+		LOGGER.info("Workflow status: " + wfRun.getStatus());
+		if (!wfRun.isPausedPendingInput() && !wfRun.isInProgress()) {
+			LOGGER.warn(PIPELINE_CONS + wfRun.getName() + IS_NOT_BUILDING_CONS);
+			return false;
+		} else if (wfRun.isInProgress()) {
+			Thread.sleep(1000);
+			return true;
+		} else {
+			boolean actionFound = false;
+			List<PendingInputActions> pendingInputActions = lastBuild.getPendingInputActions();
+			for (PendingInputActions inputAction : pendingInputActions) {
+				if (CANCEL_CONS.equals(action)) {
+					inputAction.abort();
+					actionFound = true;
 				}
-				if (!actionFound) {
-					throw ExceptionFactory.createPatchServiceRuntimeException(
-							"JenkinsPatchClientImpl.inputActionForPipeline.error",
-							new Object[] { patch.toString(), action });
+				if (inputAction.getId().equals(action)) {
+					actionFound = true;
+					inputAction.proceed();
+					break;
 				}
-				break;
 			}
+			if (!actionFound) {
+				throw ExceptionFactory.createPatchServiceRuntimeException(
+						"JenkinsPatchClientImpl.inputActionForPipeline.error",
+						new Object[] { patch.toString(), action });
+			}
+			return true; 
 		}
 	}
 
@@ -195,7 +200,6 @@ public class JenkinsClientImpl implements JenkinsClient {
 		if (buildDetails == null || !buildDetails.isBuilding()) {
 			// TODO (che, 28.12 ) : do what
 			LOGGER.warn("Job with patchNumber: " + patchNumber + IS_NOT_BUILDING_CONS);
-			return;
 		}
 	}
 
@@ -247,11 +251,13 @@ public class JenkinsClientImpl implements JenkinsClient {
 			retryCnt++;
 		}
 		if (retryCnt >= DEFAULT_RETRY_COUNTS) {
-			throw new RuntimeException("Could'nt Trigger Job: " + jobName + " and wait until Building");
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"JenkinsPatchClientImpl.triggerPipelineJobAndWaitUntilBuilding.error",
+					new Object[] { jobName });
 		}
 		Build build = server.getBuild(queueItem);
 		retryCnt = 0;
-		while (true && retryCnt < DEFAULT_RETRY_COUNTS) {
+		while (retryCnt < DEFAULT_RETRY_COUNTS) {
 			BuildWithDetails buildWithDetails = build.details();
 			if (buildWithDetails.isBuilding()) {
 				job = server.getPipelineJob(jobName);
@@ -267,8 +273,9 @@ public class JenkinsClientImpl implements JenkinsClient {
 			Thread.sleep(DEFAULT_RETRY_INTERVAL);
 			retryCnt++;
 		}
-		throw new RuntimeException("Could'nt Trigger Job: " + jobName + " and wait until Building");
-
+		throw ExceptionFactory.createPatchServiceRuntimeException(
+				"JenkinsPatchClientImpl.triggerPipelineJobAndWaitUntilBuilding.error",
+				new Object[] { jobName });
 	}
 
 }
