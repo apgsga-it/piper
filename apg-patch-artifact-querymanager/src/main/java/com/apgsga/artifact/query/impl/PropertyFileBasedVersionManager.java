@@ -24,7 +24,7 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 	}
 
 	@Override
-	public String getVersionFor(String group, String name, String bomVersion) {
+	public synchronized String getVersionFor(String group, String name, String bomVersion) {
 		versionsProperties = getProperties(bomVersion);
 		return versionsProperties.getProperty(group + ":" + name);
 
@@ -32,15 +32,15 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 
 	private Properties getProperties(String bomVersion) {
 		if (versionsProperties == null) {
-			versionsProperties = intialLoad(bomVersion);
+			versionsProperties = intialLoad(artifactManager,bomVersion);
 		}
 		return versionsProperties;
 	}
 
-	private Properties intialLoad(String bomVersion) {
+	private static Properties intialLoad(ArtifactManager artifactManager,String bomVersion) {
 
 		try {
-			versionsProperties = artifactManager.getVersionsProperties(bomVersion);
+			Properties versionsProperties = artifactManager.getVersionsProperties(bomVersion);
 			return versionsProperties;
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("ArtifactsDependencyResolverImpl.init.exception",
