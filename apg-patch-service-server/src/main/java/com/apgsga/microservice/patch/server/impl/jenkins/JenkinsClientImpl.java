@@ -177,7 +177,6 @@ public class JenkinsClientImpl implements JenkinsClient {
 				if (inputAction.getId().equals(action)) {
 					actionFound = true;
 					inputAction.proceed();
-					break;
 				}
 			}
 			if (!actionFound) {
