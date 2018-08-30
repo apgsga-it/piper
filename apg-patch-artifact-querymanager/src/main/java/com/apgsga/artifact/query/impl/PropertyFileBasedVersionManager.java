@@ -24,13 +24,13 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 	}
 
 	@Override
-	public synchronized String getVersionFor(String group, String name, String bomVersion) {
+	public String getVersionFor(String group, String name, String bomVersion) {
 		versionsProperties = getProperties(bomVersion);
 		return versionsProperties.getProperty(group + ":" + name);
 
 	}
 
-	private Properties getProperties(String bomVersion) {
+	private synchronized Properties getProperties(String bomVersion) {
 		if (versionsProperties == null) {
 			versionsProperties = intialLoad(artifactManager,bomVersion);
 		}
