@@ -263,12 +263,12 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	}
 	
 	@Override
-	public boolean getInstallJadas() {
+	public boolean getInstallJadasAndGui() {
 		return !getMavenArtifacts().isEmpty() || installOnEmptyModules;
 	}
 
 	@Override
-	public void setInstallJadas() {
+	public void setInstallJadasAndGui() {
 	}
 
 	@Override
