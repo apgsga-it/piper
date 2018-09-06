@@ -64,6 +64,14 @@ class PatchArtifactoryClient {
 				removeArtifacts("*${FIRST_PART_FOR_ARTIFACT_SEARCH}${from}*", dryRun)
 				from++
 			}
+			
+			// Cleaning Docker Image as well
+			if(!dryRun) {
+				def jadasCleanupCmd = "/opt/apgops/cleanup_jadas_images.sh ${from} ${lastRevision}"
+				['bash', '-c', jadasCleanupCmd].execute().in.text
+				println "Jadas Images have been deleted for ${target}"
+			}
+			
 		}
 		else {
 			println("No release to clean for ${target}. We probably never have any patch installed directly on ${target}, or no patch has been newly installed since last clone.")
