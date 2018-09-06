@@ -356,7 +356,7 @@ class PatchCli {
 		}
 		// TODO JHE (26.06.2018): will be removed with JAVA8MIG-389
 		if (options.rtr) {
-			if(options.rtr.size() != 1) {
+			if(options.rtrs.size() != 1) {
 				println "No parameter has been set, only a dryRun will be done. To delete all T artifact, please explicitely set dryRun to 0."
 				error = true
 			}
@@ -633,7 +633,7 @@ class PatchCli {
 	def removeAllTRevisions(def options) {
 		def patchArtifactoryClient = new PatchArtifactoryClient(config)
 		def dryRun = true
-		if(options.rtrs[0] == 0) {
+		if(options.rtrs[0] == "0") {
 			dryRun = false
 		}
 		patchArtifactoryClient.deleteAllTRevisions(dryRun)
