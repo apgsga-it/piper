@@ -29,21 +29,16 @@ class DbCliIntegrationTest extends Specification {
 		result.results.size() == 0
 	}
 	
-	@Ignore("TODO address db preconditions")
 	def "Patch DB Cli returns patch ids to be re-installed after a clone"() {
 		setup:
-			def patchDbCli = PatchDbCli.create()
+			def patchDbCli = Stub(PatchDbCli.class)
+			def patchNumbers = [1234,5678]
+			patchDbCli.listPatchAfterClone("Informatiktest") >> patchNumbers
 			def result
-			def outputFile = new File("src/test/resources/patchToBeReinstalled.json")
 		when:
 			result = patchDbCli.process(["-lpac", "Informatiktest"])
 		then:
 			result != null
-			outputFile.exists()
-			def patchList = new JsonSlurper().parseText(outputFile.text)
-			println "content of outputfile : ${patchList}"
-		cleanup:
-			outputFile.delete()
 	}
 
 }
