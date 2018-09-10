@@ -69,7 +69,7 @@ class PatchRevisionClient {
 		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
 		def prodTarget
 		jsonSystemTargets.targetSystems.each{ target ->
-			if(target.typeInd == "P") {
+			if(target.name.equalsIgnoreCase("produktion")) {
 				prodTarget = target.target
 			}
 		}
