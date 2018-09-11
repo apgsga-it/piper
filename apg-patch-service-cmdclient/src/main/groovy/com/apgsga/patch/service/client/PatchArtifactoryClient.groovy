@@ -68,7 +68,8 @@ class PatchArtifactoryClient {
 			// Cleaning Docker Image as well
 			if(!dryRun) {
 				def jadasCleanupCmd = "/opt/apgops/cleanup_jadas_images.sh ${from} ${lastRevision}"
-				['bash', '-c', jadasCleanupCmd].execute().in.text
+				println "Following command will be started to clean Jadas images : ${jadasCleanupCmd}"
+				['bash', '-c', jadasCleanupCmd].execute().getOutputStream().println()
 				println "Jadas Images have been deleted for ${target}"
 			}
 			
