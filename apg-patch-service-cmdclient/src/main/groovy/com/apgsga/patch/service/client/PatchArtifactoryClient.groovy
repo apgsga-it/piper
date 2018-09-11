@@ -55,6 +55,7 @@ class PatchArtifactoryClient {
 			def rangeStep = config.revision.range.step
 			def from = ((int) (Long.valueOf(lastRevision) / rangeStep)) * rangeStep
 			def dryRun = config.onclone.delete.artifact.dryrun
+			def originalFrom = from
 			
 			println("Artifact from ${from} to ${lastRevision} will be deleted from Artifactory.")
 			
@@ -67,7 +68,7 @@ class PatchArtifactoryClient {
 			
 			// Cleaning Docker Image as well
 			if(!dryRun) {
-				def jadasCleanupCmd = "/opt/apgops/cleanup_jadas_images.sh ${from} ${lastRevision}"
+				def jadasCleanupCmd = "/opt/apgops/cleanup_jadas_images.sh ${originalFrom} ${lastRevision}"
 				println "Following command will be started to clean Jadas images : ${jadasCleanupCmd}"
 				['bash', '-c', jadasCleanupCmd].execute().getOutputStream().println()
 				println "Jadas Images have been deleted for ${target}"
