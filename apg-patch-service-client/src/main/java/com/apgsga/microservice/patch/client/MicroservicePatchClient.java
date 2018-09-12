@@ -11,6 +11,7 @@ import com.apgsga.microservice.patch.api.DbObject;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchService;
+import com.apgsga.microservice.patch.api.SearchFilter;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -28,6 +29,8 @@ public class MicroservicePatchClient implements PatchService {
 	private static final String LIST_DBMODULES = "/listDbModules";
 
 	private static final String LIST_MAVENARTIFACTS = "/listMavenArtifacts";
+	
+	private static final String LIST_MAVENARTIFACTS_WITH_FILTER = "/listMavenArtifactsWithFilter";
 
 	private static final String LIST_SERVICEDATA = "/listServiceData";
 
@@ -114,6 +117,17 @@ public class MicroservicePatchClient implements PatchService {
 	public List<MavenArtifact> listMavenArtifacts(Patch patch) {
 		MavenArtifact[] result = restTemplate
 				.postForEntity(getRestBaseUri() + LIST_MAVENARTIFACTS, patch, MavenArtifact[].class).getBody();
+		return Lists.newArrayList(result);
+	}
+	
+	
+
+	@Override
+	public List<MavenArtifact> listMavenArtifacts(Patch patch, SearchFilter filter) {
+		Map<String, Object> params = Maps.newHashMap();
+		params.put("patch", patch);
+		params.put("searchFilter", filter);
+		MavenArtifact[] result = restTemplate.getForObject(getRestBaseUri() + LIST_MAVENARTIFACTS_WITH_FILTER, MavenArtifact[].class, params);
 		return Lists.newArrayList(result);
 	}
 

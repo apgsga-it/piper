@@ -6,6 +6,10 @@ import java.util.List;
  * @author che
  *
  */
+/**
+ * @author che
+ *
+ */
 public interface PatchService {
 
 	
@@ -36,7 +40,12 @@ public interface PatchService {
 	 */
 	public List<String> listDbModules(); 
 	
-	
+	/**
+	 * @param patch Patch, for which Artifacts are listed
+	 * @param filter Filter, which should be applied for search
+	 * @return list of Maven Arifacts relevant for Patch
+	 */
+	public List<MavenArtifact> listMavenArtifacts(Patch patch, SearchFilter filter); 
 	/**
 	 * List all Maven Artifacts 
 	 * @return list of Maven Arifacts

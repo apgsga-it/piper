@@ -20,6 +20,7 @@ import com.apgsga.microservice.patch.api.DbObject;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchService;
+import com.apgsga.microservice.patch.api.SearchFilter;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 
 @RestController
@@ -80,6 +81,14 @@ public class MicroServicePatchController implements PatchService {
 	@ResponseBody
 	@Override
 	public List<MavenArtifact> listMavenArtifacts(@RequestBody Patch patch) {
+		return patchService.listMavenArtifacts(patch);
+	}
+
+	@RequestMapping(value = "/listMavenArtifactsWithFilter/{patch}/{searchFilter}", method = RequestMethod.GET)
+	@ResponseBody
+	@Override
+	public List<MavenArtifact> listMavenArtifacts(@PathVariable("patch") Patch patch,
+			@PathVariable("searchFilter") SearchFilter filter) {
 		return patchService.listMavenArtifacts(patch);
 	}
 

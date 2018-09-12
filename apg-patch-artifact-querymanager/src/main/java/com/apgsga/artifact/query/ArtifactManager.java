@@ -11,6 +11,7 @@ import org.eclipse.aether.resolution.DependencyResolutionException;
 
 import com.apgsga.artifact.query.impl.ArtifactManagerImpl;
 import com.apgsga.microservice.patch.api.MavenArtifact;
+import com.apgsga.microservice.patch.api.SearchFilter;
 
 public interface ArtifactManager {
 	
@@ -32,6 +33,8 @@ public interface ArtifactManager {
 
 	List<MavenArtifact> getAllDependencies(String serviceVersion) throws IOException, XmlPullParserException, DependencyResolutionException,ArtifactResolutionException;
 
+	List<MavenArtifact> getAllDependencies(String serviceVersion, SearchFilter searchFilter) throws IOException, XmlPullParserException, DependencyResolutionException,ArtifactResolutionException;
+	
 	List<MavenArtifact> getArtifactsWithNameFromBom(String bomVersion) throws IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException;
 
 	Map<String, String> getArtifactsWithNameAsMap(String version) throws DependencyResolutionException, IOException, XmlPullParserException, ArtifactResolutionException;
