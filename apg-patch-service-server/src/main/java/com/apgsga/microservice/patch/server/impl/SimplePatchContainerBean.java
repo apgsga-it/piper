@@ -28,6 +28,7 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchOpService;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.PatchService;
+import com.apgsga.microservice.patch.api.SearchFilter;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.exceptions.Asserts;
@@ -93,12 +94,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public List<MavenArtifact> listMavenArtifacts(Patch patch) {
+	public List<MavenArtifact> listMavenArtifacts(Patch patch, SearchFilter filter) {
 		ServiceMetaData data = repo.findServiceByName(patch.getServiceName());
 		List<MavenArtifact> mavenArtFromStarterList = null;
 		try {
 			mavenArtFromStarterList = am
-					.getAllDependencies(data.getBaseVersionNumber() + "." + data.getRevisionMnemoPart() + "-SNAPSHOT");
+					.getAllDependencies(data.getBaseVersionNumber() + "." + data.getRevisionMnemoPart() + "-SNAPSHOT", filter);
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"SimplePatchContainerBean.listMavenArtifacts.exception",
@@ -106,6 +107,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		}
 
 		return mavenArtFromStarterList;
+	}
+	
+	
+
+	@Override
+	public List<MavenArtifact> listMavenArtifacts(Patch patch) {
+		return listMavenArtifacts(patch, SearchFilter.DEFAULT); 
 	}
 
 	@Override

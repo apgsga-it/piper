@@ -3,6 +3,7 @@ package com.apgsga.artifact.query.impl;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -30,6 +31,7 @@ import org.springframework.core.io.ResourceLoader;
 
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.MavenArtifact;
+import com.apgsga.microservice.patch.api.SearchFilter;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
@@ -96,7 +98,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
 	private org.eclipse.aether.artifact.Artifact loadBom(String version) throws ArtifactResolutionException {
 		org.eclipse.aether.artifact.Artifact bom = load(bomGroupId, bomArtefactId, version);
-		Asserts.notNull(bom, "ArtifactManagerImpl.loadBom.assert", new Object[] {bomGroupId,bomArtefactId,version});
+		Asserts.notNull(bom, "ArtifactManagerImpl.loadBom.assert", new Object[] { bomGroupId, bomArtefactId, version });
 		return bom;
 	}
 
@@ -129,19 +131,30 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	@Override
 	public List<MavenArtifact> getAllDependencies(String serviceVersion)
 			throws DependencyResolutionException, ArtifactResolutionException, IOException, XmlPullParserException {
-		return getArtifactsWithNameFromBom(serviceVersion);
+		return getAllDependencies(serviceVersion, SearchFilter.DEFAULT);
 	}
 
-	private List<MavenArtifact> getArtifactsWithVersionFromBom(String bomVersion)
+	@Override
+	public List<MavenArtifact> getAllDependencies(String serviceVersion, SearchFilter searchFilter)
+			throws IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException {
+		return getArtifactsWithVersionFromBom(serviceVersion, searchFilter);
+	}
+
+	private List<MavenArtifact> getArtifactsWithVersionFromBom(String bomVersion, SearchFilter searchFilter)
 			throws ArtifactResolutionException, IOException, XmlPullParserException {
-		org.eclipse.aether.artifact.Artifact bom =  loadBom(bomVersion);
+		org.eclipse.aether.artifact.Artifact bom = loadBom(bomVersion);
 		Model model = getModel(bom.getFile());
 		List<MavenArtifact> artifacts = getArtifacts(model);
+		List<MavenArtifact> selectedArts = null;
 		Properties properties = model.getProperties();
-		List<MavenArtifact> selectedArts = artifacts.stream()
-				.filter(artifact -> (artifact.getGroupId().startsWith("com.apgsga")
-						|| artifact.getGroupId().startsWith("com.affichage"))
-				).collect(Collectors.toList());
+		if (searchFilter.getCondition().equals(SearchFilter.SearchCondition.ALL)) {
+			selectedArts = artifacts;
+		} else if (searchFilter.getCondition().equals(SearchFilter.SearchCondition.APPLICATION)) {
+			selectedArts = artifacts.stream().filter(artifact -> (artifact.getGroupId().startsWith("com.apgsga")
+					|| artifact.getGroupId().startsWith("com.affichage"))).collect(Collectors.toList());
+		} else {
+			selectedArts = Collections.EMPTY_LIST;
+		}
 		normalizeVersions(selectedArts, properties);
 		return selectedArts;
 	}
@@ -155,7 +168,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	@Override
 	public List<MavenArtifact> getArtifactsWithNameFromBom(String bomVersion)
 			throws IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException {
-		return getArtifactsWithVersionFromBom(bomVersion);
+		return getArtifactsWithVersionFromBom(bomVersion,SearchFilter.ALL);
 	}
 
 	/*
@@ -251,7 +264,5 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		}
 		return null;
 	}
-	
-	
 
 }
