@@ -31,7 +31,7 @@ import org.springframework.core.io.ResourceLoader;
 
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.MavenArtifact;
-import com.apgsga.microservice.patch.api.SearchFilter;
+import com.apgsga.microservice.patch.api.SearchCondition;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
@@ -131,27 +131,28 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	@Override
 	public List<MavenArtifact> getAllDependencies(String serviceVersion)
 			throws DependencyResolutionException, ArtifactResolutionException, IOException, XmlPullParserException {
-		return getAllDependencies(serviceVersion, SearchFilter.DEFAULT);
+		return getAllDependencies(serviceVersion, SearchCondition.APPLICATION);
 	}
 
 	@Override
-	public List<MavenArtifact> getAllDependencies(String serviceVersion, SearchFilter searchFilter)
+	public List<MavenArtifact> getAllDependencies(String serviceVersion, SearchCondition searchFilter)
 			throws IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException {
 		return getArtifactsWithVersionFromBom(serviceVersion, searchFilter);
 	}
 
-	private List<MavenArtifact> getArtifactsWithVersionFromBom(String bomVersion, SearchFilter searchFilter)
+	private List<MavenArtifact> getArtifactsWithVersionFromBom(String bomVersion, SearchCondition searchFilter)
 			throws ArtifactResolutionException, IOException, XmlPullParserException {
 		org.eclipse.aether.artifact.Artifact bom = loadBom(bomVersion);
 		Model model = getModel(bom.getFile());
 		List<MavenArtifact> artifacts = getArtifacts(model);
 		List<MavenArtifact> selectedArts = null;
 		Properties properties = model.getProperties();
-		if (searchFilter.getCondition().equals(SearchFilter.SearchCondition.ALL)) {
+		if (searchFilter.equals(SearchCondition.ALL)) {
 			selectedArts = artifacts;
-		} else if (searchFilter.getCondition().equals(SearchFilter.SearchCondition.APPLICATION)) {
+		} else if (searchFilter.equals(SearchCondition.APPLICATION)) {
 			selectedArts = artifacts.stream().filter(artifact -> (artifact.getGroupId().startsWith("com.apgsga")
-					|| artifact.getGroupId().startsWith("com.affichage"))).collect(Collectors.toList());
+					|| artifact.getGroupId().startsWith("com.affichage")) && artifact.getVersion().endsWith("SNAPSHOT"))
+					.collect(Collectors.toList());
 		} else {
 			selectedArts = Collections.EMPTY_LIST;
 		}
@@ -168,7 +169,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	@Override
 	public List<MavenArtifact> getArtifactsWithNameFromBom(String bomVersion)
 			throws IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException {
-		return getArtifactsWithVersionFromBom(bomVersion,SearchFilter.ALL);
+		return getArtifactsWithVersionFromBom(bomVersion, SearchCondition.APPLICATION);
 	}
 
 	/*

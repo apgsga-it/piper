@@ -11,7 +11,7 @@ import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 
 import com.apgsga.microservice.patch.api.MavenArtifact;
-import com.apgsga.microservice.patch.api.SearchFilter;
+import com.apgsga.microservice.patch.api.SearchCondition;
 
 public class MockArtifactManagerImpl implements ArtifactManager {
 
@@ -26,11 +26,9 @@ public class MockArtifactManagerImpl implements ArtifactManager {
 			throws IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException {
 		return Collections.emptyList();
 	}
-	
-	
 
 	@Override
-	public List<MavenArtifact> getAllDependencies(String serviceVersion, SearchFilter searchFilter)
+	public List<MavenArtifact> getAllDependencies(String serviceVersion, SearchCondition searchFilter)
 			throws IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException {
 		return Collections.emptyList();
 

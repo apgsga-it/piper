@@ -28,7 +28,7 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchOpService;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.PatchService;
-import com.apgsga.microservice.patch.api.SearchFilter;
+import com.apgsga.microservice.patch.api.SearchCondition;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.exceptions.Asserts;
@@ -56,7 +56,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Autowired
 	private ArtifactManager am;
-	
+
 	@Autowired
 	private ArtifactDependencyResolver dependecyResolver;
 
@@ -65,10 +65,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Autowired
 	private PatchActionExecutorFactory patchActionExecutorFactory;
-	
-	@Autowired 
-	private TaskExecutor threadExecutor;
 
+	@Autowired
+	private TaskExecutor threadExecutor;
 
 	@Value("${config.common.location:/etc/opt/apg-patch-common}")
 	private String configCommon;
@@ -94,12 +93,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public List<MavenArtifact> listMavenArtifacts(Patch patch, SearchFilter filter) {
+	public List<MavenArtifact> listMavenArtifacts(Patch patch, SearchCondition filter) {
 		ServiceMetaData data = repo.findServiceByName(patch.getServiceName());
 		List<MavenArtifact> mavenArtFromStarterList = null;
 		try {
-			mavenArtFromStarterList = am
-					.getAllDependencies(data.getBaseVersionNumber() + "." + data.getRevisionMnemoPart() + "-SNAPSHOT", filter);
+			mavenArtFromStarterList = am.getAllDependencies(
+					data.getBaseVersionNumber() + "." + data.getRevisionMnemoPart() + "-SNAPSHOT", filter);
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"SimplePatchContainerBean.listMavenArtifacts.exception",
@@ -108,12 +107,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 		return mavenArtFromStarterList;
 	}
-	
-	
 
 	@Override
 	public List<MavenArtifact> listMavenArtifacts(Patch patch) {
-		return listMavenArtifacts(patch, SearchFilter.DEFAULT); 
+		return listMavenArtifacts(patch, SearchCondition.APPLICATION);
 	}
 
 	@Override
@@ -125,7 +122,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public Patch findById(String patchNummer) {
 		return repo.findById(patchNummer);
 	}
-	
+
 	@Override
 	public List<Patch> findByIds(List<String> patchIds) {
 		List<Patch> patches = Lists.newArrayList();
@@ -139,8 +136,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public Patch save(Patch patch) {
 		Asserts.notNull(patch, "SimplePatchContainerBean.save.patchobject.notnull.assert", new Object[] {});
-		Asserts.notNullOrEmpty(patch.getPatchNummer(), "SimplePatchContainerBean.save.patchnumber.notnullorempty.assert",
-				new Object[] { patch.toString() });
+		Asserts.notNullOrEmpty(patch.getPatchNummer(),
+				"SimplePatchContainerBean.save.patchnumber.notnullorempty.assert", new Object[] { patch.toString() });
 		preProcessSave(patch);
 		repo.savePatch(patch);
 		return patch;
@@ -151,7 +148,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			createBranchForDbModules(patch);
 			jenkinsClient.createPatchPipelines(patch);
 		}
-		patch.getMavenArtifacts().stream().filter(art -> Strings.isNullOrEmpty(art.getName()))
+		patch.getMavenArtifactsToBuild().stream().filter(art -> Strings.isNullOrEmpty(art.getName()))
 				.forEach(art -> addModuleName(art, patch.getMicroServiceBranch()));
 	}
 
@@ -303,12 +300,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public List<MavenArtifact> invalidArtifactNames(String version, String cvsBranch) {
 		return getArtifactNameError(getArtifactsWithNameFromBom(version), cvsBranch);
 	}
-	
+
 	@Override
 	public void onClone(String target) {
 		jenkinsClient.onClone(target);
 	}
-
 
 	public ArtifactDependencyResolver getDependecyResolver() {
 		return dependecyResolver;
@@ -337,6 +333,5 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public TaskExecutor getThreadExecutor() {
 		return threadExecutor;
 	}
-	
-	
+
 }

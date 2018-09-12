@@ -20,7 +20,7 @@ import com.apgsga.microservice.patch.api.DbObject;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchService;
-import com.apgsga.microservice.patch.api.SearchFilter;
+import com.apgsga.microservice.patch.api.SearchCondition;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 
 @RestController
@@ -77,19 +77,31 @@ public class MicroServicePatchController implements PatchService {
 		return patchService.listAllObjectsChangedForDbModule(patchId, searchString);
 	}
 
-	@RequestMapping(value = "/listMavenArtifacts", method = RequestMethod.POST)
+	@RequestMapping(value = "/listMavenArtifacts/{id}", method = RequestMethod.GET)
 	@ResponseBody
-	@Override
-	public List<MavenArtifact> listMavenArtifacts(@RequestBody Patch patch) {
-		return patchService.listMavenArtifacts(patch);
+	public List<MavenArtifact> listMavenArtifacts(@PathVariable("id") String patchId) {
+		Patch patch = patchService.findById(patchId); 
+		return listMavenArtifacts(patch);
 	}
 
-	@RequestMapping(value = "/listMavenArtifactsWithFilter/{patch}/{searchFilter}", method = RequestMethod.GET)
+	@RequestMapping(value = "/listMavenArtifactsWithFilter/{id}/{searchCondition}", method = RequestMethod.GET)
 	@ResponseBody
+	public List<MavenArtifact> listMavenArtifacts(@PathVariable("id") String patchId,
+			@PathVariable("searchCondition") String searchCondition) {
+		Patch patch = patchService.findById(patchId); 
+		return listMavenArtifacts(patch, SearchCondition.forValue(searchCondition));
+	}
+
 	@Override
-	public List<MavenArtifact> listMavenArtifacts(@PathVariable("patch") Patch patch,
-			@PathVariable("searchFilter") SearchFilter filter) {
+	public List<MavenArtifact> listMavenArtifacts(Patch patch, SearchCondition filter) {
+		return patchService.listMavenArtifacts(patch, filter);
+
+	}
+
+	@Override
+	public List<MavenArtifact> listMavenArtifacts(Patch patch) {
 		return patchService.listMavenArtifacts(patch);
+
 	}
 
 	@RequestMapping(value = "/listServiceData", method = RequestMethod.GET)

@@ -1,10 +1,9 @@
 package com.apgsga.microservice.patch.client;
 
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,7 +12,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.io.FileSystemResourceLoader;
@@ -26,24 +24,21 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileCopyUtils;
 
+import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.api.impl.DbObjectBean;
-import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
-import com.apgsga.microservice.patch.api.impl.PatchBean;
+import com.apgsga.microservice.patch.api.SearchCondition;
 import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.apgsga.microservice.patch.server.impl.persistence.FilebasedPatchPersistence;
-import com.google.common.collect.Lists;
 
 @RunWith(SpringRunner.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = { MicroPatchServer.class,
 		MicroServicePatchClientConfig.class })
 @TestPropertySource(locations = "application-test.properties")
-@ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
-public class MicroServicePatchClientTest {
-	
+@ActiveProfiles("test,mock,mavenRepo,groovyactions")
+public class MicroServicePatchClientArtefactQueryTests {
 
 	private MicroservicePatchClient patchClient;
 
@@ -56,7 +51,7 @@ public class MicroServicePatchClientTest {
 
 	@Value("${json.db.work.location:work}")
 	private String dbWorkLocation;
-	
+
 	@Value("${local.server.port}")
 	private String localPort;
 
@@ -84,62 +79,55 @@ public class MicroServicePatchClientTest {
 	}
 
 	@Test
-	public void testSaveEmptyWithId() {
-		Patch patch = new PatchBean();
-		patch.setPatchNummer("SomeUnqiueNumber1");
-		patchClient.save(patch);
-		Patch result = patchClient.findById("SomeUnqiueNumber1");
+	public void testFindArtefacts() {
+		Patch result = patchClient.findById("5401");
 		Assert.assertNotNull(result);
-		Assert.assertEquals(patch, result);
+		List<MavenArtifact> mavenArtefacts = patchClient.listMavenArtifacts(result);
+		Assert.assertTrue(mavenArtefacts.size() > 0);
+		Assert.assertTrue(mavenArtefacts.stream().allMatch(new Predicate<MavenArtifact>() {
+
+			@Override
+			public boolean test(MavenArtifact t) {
+				return t.getGroupId().startsWith("com.apgsga") || t.getGroupId().startsWith("com.affichage");
+			}
+		}));
 	}
 
 	@Test
-	public void testSaveEmptyWithIdAndRemove() {
-		Patch patch = new PatchBean();
-		patch.setPatchNummer("SomeUnqiueNumber2");
-		patchClient.save(patch);
-		Patch result = patchClient.findById("SomeUnqiueNumber2");
+	public void testFindArtefactsDefault() {
+		Patch result = patchClient.findById("5401");
 		Assert.assertNotNull(result);
-		Assert.assertEquals(patch, result);
-		patchClient.remove(result);
-		result = patchClient.findById("SomeUnqiueNumber2");
-		Assert.assertNull(result);
-	}
+		List<MavenArtifact> mavenArtefacts = patchClient.listMavenArtifacts(result, SearchCondition.APPLICATION);
+		Assert.assertTrue(mavenArtefacts.size() > 0);
+		Assert.assertTrue(mavenArtefacts.stream().allMatch(new Predicate<MavenArtifact>() {
 
-	@Test
-	public void testSaveEmptyWithOutId() {
-		Patch patch = new PatchBean();
-		try {
-			patchClient.save(patch);
-			fail();
-		} catch (Throwable e) {
-			// TODO Detail , Exception Handling
-			// Ok
-		}
-	}
-
-	@Test
-	public void testSaveWithArtifacts() {
-		Patch patch = new PatchBean();
-		patch.setPatchNummer("SomeUnqiueNumber3");
-		patch.setServiceName("It21ui");
-		patch.setMicroServiceBranch("SomeBaseBranch");
-		patch.setDbPatchBranch("SomePatchBranch");
-		patch.addDbObjects(new DbObjectBean("FileName1", "FilePath1"));
-		patch.addDbObjects(new DbObjectBean("FileName2", "FilePath2"));
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId1", "GroupId1", "SomeVersion1"));
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId2", "GroupId2", "SomeVersion2"));
-		patchClient.save(patch);
-		Patch result = patchClient.findById("SomeUnqiueNumber3");
-		Assert.assertNotNull(result);
-		Assert.assertEquals(patch, result);
+			@Override
+			public boolean test(MavenArtifact t) {
+				return t.getGroupId().startsWith("com.apgsga") || t.getGroupId().startsWith("com.affichage");
+			}
+		}));
 	}
 	
 	@Test
-	public void testFindByIds() {
-		List<Patch> patches = patchClient.findByIds(Lists.newArrayList("5401","5402"));
-		Assert.assertEquals(2, patches.size());
+	public void testFindArtefactsAll() {
+		Patch result = patchClient.findById("5401");
+		Assert.assertNotNull(result);
+		List<MavenArtifact> mavenArtefacts = patchClient.listMavenArtifacts(result, SearchCondition.ALL);
+		Assert.assertTrue(mavenArtefacts.size() > 0);
+		Assert.assertTrue(mavenArtefacts.stream().anyMatch(new Predicate<MavenArtifact>() {
+
+			@Override
+			public boolean test(MavenArtifact t) {
+				return t.getGroupId().startsWith("com.apgsga") || t.getGroupId().startsWith("com.affichage");
+			}
+		}));
+		Assert.assertTrue(mavenArtefacts.stream().anyMatch(new Predicate<MavenArtifact>() {
+
+			@Override
+			public boolean test(MavenArtifact t) {
+				return !t.getGroupId().startsWith("com.apgsga") &&  !t.getGroupId().startsWith("com.affichage");
+			}
+		}));
 	}
-	
 
 }

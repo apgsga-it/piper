@@ -43,19 +43,19 @@ shadowJar {
 dependencies {
 	// Application dependencies
 	compile project(':apg-patch-service-common')
-	compile group: 'org.codehaus.groovy' , name: 'groovy-all', version: '2.4.1'
-	compile 'org.codehaus.groovy:groovy-backports-compat23:2.4.5'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.8.4'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.4'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.4'
-	compile("org.jfrog.artifactory.client:artifactory-java-client-services:2.6.0")
-	runtime group: 'commons-cli' , name: 'commons-cli', version: '1.4'
+	compile group: 'org.codehaus.groovy' , name: 'groovy-all'
+	compile group: 'org.codehaus.groovy' , name: 'groovy-backports-compat23'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
+	compile group: 'org.jfrog.artifactory.client', name: 'artifactory-java-client-services'
+	runtime group: 'commons-cli' , name: 'commons-cli'
 	runtime group: 'oracle', name: 'ojdbc'
 	testCompile project(':apg-patch-service-server')
 	testCompile group: 'org.springframework', name: 'spring-test'
 	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'	
-	testCompile 'org.spockframework:spock-spring:1.1-groovy-2.4'
-	testCompile 'cglib:cglib-nodep:3.2.2' // for stubbing of classes
+	testCompile group: 'org.spockframework' ,name: 'spock-spring' 
+	testCompile group: 'cglib' ,name: 'cglib-nodep' // for stubbing of classes
 
 }
 

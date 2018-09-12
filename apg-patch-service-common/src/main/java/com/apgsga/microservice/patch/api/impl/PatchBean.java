@@ -142,8 +142,12 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 
 	@Override
 	public List<String> getMavenArtifactsAsVcsPath() {
-		return mavenArtifacts.stream().map(mavenArt -> mavenArt.getName()).collect(Collectors.toList());
-
+		return getMavenArtifactsToBuild().stream().map(mavenArt -> mavenArt.getName()).collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<MavenArtifact> getMavenArtifactsToBuild() {
+		return mavenArtifacts.stream().filter(m -> m.getVersion().endsWith("SNAPSHOT")).collect(Collectors.toList()); 
 	}
 
 	@Override

@@ -9,7 +9,7 @@ project.ext {
 allprojects  {
 	apply plugin: 'maven'
 	group = 'com.apgsga.patchframework'
-	version  = '1.1.19'
+	version  = '1.1.19-SNAPSHOT'
 }
 
 subprojects {
@@ -36,7 +36,48 @@ subprojects {
 		}
 	}
 
-	dependencyManagement { imports {  mavenBom 'com.affichage.common.maven:dm-bom:9.0.6.ADMIN-UIMIG-SNAPSHOT' } }
+	dependencyManagement { 
+		imports {  
+			mavenBom 'com.affichage.common.maven:dm-bom:9.0.6.ADMIN-UIMIG-SNAPSHOT' 
+		} 
+		dependencies {
+        	dependency 'com.google.guava:guava:18.0'
+        	dependency 'org.codehaus.groovy:groovy-all:2.4.13'
+        	dependency 'org.codehaus.groovy:groovy-backports-compat23:2.4.5'
+        	dependency 'com.fasterxml.jackson.core:jackson-annotations:2.8.4'
+           	dependency 'com.fasterxml.jackson.core:jackson-core:2.8.4'
+            dependency 'com.fasterxml.jackson.core:jackson-databind:2.8.4'
+           	dependency 'org.jfrog.artifactory.client:artifactory-java-client-services:2.6.0'
+            dependency 'commons-cli:commons-cli:1.4'
+           	dependency 'org.spockframework:spock-spring:1.1-groovy-2.4'
+           	dependency 'cglib:cglib-nodep:3.2.2' // for stubbing of classes
+           	dependency 'commons-transaction:commons-transaction:1.2'
+           	dependency 'com.google.guava:guava:23.0'
+           	dependency 'com.jcraft:jsch:0.1.54'
+           	dependency group: 'org.jasypt', name: 'jasypt', version: '1.9.0'
+           	dependency group: 'org.springframework.data', name: 'spring-data-commons', version: '1.12.11.RELEASE'
+           	dependency group: 'com.offbytwo.jenkins', name: 'jenkins-client', version: '0.3.9-SNAPSHOT'
+           	dependency group: 'de.codecentric', name: 'spring-boot-admin-starter-client', version: '1.3.2' 
+          	dependency group: 'org.codehaus.plexus', name: 'plexus-utils', version: '3.0.10'
+			dependency group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
+			dependency group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.11'
+			dependency group: 'org.eclipse.aether', name: 'aether-api', version: '1.1.0'
+			dependency group: 'org.eclipse.aether', name: 'aether-spi', version: '1.1.0'
+			dependency group: 'org.eclipse.aether', name: 'aether-util', version: '1.1.0'
+			dependency group: 'org.eclipse.aether', name: 'aether-impl', version: '1.1.0'
+			dependency group: 'org.eclipse.aether', name: 'aether-connector-basic', version: '1.1.0'
+			dependency group: 'org.eclipse.aether', name: 'aether-transport-file', version: '1.1.0'
+			dependency group: 'org.eclipse.aether', name: 'aether-transport-http', version: '1.1.0'
+			dependency group: 'org.apache.maven', name: 'maven-aether-provider', version: '3.1.0'
+			dependency 'org.eclipse.sisu:org.eclipse.sisu.plexus:0.1.1'
+		}
+	}
+
+	configurations {
+		compile.exclude group: 'org.skyscreamer', module: 'jsonassert'
+	}	
+
+		
 
 	task sourcesJar ( type: Jar) {
 		classifier 'sources'
