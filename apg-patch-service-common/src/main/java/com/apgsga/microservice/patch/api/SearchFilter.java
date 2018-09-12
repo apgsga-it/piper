@@ -4,6 +4,7 @@ public class SearchFilter {
 	
 	public static SearchFilter DEFAULT = new SearchFilter();
 	public static SearchFilter ALL = new SearchFilter(SearchCondition.ALL);
+	public static SearchFilter APPLICATION = new SearchFilter(SearchCondition.APPLICATION);
 
 	public static enum SearchCondition {
 		APPLICATION, ALL
@@ -12,6 +13,7 @@ public class SearchFilter {
 	private SearchCondition condition = SearchCondition.APPLICATION;
 
 	public SearchFilter(SearchCondition searchCondition) {
+		this.condition = searchCondition; 
 	}
 
 	public SearchFilter() {
