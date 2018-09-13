@@ -69,7 +69,7 @@ def homeDir = "/opt/${project.name}"
 ospackage {
 	packageName = "${project.name}"
 	version = "${pkgVersion}"
-	release = 1
+	release = 2
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -130,7 +130,7 @@ ospackage {
 	directory("/var/opt/${project.name}/log", 0755 )
 	
 	// Local Maven Repo
-	directory("/var/opt/${project.name}/mavenrepo", 0755 )
+	directory("/var/opt/${project.name}/mavenrepo", 0777 )
 	
 	from("packaging/db") {
 		into "/var/opt/${project.name}/db"
@@ -158,7 +158,7 @@ ospackage {
 	directory("/var/opt/${project.name}/dbwork", 0755 )
 	
 	// Local Maven Repo
-	directory("/var/opt/${project.name}/mavenrepo", 0755 )
+	directory("/var/opt/${project.name}/mavenrepo", 0777 )
 }
 
 
