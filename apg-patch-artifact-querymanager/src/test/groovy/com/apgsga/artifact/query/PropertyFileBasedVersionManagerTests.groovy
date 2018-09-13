@@ -16,7 +16,7 @@ import spock.lang.Specification;
 
 class PropertyFileBasedVersionManagerTests extends Specification {
 
-	def "Without additional MavenArtefact List"() {
+	def "Without additional Groovy Json Lists of Property Maps"() {
 		setup:
 		def rl = new FileSystemResourceLoader();
 		def resource = rl.getResource("target/maverepo");
@@ -26,8 +26,18 @@ class PropertyFileBasedVersionManagerTests extends Specification {
 		then:
 		assert result.equals("9.0.6.ADMIN-UIMIG-SNAPSHOT")
 	}
+	def "Without empty additional Groovy Json Lists of Property Maps"() {
+		setup:
+		def rl = new FileSystemResourceLoader();
+		def resource = rl.getResource("target/maverepo");
+		def artifactManager = new PropertyFileBasedVersionManager(resource.getURI(),"com.affichage.common.maven","dm-bom", [])
+		when:
+		def result = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.0.6.ADMIN-UIMIG-SNAPSHOT")
+		then:
+		assert result.equals("9.0.6.ADMIN-UIMIG-SNAPSHOT")
+	}
 	
-	def "With additional MavenArtefact List Overriding Versions"() {
+	def "With additional additional Groovy Json Lists of Property Maps Overriding Version Numbers"() {
 		setup:
 		def rl = new FileSystemResourceLoader();
 		def mavenRepoResource = rl.getResource("target/maverepo");
