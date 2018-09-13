@@ -131,7 +131,7 @@ class PatchCli {
 				cmdResults.results['cr'] = result
 			}
 			if (options.cm) {
-				def result = cleanLocalMavenRepo(options)
+				def result = cleanLocalMavenRepo()
 				cmdResults.results['cm'] = result
 			}
 			cmdResults.returnCode = 0
