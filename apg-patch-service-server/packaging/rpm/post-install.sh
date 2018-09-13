@@ -6,7 +6,6 @@ echo "Setting permissions on /var/opt/apg-patch-service-server"
 chown -R apg-patch-service-server:apg-patch-service-server /var/opt/apg-patch-service-server
 echo "Setting permissions on /etc/opt/apg-patch-service-server"
 chown -R apg-patch-service-server:apg-patch-service-server /etc/opt/apg-patch-service-server
-chmod -R 777 /var/opt/apg-patch-service-server/mavenrepo
 if [ "$1" = "1" ]; then
 	echo "Registering apg-patch-service-server for Boot time start"
 	systemctl enable apg-patch-service-server
