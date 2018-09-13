@@ -32,7 +32,7 @@ import com.apgsga.microservice.patch.api.ServicesMetaData;
 @RequestMapping(path = "patch/private")
 public class PatchOpServiceController implements PatchOpService, PatchPersistence {
 
-	protected final Log LOGGER = LogFactory.getLog(getClass());
+	static protected final Log LOGGER = LogFactory.getLog(PatchOpServiceController.class.getName());
 
 	@Autowired
 	private PatchPersistence repo;
@@ -154,20 +154,18 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		throw new UnsupportedOperationException();
 	}
 
-	@RequestMapping(value = "/validateArtifactNamesFromVersion", method = RequestMethod.GET)
-	@ResponseStatus(HttpStatus.OK)
-	@ResponseBody
-	@Override
-	public List<MavenArtifact> invalidArtifactNames(@RequestParam("version") String version,
-			@RequestParam("cvsbranch") String cvsBranch) {
-		return patchService.invalidArtifactNames(version, cvsBranch);
-	}
 	
 	@RequestMapping(value = "/onClone", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	@ResponseBody
 	@Override
 	public void onClone(@RequestParam("target") String target) {
 		patchService.onClone(target);
+	}
+	
+	@RequestMapping(value = "/cleanLocalMavenRepo", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public void cleanLocalMavenRepo() {
+		patchService.cleanLocalMavenRepo();
 	}
 }

@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 
 public abstract class PatchVcsCommand implements VcsCommand {
 	
-	protected final static Log LOGGER = LogFactory.getLog(PatchVcsCommand.class.getName());
+	protected static final Log LOGGER = LogFactory.getLog(PatchVcsCommand.class.getName());
 
 
 	public static VcsCommand createCreatePatchBranchCmd(String patchBranch, String prodBranch, List<String> modules) {

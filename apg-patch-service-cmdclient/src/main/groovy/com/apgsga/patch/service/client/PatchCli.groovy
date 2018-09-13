@@ -187,9 +187,12 @@ class PatchCli {
 			um longOpt: 'uploadServicesMeta', args:1, argName: 'file', 'Upload ServiceMetaData from <file> to server', required: false
 			la longOpt: 'listAllFiles', 'List all files on server', required: false
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
+			// TODO (CHE,13.9) Seperate PatchOpService into own Cli 
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
-			vv longOpt: 'validateArtifactNamesForVersion', args:2, valueSeparator: ",", argName: 'version,cvsBranch', 'Validate all artifact names for a given version on a given CVS branch', required: false
 			oc longOpt: 'onclone', args:1, argName: 'target', 'Call Patch Service onClone REST API', required: false
+			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
+			// TODO (CHE, 13.9) Separate all Revision specific operations in to own Cli
+			// TODO (CHE, 13.9) Factor out Revision Operations into Interface
 			sr longOpt: 'saveRevision', args:3, valueSeparator: ",", argName: 'targetInd,installationTarget,revision', 'Save revision file with new value for a given target', required: false
 			rr longOpt: 'retrieveRevision', args:2, valueSeparator: ",", argName: 'targetInd,installationTarget', 'Update revision with new value for given target', required: false
 			// TODO JHE (26.06.2018): will be removed with JAVA8MIG-389
@@ -342,12 +345,6 @@ class PatchCli {
 				error = true
 			}
 		}
-		if (options.vv) {
-			if(options.vvs.size() != 2 || options.vvs[0] == null || options.vvs[0].equals("") || options.vvs[1] == null || options.vvs[1].equals("")) {
-				println "You have to provide the version and the cvs branch for which you want to validate Artifacts against."
-				error = true
-			}
-		}
 		if (options.oc) {
 			if(options.ocs.size() != 1 || options.ocs[0] == null) {
 				println "You have to provide the target for which the onClone method will be done."
@@ -390,6 +387,13 @@ class PatchCli {
 			return null
 		}
 		options
+	}
+	
+	def cleanLocalMavenRepo() {
+		def patchClient = new PatchServiceClient(config)
+		def cmdResult = new Expando()
+		patchClient.cleanLocalMavenRepo();
+		cmdResult
 	}
 	
 	def getTargetSystemMappings() {
@@ -598,13 +602,6 @@ class PatchCli {
 		patchClient.saveServicesMetaData(serviceMetaData)
 	}
 
-
-	def validateArtifactNamesForVersion(def options) {
-		def patchClient = new PatchServiceClient(config)
-		println("Validating all Artifact names for version ${options.vvs[0]} on branch ${options.vvs[1]}")
-		def invalidArtifacts = patchClient.invalidArtifactNames(options.vvs[0],options.vvs[1])
-		println invalidArtifacts
-	}
 
 	def onClone(def options) {
 //		def patchCloneClient = new PatchCloneClient(config)

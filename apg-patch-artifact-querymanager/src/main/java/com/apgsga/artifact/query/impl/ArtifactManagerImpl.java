@@ -3,12 +3,17 @@ package com.apgsga.artifact.query.impl;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.Model;
@@ -53,21 +58,27 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
 	private String bomArtefactId = DEFAULT_BOM_ARTIFACT_ID;
 
+	private final String localRepo;
+
+	private Resource lcoalRepoResource;
+
 	public ArtifactManagerImpl(String localRepo, String bomGroupId, String bomArtefactId) {
 		super();
-		init(localRepo);
+		this.localRepo = localRepo;
+		init();
 		this.system = RepositorySystemFactory.newRepositorySystem();
 		this.session = RepositorySystemFactory.newRepositorySystemSession(system, localRepo);
 		this.bomGroupId = bomGroupId;
 		this.bomArtefactId = bomArtefactId;
+
 	}
 
-	private void init(String localRepo) {
+	private void init() {
 		final ResourceLoader rl = new FileSystemResourceLoader();
-		Resource resource = rl.getResource(localRepo);
-		if (!resource.exists()) {
+		lcoalRepoResource = rl.getResource(localRepo);
+		if (!lcoalRepoResource.exists()) {
 			try {
-				resource.getFile().mkdir();
+				lcoalRepoResource.getFile().mkdir();
 			} catch (IOException e) {
 				throw ExceptionFactory.createPatchServiceRuntimeException("ArtifactManagerImpl.init.exception",
 						new Object[] { e.getMessage() }, e);
@@ -79,6 +90,44 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		super();
 		this.system = RepositorySystemFactory.newRepositorySystem();
 		this.session = RepositorySystemFactory.newRepositorySystemSession(system, localRepo);
+		this.localRepo = localRepo;
+	}
+
+	@Override
+	public void cleanLocalMavenRepo() {
+		final ResourceLoader rl = new FileSystemResourceLoader();
+		Resource resource = rl.getResource(localRepo);
+		try {
+			Path rootPath = Paths.get(resource.getURI());
+			Files.walk(rootPath).sorted(Comparator.reverseOrder()).forEach(f -> delete(rootPath, f));
+		} catch (IOException e) {
+			LOGGER.error("File : " + localRepo + " could'nt be deleted", e);
+			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
+		}
+
+	}
+
+	public static void delete(Path root, Path p) {
+		try {
+			if (!root.equals(p)) {
+				Files.delete(p);
+			}
+		} catch (IOException e) {
+			LOGGER.error("File : " + p.toFile().getAbsolutePath() + " could'nt be deleted", e);
+			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
+		}
+	}
+
+	@Override
+	public File getMavenLocalRepo() {
+		try {
+			return lcoalRepoResource.getFile();
+		} catch (IOException e) {
+			LOGGER.error("Directory fetched", e);
+			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"ArtifactManagerImpl.cleanLocalMavenRepo.exception", new Object[] { e.getMessage() }, e);
+		}
 	}
 
 	/*
@@ -91,15 +140,36 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	@Override
 	public Properties getVersionsProperties(String version)
 			throws DependencyResolutionException, IOException, XmlPullParserException, ArtifactResolutionException {
-		org.eclipse.aether.artifact.Artifact bom = loadBom(version);
-		Model model = getModel(bom.getFile());
-		return getVersionsProperties(model);
+		return getVersionsProperties(loadBomModel(bomGroupId, bomArtefactId, version));
 	}
 
-	private org.eclipse.aether.artifact.Artifact loadBom(String version) throws ArtifactResolutionException {
+	private Model loadBomModel(String bomGroupId, String bomArtefactId, String version)
+			throws ArtifactResolutionException {
 		org.eclipse.aether.artifact.Artifact bom = load(bomGroupId, bomArtefactId, version);
 		Asserts.notNull(bom, "ArtifactManagerImpl.loadBom.assert", new Object[] { bomGroupId, bomArtefactId, version });
-		return bom;
+		Model model = null;
+		FileReader fileReader = null;
+		try {
+			MavenXpp3Reader mavenreader = new MavenXpp3Reader();
+			File bomFile = bom.getFile();
+			fileReader = new FileReader(bomFile);
+			model = mavenreader.read(fileReader);
+			return model;
+		} catch (IOException | XmlPullParserException e) {
+			LOGGER.error("Error Loading Bom Model", e);
+			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"ArtifactManagerImpl.loadBomModel.exception", new Object[] { e.getMessage() }, e);
+		} finally {
+			if (fileReader != null) {
+				try {
+					fileReader.close();
+				} catch (IOException e) {
+					LOGGER.error("Error Closing Filereader from loading Bom Model", e);
+					LOGGER.error(ExceptionUtils.getFullStackTrace(e));
+				}
+			}
+		}
 	}
 
 	private Artifact load(String groupId, String artifactId, String version) throws ArtifactResolutionException {
@@ -141,9 +211,8 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	}
 
 	private List<MavenArtifact> getArtifactsWithVersionFromBom(String bomVersion, SearchCondition searchFilter)
-			throws ArtifactResolutionException, IOException, XmlPullParserException {
-		org.eclipse.aether.artifact.Artifact bom = loadBom(bomVersion);
-		Model model = getModel(bom.getFile());
+			throws ArtifactResolutionException {
+		Model model = loadBomModel(bomGroupId, bomArtefactId, bomVersion);
 		List<MavenArtifact> artifacts = getArtifacts(model);
 		List<MavenArtifact> selectedArts = null;
 		Properties properties = model.getProperties();
@@ -151,8 +220,10 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		if (searchFilter.equals(SearchCondition.ALL)) {
 			selectedArts = artifacts;
 		} else if (searchFilter.equals(SearchCondition.APPLICATION)) {
-			selectedArts = artifacts.stream().filter(artifact -> (artifact.getGroupId().startsWith("com.apgsga")
-					|| artifact.getGroupId().startsWith("com.affichage")) && artifact.getVersion().endsWith("SNAPSHOT"))
+			selectedArts = artifacts.stream()
+					.filter(artifact -> (artifact.getGroupId().startsWith("com.apgsga")
+							|| artifact.getGroupId().startsWith("com.affichage"))
+							&& artifact.getVersion().endsWith("SNAPSHOT"))
 					.collect(Collectors.toList());
 		} else {
 			selectedArts = Collections.EMPTY_LIST;
@@ -188,11 +259,6 @@ public class ArtifactManagerImpl implements ArtifactManager {
 			artMap.put(art.getName(), art.getGroupId() + ":" + art.getArtifactId());
 		}
 		return artMap;
-	}
-
-	public static Model getModel(File bomFile) throws IOException, XmlPullParserException {
-		MavenXpp3Reader mavenreader = new MavenXpp3Reader();
-		return mavenreader.read(new FileReader(bomFile));
 	}
 
 	private static List<MavenArtifact> getArtifacts(Model model) {
@@ -258,12 +324,8 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	@Override
 	public String getArtifactName(String groupId, String artifactId, String version)
 			throws DependencyResolutionException, ArtifactResolutionException, IOException, XmlPullParserException {
-		org.eclipse.aether.artifact.Artifact pom = load(groupId, artifactId, version);
-		if (pom != null) {
-			Model model = ArtifactManagerImpl.getModel(pom.getFile());
-			return model.getName();
-		}
-		return null;
+		Model model = loadBomModel(groupId, artifactId, version);
+		return model.getName();
 	}
 
 }

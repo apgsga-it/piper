@@ -1,13 +1,10 @@
 package com.apgsga.patch.service.client
 
-import java.io.IOException
-
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 
 import com.apgsga.microservice.patch.api.DbModules
-import com.apgsga.microservice.patch.api.MavenArtifact
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.PatchOpService
 import com.apgsga.microservice.patch.api.PatchPersistence
@@ -35,11 +32,15 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 		"http://" + baseUrl + "/patch/private";
 	}
 
+
+
 	@Override
 	public void executeStateTransitionAction(String patchNumber, String toStatus) {
 		restTemplate.postForLocation(getRestBaseUri() + "/executeStateChangeAction/{patchNumber}/{toStatus}", null, [patchNumber:patchNumber,toStatus:toStatus]);
+	}	@Override
+	public void cleanLocalMavenRepo() {
+		restTemplate.postForLocation(getRestBaseUri() + "/cleanLocalMavenRepo");
 	}
-
 
 	@Override
 	public Patch findById(String patchNumber) {
@@ -143,12 +144,6 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 
 
 	@Override
-	public List<MavenArtifact> invalidArtifactNames(String version,String cvsBranch) {
-		def invalidArtifacts = restTemplate.getForObject(getRestBaseUri() + "/validateArtifactNamesFromVersion?version=${version}&cvsbranch=${cvsBranch}", List.class)
-		return invalidArtifacts;
-	}
-	
-	@Override
 	public void onClone(String target) {
 		restTemplate.postForLocation(getRestBaseUri() + "/onClone?target=${target}", null)
 	}
@@ -162,7 +157,7 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 
 		@Override
 		public boolean hasError(ClientHttpResponse response) throws IOException {
-		
+
 			return false;
 		}
 
@@ -170,7 +165,6 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 		public void handleError(ClientHttpResponse response) throws IOException {
 			System.err.println "Recieved Error from Server with Http Code: ${response.getStatusText()}"
 			System.err.println "Error output : " + response.body.getText("UTF-8")
-			
 		}
 	}
 }

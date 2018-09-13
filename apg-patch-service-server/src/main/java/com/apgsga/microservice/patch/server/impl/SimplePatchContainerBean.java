@@ -83,6 +83,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		super();
 		this.repo = repo;
 	}
+	
+	
 
 	@Override
 	public List<String> listDbModules() {
@@ -250,16 +252,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	private List<MavenArtifact> getArtifactsWithNameFromBom(String version) {
-		List<MavenArtifact> artifactsWithNameFromBom = null;
 		try {
-			artifactsWithNameFromBom = am.getArtifactsWithNameFromBom(version);
+			return am.getArtifactsWithNameFromBom(version);
 		} catch (Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"SimplePatchContainerBean.getArtifactsWithNameFromBom.exception",
 					new Object[] { e.getMessage(), version }, e);
 		}
-
-		return artifactsWithNameFromBom;
 	}
 
 	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
@@ -295,11 +294,15 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		cmdRunner.postProcess();
 		return artifactWihInvalidNames;
 	}
+	
+	
 
 	@Override
-	public List<MavenArtifact> invalidArtifactNames(String version, String cvsBranch) {
-		return getArtifactNameError(getArtifactsWithNameFromBom(version), cvsBranch);
+	public void cleanLocalMavenRepo() {
+		am.cleanLocalMavenRepo();
+		
 	}
+
 
 	@Override
 	public void onClone(String target) {

@@ -1,5 +1,6 @@
 package com.apgsga.artifact.query;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -51,5 +52,17 @@ public class MockArtifactManagerImpl implements ArtifactManager {
 			throws DependencyResolutionException, ArtifactResolutionException, IOException, XmlPullParserException {
 		return artifactId;
 	}
+
+	@Override
+	public void cleanLocalMavenRepo() {	
+		// Nothing
+	}
+
+	@Override
+	public File getMavenLocalRepo() {
+		return null;
+	}
+	
+	
 
 }

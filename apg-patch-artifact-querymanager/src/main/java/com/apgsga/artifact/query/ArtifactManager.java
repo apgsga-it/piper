@@ -1,5 +1,6 @@
 package com.apgsga.artifact.query;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -40,5 +41,9 @@ public interface ArtifactManager {
 	Map<String, String> getArtifactsWithNameAsMap(String version) throws DependencyResolutionException, IOException, XmlPullParserException, ArtifactResolutionException;
 
 	String getArtifactName(String groupId, String artifactId, String version) throws DependencyResolutionException, ArtifactResolutionException, IOException, XmlPullParserException;
+	
+	void cleanLocalMavenRepo();
+	
+	File getMavenLocalRepo();
 
 }
