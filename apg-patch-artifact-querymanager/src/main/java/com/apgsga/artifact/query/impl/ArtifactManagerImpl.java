@@ -147,6 +147,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		List<MavenArtifact> artifacts = getArtifacts(model);
 		List<MavenArtifact> selectedArts = null;
 		Properties properties = model.getProperties();
+		normalizeVersions(artifacts, properties);
 		if (searchFilter.equals(SearchCondition.ALL)) {
 			selectedArts = artifacts;
 		} else if (searchFilter.equals(SearchCondition.APPLICATION)) {
@@ -156,7 +157,6 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		} else {
 			selectedArts = Collections.EMPTY_LIST;
 		}
-		normalizeVersions(selectedArts, properties);
 		return selectedArts;
 	}
 
