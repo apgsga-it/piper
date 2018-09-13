@@ -39,7 +39,7 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 		restTemplate.postForLocation(getRestBaseUri() + "/executeStateChangeAction/{patchNumber}/{toStatus}", null, [patchNumber:patchNumber,toStatus:toStatus]);
 	}	@Override
 	public void cleanLocalMavenRepo() {
-		restTemplate.postForLocation(getRestBaseUri() + "/cleanLocalMavenRepo");
+		restTemplate.postForLocation(getRestBaseUri() + "/cleanLocalMavenRepo", null);
 	}
 
 	@Override
