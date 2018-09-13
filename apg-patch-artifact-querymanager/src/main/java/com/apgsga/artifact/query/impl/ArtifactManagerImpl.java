@@ -95,11 +95,13 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
 	@Override
 	public void cleanLocalMavenRepo() {
+		LOGGER.info("About to clean Local Mavenrepo");
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource resource = rl.getResource(localRepo);
 		try {
 			Path rootPath = Paths.get(resource.getURI());
 			Files.walk(rootPath).sorted(Comparator.reverseOrder()).forEach(f -> delete(rootPath, f));
+			LOGGER.info("Done cleaning Local Mavenrepo");
 		} catch (IOException e) {
 			LOGGER.error("File : " + localRepo + " could'nt be deleted", e);
 			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
@@ -111,6 +113,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		try {
 			if (!root.equals(p)) {
 				Files.delete(p);
+				LOGGER.info("Deleted: " + p.toAbsolutePath());
 			}
 		} catch (IOException e) {
 			LOGGER.error("File : " + p.toFile().getAbsolutePath() + " could'nt be deleted", e);
