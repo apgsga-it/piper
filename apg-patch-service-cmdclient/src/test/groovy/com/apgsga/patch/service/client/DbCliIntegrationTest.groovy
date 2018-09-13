@@ -14,11 +14,8 @@ import groovy.json.JsonSlurper
 import spock.lang.Ignore
 import spock.lang.Specification
 
-// TODO JHE: to be verified, probably not all anntations are required here ...
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
-//@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = [MicroPatchServer.class ])
 @TestPropertySource(locations = "application-test.properties")
-@ActiveProfiles("test,mock,groovyactions")
 class DbCliIntegrationTest extends Specification {
 	
 	def "Patch DB Cli should print out help without errors"() {

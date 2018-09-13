@@ -70,6 +70,8 @@ public interface Patch extends ServiceMetaData {
 	List<MavenArtifact> getMavenArtifacts();
 
 	List<String> getMavenArtifactsAsVcsPath();
+	
+	List<MavenArtifact> getMavenArtifactsToBuild();
 
 	void setMavenArtifacts(List<MavenArtifact> mavenArtifacts);
 

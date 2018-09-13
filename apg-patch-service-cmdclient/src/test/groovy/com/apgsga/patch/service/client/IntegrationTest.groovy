@@ -25,7 +25,7 @@ import spock.lang.Specification;
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = [MicroPatchServer.class ])
 @TestPropertySource(locations = "application-test.properties")
-@ActiveProfiles("test,mock,groovyactions")
+@ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
 public class IntegrationTest extends Specification {
 
 	@Value('${json.db.location}')

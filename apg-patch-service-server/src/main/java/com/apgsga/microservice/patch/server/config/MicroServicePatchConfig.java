@@ -94,13 +94,13 @@ public class MicroServicePatchConfig {
 	}
 
 	@Bean(name = "artifactManager")
-	@Profile("live")
+	@Profile({"live","mavenRepo"})
 	public ArtifactManager artifactManager() {
 		return ArtifactManager.create(localRepo);
 	}
 
 	@Bean(name = "artifactManager")
-	@Profile("mock")
+	@Profile("mockMavenRepo")
 	public ArtifactManager mockArtifactManager() {
 		return ArtifactManager.createMock(localRepo);
 	}

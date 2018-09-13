@@ -30,7 +30,7 @@ import com.apgsga.microservice.patch.server.impl.SimplePatchContainerBean;
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @TestPropertySource(locations = "application-test.properties")
 @SpringBootTest(classes = MicroPatchServer.class)
-@ActiveProfiles("test,mock,groovyactions")
+@ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
 public class MicroServicePatchServerTest {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());

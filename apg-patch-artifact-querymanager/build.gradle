@@ -9,18 +9,18 @@ println "Maven Local Repo is : ${rootProject.mavenLocalRepo}"
 
 dependencies {
 	compile project(':apg-patch-service-common')
-	compile group: 'org.codehaus.plexus', name: 'plexus-utils', version: '3.0.10'
-	compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
-	compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
-	compile group: 'org.eclipse.aether', name: 'aether-api', version: '1.1.0'
-	compile group: 'org.eclipse.aether', name: 'aether-spi', version: '1.1.0'
-	compile group: 'org.eclipse.aether', name: 'aether-util', version: '1.1.0'
-	compile group: 'org.eclipse.aether', name: 'aether-impl', version: '1.1.0'
-	compile group: 'org.eclipse.aether', name: 'aether-connector-basic', version: '1.1.0'
-	compile group: 'org.eclipse.aether', name: 'aether-transport-file', version: '1.1.0'
-	compile group: 'org.eclipse.aether', name: 'aether-transport-http', version: '1.1.0'
-	compile group: 'org.apache.maven', name: 'maven-aether-provider', version: '3.1.0'
-	compile ('org.eclipse.sisu:org.eclipse.sisu.plexus:0.1.1') {
+	compile group: 'org.codehaus.plexus', name: 'plexus-utils'
+	compile group: 'org.slf4j', name: 'slf4j-api'
+	compile group: 'ch.qos.logback', name: 'logback-classic'
+	compile group: 'org.eclipse.aether', name: 'aether-api'
+	compile group: 'org.eclipse.aether', name: 'aether-spi'
+	compile group: 'org.eclipse.aether', name: 'aether-util'
+	compile group: 'org.eclipse.aether', name: 'aether-impl'
+	compile group: 'org.eclipse.aether', name: 'aether-connector-basic'
+	compile group: 'org.eclipse.aether', name: 'aether-transport-file'
+	compile group: 'org.eclipse.aether', name: 'aether-transport-http'
+	compile group: 'org.apache.maven', name: 'maven-aether-provider'
+	compile ('org.eclipse.sisu:org.eclipse.sisu.plexus') {
 		exclude group: 'javax.enterprise', module: 'cdi-api'
 	}
 	compile group: 'commons-io', name: 'commons-io'
@@ -29,12 +29,12 @@ dependencies {
 	testCompile group: 'commons-collections', name: 'commons-collections'
 	testCompile group: 'org.springframework', name: 'spring-test'
 	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'	
-	testCompile group: 'org.codehaus.groovy' , name: 'groovy-all', version: '2.4.1'
-	testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.8.4'
-	testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.4'
-	testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.4'
-	testCompile 'org.spockframework:spock-spring:1.1-groovy-2.4'
-	testCompile 'cglib:cglib-nodep:3.2.2' // for stubbing of classes
+	testCompile group: 'org.codehaus.groovy' , name: 'groovy-all'
+	testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
+	testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
+	testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
+	testCompile 'org.spockframework:spock-spring'
+	testCompile 'cglib:cglib-nodep' // for stubbing of classes
 
 }
 

@@ -14,6 +14,6 @@ dependencies {
 	compile group: 'commons-lang', name: 'commons-lang'
 	compile group: 'commons-io', name: 'commons-io'
 	compile group: 'com.google.guava', name: 'guava'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.8.4'
-	compile group: 'org.codehaus.groovy' , name: 'groovy-all', version: '2.4.1'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
+	compile group: 'org.codehaus.groovy' , name: 'groovy-all'
 }
