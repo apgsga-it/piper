@@ -23,6 +23,8 @@ dependencies {
 	compile ('org.eclipse.sisu:org.eclipse.sisu.plexus') {
 		exclude group: 'javax.enterprise', module: 'cdi-api'
 	}
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
 	compile group: 'commons-io', name: 'commons-io'
 	compile group: 'commons-lang', name: 'commons-lang'
 	testCompile group: 'junit', name: 'junit'
