@@ -16,21 +16,21 @@ import spock.lang.Specification;
 
 class PropertyFileBasedVersionManagerTests extends Specification {
 
-	def "Without additional Groovy Json Lists of Property Maps"() {
+	def "Without additional path to Patch File "() {
 		setup:
 		def rl = new FileSystemResourceLoader();
 		def resource = rl.getResource("target/maverepo");
-		def artifactManager = new PropertyFileBasedVersionManager(resource.getURI(),"com.affichage.common.maven","dm-bom")
+		def artifactManager = ArtifactVersionManager.create(resource.getURI(),"com.affichage.common.maven","dm-bom")
 		when:
 		def result = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.0.6.ADMIN-UIMIG-SNAPSHOT")
 		then:
 		assert result.equals("9.0.6.ADMIN-UIMIG-SNAPSHOT")
 	}
-	def "Without empty additional Groovy Json Lists of Property Maps"() {
+	def "With empty File path to Patch File"() {
 		setup:
 		def rl = new FileSystemResourceLoader();
 		def resource = rl.getResource("target/maverepo");
-		def artifactManager = new PropertyFileBasedVersionManager(resource.getURI(),"com.affichage.common.maven","dm-bom", [])
+		def artifactManager = ArtifactVersionManager.create(resource.getURI(),"com.affichage.common.maven","dm-bom", null)
 		when:
 		def result = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.0.6.ADMIN-UIMIG-SNAPSHOT")
 		then:
@@ -41,9 +41,7 @@ class PropertyFileBasedVersionManagerTests extends Specification {
 		setup:
 		def rl = new FileSystemResourceLoader();
 		def mavenRepoResource = rl.getResource("target/maverepo");
-		def patchFile = rl.getResource("classpath:Patch5797.json").getFile()
-		def patch = new JsonSlurper().parseText(patchFile.text)
-		def artifactManager = new PropertyFileBasedVersionManager(mavenRepoResource.getURI(),"com.affichage.common.maven","dm-bom", patch.mavenArtifacts)
+		def artifactManager = ArtifactVersionManager.create(mavenRepoResource.getURI(),"com.affichage.common.maven","dm-bom", "src/test/resources/Patch5797.json")
 		when:
 		def resultZentralDispo = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.0.6.ADMIN-UIMIG-SNAPSHOT")
 		def resultCommondao = artifactManager.getVersionFor("com.affichage.it21.adgis","adgis-common-dao","9.0.6.ADMIN-UIMIG-SNAPSHOT")
