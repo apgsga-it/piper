@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.DefaultArtifact;
@@ -89,8 +90,8 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 			LOGGER.warn("Interrupted!", e);
 		    Thread.currentThread().interrupt();
 		} catch (ExecutionException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("ArtifactsDependencyResolverImpl.resolveDependenciesInternal.exception",
-					new Object[] { e.getMessage() }, e);		
+			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
+			throw new RuntimeException(e);
 		}
 		return resolvedDependencies;
 	}
@@ -129,8 +130,8 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 			return visitor.create();			
 
 		} catch (DependencyResolutionException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("ArtifactsDependencyResolverImpl.resolveDependencies.exception",
-					new Object[] { e.getMessage() }, e);			
+			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
+			throw new RuntimeException(e);		
 		}
 
 	}

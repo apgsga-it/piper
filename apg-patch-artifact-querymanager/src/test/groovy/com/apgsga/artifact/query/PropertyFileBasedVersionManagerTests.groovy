@@ -8,6 +8,8 @@ import org.springframework.core.io.FileSystemResourceLoader
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.util.FileSystemUtils
+
+import com.apgsga.artifact.query.impl.PatchFileAccessException
 import com.apgsga.artifact.query.impl.PropertyFileBasedVersionManager
 import com.apgsga.microservice.patch.api.SearchCondition
 import com.google.common.collect.Count
@@ -37,7 +39,7 @@ class PropertyFileBasedVersionManagerTests extends Specification {
 		assert result.equals("9.0.6.ADMIN-UIMIG-SNAPSHOT")
 	}
 	
-	def "With additional additional Groovy Json Lists of Property Maps Overriding Version Numbers"() {
+	def "With additional Path to PatchFile Overriding Version Numbers"() {
 		setup:
 		def rl = new FileSystemResourceLoader();
 		def mavenRepoResource = rl.getResource("target/maverepo");
@@ -48,6 +50,18 @@ class PropertyFileBasedVersionManagerTests extends Specification {
 		then:
 		assert resultZentralDispo.equals("9.0.6.ADMIN-UIMIG-SNAPSHOT")
 		assert resultCommondao.equals("9.9.9")
+	}
+	
+	def "With invalid  Path to PatchFile Overriding Version Numbers"() {
+		setup:
+		def rl = new FileSystemResourceLoader();
+		def mavenRepoResource = rl.getResource("target/maverepo");
+		def artifactManager = ArtifactVersionManager.create(mavenRepoResource.getURI(),"com.affichage.common.maven","dm-bom", "xxxxxxxx/Patch5797.json")
+		when:
+		def resultZentralDispo = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.0.6.ADMIN-UIMIG-SNAPSHOT")
+		def resultCommondao = artifactManager.getVersionFor("com.affichage.it21.adgis","adgis-common-dao","9.0.6.ADMIN-UIMIG-SNAPSHOT")
+		then:
+		thrown PatchFileAccessException
 	}
 	
 

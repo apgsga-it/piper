@@ -5,9 +5,12 @@ import java.net.URI;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.DependencyResolutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 
@@ -15,10 +18,12 @@ import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.artifact.query.ArtifactVersionManager;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
+	
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ArtifactsDependencyResolverImpl.class);
+
 
 	private ArtifactManager artifactManager;
 	private Properties versionsProperties;
@@ -66,8 +71,8 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 		try {
 			patch = mapper.readValue(rl.getResource(patchFilePath).getFile(), Patch.class);
 		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("PropertyFileBasedVersionManager.convertToProperties.exception",
-					new Object[] { patchFilePath, e.getMessage() }, e);
+			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
+			throw new PatchFileAccessException(e);	
 		}
 		for (MavenArtifact art : patch.getMavenArtifacts()) {
 			if (!art.getVersion().endsWith("SNAPSHOT")) {
@@ -83,8 +88,8 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 			Properties versionsProperties = artifactManager.getVersionsProperties(bomVersion);
 			return versionsProperties;
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("PropertyFileBasedVersionManager.intialLoad.exception",
-					new Object[] { e.getMessage() }, e);
+			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
+			throw new PatchFileAccessException(e);		
 		}
 	}
 }
