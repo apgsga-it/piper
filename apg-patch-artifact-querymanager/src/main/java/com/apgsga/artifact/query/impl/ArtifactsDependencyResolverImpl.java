@@ -71,7 +71,8 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 		if (artifacts.isEmpty()) {
 			return resolvedDependencies;
 		}
-        ExecutorService executorService = Executors.newFixedThreadPool(artifacts.size());
+		// TODO (che,13.9) : Make Pool size configurable
+        ExecutorService executorService = Executors.newFixedThreadPool(20);
         List<Callable<MavenArtWithDependencies>> callables = Lists.newArrayList();
         for (MavenArtifact art : artifacts) {
         		Callable<MavenArtWithDependencies> callable = () ->  {
