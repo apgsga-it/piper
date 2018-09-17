@@ -6,21 +6,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.assertj.core.util.Lists;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.artifact.query.ArtifactVersionManager;
-import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.google.common.collect.Lists;
 
 public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 
 	private ArtifactManager artifactManager;
 	private Properties versionsProperties;
-	private List<Map<String,String>> mavenArtefactsToOverride = Lists.emptyList();
+	private List<Map<String,String>> mavenArtefactsToOverride = Lists.newArrayList();
 
 	public PropertyFileBasedVersionManager(URI mavenLocalPath, String bomGroupId, String bomArtifactId) {
 		super();
