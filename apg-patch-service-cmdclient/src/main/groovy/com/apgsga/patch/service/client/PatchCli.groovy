@@ -9,6 +9,7 @@ import org.springframework.core.io.ClassPathResource
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.ServicesMetaData
+import com.apgsga.patch.service.client.db.PatchDbClient
 import com.fasterxml.jackson.databind.ObjectMapper
 
 import groovy.json.JsonSlurper
@@ -105,27 +106,6 @@ class PatchCli {
 				def result = onClone(options)
 				cmdResults.results['oc'] = result
 			}
-			if (options.sr) {
-				def result = saveRevisions(options)
-				cmdResults.results['sr'] = result
-			}
-			if (options.rr) {
-				def result = retrieveRevisions(options)
-				cmdResults.results['rr'] = result
-			}
-			// TODO JHE (26.06.2018): will be removed with JAVA8MIG-389
-			if (options.rtr) {
-				def result = removeAllTRevisions(options)
-				cmdResults.results['rtr'] = result
-			}
-			if (options.pr) {
-				def result = retrieveLastProdRevision()
-				cmdResults.results['pr'] = result
-			}
-			if (options.resr) {
-				def result = resetRevision(options)
-				cmdResults.results['resr'] = result
-			}
 			if (options.cr) {
 				def result = cleanReleases(options)
 				cmdResults.results['cr'] = result
@@ -195,14 +175,6 @@ class PatchCli {
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
 			oc longOpt: 'onclone', args:1, argName: 'target', 'Call Patch Service onClone REST API', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
-			// TODO (CHE, 13.9) Separate all Revision specific operations in to own Cli
-			// TODO (CHE, 13.9) Factor out Revision Operations into Interface
-			sr longOpt: 'saveRevision', args:3, valueSeparator: ",", argName: 'targetInd,installationTarget,revision', 'Save revision file with new value for a given target', required: false
-			rr longOpt: 'retrieveRevision', args:2, valueSeparator: ",", argName: 'targetInd,installationTarget', 'Update revision with new value for given target', required: false
-			// TODO JHE (26.06.2018): will be removed with JAVA8MIG-389
-			rtr longOpt: 'removeTRevisions', args:1, argName: 'dryRun', 'Remove all T Revision from Artifactory. dryRun=1 -> simulation only, dryRun=0 -> artifact will be deleted', required: false
-			pr longOpt: 'prodRevision', args:0, 'Retrieve last revision for the production target', required: false
-			resr longOpt: 'resetRevision', args:1, argName: 'target', 'Reset revision number for a given target', required: false
 			cr longOpt: 'cleanReleases', args:1, argName: 'target', 'Clean release Artifacts for a given target on Artifactory', required: false
 		}
 
@@ -352,31 +324,6 @@ class PatchCli {
 		if (options.oc) {
 			if(options.ocs.size() != 1 || options.ocs[0] == null) {
 				println "You have to provide the target for which the onClone method will be done."
-				error = true
-			}
-		}
-		// TODO JHE (26.06.2018): will be removed with JAVA8MIG-389
-		if (options.rtr) {
-			if(options.rtrs.size() != 1) {
-				println "No parameter has been set, only a dryRun will be done. To delete all T artifact, please explicitely set dryRun to 0."
-				error = true
-			}
-		}
-		if (options.rr) {
-			if(options.rrs.size() != 2) {
-				println "2 parameters are required for the retrieveRevision command."
-				error = true
-			}
-		}
-		if (options.sr) {
-			if(options.srs.size() != 3) {
-				println "3 parameters are required for the saveRevision command."
-				error = true
-			}
-		}
-		if (options.resr) {
-			if(options.resrs.size() != 1) {
-				println "target parameter is required when reseting revision."
 				error = true
 			}
 		}
@@ -608,44 +555,12 @@ class PatchCli {
 
 
 	def onClone(def options) {
-//		def patchCloneClient = new PatchCloneClient(config)
 		def patchClient = new PatchServiceClient(config)
 		println "Performing onClone for ${options.ocs[0]}"
 		def target = options.ocs[0]
 		patchClient.onClone(target)
 	}
 
-	def retrieveRevisions(def options) {
-		def patchRevisionClient = new PatchRevisionClient(config)
-		patchRevisionClient.retrieveRevisions(options.rrs[0],options.rrs[1])
-	}
-	
-	def retrieveLastProdRevision() {
-		def patchRevisionClient = new PatchRevisionClient(config)
-		patchRevisionClient.retrieveLastProdRevision()
-	}
-
-	def saveRevisions(def options) {
-		def patchRevisionClient = new PatchRevisionClient(config)
-		patchRevisionClient.saveRevisions(options.srs[0],options.srs[1],options.srs[2])
-	}
-
-	// TODO JHE (26.06.2018): will be removed with JAVA8MIG-389
-	def removeAllTRevisions(def options) {
-		def patchArtifactoryClient = new PatchArtifactoryClient(config)
-		def dryRun = true
-		if(options.rtrs[0] == "0") {
-			dryRun = false
-		}
-		patchArtifactoryClient.deleteAllTRevisions(dryRun)
-	}
-	
-	def resetRevision(def options) {
-		def patchRevisionClient = new PatchRevisionClient(config)
-		def target = options.resrs[0]
-		patchRevisionClient.resetLastRevision(target)
-	}
-	
 	def cleanReleases(def options) {
 		def target = options.crs[0]
 		def patchArtifactoryClient = new PatchArtifactoryClient(config)

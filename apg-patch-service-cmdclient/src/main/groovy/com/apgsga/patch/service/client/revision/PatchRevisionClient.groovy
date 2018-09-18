@@ -1,4 +1,4 @@
-package com.apgsga.patch.service.client
+package com.apgsga.patch.service.client.revision
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper

@@ -2,12 +2,15 @@ import org.apache.http.util.Args
 
 import com.apgsga.patch.service.client.PatchCli
 import com.apgsga.patch.service.client.db.PatchDbCli
+import com.apgsga.patch.service.client.revision.PatchRevisionCli
 
 def client = args[0]
 
-// We remove with "pli" or "pliDb" from args as they have no meaning for PatchCli or PatchDbCli
+// We remove with "pli", "pliDb" pr "pliRev from args as they have no meaning for PatchCli or PatchDbCli
 args = args - "pli"
 args = args - "pliDb"
+args = args - "pliRev"
+
  
 
 if(client.equalsIgnoreCase("pli")) {
@@ -18,6 +21,11 @@ if(client.equalsIgnoreCase("pli")) {
 if(client.equalsIgnoreCase("pliDb")) {
 	println "Starting pliDb client"
 	System.exit(PatchDbCli.create().process(args).returnCode)
+}
+
+if(client.equalsIgnoreCase("pliRev")) {
+	println "Starting pliRev client"
+	System.exit(PatchRevisionCli.create().process(args).returnCode)
 }
 
 println "pliStarter couldn't find an pli to be started with name ${client}."

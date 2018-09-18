@@ -2,6 +2,9 @@ package com.apgsga.patch.service.client
 
 import org.jfrog.artifactory.client.Artifactory
 import org.jfrog.artifactory.client.model.RepoPath
+
+import com.apgsga.patch.service.client.revision.PatchRevisionClient
+
 import org.jfrog.artifactory.client.ArtifactoryClientBuilder
 
 class PatchArtifactoryClient {
