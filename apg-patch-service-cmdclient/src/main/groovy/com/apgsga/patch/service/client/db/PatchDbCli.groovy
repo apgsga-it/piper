@@ -103,7 +103,6 @@ class PatchDbCli {
 	}
 	
 	private def validateOpts(def args) {
-		// TODO JHE: Add oc, sr, rr and rtr description here.
 		def cli = new CliBuilder(usage: 'apsdbpli.sh -[h|lpac]')
 		cli.formatter.setDescPadding(0)
 		cli.formatter.setLeftPadding(0)

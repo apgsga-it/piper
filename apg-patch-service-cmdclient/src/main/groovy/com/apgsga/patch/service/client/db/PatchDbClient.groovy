@@ -1,4 +1,4 @@
-package com.apgsga.patch.service.client
+package com.apgsga.patch.service.client.db
 import groovy.sql.Sql
 class PatchDbClient {
 	
