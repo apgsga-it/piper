@@ -129,8 +129,8 @@ class PatchRevisionCli {
 		def options = cli.parse(args)
 		def error = false;
 
-		if (options == null) {
-			println "Wrong parameters"
+		if (!options | options.getOptions().size() == 0) {
+			println "No option have been provided, please see the usage."
 			cli.usage()
 			return null
 		}
