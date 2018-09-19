@@ -110,6 +110,7 @@ class PatchDbCli {
 		cli.with {
 			h longOpt: 'help', 'Show usage information', required: false
 			lpac longOpt: 'listPatchAfterClone', args:1, argName: 'status', 'Get list of patches to be re-installed after a clone', required: false
+			
 		}
 		
 		def options = cli.parse(args)

@@ -29,7 +29,7 @@ public class ErrorMessages {
 		try {
 			properties.load(resource.getInputStream());
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new MessageFileLoadingException(e);
 		}
 		messageSource.setCommonMessages(properties);
 	}

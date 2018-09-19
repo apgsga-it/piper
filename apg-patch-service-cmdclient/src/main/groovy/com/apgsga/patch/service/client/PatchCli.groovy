@@ -171,7 +171,7 @@ class PatchCli {
 			um longOpt: 'uploadServicesMeta', args:1, argName: 'file', 'Upload ServiceMetaData from <file> to server', required: false
 			la longOpt: 'listAllFiles', 'List all files on server', required: false
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
-			// TODO (CHE,13.9) Seperate PatchOpService into own Cli 
+			// TODO (CHE,13.9) Seperate Db Part into own Cli, needs to be coordinated with current Patch System (PatchOMat)
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
 			oc longOpt: 'onclone', args:1, argName: 'target', 'Call Patch Service onClone REST API', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false

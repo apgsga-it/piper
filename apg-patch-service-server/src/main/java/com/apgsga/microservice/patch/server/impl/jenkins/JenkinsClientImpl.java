@@ -69,17 +69,23 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	@Override
 	public void startInstallPipeline(Patch patch) {
-		startPipeline(patch, "Download");
+		startPipeline(patch, "Download", false);
 
 	}
 
 	@Override
 	public void startProdPatchPipeline(Patch patch) {
-		startPipeline(patch, "");
+		startPipeline(patch, "", false);
 
 	}
 
-	private void startPipeline(Patch patch, String jobSuffix) {
+	@Override
+	public void restartProdPatchPipeline(Patch patch) {
+		startPipeline(patch, "", true);
+
+	}
+
+	private void startPipeline(Patch patch, String jobSuffix, boolean restart) {
 		try {
 			String patchName = PATCH_CONS + patch.getPatchNummer();
 			String jobName = patchName + jobSuffix;
@@ -89,6 +95,8 @@ public class JenkinsClientImpl implements JenkinsClient {
 			Map<String, String> jobParm = Maps.newHashMap();
 			jobParm.put(TOKEN_CONS, jobName);
 			jobParm.put("PARAMETER", patchFile.getAbsolutePath());
+			jobParm.put("RESTART" , restart ? "TRUE" : "FALSE");
+		
 			// TODO (jhe , che , 12.12. 2017) : hangs, when job fails
 			// immediately
 			LOGGER.info("Triggering Pipeline Job and waiting until Building " + jobName + " with Paramter: "
@@ -152,6 +160,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 	private void inputActionForPipeline(Patch patch, String action, PipelineBuild lastBuild)
 			throws IOException, InterruptedException {
 		while (waitForAndProcessInput(patch, action, lastBuild)) {
+			// Loops with condition
 			
 		}
 	}
@@ -191,13 +200,11 @@ public class JenkinsClientImpl implements JenkinsClient {
 	private void validateLastPipelineBuilder(String patchNumber, PipelineBuild lastBuild) throws IOException {
 		if (lastBuild == null || lastBuild.equals(Build.BUILD_HAS_NEVER_RUN)
 				|| lastBuild.equals(Build.BUILD_HAS_BEEN_CANCELLED)) {
-			// TODO (che, 28.12 ) : do what
 			LOGGER.warn("Job with patchNumber: " + patchNumber + IS_NOT_BUILDING_CONS);
 			return;
 		}
 		BuildWithDetails buildDetails = lastBuild.details();
 		if (buildDetails == null || !buildDetails.isBuilding()) {
-			// TODO (che, 28.12 ) : do what
 			LOGGER.warn("Job with patchNumber: " + patchNumber + IS_NOT_BUILDING_CONS);
 		}
 	}
