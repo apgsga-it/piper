@@ -10,6 +10,8 @@ public interface JenkinsClient {
 	public void startInstallPipeline(Patch patch);
 
 	public void startProdPatchPipeline(Patch patch);
+	
+	public void restartProdPatchPipeline(Patch patch);
 
 	public void cancelPatchPipeline(Patch patch);
 

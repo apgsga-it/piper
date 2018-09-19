@@ -45,7 +45,7 @@ import com.google.common.collect.Lists;
 @Component("ServerBean")
 public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
-	protected final Log LOGGER = LogFactory.getLog(getClass());
+	protected static final Log LOGGER = LogFactory.getLog(SimplePatchContainerBean.class.getName());
 
 	@Autowired
 	@Qualifier("patchPersistence")
@@ -83,8 +83,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		super();
 		this.repo = repo;
 	}
-	
-	
 
 	@Override
 	public List<String> listDbModules() {
@@ -251,14 +249,14 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		patchActionExecutor.execute(patchNumber, toStatus);
 	}
 
-	private List<MavenArtifact> getArtifactsWithNameFromBom(String version) {
-		try {
-			return am.getArtifactsWithNameFromBom(version);
-		} catch (Exception e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"SimplePatchContainerBean.getArtifactsWithNameFromBom.exception",
-					new Object[] { e.getMessage(), version }, e);
-		}
+	@Override
+	public void restartProdPipeline(String patchNumber) {
+		Asserts.notNull(patchNumber, "SimplePatchContainerBean.restartProdPipeline.patchnumber.notnull.assert",
+				new Object[] {});
+		Asserts.isTrue((repo.patchExists(patchNumber)),
+				"SimplePatchContainerBean.restartProdPipeline.patch.exists.assert", new Object[] { patchNumber });
+		Patch patch = repo.findById(patchNumber);
+		jenkinsClient.restartProdPatchPipeline(patch);
 	}
 
 	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
@@ -294,15 +292,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		cmdRunner.postProcess();
 		return artifactWihInvalidNames;
 	}
-	
-	
 
 	@Override
 	public void cleanLocalMavenRepo() {
 		am.cleanLocalMavenRepo();
-		
-	}
 
+	}
 
 	@Override
 	public void onClone(String target) {

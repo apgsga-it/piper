@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.apgsga.microservice.patch.api.DbModules;
-import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchOpService;
 import com.apgsga.microservice.patch.api.PatchPersistence;
@@ -32,7 +31,7 @@ import com.apgsga.microservice.patch.api.ServicesMetaData;
 @RequestMapping(path = "patch/private")
 public class PatchOpServiceController implements PatchOpService, PatchPersistence {
 
-	static protected final Log LOGGER = LogFactory.getLog(PatchOpServiceController.class.getName());
+	protected static final Log LOGGER = LogFactory.getLog(PatchOpServiceController.class.getName());
 
 	@Autowired
 	private PatchPersistence repo;
@@ -68,6 +67,15 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@Override
 	public void savePatch(@RequestBody Patch patch) {
 		repo.savePatch(patch);
+	}
+
+	@RequestMapping(value = "/restartPatchPipeline/{patchNumber}", method = RequestMethod.POST)
+	@ResponseBody
+	@Override
+	public void restartProdPipeline(@PathVariable("patchNumber") String patchNumber) {
+		LOGGER.info("Got restartProdPipeline Request for Patch: " + patchNumber ); 
+		patchService.restartProdPipeline(patchNumber);
+		LOGGER.info("restartProdPipeline Request for Patch: " + patchNumber + " done.");
 	}
 
 	@RequestMapping(value = "/findAllPatchIds", method = RequestMethod.GET)
@@ -154,14 +162,13 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		throw new UnsupportedOperationException();
 	}
 
-	
 	@RequestMapping(value = "/onClone", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	@Override
 	public void onClone(@RequestParam("target") String target) {
 		patchService.onClone(target);
 	}
-	
+
 	@RequestMapping(value = "/cleanLocalMavenRepo", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	@Override

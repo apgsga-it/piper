@@ -32,7 +32,10 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 		"http://" + baseUrl + "/patch/private";
 	}
 
-
+	@Override
+	public void restartProdPipeline(String patchNumber) {
+		restTemplate.postForLocation(getRestBaseUri() + "/restartProdPipeline/{patchNumber}", null, [patchNumber:patchNumber]);
+	}
 
 	@Override
 	public void executeStateTransitionAction(String patchNumber, String toStatus) {

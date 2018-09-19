@@ -27,6 +27,14 @@ public class JenkinsMockClient implements JenkinsClient {
 		LOGGER.info("startProdPatchPipeline for : " + patch.toString());
 
 	}
+	
+	
+
+	@Override
+	public void restartProdPatchPipeline(Patch patch) {
+		LOGGER.info("restartProdPatchPipeline for : " + patch.toString() );
+		
+	}
 
 	@Override
 	public void processInputAction(Patch patch, String target, String stage) {
