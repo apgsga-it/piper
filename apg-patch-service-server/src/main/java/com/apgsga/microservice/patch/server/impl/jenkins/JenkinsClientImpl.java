@@ -13,6 +13,7 @@ import org.springframework.core.task.TaskExecutor;
 
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.google.common.collect.Maps;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.Build;
@@ -95,8 +96,8 @@ public class JenkinsClientImpl implements JenkinsClient {
 			Map<String, String> jobParm = Maps.newHashMap();
 			jobParm.put(TOKEN_CONS, jobName);
 			jobParm.put("PARAMETER", patchFile.getAbsolutePath());
-			jobParm.put("RESTART" , restart ? "TRUE" : "FALSE");
-		
+			jobParm.put("RESTART", restart ? "TRUE" : "FALSE");
+
 			// TODO (jhe , che , 12.12. 2017) : hangs, when job fails
 			// immediately
 			LOGGER.info("Triggering Pipeline Job and waiting until Building " + jobName + " with Paramter: "
@@ -138,7 +139,8 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	@Override
 	public void processInputAction(Patch patch, String targetName, String stage) {
-		String action = stage.equals(CANCEL_CONS) ? stage : PATCH_CONS + patch.getPatchNummer() + stage + targetName + OK_CONS;
+		String action = stage.equals(CANCEL_CONS) ? stage
+				: PATCH_CONS + patch.getPatchNummer() + stage + targetName + OK_CONS;
 		JenkinsServer jenkinsServer = null;
 		try {
 			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
@@ -161,7 +163,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 			throws IOException, InterruptedException {
 		while (waitForAndProcessInput(patch, action, lastBuild)) {
 			// Loops with condition
-			
+
 		}
 	}
 
@@ -193,7 +195,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 						"JenkinsPatchClientImpl.inputActionForPipeline.error",
 						new Object[] { patch.toString(), action });
 			}
-			return false; 
+			return false;
 		}
 	}
 
@@ -230,6 +232,9 @@ public class JenkinsClientImpl implements JenkinsClient {
 				throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsAdminClientImpl.startPipeline.error",
 						new Object[] { target, jobName, details.getConsoleOutputText() });
 			}
+		} catch (PatchServiceRuntimeException e) {
+			throw e;
+
 		} catch (Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsAdminClientImpl.startPipeline.error",
 					new Object[] { e.getMessage(), target }, e);
@@ -258,8 +263,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 		}
 		if (retryCnt >= DEFAULT_RETRY_COUNTS) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"JenkinsPatchClientImpl.triggerPipelineJobAndWaitUntilBuilding.error",
-					new Object[] { jobName });
+					"JenkinsPatchClientImpl.triggerPipelineJobAndWaitUntilBuilding.error", new Object[] { jobName });
 		}
 		Build build = server.getBuild(queueItem);
 		retryCnt = 0;
@@ -280,8 +284,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 			retryCnt++;
 		}
 		throw ExceptionFactory.createPatchServiceRuntimeException(
-				"JenkinsPatchClientImpl.triggerPipelineJobAndWaitUntilBuilding.error",
-				new Object[] { jobName });
+				"JenkinsPatchClientImpl.triggerPipelineJobAndWaitUntilBuilding.error", new Object[] { jobName });
 	}
 
 }

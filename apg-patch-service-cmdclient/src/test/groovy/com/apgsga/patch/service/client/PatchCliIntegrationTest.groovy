@@ -27,7 +27,7 @@ import spock.lang.Specification;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = [MicroPatchServer.class ])
 @TestPropertySource(locations = "application-test.properties")
 @ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
-public class IntegrationTest extends Specification {
+public class PatchCliIntegrationTest extends Specification {
 
 	@Value('${json.db.location}')
 	private String dbLocation;
@@ -297,21 +297,6 @@ public class IntegrationTest extends Specification {
 		result.returnCode == 0
 	}
 
-
-	def "Patch Cli valid State Change Action for config db with config file"() {
-		setup:
-		def client = PatchCli.create()
-		when:
-		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"])
-		def result = client.process(["-sta", "5401,EntwicklungInstallationsbereit,mockdb"])
-		then:
-		preCondResult != null
-		preCondResult.returnCode == 0
-		result != null
-		result.returnCode == 0
-		cleanup:
-		repo.clean()
-	}
 
 	def "Patch Cli validate Artifact names from version"() {
 		setup:

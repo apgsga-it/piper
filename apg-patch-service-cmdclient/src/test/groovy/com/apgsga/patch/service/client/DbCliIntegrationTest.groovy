@@ -26,6 +26,7 @@ class DbCliIntegrationTest extends Specification {
 		result.results.size() == 0
 	}
 	
+	// TODO (JHE, CHE, 19.9 ): This doesn't make really sense, what is tested? 
 	def "Patch DB Cli returns patch ids to be re-installed after a clone"() {
 		setup:
 			def patchDbCli = Stub(PatchDbCli.class)
@@ -36,6 +37,22 @@ class DbCliIntegrationTest extends Specification {
 			result = patchDbCli.process(["-lpac", "Informatiktest"])
 		then:
 			result != null
+	}
+	
+	def "Patch DB Cli returns patch ids to be re-installed after a clone, real"() {
+		setup:
+			def patchDbCli = PatchDbCli.create()
+			def result
+			def outputFile = new File("src/test/resources/patchToBeReinstalled.json")
+		when:
+			result = patchDbCli.process(["-lpac", "Informatiktest"])
+		then:
+			result != null
+			outputFile.exists()
+			def patchList = new JsonSlurper().parseText(outputFile.text)
+			println "content of outputfile : ${patchList}"
+		cleanup:
+			outputFile.delete()
 	}
 
 }
