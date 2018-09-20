@@ -44,8 +44,8 @@ class DbCliIntegrationTest extends Specification {
 	}
 
 
-	@Requires({patchExists("4969")})
-	def "Patch DB Cli  returns Status of Patch"() {
+	@Requires({patchExists("5801")})
+	def "Patch DB Cli  returns predecessor States of Patch"() {
 		setup:
 		def patchDbCli = PatchDbCli.create()
 		def result
@@ -55,18 +55,18 @@ class DbCliIntegrationTest extends Specification {
 		savedOut = System.out;
 		buffer = new ByteArrayOutputStream()
 		System.setOut(new PrintStream(buffer))
-		result = patchDbCli.process(["-rsta", "4969"])
+		result = patchDbCli.process(["-rsta", "5801"])
 		System.setOut(savedOut)
 		then:
 		result != null
 		result.returnCode == 0
-		result.status == 80
-		buffer.toString().trim() == "80"
+	 	result.result == ['Entwicklung', 'EntwicklungInstallationsbereit', 'InformatiktestInstallationsbereit', 'Informatiktest', 'ProduktionInstallationsbereit']
+		buffer.toString().trim().tokenize('::') == result.result
 
 	}
 	
 	@Requires({dbAvailable()})
-	def "Patch DB Cli tries to retrieve Status of non existing Patch"() {
+	def "Patch DB Cli tries to retrieve predecessor States non existing Patch"() {
 		setup:
 		def patchDbCli = PatchDbCli.create()
 		def result

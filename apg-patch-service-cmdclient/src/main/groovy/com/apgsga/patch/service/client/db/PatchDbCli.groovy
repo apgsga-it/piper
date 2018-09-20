@@ -4,7 +4,7 @@ import org.apache.commons.lang.exception.ExceptionUtils
 import org.codehaus.groovy.runtime.StackTraceUtils
 import org.springframework.core.io.ClassPathResource
 
-import com.apgsga.patch.client.utils.TargetSystemMappings
+import com.apgsga.patch.service.client.utils.TargetSystemMappings
 import com.apgsga.patch.service.client.PatchClientServerException
 
 import groovy.sql.Sql
@@ -45,7 +45,7 @@ class PatchDbCli {
 				def status = options.lpacs[0]
 				cmdResults.result = dbCli.listPatchAfterClone(status,config.postclone.list.patch.file.path)
 			} else if (options.rsta) {
-				cmdResults.status  = dbCli.retrievePredecessorStatesForPatch(options.rsta)
+				cmdResults.result  = dbCli.retrievePredecessorStatesForPatch(options.rsta)
 			} else if (options.sta) {
 				def patchNumber = options.stas[0]
 				def toState = options.stas[1]

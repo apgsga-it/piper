@@ -7,7 +7,7 @@ import org.springframework.core.io.ClassPathResource
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.ServicesMetaData
-import com.apgsga.patch.client.utils.TargetSystemMappings
+import com.apgsga.patch.service.client.utils.TargetSystemMappings
 import com.fasterxml.jackson.databind.ObjectMapper
 
 import groovy.json.JsonSlurper
