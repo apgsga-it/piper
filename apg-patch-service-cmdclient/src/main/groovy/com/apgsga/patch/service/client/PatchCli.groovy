@@ -1,21 +1,19 @@
 package com.apgsga.patch.service.client
 
 
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.runtime.StackTraceUtils
 import org.springframework.core.io.ClassPathResource
 
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.ServicesMetaData
-import com.apgsga.patch.service.client.db.PatchDbClient
+import com.apgsga.patch.client.utils.TargetSystemMappings
 import com.fasterxml.jackson.databind.ObjectMapper
 
 import groovy.json.JsonSlurper
 
 class PatchCli {
-	
+
 	public static PatchCli create() {
 		def patchCli = new PatchCli()
 		return patchCli
@@ -24,8 +22,8 @@ class PatchCli {
 	private PatchCli() {
 		super();
 	}
-	
-	def validComponents = ["db", "aps", "mockdb", "nil"]
+
+	def validComponents = [ "aps", "nil"]
 	def validate = true
 	def config
 
@@ -33,6 +31,7 @@ class PatchCli {
 		println "apscli running with ${profile} profile"
 		println args
 		config = parseConfig()
+		TargetSystemMappings.instance.load(config)
 		def cmdResults = new Expando();
 		cmdResults.returnCode = 1
 		cmdResults.results = [:]
@@ -42,68 +41,69 @@ class PatchCli {
 			return cmdResults
 		}
 		try {
+			def patchClient = new PatchServiceClient(config)
 			if (options.l) {
-				def result = uploadPatchFiles(options)
+				def result = uploadPatchFiles(patchClient,options)
 				cmdResults.results['l'] = result
 			}
 			if (options.d) {
-				def result = downloadPatchFiles(options)
+				def result = downloadPatchFiles(patchClient,options)
 				cmdResults.results['d'] =  result
 			}
 			if (options.e) {
-				def result = patchExists(options)
+				def result = patchExists(patchClient,options)
 				cmdResults.results['e'] =  result
 			}
 			if (options.fs) {
-				def result = findById(options)
+				def result = findById(patchClient,options)
 				cmdResults.results['f'] = result
 			}
 			if (options.a) {
-				def result = findAndPrintAllPatchIds()
+				def result = findAndPrintAllPatchIds(patchClient,options)
 				cmdResults.results['a'] =  result
 			}
 			if (options.r) {
-				def result = removePatch(options)
+				def result = removePatch(patchClient,options)
 				cmdResults.results['r'] =  result
 			}
 			if (options.s) {
-				def result = uploadPatch(options)
+				def result = uploadPatch(patchClient,options)
 				cmdResults.results['s']=  result
 			}
 			if (options.sa) {
-				def result = savePatch(options)
+				def result = savePatch(patchClient,options)
 				cmdResults.results['sa']=  result
 			}
 			if (options.dd) {
-				def result = downloadDbModules(options)
+				def result = downloadDbModules(patchClient,options)
 				cmdResults.results['dd'] = result
 			}
 			if (options.ud) {
-				def result = uploadDbModules(options)
+				def result = uploadDbModules(patchClient,options)
 				cmdResults.results['ud'] = result
 			}
 			if (options.dm) {
-				def result = downloadServiceMetaData(options)
+				def result = downloadServiceMetaData(patchClient,options)
 				cmdResults.results['dm'] = result
 			}
 			if (options.um) {
-				def result = uploadServiceMetaData(options)
+				def result = uploadServiceMetaData(patchClient,options)
 				cmdResults.results['um'] = result
 			}
 			if (options.sta) {
-				def result = stateChangeAction(options)
+				def result = stateChangeAction(patchClient,options)
 				cmdResults.results['sta'] = result
 			}
 			if (options.la) {
-				def result = listAllFiles(options)
+				def result = listAllFiles(patchClient,options)
 				cmdResults.results['la'] = result
 			}
 			if (options.lf) {
-				def result = listFiles(options)
+				def result = listFiles(patchClient,options)
 				cmdResults.results['lf'] = result
 			}
 			if (options.oc) {
-				def result = onClone(options)
+				def result = onClone(patchClient,options)
 				cmdResults.results['oc'] = result
 			}
 			if (options.cr) {
@@ -111,7 +111,7 @@ class PatchCli {
 				cmdResults.results['cr'] = result
 			}
 			if (options.cm) {
-				def result = cleanLocalMavenRepo()
+				def result = cleanLocalMavenRepo(patchClient,options)
 				cmdResults.results['cm'] = result
 			}
 			cmdResults.returnCode = 0
@@ -120,12 +120,10 @@ class PatchCli {
 			System.err.println "Server Error ccurred on ${e.errorMessage.timestamp} : ${e.errorMessage.errorText} "
 			cmdResults.results['error'] = e.errorMessage
 			return cmdResults
-
 		} catch (AssertionError e) {
 			System.err.println "Client Error ccurred ${e.message} "
 			cmdResults.results['error'] = e.message
 			return cmdResults
-
 		} catch (Exception e) {
 			System.err.println " Unhandling Exception occurred "
 			System.err.println e.toString()
@@ -134,24 +132,24 @@ class PatchCli {
 			return cmdResults
 		}
 	}
-	
+
 	private def parseConfig() {
 		ClassPathResource res = new ClassPathResource('apscli.properties')
 		assert res.exists() : "apscli.properties doesn't exist or is not accessible!"
 		ConfigObject conf = new ConfigSlurper(profile).parse(res.URL);
 		return conf
 	}
-	
+
 	private getProfile() {
 		def apsCliEnv = System.getProperty("apscli.env")
 		// If apscli.env is not define, we assume we're testing
 		def prof =  apsCliEnv ?: "test"
 		return prof
 	}
-	
+
 	def validateOpts(args) {
 		// TODO JHE: Add oc, sr, rr and rtr description here.
-		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-[l|d|dd|dm] <directory>]  [-[e|r] <patchnumber>] [-[s|sa|ud|um] <file>] [-f <patchnumber,directory>] [-sta <patchnumber,toState,[aps,db,nil]]')
+		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-[l|d|dd|dm] <directory>]  [-[e|r] <patchnumber>] [-[s|sa|ud|um] <file>] [-f <patchnumber,directory>] [-sta <patchnumber,toState,[aps]]')
 		cli.formatter.setDescPadding(0)
 		cli.formatter.setLeftPadding(0)
 		cli.formatter.setWidth(100)
@@ -171,10 +169,11 @@ class PatchCli {
 			um longOpt: 'uploadServicesMeta', args:1, argName: 'file', 'Upload ServiceMetaData from <file> to server', required: false
 			la longOpt: 'listAllFiles', 'List all files on server', required: false
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
-			// TODO (CHE,13.9) Seperate Db Part into own Cli, needs to be coordinated with current Patch System (PatchOMat)
-			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can be service,db or null ', required: false
+			// TODO (CHE,13.9) Get rid of the component parameter, needs to be coordinated with current Patch System (PatchOMat)
+			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can only be aps ', required: false
 			oc longOpt: 'onclone', args:1, argName: 'target', 'Call Patch Service onClone REST API', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
+			// TODO (JHE, CHE, 12.9 ) move this to own cli
 			cr longOpt: 'cleanReleases', args:1, argName: 'target', 'Clean release Artifacts for a given target on Artifactory', required: false
 		}
 
@@ -190,10 +189,10 @@ class PatchCli {
 		if (!validate) {
 			return options
 		}
-		
+
 		if (!options | options.h| options.getOptions().size() == 0) {
 			cli.usage()
-			def validToStates = getTargetSystemMappings().keySet()
+			def validToStates = TargetSystemMappings.instance.get().keySet()
 			println "Valid toStates are: ${validToStates}"
 			println "Valid components are: ${validComponents}"
 			return null
@@ -282,12 +281,9 @@ class PatchCli {
 				error = true
 			}
 		}
-		if (options.db && !options.sta) {
-			println "No need to have a db configuration, if not using sta"
-		}
 		if (options.sta) {
 			if (options.stas.size() != 3 ) {
-				println "Option sta needs 3 arguments: <patchNumber,toState,[db,aps,nil]>"
+				println "Option sta needs 3 arguments: <patchNumber,toState, aps]>"
 				error = true
 			}
 			def patchNumber = options.stas[0]
@@ -296,7 +292,7 @@ class PatchCli {
 				error = true
 			}
 			def toState = options.stas[1]
-			def validToStates = getTargetSystemMappings().keySet()
+			def validToStates = TargetSystemMappings.instance.get().keySet()
 			if (!validToStates.contains(toState) ) {
 				println "ToState ${toState} not valid: needs to be one of ${validToStates}"
 				error = true
@@ -306,14 +302,6 @@ class PatchCli {
 				println "Component ${component} not valid: needs to be one of ${validComponents}"
 				error = true
 			}
-			if (options.db) {
-				def dbConfigFile = new File(options.db)
-				if (!dbConfigFile.exists() || !dbConfigFile.isFile()) {
-					println "Db Configfile ${dbConfigFile} not valid: does'nt exist or isn't a file"
-					error = true
-				}
-			}
-
 		}
 		if (options.e) {
 			if (!options.e.isInteger()) {
@@ -339,27 +327,15 @@ class PatchCli {
 		}
 		options
 	}
-	
-	def cleanLocalMavenRepo() {
-		def patchClient = new PatchServiceClient(config)
+
+	def cleanLocalMavenRepo(def patchClient) {
 		def cmdResult = new Expando()
 		patchClient.cleanLocalMavenRepo();
 		cmdResult
 	}
-	
-	def getTargetSystemMappings() {
-		def mappingFileName = config.target.system.mapping.file.name
-		def configDir = config.config.dir
-		def targetSystemMappingsFilePath = "${configDir}/${mappingFileName}"
-		def targetSystemFile = new File(targetSystemMappingsFilePath)
-		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
-		def targetSystemMappings = [:]
-		jsonSystemTargets.targetSystems.find( { a ->  a.stages.find( { targetSystemMappings.put("${a.name}${it.toState}".toString(),"${it.code}") })} )
-		return targetSystemMappings
-	}
-	
-	def stateChangeAction(def options) {
-		def patchClient = new PatchServiceClient(config)
+
+
+	def stateChangeAction(def patchClient,def options) {
 		def cmdResult = new Expando()
 		def patchNumber = options.stas[0]
 		def toState = options.stas[1]
@@ -369,29 +345,24 @@ class PatchCli {
 		cmdResult.component = component
 		if (component.equals("aps")) {
 			patchClient.executeStateTransitionAction(patchNumber,toState)
-		} else if (component.equals("db") || component.equals("mockdb")) {
-			def dbcli = new PatchDbClient(component,getTargetSystemMappings())
-			def jdbcConfigFule = new File(config.ops.groovy.file.path)
-			def defaultJdbcConfig = new ConfigSlurper().parse(jdbcConfigFule.toURI().toURL())
-			dbcli.executeStateTransitionAction(defaultJdbcConfig, patchNumber, toState)
 		} else {
 			println "Skipping State change Processing for ${patchNumber}"
 		}
 		return cmdResult
 	}
 
-	def findById(def options) {
+	def findById(def patchClient,def options) {
 		def cmdResult = new Expando()
 		def patchNumber = options.fs[0]
 		def dirName = options.fs[1]
-		def found = retrieveAndWritePatch(patchNumber, dirName)
+		def found = retrieveAndWritePatch(patchClient, patchNumber, dirName )
 		cmdResult.patchNumber = patchNumber
 		cmdResult.dirName = dirName
 		cmdResult.exists = found
 		return cmdResult
 	}
 
-	def downloadPatchFiles(def options) {
+	def downloadPatchFiles(def patchClient,def options) {
 		def cmdResult = new Expando()
 		List<String> ids =  patchClient.findAllPatchIds()
 		ids.each { id ->
@@ -402,32 +373,28 @@ class PatchCli {
 		return cmdResult
 	}
 
-	def findAndPrintAllPatchIds() {
-		def patchClient = new PatchServiceClient(config)
+	def findAndPrintAllPatchIds(def patchClient,def options) {
 		List<String> ids =  patchClient.findAllPatchIds()
 		println "All Patch Ids: ${ids}"
 		def cmdResult = new Expando()
 		cmdResult.patchNumbers = ids
 	}
 
-	def listAllFiles(def options) {
-		def patchClient = new PatchServiceClient(config)
+	def listAllFiles(def patchClient,def options) {
 		List<String> files =  patchClient.listAllFiles()
 		println "All Files on server: ${files}"
 		def cmdResult = new Expando()
 		cmdResult.files = files
 	}
 
-	def listFiles(def options) {
-		def patchClient = new PatchServiceClient(config)
+	def listFiles(def patchClient,def options) {
 		List<String> files =  patchClient.listFiles(options.lf)
 		println "Files with ${options.lf} as prefix on server: ${files}"
 		def cmdResult = new Expando()
 		cmdResult.files = files
 	}
 
-	def patchExists(def options) {
-		def patchClient = new PatchServiceClient(config)
+	def patchExists(def patchClient,def options) {
 		def exists = patchClient.patchExists(options.e)
 		println "Patch ${options.e} exists is: ${exists} "
 		def cmdResult = new Expando()
@@ -435,8 +402,7 @@ class PatchCli {
 		return cmdResult
 	}
 
-	def savePatch(def options) {
-		def patchClient = new PatchServiceClient(config)
+	def savePatch(def patchClient,def options) {
 		patchClient.save(new File(options.sa), Patch.class)
 		def cmdResult = new Expando()
 		cmdResult.patchFile = options.sa
@@ -444,8 +410,7 @@ class PatchCli {
 	}
 
 
-	def uploadPatch(def options) {
-		def patchClient = new PatchServiceClient(config)
+	def uploadPatch(def patchClient,def options) {
 		patchClient.savePatch(new File(options.s), Patch.class)
 		def cmdResult = new Expando()
 		cmdResult.patchFile = options.s
@@ -453,12 +418,11 @@ class PatchCli {
 	}
 
 
-	def removePatch(def options) {
-		def patchClient = new PatchServiceClient(config)
+	def removePatch(def patchClient,def options) {
 		println "Reading: ${options.r} to remove from server"
 		Patch patchData = patchClient.findById(options.r)
 		println "Removing Patch ${options.r}"
-	    assert patchData != null : "Patch ${options.r} to remove not found"
+		assert patchData != null : "Patch ${options.r} to remove not found"
 		patchClient.removePatch(patchData)
 		println "Remove Patch ${options.r} done."
 		def cmdResult = new Expando();
@@ -467,8 +431,7 @@ class PatchCli {
 		return cmdResult
 	}
 
-	def retrieveAndWritePatch(def id, def file) {
-		def patchClient = new PatchServiceClient(config)
+	def retrieveAndWritePatch(def patchClient,def id, def file) {
 		println "Writting: ${id} to ${file}"
 		def patchData = patchClient.findById(id)
 		if (patchData == null) {
@@ -480,8 +443,7 @@ class PatchCli {
 		return true
 	}
 
-	def uploadPatchFiles(def options) {
-		def patchClient = new PatchServiceClient(config)
+	def uploadPatchFiles(def patchClient,def options) {
 		def found = false
 		def cmdResult = new Expando()
 		cmdResult.fileNames = []
@@ -499,8 +461,7 @@ class PatchCli {
 		return cmdResult
 	}
 
-	def downloadDbModules(def options) {
-		def patchClient = new PatchServiceClient(config)
+	def downloadDbModules(def patchClient,def options) {
 		println "Downloading Dbmodules to ${options.dd}"
 		def cmdResult = new Expando()
 		def dbmodules =  patchClient.getDbModules()
@@ -518,16 +479,14 @@ class PatchCli {
 		return cmdResult
 	}
 
-	def uploadDbModules(def options) {
-		def patchClient = new PatchServiceClient(config)
+	def uploadDbModules(def patchClient,def options) {
 		println "Uploading Dbmodules from ${options.ud}"
 		ObjectMapper mapper = new ObjectMapper();
 		def dbModules = mapper.readValue(new File("${options.ud}"), DbModules.class)
 		patchClient.saveDbModules(dbModules)
 	}
 
-	def downloadServiceMetaData(def options) {
-		def patchClient = new PatchServiceClient(config)
+	def downloadServiceMetaData(def patchClient,def options){
 		println "Downloading ServiceMetaData to ${options.dm}"
 		def cmdResult = new Expando()
 		def data =  patchClient.getServicesMetaData()
@@ -545,8 +504,7 @@ class PatchCli {
 		return cmdResult
 	}
 
-	def uploadServiceMetaData(def options) {
-		def patchClient = new PatchServiceClient(config)
+	def uploadServiceMetaData(def patchClient,def options) {
 		println "Uploading ServiceMetaData from ${options.um}"
 		ObjectMapper mapper = new ObjectMapper();
 		def serviceMetaData = mapper.readValue(new File("${options.um}"), ServicesMetaData.class)
@@ -554,8 +512,7 @@ class PatchCli {
 	}
 
 
-	def onClone(def options) {
-		def patchClient = new PatchServiceClient(config)
+	def onClone(def patchClient,def options) {
 		println "Performing onClone for ${options.ocs[0]}"
 		def target = options.ocs[0]
 		patchClient.onClone(target)

@@ -20,7 +20,7 @@ import spock.lang.Specification;
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = [MicroPatchServer.class ])
 @TestPropertySource(locations = "application-test.properties")
 @ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
-public class IntegrationExceptionHandlingTests extends Specification {
+public class PatchCliIntegrationExceptionHandlingTests extends Specification {
 
 	private static def DEFAULT_CONFIG_OPT = ["-c", "src/test/resources/config"]
 
