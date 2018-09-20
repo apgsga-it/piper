@@ -1,4 +1,4 @@
-package com.apgsga.patch.client.utils
+package com.apgsga.patch.service.client.utils
 
 import groovy.json.JsonSlurper
 import groovy.transform.Synchronized
@@ -19,6 +19,18 @@ public class TargetSystemMappings {
 			null
 		}
 		statusNum
+	}
+	
+	def findPredecessorStates(state) {
+		def predecessorStates = []
+		for (String key : targetSystemMappings.keySet()) {
+			def preState = targetSystemMappings[key]
+			if (state.toString() == preState) {
+				break
+			}
+			predecessorStates << key
+		}
+		predecessorStates
 	}
 	
 	@Synchronized

@@ -2,7 +2,7 @@ package com.apgsga.patch.service.client.db
 import org.springframework.util.Assert
 
 import com.apgsga.microservice.patch.exceptions.Asserts
-import com.apgsga.patch.client.utils.TargetSystemMappings
+import com.apgsga.patch.service.client.utils.TargetSystemMappings
 
 import groovy.json.JsonBuilder
 class PatchDbClient {
@@ -48,9 +48,9 @@ class PatchDbClient {
 	public def retrievePredecessorStatesForPatch(def patchNumber) {
 		def id = patchNumber as Long
 		def patchStatus = sqlRetrievePatchStatus(id)
-		def allowedStateChanges = sqlRetrieveAllowedStates() as Set
-		println patchStatus
-		patchStatus
+		def precedessorStates = TargetSystemMappings.instance.findPredecessorStates(patchStatus)
+		print precedessorStates.join("::")
+		precedessorStates
 	}
 
 
