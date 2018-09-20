@@ -35,7 +35,7 @@ public class PatchCliIntegrationTest extends Specification {
 	@Autowired
 	@Qualifier("patchPersistence")
 	private PatchPersistence repo;
-	
+
 	def setup() {
 		def buildFolder = new File("build")
 		if (!buildFolder.exists()) {
@@ -286,7 +286,7 @@ public class PatchCliIntegrationTest extends Specification {
 		cleanup:
 		repo.clean()
 	}
-	
+
 	def "Patch Cli Missing configuration for State Change Action"() {
 		setup:
 		def client = PatchCli.create()
@@ -307,101 +307,101 @@ public class PatchCliIntegrationTest extends Specification {
 		result != null
 		result.returnCode == 0
 	}
-	
+
 	def "Patch Cli validate onClone mechanism"() {
 		setup:
-			/*
-			 * For our tests, within src/test/resources/TargetSystemMappings.json, CHEI211 is configured as the
-			 * production target.
-			 * 
-			 * In order to test the onClone, we don't start the apscli with "oc" option, but rather simulate that the "oc*
-			 * option itself will do -> "apscli resr ${target}" and "apscli cr ${apscli}"
-			 * 
-			 */
-			def client = PatchCli.create()
-			def revisionClient = PatchRevisionCli.create()
-			def revisionsFile = new File("src/test/resources/Revisions.json")
-			def currentRevision = [P:5,T:30000]
-			def lastRevision = [CHEI212:10036,CHEI211:4,CHEI213:20025]
-			def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
-			revisionsFile.write(new JsonBuilder(revisions).toPrettyString())
-			def revisionsAfterClone
-			def result
-			def crResult
-			def resrResult
-			def oldStream
-			def buffer
-			def revisionAsJson
-			def revisionsFromRRCall
-			def revisionsFromFile
+		/*
+		 * For our tests, within src/test/resources/TargetSystemMappings.json, CHEI211 is configured as the
+		 * production target.
+		 * 
+		 * In order to test the onClone, we don't start the apscli with "oc" option, but rather simulate that the "oc*
+		 * option itself will do -> "apscli resr ${target}" and "apscli cr ${apscli}"
+		 * 
+		 */
+		def client = PatchCli.create()
+		def revisionClient = PatchRevisionCli.create()
+		def revisionsFile = new File("src/test/resources/Revisions.json")
+		def currentRevision = [P:5,T:30000]
+		def lastRevision = [CHEI212:10036,CHEI211:4,CHEI213:20025]
+		def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
+		revisionsFile.write(new JsonBuilder(revisions).toPrettyString())
+		def revisionsAfterClone
+		def result
+		def crResult
+		def resrResult
+		def oldStream
+		def buffer
+		def revisionAsJson
+		def revisionsFromRRCall
+		def revisionsFromFile
 		when:
-			// This is actually that the "oc" would do
-			crResult = client.process(["-cr", "CHEI212"])
-			resrResult = revisionClient.process(["-resr", "CHEI212"])
-			revisionsAfterClone = new JsonSlurper().parseText(revisionsFile.text)
+		// This is actually that the "oc" would do
+		crResult = client.process(["-cr", "CHEI212"])
+		resrResult = revisionClient.process(["-resr", "CHEI212"])
+		revisionsAfterClone = new JsonSlurper().parseText(revisionsFile.text)
 		then:
-			resrResult.returnCode == 0
-			crResult.returnCode == 0
-			revisionsFile.exists()
-			revisionsAfterClone.currentRevision["P"].toInteger() == 5
-			revisionsAfterClone.currentRevision["T"].toInteger() == 30000
-			revisionsAfterClone.lastRevisions["CHEI211"].toInteger() == 4
-			revisionsAfterClone.lastRevisions["CHEI213"].toInteger() == 20025
-			revisionsAfterClone.lastRevisions["CHEI212"] == "10000@P"
+		resrResult.returnCode == 0
+		crResult.returnCode == 0
+		revisionsFile.exists()
+		revisionsAfterClone.currentRevision["P"].toInteger() == 5
+		revisionsAfterClone.currentRevision["T"].toInteger() == 30000
+		revisionsAfterClone.lastRevisions["CHEI211"].toInteger() == 4
+		revisionsAfterClone.lastRevisions["CHEI213"].toInteger() == 20025
+		revisionsAfterClone.lastRevisions["CHEI212"] == "10000@P"
 		when:
-			oldStream = System.out;
-			buffer = new ByteArrayOutputStream()
-			System.setOut(new PrintStream(buffer))
-			result = revisionClient.process(["-rr", "T,CHEI212"])
-			System.setOut(oldStream)
-			revisionAsJson = TestUtil.getRevisionLine(buffer.toString())
-			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
+		oldStream = System.out;
+		buffer = new ByteArrayOutputStream()
+		System.setOut(new PrintStream(buffer))
+		result = revisionClient.process(["-rr", "T,CHEI212"])
+		System.setOut(oldStream)
+		revisionAsJson = TestUtil.getRevisionLine(buffer.toString())
+		revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
 		then:
-			result.returnCode == 0
-			revisionsFile.exists()
-			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 10000
-			revisionsFromRRCall.fromRetrieveRevision.lastRevision == "CLONED"
+		result.returnCode == 0
+		revisionsFile.exists()
+		revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 10000
+		revisionsFromRRCall.fromRetrieveRevision.lastRevision == "CLONED"
 		when:
-			result = revisionClient.process(["-sr", "T,CHEI212,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
-			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
+		result = revisionClient.process(["-sr", "T,CHEI212,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
+		revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
 		then:
-			revisionsFile.exists()
-			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10000
-			revisionsFromFile.lastRevisions["CHEI211"].toInteger() == 4
-			revisionsFromFile.lastRevisions["CHEI213"].toInteger() == 20025
-			revisionsFromFile.currentRevision["P"].toInteger() == 5
-			revisionsFromFile.currentRevision["T"].toInteger() == 30000
+		revisionsFile.exists()
+		revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10000
+		revisionsFromFile.lastRevisions["CHEI211"].toInteger() == 4
+		revisionsFromFile.lastRevisions["CHEI213"].toInteger() == 20025
+		revisionsFromFile.currentRevision["P"].toInteger() == 5
+		revisionsFromFile.currentRevision["T"].toInteger() == 30000
 		when:
-			oldStream = System.out;
-			buffer = new ByteArrayOutputStream()
-			System.setOut(new PrintStream(buffer))
-			result = revisionClient.process(["-rr", "T,CHEI212"])
-			System.setOut(oldStream)
-			revisionAsJson = TestUtil.getRevisionLine(buffer.toString())
-			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
+		oldStream = System.out;
+		buffer = new ByteArrayOutputStream()
+		System.setOut(new PrintStream(buffer))
+		result = revisionClient.process(["-rr", "T,CHEI212"])
+		System.setOut(oldStream)
+		revisionAsJson = TestUtil.getRevisionLine(buffer.toString())
+		revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
 		then:
-			result.returnCode == 0
-			revisionsFile.exists()
-			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 10001
-			revisionsFromRRCall.fromRetrieveRevision.lastRevision.toInteger() == 10000
+		result.returnCode == 0
+		revisionsFile.exists()
+		revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 10001
+		revisionsFromRRCall.fromRetrieveRevision.lastRevision.toInteger() == 10000
 		when:
-			// We shouldn't do anything, and the process shouldn't crash if we try to clone a target which doesn't exist within Revisions.json
-			currentRevision = [P:5,T:30000]
-			lastRevision = [CHEI212:10036,CHEI211:4,CHEI213:20025]
-			revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
-			revisionsFile.write(new JsonBuilder(revisions).toPrettyString())
-			crResult = client.process(["-cr", "CHQI567"])
-			resrResult = revisionClient.process(["-resr", "CHQI567"])
-			def revisionsAfterUnvalidClone = new JsonSlurper().parseText(revisionsFile.text)
+		// We shouldn't do anything, and the process shouldn't crash if we try to clone a target which doesn't exist within Revisions.json
+		currentRevision = [P:5,T:30000]
+		lastRevision = [CHEI212:10036,CHEI211:4,CHEI213:20025]
+		revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
+		revisionsFile.write(new JsonBuilder(revisions).toPrettyString())
+		crResult = client.process(["-cr", "CHQI567"])
+		resrResult = revisionClient.process(["-resr", "CHQI567"])
+		def revisionsAfterUnvalidClone = new JsonSlurper().parseText(revisionsFile.text)
 		then:
-			result.returnCode == 0
-			revisionsFile.exists()
-			revisionsAfterUnvalidClone.currentRevision["P"].toInteger() == 5
-			revisionsAfterUnvalidClone.currentRevision["T"].toInteger() == 30000
-			revisionsAfterUnvalidClone.lastRevisions["CHEI211"].toInteger() == 4
-			revisionsAfterUnvalidClone.lastRevisions["CHEI213"].toInteger() == 20025
-			revisionsAfterUnvalidClone.lastRevisions["CHEI212"].toInteger() == 10036
+		result.returnCode == 0
+		revisionsFile.exists()
+		revisionsAfterUnvalidClone.currentRevision["P"].toInteger() == 5
+		revisionsAfterUnvalidClone.currentRevision["T"].toInteger() == 30000
+		revisionsAfterUnvalidClone.lastRevisions["CHEI211"].toInteger() == 4
+		revisionsAfterUnvalidClone.lastRevisions["CHEI213"].toInteger() == 20025
+		revisionsAfterUnvalidClone.lastRevisions["CHEI212"].toInteger() == 10036
 		cleanup:
-			revisionsFile.delete()
+		revisionsFile.delete()
 	}
 }

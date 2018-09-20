@@ -31,6 +31,7 @@ class PatchCli {
 		println "apscli running with ${profile} profile"
 		println args
 		config = parseConfig()
+		TargetSystemMappings.instance.load(config)
 		def cmdResults = new Expando();
 		cmdResults.returnCode = 1
 		cmdResults.results = [:]
@@ -191,7 +192,7 @@ class PatchCli {
 
 		if (!options | options.h| options.getOptions().size() == 0) {
 			cli.usage()
-			def validToStates = TargetSystemMappings.load(config).keySet()
+			def validToStates = TargetSystemMappings.instance.get().keySet()
 			println "Valid toStates are: ${validToStates}"
 			println "Valid components are: ${validComponents}"
 			return null
@@ -291,7 +292,7 @@ class PatchCli {
 				error = true
 			}
 			def toState = options.stas[1]
-			def validToStates = TargetSystemMappings.load(config).keySet()
+			def validToStates = TargetSystemMappings.instance.get().keySet()
 			if (!validToStates.contains(toState) ) {
 				println "ToState ${toState} not valid: needs to be one of ${validToStates}"
 				error = true
@@ -354,7 +355,7 @@ class PatchCli {
 		def cmdResult = new Expando()
 		def patchNumber = options.fs[0]
 		def dirName = options.fs[1]
-		def found = retrieveAndWritePatch(patchNumber, dirName, patchClient)
+		def found = retrieveAndWritePatch(patchClient, patchNumber, dirName )
 		cmdResult.patchNumber = patchNumber
 		cmdResult.dirName = dirName
 		cmdResult.exists = found

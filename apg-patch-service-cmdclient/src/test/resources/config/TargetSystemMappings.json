@@ -6,17 +6,18 @@
             "typeInd": "T",
             "stages": [
                 {
-                    "name": "startPipelineAndTag",
-                    "toState": "Installationsbereit",
-                    "code": 2,
-                    "implcls": "com.apgsga.microservice.patch.server.impl.EntwicklungInstallationsbereitAction"
-                },
-                {
                     "name": "cancel",
                     "toState": "",
                     "code": 0,
                     "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
+                },
+                {
+                    "name": "startPipelineAndTag",
+                    "toState": "Installationsbereit",
+                    "code": 2,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.EntwicklungInstallationsbereitAction"
                 }
+
             ]
         },
         {

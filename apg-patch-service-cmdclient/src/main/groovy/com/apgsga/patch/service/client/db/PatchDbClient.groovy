@@ -1,8 +1,10 @@
 package com.apgsga.patch.service.client.db
+import org.springframework.util.Assert
+
+import com.apgsga.microservice.patch.exceptions.Asserts
 import com.apgsga.patch.client.utils.TargetSystemMappings
 
 import groovy.json.JsonBuilder
-import groovy.sql.Sql
 class PatchDbClient {
 
 	def config
@@ -14,15 +16,16 @@ class PatchDbClient {
 		this.config = config
 	}
 
-	public void executeStateTransitionAction(def patchNumber, def toStatus) {
-		def statusNum = TargetSystemMappings.findStatus(config, toStatus); 
-		def sql = "update cm_patch_f set status = ${statusNum} where id = ${patchNumber}".toString()
-		def result = dbConnection.execute(sql)
-		println result
+	public def executeStateTransitionAction(def patchNumber, def toStatus) {
+		def statusNum = TargetSystemMappings.instance.findStatus(toStatus) as Long;
+		def id = patchNumber as Long
+		def sql = 'update cm_patch_f set status = :statusNum where id = :id'
+		def result = dbConnection.execute(sql,['statusNum':statusNum,'id':id])
+		print result == false
+		result
 	}
 
 	public def listPatchAfterClone(def status, def filePath) {
-		// If we don't force sql to be a String, ${status} will be replace with a "?" at the time we run the query.
 		def String sql = "SELECT id FROM cm_patch_install_sequence_f WHERE ${status}=1 AND (produktion = 0 OR chronology > trunc(SYSDATE))"
 		def patchNumbers = []
 		dbConnection.eachRow(sql) { row ->
@@ -42,11 +45,30 @@ class PatchDbClient {
 		listPatchFile.write(new JsonBuilder(patchlist:patchNumbers).toPrettyString())
 	}
 
-	public def retrieveCurrentPatchState(def patchNumber) {
-		def sql = "select status from  cm_patch_f where id = ${patchNumber}".toString()
-		def result = dbConnection.firstRow(sql)
-		print result
-		result
+	public def retrievePredecessorStatesForPatch(def patchNumber) {
+		def id = patchNumber as Long
+		def patchStatus = sqlRetrievePatchStatus(id)
+		def allowedStateChanges = sqlRetrieveAllowedStates() as Set
+		println patchStatus
+		patchStatus
+	}
+
+
+	private def sqlRetrievePatchStatus(def id) {
+		def sql = 'select status from  cm_patch_f where id = :patchNumber';
+		def row = dbConnection.firstRow(sql, [patchNumber:id])
+		Assert.notNull(row,"Patch with Id: ${id} not found")
+		Assert.notNull(row.STATUS,"Unexpected Column for sql: ${sql}")
+		def patchStatus =  row.STATUS
+		patchStatus
+	}
+	
+	// TODO (che , 20.9 ) Would be nice, but the required predecessor state are not complete
+	private def sqlRetrieveAllowedStates() {
+		def sql = 'select von_status fromState, zu_status toState from cm_patch_berechtigung_f where user_id in (select user from dual)';
+		def allowedStateChanges = dbConnection.rows(sql)
+		Assert.isTrue(!allowedStateChanges.empty, "Unexpected result")
+		allowedStateChanges
 	}
 
 

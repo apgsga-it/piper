@@ -1,12 +1,20 @@
 package com.apgsga.patch.service.client.db
 
+import org.apache.commons.lang.exception.ExceptionUtils
 import org.codehaus.groovy.runtime.StackTraceUtils
 import org.springframework.core.io.ClassPathResource
 
+import com.apgsga.patch.client.utils.TargetSystemMappings
 import com.apgsga.patch.service.client.PatchClientServerException
 
 import groovy.sql.Sql
 
+/**
+ * This command line Tool  is used to make jdbc calls to the It21 database. 
+ * It is intended to be use in a automated scripting enviroment like Jenkins pipeline, which depend on standard output processing
+ * therefore care has been taken to avoid logging via standard output in the normal path of execution
+ *
+ */
 class PatchDbCli {
 
 	def config
@@ -19,14 +27,10 @@ class PatchDbCli {
 	}
 
 	def process(def args) {
-
-		println "apsDbCli running with ${profile} profile"
-		println args
-
 		config = parseConfig()
+		TargetSystemMappings.instance.load(config)
 		def cmdResults = new Expando();
 		cmdResults.returnCode = 1
-		cmdResults.results = [:]
 		def options = validateOpts(args)
 		if (!options) {
 			cmdResults.returnCode = 0
@@ -36,30 +40,33 @@ class PatchDbCli {
 			def jdbcConfigFile = new File(config.ops.groovy.file.path)
 			def defaultJdbcConfig = new ConfigSlurper().parse(jdbcConfigFile.toURI().toURL())
 			def dbConnection = Sql.newInstance(defaultJdbcConfig.db.url, defaultJdbcConfig.db.user, defaultJdbcConfig.db.passwd)
-			def dbCli = new PatchDbClient(dbConnection, null)
+			def dbCli = new PatchDbClient(dbConnection, config)
 			if(options.lpac) {
 				def status = options.lpacs[0]
-				def result = dbCli.listPatchAfterClone(status,config.postclone.list.patch.file.path)
-				cmdResults.results['lpac'] = result
+				cmdResults.result = dbCli.listPatchAfterClone(status,config.postclone.list.patch.file.path)
 			} else if (options.rsta) {
-				def result = dbCli.retrieveCurrentPatchState(options.rsta[0])
-				cmdResults.results['rsta'] = result
+				cmdResults.status  = dbCli.retrievePredecessorStatesForPatch(options.rsta)
+			} else if (options.sta) {
+				def patchNumber = options.stas[0]
+				def toState = options.stas[1]
+				cmdResults.dbResult = dbCli.executeStateTransitionAction(patchNumber,toState)
 			}
 			cmdResults.returnCode = 0
 			return cmdResults
 		} catch (PatchClientServerException e) {
 			System.err.println "Server Error ccurred on ${e.errorMessage.timestamp} : ${e.errorMessage.errorText} "
-			cmdResults.results['error'] = e.errorMessage
+			cmdResults.error = e.errorMessage
 			return cmdResults
 		} catch (AssertionError e) {
 			System.err.println "Client Error ccurred ${e.message} "
-			cmdResults.results['error'] = e.message
+			println ExceptionUtils.getFullStackTrace(e)
+			cmdResults.error = e.message
 			return cmdResults
 		} catch (Exception e) {
-			System.err.println " Unhandling Exception occurred "
+			System.err.println "Unhandeled Exception occurred "
 			System.err.println e.toString()
-			StackTraceUtils.printSanitizedStackTrace(e,new PrintWriter(System.err))
-			cmdResults.results['error'] = e
+			println ExceptionUtils.getFullStackTrace(e)
+			cmdResults.error = e
 			return cmdResults
 		}
 	}
@@ -79,7 +86,7 @@ class PatchDbCli {
 	}
 
 	private def validateOpts(def args) {
-		def cli = new CliBuilder(usage: 'apsdbpli.sh -[h|lpac]')
+		def cli = new CliBuilder(usage: 'apsdbpli.sh -[h|lpac|[rsta,patchNumber]')
 		cli.formatter.setDescPadding(0)
 		cli.formatter.setLeftPadding(0)
 		cli.formatter.setWidth(100)
@@ -87,7 +94,7 @@ class PatchDbCli {
 			h longOpt: 'help', 'Show usage information', required: false
 			lpac longOpt: 'listPatchAfterClone', args:1, argName: 'status', 'Get list of patches to be re-installed after a clone', required: false
 			rsta longOpt: 'retrievePatchStatus', args:1, argName: 'patchNumber', 'Get the Status for the Patch with PatchNumber', required: false
-			nsta longOpt: 'notifyPatchStatus', args:1, argName: 'patchNumber', 'Notify the Patch Status back to the Db', required: false
+			sta longOpt: 'stateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to the database', required: false
 		}
 
 		def options = cli.parse(args)
@@ -110,18 +117,31 @@ class PatchDbCli {
 				error = true
 			}
 		}
-		
+
 		if(options.rsta) {
-			if(options.rsta.size() != 1) {
-				println("Target status is required when fetching list of patch to be re-installed.")
-				error = true
-			}
 			if (!options.rsta.isInteger()) {
 				println "Patchnumber ${options.rsta} is not a Integer"
 				error = true
 			}
 		}
 
+		if (options.sta) {
+			if (options.stas.size() != 2 ) {
+				println "Option sta needs 2 arguments: <patchNumber,toState>>"
+				error = true
+			}
+			def patchNumber = options.stas[0]
+			if (!patchNumber.isInteger()) {
+				println "Patchnumber ${patchNumber} is not a Integer"
+				error = true
+			}
+			def toState = options.stas[1]
+			def validToStates = TargetSystemMappings.instance.get().keySet()
+			if (!validToStates.contains(toState) ) {
+				println "ToState ${toState} not valid: needs to be one of ${validToStates}"
+				error = true
+			}
+		}
 
 		if(error) {
 			cli.usage()
