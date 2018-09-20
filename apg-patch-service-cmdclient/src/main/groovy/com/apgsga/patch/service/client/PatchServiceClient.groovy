@@ -34,7 +34,7 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 
 	@Override
 	public void restartProdPipeline(String patchNumber) {
-		restTemplate.postForLocation(getRestBaseUri() + "/restartProdPipeline/{patchNumber}", null, [patchNumber:patchNumber]);
+		restTemplate.postForLocation(getRestBaseUri() + "/restartProdPatchPipeline/{patchNumber}", null, [patchNumber:patchNumber]);
 	}
 
 	@Override

@@ -69,7 +69,7 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		repo.savePatch(patch);
 	}
 
-	@RequestMapping(value = "/restartPatchPipeline/{patchNumber}", method = RequestMethod.POST)
+	@RequestMapping(value = "/restartProdPatchPipeline/{patchNumber}", method = RequestMethod.POST)
 	@ResponseBody
 	@Override
 	public void restartProdPipeline(@PathVariable("patchNumber") String patchNumber) {

@@ -74,6 +74,10 @@ class PatchCli {
 				def result = savePatch(patchClient,options)
 				cmdResults.results['sa']=  result
 			}
+			if (options.redo) {
+				def result = redoPatch(patchClient,options)
+				cmdResults.results['sa']=  result
+			}
 			if (options.dd) {
 				def result = downloadDbModules(patchClient,options)
 				cmdResults.results['dd'] = result
@@ -163,6 +167,7 @@ class PatchCli {
 			r longOpt: 'remove', args:1, argName: 'patchNumber', 'Remove Patch with <patchNumber>', required: false
 			s longOpt: 'save', args:1, argName: 'patchFile', 'Uploads a <patchFile> to the server', required: false
 			sa longOpt: 'save', args:1, argName: 'patchFile', 'Saves a <patchFile> to the server, which starts the Patch Pipeline', required: false
+			redo longOpt: 'redo', args:1, argName: 'patchNumber', 'Restarts a patch Patch Pipeline', required: false
 			dd longOpt: 'downloadDbmodules', args:1, argName: 'directory', 'Download Dbmodules from server to <directory>', required: false
 			ud longOpt: 'uploadDbmodules', args:1, argName: 'file', 'Upload Dbmodules from <file> to server', required: false
 			dm longOpt: 'downloadServicesMeta', args:1, argName: 'directory', 'Download ServiceMetaData from server to <directory>', required: false
@@ -309,6 +314,12 @@ class PatchCli {
 				error = true
 			}
 		}
+		if (options.redo) {
+			if (!options.redo.isInteger()) {
+				println "Patchnumber ${options.redo} is not a Integer"
+				error = true
+			}
+		}
 		if (options.oc) {
 			if(options.ocs.size() != 1 || options.ocs[0] == null) {
 				println "You have to provide the target for which the onClone method will be done."
@@ -406,6 +417,13 @@ class PatchCli {
 		patchClient.save(new File(options.sa), Patch.class)
 		def cmdResult = new Expando()
 		cmdResult.patchFile = options.sa
+		return cmdResult
+	}
+	
+	def redoPatch(def patchClient,def options) {
+		patchClient.restartProdPipeline(options.redo)
+		def cmdResult = new Expando()
+		cmdResult.patchFile = options.redo
 		return cmdResult
 	}
 
