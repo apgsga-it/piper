@@ -14,17 +14,15 @@ args = args - "pliRev"
  
 
 if(client.equalsIgnoreCase("pli")) {
-	println "Starting pli client"
 	System.exit(PatchCli.create().process(args).returnCode)
 }
 
 if(client.equalsIgnoreCase("pliDb")) {
-	println "Starting pliDb client"
 	System.exit(PatchDbCli.create().process(args).returnCode)
 }
 
 if(client.equalsIgnoreCase("pliRev")) {
-	println "Starting pliRev client"
+
 	System.exit(PatchRevisionCli.create().process(args).returnCode)
 }
 
