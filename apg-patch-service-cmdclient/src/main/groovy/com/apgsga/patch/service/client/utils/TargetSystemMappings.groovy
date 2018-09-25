@@ -25,10 +25,10 @@ public class TargetSystemMappings {
 		def predecessorStates = []
 		for (String key : targetSystemMappings.keySet()) {
 			def preState = targetSystemMappings[key]
+			predecessorStates << key
 			if (state.toString() == preState) {
 				break
 			}
-			predecessorStates << key
 		}
 		predecessorStates
 	}
