@@ -1,5 +1,7 @@
 package com.apgsga.patch.service.client.utils
 
+import com.google.common.cache.LocalCache.Values
+
 import groovy.json.JsonSlurper
 import groovy.transform.Synchronized
 
@@ -34,14 +36,15 @@ public class TargetSystemMappings {
 	}
 	
 	def relevantStateCode(state,fromToStates) {
+		def codeValues = targetSystemMappings.values()
+		if (codeValues.contains(state.toString())) {
+			return state
+		}
 		for (def row : fromToStates) {
 			def toState = row.TOSTATE
 			def fromState = row.FROMSTATE
-			if (toState.equals(state)) {
-				return fromState
-			}
 			if (fromState.equals(state)) {
-				return fromState
+				return toState
 			}
 		}
 		null
