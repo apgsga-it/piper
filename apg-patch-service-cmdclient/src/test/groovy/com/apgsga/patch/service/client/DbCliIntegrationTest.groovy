@@ -60,7 +60,7 @@ class DbCliIntegrationTest extends Specification {
 		then:
 		result != null
 		result.returnCode == 0
-	 	result.result == ['Entwicklung', 'EntwicklungInstallationsbereit','InformatiktestInstallationsbereit']
+	 	result.result == ['Entwicklung', 'EntwicklungInstallationsbereit','InformatiktestInstallationsbereit','Informatiktest']
 		buffer.toString().trim().tokenize('::') == result.result
 
 	}
