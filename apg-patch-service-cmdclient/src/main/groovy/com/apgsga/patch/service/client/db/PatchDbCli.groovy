@@ -11,7 +11,7 @@ import groovy.sql.Sql
 
 /**
  * This command line Tool  is used to make jdbc calls to the It21 database. 
- * It is intended to be use in a automated scripting enviroment like Jenkins pipeline, which depend on standard output processing
+ * It is intended to be used in a automated scripting enviroment like Jenkins pipeline, which depends on standard output processing
  * therefore care has been taken to avoid logging via standard output in the normal path of execution
  *
  */
@@ -45,7 +45,7 @@ class PatchDbCli {
 				def status = options.lpacs[0]
 				cmdResults.result = dbCli.listPatchAfterClone(status,config.postclone.list.patch.file.path)
 			} else if (options.rsta) {
-				cmdResults.result  = dbCli.retrievePredecessorStatesForPatch(options.rsta)
+				cmdResults.result  = dbCli.retrieveRedoToState(options.rsta)
 			} else if (options.sta) {
 				def patchNumber = options.stas[0]
 				def toState = options.stas[1]

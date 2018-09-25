@@ -46,14 +46,13 @@ class PatchDbClient {
 	}
 
 	// TODO (che, 25.9 ) : Better way to achieve this
-	public def retrievePredecessorStatesForPatch(def patchNumber) {
+	public def retrieveRedoToState(def patchNumber) {
 		def id = patchNumber as Long
-		def patchStatus = sqlRetrievePatchStatus(id)
-		def relevantStatus = TargetSystemMappings.instance.relevantStateCode(patchStatus,fromToStates())
-		Assert.notNull(relevantStatus, "No relevant State found for ${patchNumber} with ${patchStatus}")
-		def precedessorStates = TargetSystemMappings.instance.findPredecessorStates(relevantStatus)
-		println precedessorStates.join("::")
-		precedessorStates
+		def patchCode = sqlRetrievePatchStatus(id)
+		def relevantToStateCode = TargetSystemMappings.instance.relevantStateCode(patchCode,fromToStates())
+		Assert.notNull(relevantToStateCode, "No relevant State found for ${patchNumber} with ${patchCode}")
+		def redoToState = TargetSystemMappings.instance.findState(relevantToStateCode)
+		redoToState
 	}
 
 

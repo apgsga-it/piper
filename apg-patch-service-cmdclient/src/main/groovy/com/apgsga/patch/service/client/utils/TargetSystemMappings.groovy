@@ -23,6 +23,17 @@ public class TargetSystemMappings {
 		statusNum
 	}
 	
+	def findState(stateCode) {
+		for (String key : targetSystemMappings.keySet()) {
+			def preState = targetSystemMappings[key]
+			if (stateCode.toString() == preState) {
+				return key
+			}
+		}
+		null
+	}
+
+	
 	def findPredecessorStates(state) {
 		def predecessorStates = []
 		for (String key : targetSystemMappings.keySet()) {
