@@ -33,6 +33,20 @@ public class TargetSystemMappings {
 		predecessorStates
 	}
 	
+	def relevantStateCode(state,fromToStates) {
+		for (def row : fromToStates) {
+			def toState = row.TOSTATE
+			def fromState = row.FROMSTATE
+			if (toState.equals(state)) {
+				return fromState
+			}
+			if (fromState.equals(state)) {
+				return fromState
+			}
+		}
+		null
+	}
+	
 	@Synchronized
 	def load(config) {
 		def mappingFileName = config.target.system.mapping.file.name

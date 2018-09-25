@@ -45,10 +45,13 @@ class PatchDbClient {
 		listPatchFile.write(new JsonBuilder(patchlist:patchNumbers).toPrettyString())
 	}
 
+	// TODO (che, 25.9 ) : Better way to achieve this
 	public def retrievePredecessorStatesForPatch(def patchNumber) {
 		def id = patchNumber as Long
 		def patchStatus = sqlRetrievePatchStatus(id)
-		def precedessorStates = TargetSystemMappings.instance.findPredecessorStates(patchStatus)
+		def relevantStatus = TargetSystemMappings.instance.relevantStateCode(patchStatus,fromToStates())
+		Assert.notNull(relevantStatus, "No relevant State found for ${patchNumber} with ${patchStatus}")
+		def precedessorStates = TargetSystemMappings.instance.findPredecessorStates(relevantStatus)
 		print precedessorStates.join("::")
 		precedessorStates
 	}
@@ -64,7 +67,7 @@ class PatchDbClient {
 	}
 	
 	// TODO (che , 20.9 ) Would be nice, but the required predecessor state are not complete
-	private def sqlRetrieveAllowedStates() {
+	private def fromToStates() {
 		def sql = 'select von_status fromState, zu_status toState from cm_patch_berechtigung_f where user_id in (select user from dual)';
 		def allowedStateChanges = dbConnection.rows(sql)
 		Assert.isTrue(!allowedStateChanges.empty, "Unexpected result")
