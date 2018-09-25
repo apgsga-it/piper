@@ -21,7 +21,7 @@ class PatchDbClient {
 		def id = patchNumber as Long
 		def sql = 'update cm_patch_f set status = :statusNum where id = :id'
 		def result = dbConnection.execute(sql,['statusNum':statusNum,'id':id])
-		print result == false
+		println result == false
 		result
 	}
 
@@ -52,7 +52,7 @@ class PatchDbClient {
 		def relevantStatus = TargetSystemMappings.instance.relevantStateCode(patchStatus,fromToStates())
 		Assert.notNull(relevantStatus, "No relevant State found for ${patchNumber} with ${patchStatus}")
 		def precedessorStates = TargetSystemMappings.instance.findPredecessorStates(relevantStatus)
-		print precedessorStates.join("::")
+		println precedessorStates.join("::")
 		precedessorStates
 	}
 
