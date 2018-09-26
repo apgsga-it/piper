@@ -45,13 +45,13 @@ class PatchDbClient {
 		listPatchFile.write(new JsonBuilder(patchlist:patchNumbers).toPrettyString())
 	}
 
-	// TODO (che, 25.9 ) : Better way to achieve this
 	public def retrieveRedoToState(def patchNumber) {
 		def id = patchNumber as Long
 		def patchCode = sqlRetrievePatchStatus(id)
 		def relevantToStateCode = TargetSystemMappings.instance.relevantStateCode(patchCode,fromToStates())
 		Assert.notNull(relevantToStateCode, "No relevant State found for ${patchNumber} with ${patchCode}")
 		def redoToState = TargetSystemMappings.instance.findState(relevantToStateCode)
+		println redoToState
 		redoToState
 	}
 
