@@ -1,7 +1,5 @@
 package com.apgsga.patch.service.client.utils
 
-import com.google.common.cache.LocalCache.Values
-
 import groovy.json.JsonSlurper
 import groovy.transform.Synchronized
 
