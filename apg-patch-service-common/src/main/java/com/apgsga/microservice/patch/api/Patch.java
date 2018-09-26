@@ -101,6 +101,10 @@ public interface Patch extends ServiceMetaData {
 
 	public void setLastRevision(String lastRevisionNumber);
 	
+	public String getRunningNr();
+
+	public void setRunningNr(String runningNr);
+	
 	public boolean getInstallOnEmptyModules();
 	
 	public void setInstallOnEmptyModules(boolean installOnEmptyModules);
