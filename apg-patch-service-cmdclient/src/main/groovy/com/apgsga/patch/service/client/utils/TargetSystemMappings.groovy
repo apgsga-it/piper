@@ -1,7 +1,5 @@
 package com.apgsga.patch.service.client.utils
 
-import com.google.common.cache.LocalCache.Values
-
 import groovy.json.JsonSlurper
 import groovy.transform.Synchronized
 
@@ -22,6 +20,17 @@ public class TargetSystemMappings {
 		}
 		statusNum
 	}
+	
+	def findState(stateCode) {
+		for (String key : targetSystemMappings.keySet()) {
+			def preState = targetSystemMappings[key]
+			if (stateCode.toString() == preState) {
+				return key
+			}
+		}
+		null
+	}
+
 	
 	def findPredecessorStates(state) {
 		def predecessorStates = []
