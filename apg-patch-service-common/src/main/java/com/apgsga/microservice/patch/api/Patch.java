@@ -93,13 +93,13 @@ public interface Patch extends ServiceMetaData {
 
 	public void setInstallationTarget(String target);
 
-	public String getRevisionNumber();
+	public String getRevision();
 
-	public void setRevisionNumber(String revisionNumber);
+	public void setRevision(String revisionNumber);
 
-	public String getLastRevisionNumber();
+	public String getLastRevision();
 
-	public void setLastRevisionNumber(String lastRevisionNumber);
+	public void setLastRevision(String lastRevisionNumber);
 	
 	public boolean getInstallOnEmptyModules();
 	

@@ -25,8 +25,8 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	private String installationTarget;
 	private String baseVersionNumber;
 	private String revisionMnemoPart;
-	private String revisionNumber;
-	private String lastRevisionNumber;
+	private String revision;
+	private String lastRevision;
 	private List<DbObject> dbObjects = Lists.newArrayList();
 	private List<MavenArtifact> mavenArtifacts = Lists.newArrayList();
 	private boolean installOnEmptyModules = false;
@@ -235,23 +235,23 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	}
 
 	@Override
-	public String getRevisionNumber() {
-		return revisionNumber;
+	public String getRevision() {
+		return revision;
 	}
 
 	@Override
-	public void setRevisionNumber(String revisionNumber) {
-		this.revisionNumber = revisionNumber;
+	public void setRevision(String revisionNumber) {
+		this.revision = revisionNumber;
 	}
 
 	@Override
-	public String getLastRevisionNumber() {
-		return lastRevisionNumber;
+	public String getLastRevision() {
+		return lastRevision;
 	}
 
 	@Override
-	public void setLastRevisionNumber(String lastRevisionNumber) {
-		this.lastRevisionNumber = lastRevisionNumber;
+	public void setLastRevision(String lastRevisionNumber) {
+		this.lastRevision = lastRevisionNumber;
 	}
 	
 	@Override
@@ -284,14 +284,14 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		result = prime * result + ((dbPatchBranch == null) ? 0 : dbPatchBranch.hashCode());
 		result = prime * result + (installOnEmptyModules ? 1231 : 1237);
 		result = prime * result + ((installationTarget == null) ? 0 : installationTarget.hashCode());
-		result = prime * result + ((lastRevisionNumber == null) ? 0 : lastRevisionNumber.hashCode());
+		result = prime * result + ((lastRevision == null) ? 0 : lastRevision.hashCode());
 		result = prime * result + ((mavenArtifacts == null) ? 0 : mavenArtifacts.hashCode());
 		result = prime * result + ((microServiceBranch == null) ? 0 : microServiceBranch.hashCode());
 		result = prime * result + ((patchNummer == null) ? 0 : patchNummer.hashCode());
 		result = prime * result + ((patchTag == null) ? 0 : patchTag.hashCode());
 		result = prime * result + ((prodBranch == null) ? 0 : prodBranch.hashCode());
 		result = prime * result + ((revisionMnemoPart == null) ? 0 : revisionMnemoPart.hashCode());
-		result = prime * result + ((revisionNumber == null) ? 0 : revisionNumber.hashCode());
+		result = prime * result + ((revision == null) ? 0 : revision.hashCode());
 		result = prime * result + ((serviceName == null) ? 0 : serviceName.hashCode());
 		result = prime * result + ((tagNr == null) ? 0 : tagNr.hashCode());
 		return result;
@@ -328,10 +328,10 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 				return false;
 		} else if (!installationTarget.equals(other.installationTarget))
 			return false;
-		if (lastRevisionNumber == null) {
-			if (other.lastRevisionNumber != null)
+		if (lastRevision == null) {
+			if (other.lastRevision != null)
 				return false;
-		} else if (!lastRevisionNumber.equals(other.lastRevisionNumber))
+		} else if (!lastRevision.equals(other.lastRevision))
 			return false;
 		if (mavenArtifacts == null) {
 			if (other.mavenArtifacts != null)
@@ -363,10 +363,10 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 				return false;
 		} else if (!revisionMnemoPart.equals(other.revisionMnemoPart))
 			return false;
-		if (revisionNumber == null) {
-			if (other.revisionNumber != null)
+		if (revision == null) {
+			if (other.revision != null)
 				return false;
-		} else if (!revisionNumber.equals(other.revisionNumber))
+		} else if (!revision.equals(other.revision))
 			return false;
 		if (serviceName == null) {
 			if (other.serviceName != null)
@@ -386,8 +386,8 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		return "PatchBean [patchNummer=" + patchNummer + ", serviceName=" + serviceName + ", microServiceBranch="
 				+ microServiceBranch + ", dbPatchBranch=" + dbPatchBranch + ", prodBranch=" + prodBranch + ", patchTag="
 				+ patchTag + ", tagNr=" + tagNr + ", installationTarget=" + installationTarget + ", baseVersionNumber="
-				+ baseVersionNumber + ", revisionMnemoPart=" + revisionMnemoPart + ", revisionNumber=" + revisionNumber
-				+ ", lastRevisionNumber=" + lastRevisionNumber + ", dbObjects=" + dbObjects + ", mavenArtifacts="
+				+ baseVersionNumber + ", revisionMnemoPart=" + revisionMnemoPart + ", revisionNumber=" + revision
+				+ ", lastRevisionNumber=" + lastRevision + ", dbObjects=" + dbObjects + ", mavenArtifacts="
 				+ mavenArtifacts + ", installOnEmptyModules=" + installOnEmptyModules + "]";
 	}
 
