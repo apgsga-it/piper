@@ -46,7 +46,7 @@ public class TargetSystemMappings {
 	
 	def relevantStateCode(state,fromToStates) {
 		def codeValues = targetSystemMappings.values()
-		if (codeValues.contains(state.toString())) {
+		if (codeValues.contains("${state.toString()}")) {
 			return state
 		}
 		for (def row : fromToStates) {
