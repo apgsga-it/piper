@@ -288,6 +288,120 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	public void setRunningNr(String runningNr) {
 		this.runningNr = runningNr; 
 	}
+	
+	
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((baseVersionNumber == null) ? 0 : baseVersionNumber.hashCode());
+		result = prime * result + ((dbObjects == null) ? 0 : dbObjects.hashCode());
+		result = prime * result + ((dbPatchBranch == null) ? 0 : dbPatchBranch.hashCode());
+		result = prime * result + (installOnEmptyModules ? 1231 : 1237);
+		result = prime * result + ((installationTarget == null) ? 0 : installationTarget.hashCode());
+		result = prime * result + ((lastRevision == null) ? 0 : lastRevision.hashCode());
+		result = prime * result + ((mavenArtifacts == null) ? 0 : mavenArtifacts.hashCode());
+		result = prime * result + ((microServiceBranch == null) ? 0 : microServiceBranch.hashCode());
+		result = prime * result + ((patchNummer == null) ? 0 : patchNummer.hashCode());
+		result = prime * result + ((patchTag == null) ? 0 : patchTag.hashCode());
+		result = prime * result + ((prodBranch == null) ? 0 : prodBranch.hashCode());
+		result = prime * result + ((revision == null) ? 0 : revision.hashCode());
+		result = prime * result + ((revisionMnemoPart == null) ? 0 : revisionMnemoPart.hashCode());
+		result = prime * result + ((runningNr == null) ? 0 : runningNr.hashCode());
+		result = prime * result + ((serviceName == null) ? 0 : serviceName.hashCode());
+		result = prime * result + ((tagNr == null) ? 0 : tagNr.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PatchBean other = (PatchBean) obj;
+		if (baseVersionNumber == null) {
+			if (other.baseVersionNumber != null)
+				return false;
+		} else if (!baseVersionNumber.equals(other.baseVersionNumber))
+			return false;
+		if (dbObjects == null) {
+			if (other.dbObjects != null)
+				return false;
+		} else if (!dbObjects.equals(other.dbObjects))
+			return false;
+		if (dbPatchBranch == null) {
+			if (other.dbPatchBranch != null)
+				return false;
+		} else if (!dbPatchBranch.equals(other.dbPatchBranch))
+			return false;
+		if (installOnEmptyModules != other.installOnEmptyModules)
+			return false;
+		if (installationTarget == null) {
+			if (other.installationTarget != null)
+				return false;
+		} else if (!installationTarget.equals(other.installationTarget))
+			return false;
+		if (lastRevision == null) {
+			if (other.lastRevision != null)
+				return false;
+		} else if (!lastRevision.equals(other.lastRevision))
+			return false;
+		if (mavenArtifacts == null) {
+			if (other.mavenArtifacts != null)
+				return false;
+		} else if (!mavenArtifacts.equals(other.mavenArtifacts))
+			return false;
+		if (microServiceBranch == null) {
+			if (other.microServiceBranch != null)
+				return false;
+		} else if (!microServiceBranch.equals(other.microServiceBranch))
+			return false;
+		if (patchNummer == null) {
+			if (other.patchNummer != null)
+				return false;
+		} else if (!patchNummer.equals(other.patchNummer))
+			return false;
+		if (patchTag == null) {
+			if (other.patchTag != null)
+				return false;
+		} else if (!patchTag.equals(other.patchTag))
+			return false;
+		if (prodBranch == null) {
+			if (other.prodBranch != null)
+				return false;
+		} else if (!prodBranch.equals(other.prodBranch))
+			return false;
+		if (revision == null) {
+			if (other.revision != null)
+				return false;
+		} else if (!revision.equals(other.revision))
+			return false;
+		if (revisionMnemoPart == null) {
+			if (other.revisionMnemoPart != null)
+				return false;
+		} else if (!revisionMnemoPart.equals(other.revisionMnemoPart))
+			return false;
+		if (runningNr == null) {
+			if (other.runningNr != null)
+				return false;
+		} else if (!runningNr.equals(other.runningNr))
+			return false;
+		if (serviceName == null) {
+			if (other.serviceName != null)
+				return false;
+		} else if (!serviceName.equals(other.serviceName))
+			return false;
+		if (tagNr == null) {
+			if (other.tagNr != null)
+				return false;
+		} else if (!tagNr.equals(other.tagNr))
+			return false;
+		return true;
+	}
 
 	@Override
 	public String toString() {
