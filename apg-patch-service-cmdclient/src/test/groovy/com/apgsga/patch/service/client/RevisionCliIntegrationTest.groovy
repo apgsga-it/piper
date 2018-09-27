@@ -355,6 +355,7 @@ class RevisionCliIntegrationTest extends Specification {
 			def revFile = new File("src/test/resources/Revisions.json")
 			def result
 			def revAsJson
+			
 		when:
 			result = cli.process(["-spr","5"])
 			revAsJson = new JsonSlurper().parse(revFile)
@@ -371,7 +372,37 @@ class RevisionCliIntegrationTest extends Specification {
 	
 	def "Patch Revision Cli validate get production revision"() {
 		setup:
-			assert false, "not implemented yet"
+			PatchRevisionCli cli = PatchRevisionCli.create()
+			def revFile = new File("src/test/resources/Revisions.json")
+			def result
+			PrintStream oldStream
+			def buffer
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			result = cli.process(["-spr","5"])
+			result = cli.process(["-pr"])
+			System.setOut(oldStream)
+		then:
+			revFile.exists()
+			result.returnCode == 0
+			buffer.toString().trim() == "5"
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			result = cli.process(["-spr","50"])
+			result = cli.process(["-spr","500"])
+			result = cli.process(["-spr","5000"])
+			result = cli.process(["-pr"])
+			System.setOut(oldStream)
+		then:
+			revFile.exists()
+			result.returnCode == 0
+			buffer.toString().trim() == "5000"
+		cleanup:
+			revFile.delete()
 	}
 	
 	

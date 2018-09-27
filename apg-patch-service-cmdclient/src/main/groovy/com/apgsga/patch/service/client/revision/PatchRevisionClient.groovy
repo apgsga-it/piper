@@ -80,6 +80,11 @@ class PatchRevisionClient {
 		revisionFile.write(new JsonBuilder(revFileAsJson).toPrettyString())
 	}
 	
+	def getProductionRevision() {
+		def revFileAsJson = new JsonSlurper().parse(revisionFile)
+		println revFileAsJson.lastProdRev
+	}
+	
 //	def retrieveRevisions(def targetInd, def installationTarget) {
 //		
 //		println("(retrieveRevisions) Retrieving revision for target ${installationTarget} (${targetInd})")
