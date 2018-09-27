@@ -1,5 +1,7 @@
 package com.apgsga.patch.service.client
 
+// TODO JHE: Probably OK to be deleted as soon as Revision client will have been newly written
+@Deprecated
 class TestUtil {
 	
 	static def getLastProdRevisionLine(String lines) {
