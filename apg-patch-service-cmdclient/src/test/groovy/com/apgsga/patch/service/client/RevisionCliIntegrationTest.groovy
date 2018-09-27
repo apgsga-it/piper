@@ -349,12 +349,27 @@ class RevisionCliIntegrationTest extends Specification {
 			revFile.delete()
 	}
 	
-	def "Patch Revision Cli validate set current production revision"() {
+	def "Patch Revision Cli validate set production revision"() {
 		setup:
-			assert false, "not implemented yet"
+			PatchRevisionCli cli = PatchRevisionCli.create()
+			def revFile = new File("src/test/resources/Revisions.json")
+			def result
+			def revAsJson
+		when:
+			result = cli.process(["-spr","5"])
+			revAsJson = new JsonSlurper().parse(revFile)
+		then:
+			revAsJson.lastProdRev.toInteger() == 5
+		when:
+			result = cli.process(["-spr","22"])
+			revAsJson = new JsonSlurper().parse(revFile)
+		then:
+			revAsJson.lastProdRev.toInteger() == 22
+		cleanup:
+			revFile.delete()
 	}
 	
-	def "Patch Revision Cli validate get last production revision"() {
+	def "Patch Revision Cli validate get production revision"() {
 		setup:
 			assert false, "not implemented yet"
 	}

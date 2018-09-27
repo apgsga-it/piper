@@ -47,6 +47,11 @@ class PatchRevisionCli {
 				cmdResults.results['lr'] = result
 			}
 			
+			if(options.spr) {
+				def result = setProductionRevision(options)
+				cmdResults.results['spr'] = result
+			}
+			
 			cmdResults.returnCode = 0
 			return cmdResults
 			
@@ -82,6 +87,11 @@ class PatchRevisionCli {
 	private def nextRevision() {
 		def patchRevClient = new PatchRevisionClient(config)
 		patchRevClient.nextRevision()
+	}
+	
+	private def setProductionRevision(def options) {
+		def patchRevClient = new PatchRevisionClient(config)
+		patchRevClient.setProductionRevision(options.sprs[0])
 	}
 	
 //	def saveRevisions(def options) {
@@ -126,7 +136,7 @@ class PatchRevisionCli {
 			ar longOpt: 'addRevision', args:2, valueSeparator: ",", argName: 'target,revision', 'Add a new revision number to the revision list of the given target', required: false
 			lr longOpt: 'lastRevision', args:1, argName: 'target', 'Get last revision for the given target', required: false
 			lpr longOpt: 'lastProdRevision', args:0, 'Get the last Production revision', required: false
-			spr longOpt: 'setProductionRevision', args:0, 'Set the last Production revision', required: false
+			spr longOpt: 'setProductionRevision', args:1, argName: 'revision', 'Set the last Production revision', required: false
 			nr longOpt: 'nextRevision', args:0, 'Get the next global revision number', required: false
 			rr longOpt: 'resetRevision', args:1, argName: 'target', 'Reset the revision list and last revision for the given target', required: false
 			
@@ -144,7 +154,7 @@ class PatchRevisionCli {
 			return null
 		}
 		
-		if (options.nr || options.lr) {
+		if (options.nr || options.lr || options.spr) {
 			error = false
 		}
 
