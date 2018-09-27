@@ -85,6 +85,16 @@ class PatchRevisionClient {
 		println revFileAsJson.lastProdRev
 	}
 	
+	def resetRevisions(def target) {
+		def revFileAsJson = new JsonSlurper().parse(revisionFile)
+		if(revFileAsJson."${target}" != null) {
+			revFileAsJson."${target}".revisions = []
+			//TODO JHE : to be verified, do we always want to set it with lastProdRev?
+			revFileAsJson."${target}".lastRevision = revFileAsJson.lastProdRev
+			revisionFile.write(new JsonBuilder(revFileAsJson).toPrettyString())
+		}
+	}
+	
 //	def retrieveRevisions(def targetInd, def installationTarget) {
 //		
 //		println("(retrieveRevisions) Retrieving revision for target ${installationTarget} (${targetInd})")

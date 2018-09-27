@@ -57,6 +57,11 @@ class PatchRevisionCli {
 				cmdResults.results['pr'] = result
 			}
 			
+			if(options.rr) {
+				def result = resetRevisions(options)
+				cmdResults.results['rr'] = result
+			}
+			
 			cmdResults.returnCode = 0
 			return cmdResults
 			
@@ -102,6 +107,11 @@ class PatchRevisionCli {
 	private def getProductionRevision() {
 		def patchRevClient = new PatchRevisionClient(config)
 		patchRevClient.getProductionRevision()
+	}
+	
+	private def resetRevisions(def options) {
+		def patchRevClient = new PatchRevisionClient(config)
+		patchRevClient.resetRevisions(options.rrs[0])
 	}
 	
 //	def saveRevisions(def options) {
@@ -164,7 +174,7 @@ class PatchRevisionCli {
 			return null
 		}
 		
-		if (options.nr || options.lr || options.spr || options.pr) {
+		if (options.nr || options.lr || options.spr || options.pr || options.rr) {
 			error = false
 		}
 

@@ -408,7 +408,42 @@ class RevisionCliIntegrationTest extends Specification {
 	
 	def "Patch Revision Cli validate reset revision for a given target"() {
 		setup:
-			assert false, "not implemented yet"
+			PatchRevisionCli cli = PatchRevisionCli.create()	
+			def revFile = new File("src/test/resources/Revisions.json")
+			def result
+			def revAsJson
+		when:
+			cli.process(["-ar","chti211,18"])
+			cli.process(["-ar","chei212,77"])
+			cli.process(["-ar","chei212,88"])
+			cli.process(["-ar","chti211,185"])
+			cli.process(["-ar","chei212,100"])
+			cli.process(["-ar","chei211,50"])
+			cli.process(["-spr","5000"])
+			cli.process(["-nr"])
+			revAsJson = new JsonSlurper().parse(revFile)
+		then:
+			revAsJson.lastProdRev.toInteger() == 5000
+			revAsJson.nextRev.toInteger() == 2
+			revAsJson.chti211.revisions.size() == 2
+			revAsJson.chti211.revisions.contains("18")
+			revAsJson.chei212.revisions.size() == 3
+			revAsJson.chei212.revisions.contains("100")
+			revAsJson.chei211.revisions.size() == 1
+			revAsJson.chei211.revisions.contains("50")
+		when:
+			result = cli.process(["-rr","chei212"])
+			revAsJson = new JsonSlurper().parse(revFile)
+		then:
+			revAsJson.lastProdRev.toInteger() == 5000
+			revAsJson.nextRev.toInteger() == 2
+			revAsJson.chti211.revisions.size() == 2
+			revAsJson.chti211.revisions.contains("18")
+			revAsJson.chei212.revisions.size() == 0
+			revAsJson.chei211.revisions.size() == 1
+			revAsJson.chei211.revisions.contains("50")
+		cleanup:
+			revFile.delete()
 	}
 	
 	def "Patch Revision Cli validate reset revision if no revision file exists"() {
