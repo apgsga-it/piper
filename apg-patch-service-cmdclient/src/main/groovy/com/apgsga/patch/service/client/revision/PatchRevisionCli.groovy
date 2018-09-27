@@ -114,37 +114,6 @@ class PatchRevisionCli {
 		patchRevClient.resetRevisions(options.rrs[0])
 	}
 	
-//	def saveRevisions(def options) {
-//		def patchRevisionClient = new PatchRevisionClient(config)
-//		patchRevisionClient.saveRevisions(options.srs[0],options.srs[1],options.srs[2])
-//	}
-//	
-//	def retrieveRevisions(def options) {
-//		def patchRevisionClient = new PatchRevisionClient(config)
-//		patchRevisionClient.retrieveRevisions(options.rrs[0],options.rrs[1])
-//	}
-//	
-//	def retrieveLastProdRevision() {
-//		def patchRevisionClient = new PatchRevisionClient(config)
-//		patchRevisionClient.retrieveLastProdRevision()
-//	}
-//	
-//	def resetRevision(def options) {
-//		def patchRevisionClient = new PatchRevisionClient(config)
-//		def target = options.resrs[0]
-//		patchRevisionClient.resetLastRevision(target)
-//	}
-//	
-//	// TODO JHE (26.06.2018): will be removed with JAVA8MIG-389
-//	def removeAllTRevisions(def options) {
-//		def patchArtifactoryClient = new PatchArtifactoryClient(config)
-//		def dryRun = true
-//		if(options.rtrs[0] == "0") {
-//			dryRun = false
-//		}
-//		patchArtifactoryClient.deleteAllTRevisions(dryRun)
-//	}
-	
 	private def validateOpts(def args) {
 		def cli = new CliBuilder (usage: 'apsrevpli.sh -[h|ar|lr|lpr|spr|nr|rr]')
 		cli.formatter.setDescPadding(0)

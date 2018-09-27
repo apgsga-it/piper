@@ -20,88 +20,6 @@ class RevisionCliIntegrationTest extends Specification {
 	
 	def usageString = "usage: apsrevpli.sh -[h|ar|lr|lpr|spr|nr|rr]"
 	
-	@Ignore
-	def "___ test"() {
-		setup:
-			def f = new File("src/test/resources/TEST_JHE_Revisions.json")
-			def target = "chei212"
-			def lastTargetRev = null
-
-			if(f.exists()) {
-				f.delete()
-			}
-		
-			def builder = new JsonBuilder()
-			
-			builder {
-				chei212 {
-					lastRev(null)
-					revs([])
-				}
-				lastProdRev(null)
-				nextRev(1)
-			}
-			
-			f.write(builder.toPrettyString())
-
-			def f2 = new File("src/test/resources/TEST_JHE_2_Revisions.json")
-			if(f2.exists()) {
-				f2.delete()
-			}
-
-		when:
-
-			
-			def builderFromExpected = new JsonBuilder()
-			
-//			builder2 {
-//				chei212 {
-//					lastRev(null)
-//					revs([])
-//				}
-//			}
-			
-			builderFromExpected {
-				chei212 {
-					lastRev(null)
-					revs([])
-				}
-				lastProdRev(null)
-				nextRev(1)
-			}
-
-			def s = ""
-			
-			
-			def slurper = new JsonSlurper()
-			def initJson = slurper.parse(f)
-			
-			initJson.each {
-				s += it
-				s += ","
-			}
-			
-			println "S : ${s}"
-			println JsonOutput.toJson(s)
-			
-			def builder2 = new JsonBuilder(JsonOutput.toJson(s))
-			
-
-//			println initJson.toString()		
-//			println "===================================="
-			println builder2.toPrettyString()
-//			println "===================================="
-//			println builderFromExpected.toPrettyString()
-//			println "===================================="
-//			println JsonOutput.toJson([initJson.toString(),builder2.toPrettyString()])
-			
-			f2.write(JsonOutput.toJson([initJson.toString(),builder2.toPrettyString()]))
-			
-		then:
-			f.exists()
-	}
-	
-	
 	def "Patch Revision Cli validate behavior when no option has been passed"() {
 		setup:
 			PatchRevisionCli cli = PatchRevisionCli.create()
@@ -405,7 +323,6 @@ class RevisionCliIntegrationTest extends Specification {
 			revFile.delete()
 	}
 	
-	
 	def "Patch Revision Cli validate reset revision for a given target"() {
 		setup:
 			PatchRevisionCli cli = PatchRevisionCli.create()	
@@ -446,228 +363,44 @@ class RevisionCliIntegrationTest extends Specification {
 			revFile.delete()
 	}
 	
-	def "Patch Revision Cli validate reset revision if no revision file exists"() {
-		setup:
-			assert false, "not implemented yet"
-	}
-	
 	def "Patch Revision Cli validate reset revision if the given target is not within the revision file"() {
 		setup:
-			assert false, "not implemented yet"
+			PatchRevisionCli cli = PatchRevisionCli.create()
+			def revFile = new File("src/test/resources/Revisions.json")
+			def result
+			def revAsJson
+		when:
+			cli.process(["-ar","chti211,18"])
+			cli.process(["-ar","chei212,77"])
+			cli.process(["-ar","chei212,88"])
+			cli.process(["-ar","chti211,185"])
+			cli.process(["-ar","chei212,100"])
+			cli.process(["-ar","chei211,50"])
+			cli.process(["-spr","5000"])
+			cli.process(["-nr"])
+			revAsJson = new JsonSlurper().parse(revFile)
+		then:
+			revAsJson.lastProdRev.toInteger() == 5000
+			revAsJson.nextRev.toInteger() == 2
+			revAsJson.chti211.revisions.size() == 2
+			revAsJson.chti211.revisions.contains("18")
+			revAsJson.chei212.revisions.size() == 3
+			revAsJson.chei212.revisions.contains("100")
+			revAsJson.chei211.revisions.size() == 1
+			revAsJson.chei211.revisions.contains("50")
+		when:
+			result = cli.process(["-rr","chti215"])
+			revAsJson = new JsonSlurper().parse(revFile)
+		then:
+			revAsJson.lastProdRev.toInteger() == 5000
+			revAsJson.nextRev.toInteger() == 2
+			revAsJson.chti211.revisions.size() == 2
+			revAsJson.chti211.revisions.contains("18")
+			revAsJson.chei212.revisions.size() == 3
+			revAsJson.chei212.revisions.contains("100")
+			revAsJson.chei211.revisions.size() == 1
+			revAsJson.chei211.revisions.contains("50")
+		cleanup:
+			revFile.delete()
 	}
-	
-	
-	
-	
-//	def "Patch Cli validate retrieve and save revision"() {
-//		setup:
-//			def client = PatchRevisionCli.create()
-//			PrintStream oldStream
-//			def buffer
-//			def revisionAsJson
-//			def revisionsFromRRCall
-//			def revisionsFromFile
-//			def revisionsFile = new File("src/test/resources/Revisions.json")
-//		when:
-//			oldStream = System.out;
-//			buffer = new ByteArrayOutputStream()
-//			System.setOut(new PrintStream(buffer))
-//			client.process(["-rr", "T,CHEI212"])
-//			System.setOut(oldStream)
-//			revisionAsJson = TestUtil.getRevisionLine(buffer.toString())
-//			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
-//		then:
-//			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 10000
-//			revisionsFromRRCall.fromRetrieveRevision.lastRevision == "SNAPSHOT"
-//			!revisionsFile.exists()
-//		when:
-//			client.process(["-sr", "T,CHEI212,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
-//			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
-//		then:
-//			revisionsFile.exists()
-//			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10000
-//			revisionsFromFile.lastRevisions["CHEI211"] == null
-//			revisionsFromFile.currentRevision["P"].toInteger() == 1
-//			revisionsFromFile.currentRevision["T"].toInteger() == 20000
-//		when:
-//			oldStream = System.out;
-//			buffer = new ByteArrayOutputStream()
-//			System.setOut(new PrintStream(buffer))
-//			client.process(["-rr", "T,CHEI211"])
-//			System.setOut(oldStream)
-//			revisionAsJson = TestUtil.getRevisionLine(buffer.toString())
-//			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
-//			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
-//		then:
-//			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 20000
-//			revisionsFromRRCall.fromRetrieveRevision.lastRevision == "SNAPSHOT"
-//			revisionsFile.exists()
-//			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10000
-//			revisionsFromFile.lastRevisions["CHEI211"] == null
-//			revisionsFromFile.currentRevision["P"].toInteger() == 1
-//			revisionsFromFile.currentRevision["T"].toInteger() == 20000
-//		when:
-//			client.process(["-sr", "T,CHEI211,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
-//			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
-//		then:
-//			revisionsFile.exists()
-//			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10000
-//			revisionsFromFile.lastRevisions["CHEI211"].toInteger() == 20000
-//			revisionsFromFile.currentRevision["P"].toInteger() == 1
-//			revisionsFromFile.currentRevision["T"].toInteger() == 30000
-//		when:
-//			oldStream = System.out;
-//			buffer = new ByteArrayOutputStream()
-//			System.setOut(new PrintStream(buffer))
-//			client.process(["-rr", "T,CHEI212"])
-//			System.setOut(oldStream)
-//			revisionAsJson = TestUtil.getRevisionLine(buffer.toString())
-//			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
-//		then:
-//			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 10001
-//			revisionsFromRRCall.fromRetrieveRevision.lastRevision.toInteger() == 10000
-//			revisionsFile.exists()
-//		when:
-//			client.process(["-sr", "T,CHEI212,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
-//			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
-//		then:
-//			revisionsFile.exists()
-//			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10001
-//			revisionsFromFile.lastRevisions["CHEI211"].toInteger() == 20000
-//			revisionsFromFile.currentRevision["P"].toInteger() == 1
-//			revisionsFromFile.currentRevision["T"].toInteger() == 30000
-//		when:
-//			oldStream = System.out;
-//			buffer = new ByteArrayOutputStream()
-//			System.setOut(new PrintStream(buffer))
-//			client.process(["-rr", "P,CHPI211"])
-//			System.setOut(oldStream)
-//			revisionAsJson = TestUtil.getRevisionLine(buffer.toString())
-//			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
-//		then:
-//			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 1
-//			revisionsFromRRCall.fromRetrieveRevision.lastRevision == "SNAPSHOT"
-//			revisionsFile.exists()
-//		when:
-//			client.process(["-sr", "P,CHPI211,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
-//			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
-//		then:
-//			revisionsFile.exists()
-//			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10001
-//			revisionsFromFile.lastRevisions["CHEI211"].toInteger() == 20000
-//			revisionsFromFile.lastRevisions["CHPI211"].toInteger() == 1
-//			revisionsFromFile.currentRevision["P"].toInteger() == 2
-//			revisionsFromFile.currentRevision["T"].toInteger() == 30000
-//		when:
-//			oldStream = System.out;
-//			buffer = new ByteArrayOutputStream()
-//			System.setOut(new PrintStream(buffer))
-//			client.process(["-rr", "T,CHEI211"])
-//			System.setOut(oldStream)
-//			revisionAsJson = TestUtil.getRevisionLine(buffer.toString())
-//			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
-//		then:
-//			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 20001
-//			revisionsFromRRCall.fromRetrieveRevision.lastRevision.toInteger() == 20000
-//			revisionsFile.exists()
-//		when:
-//			client.process(["-sr", "T,CHEI211,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
-//			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
-//		then:
-//			revisionsFile.exists()
-//			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10001
-//			revisionsFromFile.lastRevisions["CHEI211"].toInteger() == 20001
-//			revisionsFromFile.lastRevisions["CHPI211"].toInteger() == 1
-//			revisionsFromFile.currentRevision["P"].toInteger() == 2
-//			revisionsFromFile.currentRevision["T"].toInteger() == 30000
-//		when:
-//			oldStream = System.out;
-//			buffer = new ByteArrayOutputStream()
-//			System.setOut(new PrintStream(buffer))
-//			client.process(["-rr", "P,CHPI211"])
-//			System.setOut(oldStream)
-//			revisionAsJson = TestUtil.getRevisionLine(buffer.toString())
-//			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
-//		then:
-//			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 2
-//			revisionsFromRRCall.fromRetrieveRevision.lastRevision.toInteger() == 1
-//			revisionsFile.exists()
-//		when:
-//			client.process(["-sr", "P,CHPI211,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
-//			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
-//		then:
-//			revisionsFile.exists()
-//			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10001
-//			revisionsFromFile.lastRevisions["CHEI211"].toInteger() == 20001
-//			revisionsFromFile.lastRevisions["CHPI211"].toInteger() == 2
-//			revisionsFromFile.currentRevision["P"].toInteger() == 3
-//			revisionsFromFile.currentRevision["T"].toInteger() == 30000
-//		when:
-//			oldStream = System.out;
-//			buffer = new ByteArrayOutputStream()
-//			System.setOut(new PrintStream(buffer))
-//			client.process(["-rr", "T,CHEI213"])
-//			System.setOut(oldStream)
-//			revisionAsJson = TestUtil.getRevisionLine(buffer.toString())
-//			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
-//		then:
-//			revisionsFromRRCall.fromRetrieveRevision.revision.toInteger() == 30000
-//			revisionsFromRRCall.fromRetrieveRevision.lastRevision == "SNAPSHOT"
-//			revisionsFile.exists()
-//		when:
-//			client.process(["-sr", "T,CHEI213,${revisionsFromRRCall.fromRetrieveRevision.revision}"])
-//			revisionsFromFile = new JsonSlurper().parseText(revisionsFile.text)
-//		then:
-//			revisionsFile.exists()
-//			revisionsFromFile.lastRevisions["CHEI212"].toInteger() == 10001
-//			revisionsFromFile.lastRevisions["CHEI211"].toInteger() == 20001
-//			revisionsFromFile.lastRevisions["CHEI213"].toInteger() == 30000
-//			revisionsFromFile.lastRevisions["CHPI211"].toInteger() == 2
-//			revisionsFromFile.currentRevision["P"].toInteger() == 3
-//			revisionsFromFile.currentRevision["T"].toInteger() == 40000
-//		cleanup:
-//			revisionsFile.delete()
-//	}
-//	
-//	def "Patch Cli validate retrieve last prod revision"() {
-//		setup:
-//			/*
-//			 * For our tests, within src/test/resources/TargetSystemMappings.json, CHEI211 is configured as the
-//			 * production target.
-//			 *
-//			 */
-//			def client = PatchRevisionCli.create()
-//			def revisionsFile = new File("src/test/resources/Revisions.json")
-//			def currentRevision = [P:5,T:30000]
-//			def lastRevision = [CHEI212:10036,CHEI211:4,CHEI213:20025]
-//			def revisions = [lastRevisions:lastRevision, currentRevision:currentRevision]
-//			revisionsFile.write(new JsonBuilder(revisions).toPrettyString())
-//			def oldStream
-//			def buffer
-//			def revisionAsJson
-//			def revisionsFromRRCall
-//		when:
-//			oldStream = System.out;
-//			buffer = new ByteArrayOutputStream()
-//			System.setOut(new PrintStream(buffer))
-//			client.process(["-pr"])
-//			System.setOut(oldStream)
-//			revisionAsJson = TestUtil.getLastProdRevisionLine(buffer.toString())
-//			revisionsFromRRCall = new JsonSlurper().parseText(revisionAsJson)
-//		then:
-//			revisionsFromRRCall.lastProdRevision.toInteger() == 4
-//		cleanup:
-//			revisionsFile.delete()
-//	}
-//	
-//	// TODO JHE (26.06.2018): will be removed with JAVA8MIG-389
-//	def "Patch Cli delete all T revision with dryRun"() {
-//		setup:
-//			def client = PatchCli.create()
-//		when:
-//			client.process(["-rtr", "1"]) // 1 -> dryRun
-//		then:
-//			// Simply nothing should happen.
-//			notThrown(RuntimeException)
-//	}
 }
