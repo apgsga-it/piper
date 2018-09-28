@@ -58,7 +58,7 @@ class PatchRevisionClient {
 		if(!revisionFile.exists()) {
 			def builder = new JsonBuilder()
 			builder {
-				lastProdRev(null)
+				lastProdRev("SNAPSHOT")
 				nextRev(1)
 			}
 			revisionFile.write(builder.toPrettyString())
