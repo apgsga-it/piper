@@ -257,7 +257,7 @@ class RevisionCliIntegrationTest extends Specification {
 		then:
 			revFile.exists()
 			result.returnCode == 0
-			buffer.toString().trim() == "null"
+			buffer.toString().trim() == "SNAPSHOT"
 		cleanup:
 			revFile.delete()
 	}

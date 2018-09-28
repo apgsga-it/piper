@@ -70,7 +70,7 @@ class PatchRevisionClient {
 		if(revFileAsJson."${target}" != null)
 			println revFileAsJson."${target}".lastRevision
 		else {
-			println "null"
+			println "SNAPSHOT"
 		}
 	}
 	
