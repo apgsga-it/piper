@@ -1,17 +1,12 @@
 package com.apgsga.patch.service.client
 
-import groovy.json.JsonBuilder
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
-
-import org.json.JSONObject
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.annotation.DirtiesContext.ClassMode
 import org.springframework.test.context.TestPropertySource
 
 import com.apgsga.patch.service.client.revision.PatchRevisionCli
 
-import spock.lang.Ignore
+import groovy.json.JsonSlurper
 import spock.lang.Specification
 
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
