@@ -45,8 +45,7 @@ class DbCliIntegrationTest extends Specification {
 	}
 
 
-	@Requires({patchExists("5792")})
-	@Ignore
+	@Requires({patchExists("22222")})
 	def "Patch DB Cli  returns predecessor States of Patch"() {
 		setup:
 		def patchDbCli = PatchDbCli.create()

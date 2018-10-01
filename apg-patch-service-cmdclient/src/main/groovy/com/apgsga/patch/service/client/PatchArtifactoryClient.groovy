@@ -51,12 +51,10 @@ class PatchArtifactoryClient {
 	
 	def cleanReleases(def target) {
 		
-		def cmd = "/opt/apg-patch-cli/bin/apsrevcli.sh -llr ${target}"
-		def revision = ['bash', '-c', cmd].execute().getOutputStream().toString()
+		def revisionClient = new PatchRevisionClient(config)
+		def revision = revisionClient.getInstalledRevisions(target) 
 		
-		println "revision : ${revision}"
-		
-		if(revision != '') {
+		if(revision != null) {
 			println "Following revision would have been deleted"
 			revision.each {
 				println("rev ${it}")

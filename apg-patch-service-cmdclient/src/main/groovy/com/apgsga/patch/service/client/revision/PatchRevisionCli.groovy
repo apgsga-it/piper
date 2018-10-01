@@ -62,12 +62,7 @@ class PatchRevisionCli {
 				def result = resetRevisions(options)
 				cmdResults.results['rr'] = result
 			}
-			
-			if(options.llr) {
-				def result = listRevisions(options)
-				cmdResults.results['llr']  = result
-			}
-			
+						
 			cmdResults.returnCode = 0
 			return cmdResults
 			
@@ -120,11 +115,6 @@ class PatchRevisionCli {
 		patchRevClient.resetRevisions(options.rrs[0])
 	}
 	
-	private def listRevisions(def options) {
-		def patchRevClient = new PatchRevisionClient(config)
-		patchRevClient.getInstalledRevisions(options.llrs[0])
-	}
-	
 	private def validateOpts(def args) {
 		def cli = new CliBuilder (usage: 'apsrevpli.sh -[h|ar|lr|lpr|spr|nr|rr]')
 		cli.formatter.setDescPadding(0)
@@ -135,7 +125,6 @@ class PatchRevisionCli {
 			h longOpt: 'help', 'Show usage information', required: false
 			ar longOpt: 'addRevision', args:2, valueSeparator: ",", argName: 'target,revision', 'Add a new revision number to the revision list of the given target', required: false
 			lr longOpt: 'lastRevision', args:1, argName: 'target', 'Get last revision for the given target', required: false
-			llr longOpt: 'listRevisions', args:1, argName: 'target', 'Get list of revisions for the given target', required: false
 			pr longOpt: 'productionRevision', args:0, 'Get the last Production revision', required: false
 			spr longOpt: 'setProductionRevision', args:1, argName: 'revision', 'Set the last Production revision', required: false
 			nr longOpt: 'nextRevision', args:0, 'Get the next global revision number', required: false

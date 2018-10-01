@@ -42,10 +42,10 @@ class PatchRevisionClient {
 	def getInstalledRevisions(def target) {
 		def revFileAsJson = new JsonSlurper().parse(revisionFile)
 		if(revFileAsJson."${target}" != null) {
-			println revFileAsJson."${target}".revisions
+			return revFileAsJson."${target}".revisions
 		}
 		else {
-			println ''
+			return null
 		}
 		
 	}
