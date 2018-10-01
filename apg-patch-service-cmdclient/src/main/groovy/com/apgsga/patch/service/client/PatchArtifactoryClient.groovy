@@ -58,7 +58,10 @@ class PatchArtifactoryClient {
 		if(revision != null) {
 			println "Following revision would have been deleted"
 			revision.each {
+				// Will delete all published JAR, POM, ZIP, etc ... for the given version/revision
 				removeArtifacts("*-${it}.*", dryRun)
+				// Will delete all published sources jar for the given version/revision
+				removeArtifacts("*-${it}-sources.jar", dryRun)
 			}
 		}
 		
