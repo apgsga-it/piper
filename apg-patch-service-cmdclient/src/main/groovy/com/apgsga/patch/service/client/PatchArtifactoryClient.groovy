@@ -52,7 +52,9 @@ class PatchArtifactoryClient {
 	def cleanReleases(def target) {
 		
 		def cmd = "/opt/apg-patch-cli/bin/apsrevcli.sh -llr ${target}"
-		def revision = sh ( returnStdout : true, script: cmd).trim()
+		def revision = ['bash', '-c', cmd].execute().getOutputStream().toString()
+		
+		println "revision : ${revisions}"
 		
 		if(revision != '') {
 			println "Following revision would have been deleted"
