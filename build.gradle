@@ -9,7 +9,7 @@ project.ext {
 allprojects  {
 	apply plugin: 'maven'
 	group = 'com.apgsga.patchframework'
-	version  = '1.2.8'
+	version  = '1.2.9'
 }
 
 subprojects {
