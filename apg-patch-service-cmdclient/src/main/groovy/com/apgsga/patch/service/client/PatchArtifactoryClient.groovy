@@ -58,7 +58,7 @@ class PatchArtifactoryClient {
 		if(revision != null) {
 			println "Following revision would have been deleted"
 			revision.each {
-				removeArtifacts("*-${revision}.*", dryRun)
+				removeArtifacts("*-${it}.*", dryRun)
 			}
 		}
 		
