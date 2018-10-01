@@ -58,8 +58,8 @@ class PatchArtifactoryClient {
 		if(revision != null) {
 			println "Following revision would have been deleted"
 			revision.each {
-				// TODO JHE: get -9.0.6.ADMIN-UIMIG- dynamically (ServiceMetaData.json file) or from parameter
-				removeArtifacts("*-9.0.6.ADMIN-UIMIG-${revision}.*", dryRun)
+				println "*${revision}.*"
+//				removeArtifacts("*${revision}.*", dryRun)
 			}
 		}
 		
