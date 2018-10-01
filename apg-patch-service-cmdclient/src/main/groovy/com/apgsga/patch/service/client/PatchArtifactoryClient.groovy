@@ -52,12 +52,14 @@ class PatchArtifactoryClient {
 	def cleanReleases(def target) {
 		
 		def revisionClient = new PatchRevisionClient(config)
-		def revision = revisionClient.getInstalledRevisions(target) 
+		def revision = revisionClient.getInstalledRevisions(target)
+		def dryRun = config.onclone.delete.artifact.dryrun
 		
 		if(revision != null) {
 			println "Following revision would have been deleted"
 			revision.each {
-				println("rev ${it}")
+				// TODO JHE: get -9.0.6.ADMIN-UIMIG- dynamically (ServiceMetaData.json file) or from parameter
+				removeArtifacts("*-9.0.6.ADMIN-UIMIG-${revision}.*", dryRun)
 			}
 		}
 		
