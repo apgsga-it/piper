@@ -38,6 +38,8 @@ class PatchArtifactoryClient {
 	}
 	
 	// TODO JHE (26.06.2018): will be remove with JAVA8MIG-389 
+	// TODO JHE: To be deleted -> we don't have "T" releases anymore !!!
+	/*
 	public def deleteAllTRevisions(def dryRun) {
 		println "Removing all T Artifact from Artifactory."
 		removeArtifacts("*-T-*", dryRun);
@@ -45,15 +47,26 @@ class PatchArtifactoryClient {
 			new File(config.revision.file.path).delete()
 		}
 	}
+	*/
 	
 	def cleanReleases(def target) {
 		
-		def PatchRevisionClient patchRevisionClient = new PatchRevisionClient(config)
-		def lastRevision = patchRevisionClient.getLastRevisionForTarget(target)
+		def cmd = "/opt/apg-patch-cli/bin/apsrevcli.sh -llr ${target}"
+		def revision = sh ( returnStdout : true, script: cmd).trim()
 		
+		if(revision != '') {
+			println "Following revision would have been deleted"
+			revision.each {
+				println("rev ${it}")
+			}
+		}
+		
+		/*
+		def PatchRevisionClient patchRevisionClient = new PatchRevisionClient(config)
+		def revisionsToBeDeleted = patchRevisionClient.getInstalledRevisions(target)
 		// JHE (26.07.2018): If lastRevision is null, it means that nothing has ever been patch on the target -> then we don't have to do anything.
 		// JHE (13.08.2018): If lastRevision ends with "@P", it means nothing has been patched since last clone -> then we don't have to do anything.
-		if(lastRevision != null && !lastRevision.toString().endsWith("@P")) {
+		if(lastRevision != 'SNAPSHOT') {
 		 
 			def rangeStep = config.revision.range.step
 			def from = ((int) (Long.valueOf(lastRevision) / rangeStep)) * rangeStep
@@ -78,6 +91,7 @@ class PatchArtifactoryClient {
 			}
 			
 		}
+		*/
 		else {
 			println("No release to clean for ${target}. We probably never have any patch installed directly on ${target}, or no patch has been newly installed since last clone.")
 		}

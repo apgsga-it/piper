@@ -398,4 +398,61 @@ class RevisionCliIntegrationTest extends Specification {
 		cleanup:
 			revFile.delete()
 	}
+	
+	def "Patch Revision Client validate get list of installed revisions for non existing target"() {
+		setup:
+			PatchRevisionCli cli = PatchRevisionCli.create()
+			def revFile = new File("src/test/resources/Revisions.json")
+			def result
+			PrintStream oldStream
+			def buffer
+			def revisions
+		when:
+			cli.process(["-ar","chti211,18"])
+			cli.process(["-ar","chei212,77"])
+			cli.process(["-ar","chei212,88"])
+			cli.process(["-ar","chti211,185"])
+			cli.process(["-ar","chei212,100"])
+			cli.process(["-ar","chei211,50"])
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			result = cli.process(["-llr","chei215"])
+			System.setOut(oldStream)
+		then:
+			result.returnCode == 0
+			buffer.toString().trim() == ''
+		cleanup:
+			revFile.delete()
+	}
+	
+	def "Patch Revision Client validate get list of installed revisions for existing target"() {
+		setup:
+			PatchRevisionCli cli = PatchRevisionCli.create()
+			def revFile = new File("src/test/resources/Revisions.json")
+			def result
+			PrintStream oldStream
+			def buffer
+			def revisions
+		when:
+			cli.process(["-ar","chti211,18"])
+			cli.process(["-ar","chei212,77"])
+			cli.process(["-ar","chei212,88"])
+			cli.process(["-ar","chti211,185"])
+			cli.process(["-ar","chei212,100"])
+			cli.process(["-ar","chei211,50"])
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			result = cli.process(["-llr","chei212"])
+			System.setOut(oldStream)
+			revisions = buffer.toString().trim() 
+		then:
+			result.returnCode == 0
+			revisions.contains("77")
+			revisions.contains("88")
+			revisions.contains("100")
+		cleanup:
+			revFile.delete()
+	}
 }

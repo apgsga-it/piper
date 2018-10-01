@@ -39,6 +39,17 @@ class PatchRevisionClient {
 		revisionFile.write(JsonOutput.prettyPrint(JsonOutput.toJson(revFileAsJson + builder.content)))
 	}
 	
+	def getInstalledRevisions(def target) {
+		def revFileAsJson = new JsonSlurper().parse(revisionFile)
+		if(revFileAsJson."${target}" != null) {
+			println revFileAsJson."${target}".revisions
+		}
+		else {
+			println ''
+		}
+		
+	}
+	
 	def nextRevision() {
 		def revFileAsJson = new JsonSlurper().parse(revisionFile)
 		println revFileAsJson.nextRev
