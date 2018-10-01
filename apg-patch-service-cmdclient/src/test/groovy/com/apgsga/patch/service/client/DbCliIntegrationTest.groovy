@@ -11,6 +11,7 @@ import com.apgsga.patch.service.client.db.PatchDbCli
 
 import groovy.json.JsonSlurper
 import groovy.sql.Sql
+import spock.lang.Ignore
 import spock.lang.Requires
 import spock.lang.Specification
 
@@ -45,6 +46,7 @@ class DbCliIntegrationTest extends Specification {
 
 
 	@Requires({patchExists("5792")})
+	@Ignore
 	def "Patch DB Cli  returns predecessor States of Patch"() {
 		setup:
 		def patchDbCli = PatchDbCli.create()
