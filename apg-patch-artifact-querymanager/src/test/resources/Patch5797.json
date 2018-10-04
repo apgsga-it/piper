@@ -2,7 +2,7 @@
 	"className": "com.apgsga.microservice.patch.api.impl.PatchBean",
 	"patchNummer": "5797",
 	"serviceName": "It21Ui",
-	"microServiceBranch": "it21_release_9_0_6_admin_uimig",
+	"microServiceBranch": "it21_release_9_1_0_admin_uimig",
 	"dbPatchBranch": "Patch_0900C1_5797",
 	"prodBranch": "HEAD",
 	"patchTag": "",
