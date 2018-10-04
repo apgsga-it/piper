@@ -263,62 +263,6 @@ class RevisionCliIntegrationTest extends Specification {
 			revFile.delete()
 	}
 	
-//	def "Patch Revision Cli validate set production revision"() {
-//		setup:
-//			PatchRevisionCli cli = PatchRevisionCli.create()
-//			def revFile = new File("src/test/resources/Revisions.json")
-//			def result
-//			def revAsJson
-//			
-//		when:
-//			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-5"])
-//			revAsJson = new JsonSlurper().parse(revFile)
-//		then:
-//			revAsJson.lastProdRev.toString() == "9.1.0.ADMIN-UIMIG-5"
-//		when:
-//			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-22"])
-//			revAsJson = new JsonSlurper().parse(revFile)
-//		then:
-//			revAsJson.lastProdRev.toString() == "9.1.0.ADMIN-UIMIG-22"
-//		cleanup:
-//			revFile.delete()
-//	}
-	
-//	def "Patch Revision Cli validate get production revision"() {
-//		setup:
-//			PatchRevisionCli cli = PatchRevisionCli.create()
-//			def revFile = new File("src/test/resources/Revisions.json")
-//			def result
-//			PrintStream oldStream
-//			def buffer
-//		when:
-//			oldStream = System.out;
-//			buffer = new ByteArrayOutputStream()
-//			System.setOut(new PrintStream(buffer))
-//			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-5"])
-//			result = cli.process(["-pr"])
-//			System.setOut(oldStream)
-//		then:
-//			revFile.exists()
-//			result.returnCode == 0
-//			buffer.toString().trim() == "9.1.0.ADMIN-UIMIG-5"
-//		when:
-//			oldStream = System.out;
-//			buffer = new ByteArrayOutputStream()
-//			System.setOut(new PrintStream(buffer))
-//			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-50"])
-//			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-500"])
-//			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-5000"])
-//			result = cli.process(["-pr"])
-//			System.setOut(oldStream)
-//		then:
-//			revFile.exists()
-//			result.returnCode == 0
-//			buffer.toString().trim() == "9.1.0.ADMIN-UIMIG-5000"
-//		cleanup:
-//			revFile.delete()
-//	}
-	
 	def "Patch Revision Cli validate reset revision for a given target"() {
 		setup:
 			PatchRevisionCli cli = PatchRevisionCli.create()	
