@@ -28,6 +28,7 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 	private ArtifactManager artifactManager;
 	private Properties versionsProperties;
 	private String patchFilePath = "";
+	private String lastBomVersion = "";
 
 	public PropertyFileBasedVersionManager(URI mavenLocalPath, String bomGroupId, String bomArtifactId) {
 		super();
@@ -50,12 +51,13 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 	}
 
 	private synchronized Properties getProperties(String bomVersion) {
-		if (versionsProperties == null) {
+		if (versionsProperties == null || !bomVersion.equals(lastBomVersion)) {
 			Properties overrideVersionProperties = convertToProperties(patchFilePath); 
 			versionsProperties = intialLoad(artifactManager,bomVersion);
 			for (Object key : overrideVersionProperties.keySet()) {
 				versionsProperties.put(key, overrideVersionProperties.get(key)); 
 			}
+			lastBomVersion = bomVersion; 
 		}
 		return versionsProperties;
 	}
