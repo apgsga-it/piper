@@ -48,16 +48,6 @@ class PatchRevisionCli {
 				cmdResults.results['lr'] = result
 			}
 			
-			if(options.spr) {
-				def result = setProductionRevision(options)
-				cmdResults.results['spr'] = result
-			}
-			
-			if(options.pr) {
-				def result = getProductionRevision()
-				cmdResults.results['pr'] = result
-			}
-			
 			if(options.rr) {
 				def result = resetRevisions(options)
 				cmdResults.results['rr'] = result
@@ -100,23 +90,13 @@ class PatchRevisionCli {
 		patchRevClient.nextRevision()
 	}
 	
-	private def setProductionRevision(def options) {
-		def patchRevClient = new PatchRevisionClient(config)
-		patchRevClient.setProductionRevision(options.sprs[0])
-	}
-	
-	private def getProductionRevision() {
-		def patchRevClient = new PatchRevisionClient(config)
-		patchRevClient.getProductionRevision()
-	}
-	
 	private def resetRevisions(def options) {
 		def patchRevClient = new PatchRevisionClient(config)
-		patchRevClient.resetRevisions(options.rrs[0])
+		patchRevClient.resetRevisions(options.rrs[0], options.rrs[1])
 	}
 	
 	private def validateOpts(def args) {
-		def cli = new CliBuilder (usage: 'apsrevpli.sh -[h|ar|lr|lpr|spr|nr|rr]')
+		def cli = new CliBuilder (usage: 'apsrevpli.sh -[h|ar|lr|nr|rr]')
 		cli.formatter.setDescPadding(0)
 		cli.formatter.setLeftPadding(0)
 		cli.formatter.setWidth(100)
@@ -125,10 +105,8 @@ class PatchRevisionCli {
 			h longOpt: 'help', 'Show usage information', required: false
 			ar longOpt: 'addRevision', args:2, valueSeparator: ",", argName: 'target,revision', 'Add a new revision number to the revision list of the given target', required: false
 			lr longOpt: 'lastRevision', args:1, argName: 'target', 'Get last revision for the given target', required: false
-			pr longOpt: 'productionRevision', args:0, 'Get the last Production revision', required: false
-			spr longOpt: 'setProductionRevision', args:1, argName: 'revision', 'Set the last Production revision', required: false
 			nr longOpt: 'nextRevision', args:0, 'Get the next global revision number', required: false
-			rr longOpt: 'resetRevision', args:1, argName: 'target', 'Reset the revision list and last revision for the given target', required: false
+			rr longOpt: 'resetRevision', args:2, valueSeparator: ",", argName: 'source,target', 'Reset the revision list and last revision for the given target', required: false
 			
 		}
 		
@@ -144,7 +122,7 @@ class PatchRevisionCli {
 			return null
 		}
 		
-		if (options.nr || options.lr || options.spr || options.pr || options.rr || options.llr) {
+		if (options.nr || options.lr || options.rr || options.llr) {
 			error = false
 		}
 

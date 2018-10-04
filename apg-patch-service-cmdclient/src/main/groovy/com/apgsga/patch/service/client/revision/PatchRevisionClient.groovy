@@ -69,7 +69,6 @@ class PatchRevisionClient {
 		if(!revisionFile.exists()) {
 			def builder = new JsonBuilder()
 			builder {
-				lastProdRev("SNAPSHOT")
 				nextRev(1)
 			}
 			revisionFile.write(builder.toPrettyString())
@@ -85,23 +84,11 @@ class PatchRevisionClient {
 		}
 	}
 	
-	def setProductionRevision(def revision) {
+	def resetRevisions(def source, def target) {
 		def revFileAsJson = new JsonSlurper().parse(revisionFile)
-		revFileAsJson.lastProdRev = revision
-		revisionFile.write(new JsonBuilder(revFileAsJson).toPrettyString())
-	}
-	
-	def getProductionRevision() {
-		def revFileAsJson = new JsonSlurper().parse(revisionFile)
-		println revFileAsJson.lastProdRev
-	}
-	
-	def resetRevisions(def target) {
-		def revFileAsJson = new JsonSlurper().parse(revisionFile)
-		if(revFileAsJson."${target}" != null) {
+		if(revFileAsJson."${source}" != null && revFileAsJson."${target}" != null) {
 			revFileAsJson."${target}".revisions = []
-			//TODO JHE : to be verified, do we always want to set it with lastProdRev?
-			revFileAsJson."${target}".lastRevision = revFileAsJson.lastProdRev
+			revFileAsJson."${target}".lastRevision = revFileAsJson."${source}".lastRevision
 			revisionFile.write(new JsonBuilder(revFileAsJson).toPrettyString())
 		}
 	}

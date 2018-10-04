@@ -14,7 +14,7 @@ import spock.lang.Specification
 @TestPropertySource(locations = "application-test.properties")
 class RevisionCliIntegrationTest extends Specification {
 	
-	def usageString = "usage: apsrevpli.sh -[h|ar|lr|lpr|spr|nr|rr]"
+	def usageString = "usage: apsrevpli.sh -[h|ar|lr|nr|rr]"
 	
 	def "Patch Revision Cli validate behavior when no option has been passed"() {
 		setup:
@@ -263,61 +263,61 @@ class RevisionCliIntegrationTest extends Specification {
 			revFile.delete()
 	}
 	
-	def "Patch Revision Cli validate set production revision"() {
-		setup:
-			PatchRevisionCli cli = PatchRevisionCli.create()
-			def revFile = new File("src/test/resources/Revisions.json")
-			def result
-			def revAsJson
-			
-		when:
-			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-5"])
-			revAsJson = new JsonSlurper().parse(revFile)
-		then:
-			revAsJson.lastProdRev.toString() == "9.1.0.ADMIN-UIMIG-5"
-		when:
-			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-22"])
-			revAsJson = new JsonSlurper().parse(revFile)
-		then:
-			revAsJson.lastProdRev.toString() == "9.1.0.ADMIN-UIMIG-22"
-		cleanup:
-			revFile.delete()
-	}
+//	def "Patch Revision Cli validate set production revision"() {
+//		setup:
+//			PatchRevisionCli cli = PatchRevisionCli.create()
+//			def revFile = new File("src/test/resources/Revisions.json")
+//			def result
+//			def revAsJson
+//			
+//		when:
+//			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-5"])
+//			revAsJson = new JsonSlurper().parse(revFile)
+//		then:
+//			revAsJson.lastProdRev.toString() == "9.1.0.ADMIN-UIMIG-5"
+//		when:
+//			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-22"])
+//			revAsJson = new JsonSlurper().parse(revFile)
+//		then:
+//			revAsJson.lastProdRev.toString() == "9.1.0.ADMIN-UIMIG-22"
+//		cleanup:
+//			revFile.delete()
+//	}
 	
-	def "Patch Revision Cli validate get production revision"() {
-		setup:
-			PatchRevisionCli cli = PatchRevisionCli.create()
-			def revFile = new File("src/test/resources/Revisions.json")
-			def result
-			PrintStream oldStream
-			def buffer
-		when:
-			oldStream = System.out;
-			buffer = new ByteArrayOutputStream()
-			System.setOut(new PrintStream(buffer))
-			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-5"])
-			result = cli.process(["-pr"])
-			System.setOut(oldStream)
-		then:
-			revFile.exists()
-			result.returnCode == 0
-			buffer.toString().trim() == "9.1.0.ADMIN-UIMIG-5"
-		when:
-			oldStream = System.out;
-			buffer = new ByteArrayOutputStream()
-			System.setOut(new PrintStream(buffer))
-			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-50"])
-			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-500"])
-			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-5000"])
-			result = cli.process(["-pr"])
-			System.setOut(oldStream)
-		then:
-			revFile.exists()
-			result.returnCode == 0
-			buffer.toString().trim() == "9.1.0.ADMIN-UIMIG-5000"
-		cleanup:
-			revFile.delete()
-	}
+//	def "Patch Revision Cli validate get production revision"() {
+//		setup:
+//			PatchRevisionCli cli = PatchRevisionCli.create()
+//			def revFile = new File("src/test/resources/Revisions.json")
+//			def result
+//			PrintStream oldStream
+//			def buffer
+//		when:
+//			oldStream = System.out;
+//			buffer = new ByteArrayOutputStream()
+//			System.setOut(new PrintStream(buffer))
+//			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-5"])
+//			result = cli.process(["-pr"])
+//			System.setOut(oldStream)
+//		then:
+//			revFile.exists()
+//			result.returnCode == 0
+//			buffer.toString().trim() == "9.1.0.ADMIN-UIMIG-5"
+//		when:
+//			oldStream = System.out;
+//			buffer = new ByteArrayOutputStream()
+//			System.setOut(new PrintStream(buffer))
+//			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-50"])
+//			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-500"])
+//			result = cli.process(["-spr","9.1.0.ADMIN-UIMIG-5000"])
+//			result = cli.process(["-pr"])
+//			System.setOut(oldStream)
+//		then:
+//			revFile.exists()
+//			result.returnCode == 0
+//			buffer.toString().trim() == "9.1.0.ADMIN-UIMIG-5000"
+//		cleanup:
+//			revFile.delete()
+//	}
 	
 	def "Patch Revision Cli validate reset revision for a given target"() {
 		setup:
@@ -332,11 +332,10 @@ class RevisionCliIntegrationTest extends Specification {
 			cli.process(["-ar","chti211,9.1.0.ADMIN-UIMIG-185"])
 			cli.process(["-ar","chei212,9.1.0.ADMIN-UIMIG-100"])
 			cli.process(["-ar","chei211,9.1.0.ADMIN-UIMIG-50"])
-			cli.process(["-spr","9.1.0.ADMIN-UIMIG-5000"])
+			cli.process(["-ar","chpi211,9.1.0.ADMIN-UIMIG-5000"])
 			cli.process(["-nr"])
 			revAsJson = new JsonSlurper().parse(revFile)
 		then:
-			revAsJson.lastProdRev.toString().trim() == "9.1.0.ADMIN-UIMIG-5000"
 			revAsJson.nextRev.toInteger() == 2
 			revAsJson.chti211.revisions.size() == 2
 			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
@@ -344,22 +343,26 @@ class RevisionCliIntegrationTest extends Specification {
 			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-100")
 			revAsJson.chei211.revisions.size() == 1
 			revAsJson.chei211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
+			revAsJson.chpi211.revisions.size() == 1
+			revAsJson.chpi211.revisions.contains("9.1.0.ADMIN-UIMIG-5000")
 		when:
-			result = cli.process(["-rr","chei212"])
+			result = cli.process(["-rr","chpi211,chei212"])
 			revAsJson = new JsonSlurper().parse(revFile)
 		then:
-			revAsJson.lastProdRev.toString().trim() == "9.1.0.ADMIN-UIMIG-5000"
 			revAsJson.nextRev.toInteger() == 2
 			revAsJson.chti211.revisions.size() == 2
 			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
 			revAsJson.chei212.revisions.size() == 0
+			revAsJson.chei212.lastRevision == "9.1.0.ADMIN-UIMIG-5000"
 			revAsJson.chei211.revisions.size() == 1
 			revAsJson.chei211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
+			revAsJson.chpi211.revisions.size() == 1
+			revAsJson.chpi211.revisions.contains("9.1.0.ADMIN-UIMIG-5000")
 		cleanup:
 			revFile.delete()
 	}
 	
-	def "Patch Revision Cli validate reset revision if the given target is not within the revision file"() {
+	def "Patch Revision Cli validate reset revision if the given target or source is not within the revision file"() {
 		setup:
 			PatchRevisionCli cli = PatchRevisionCli.create()
 			def revFile = new File("src/test/resources/Revisions.json")
@@ -372,11 +375,10 @@ class RevisionCliIntegrationTest extends Specification {
 			cli.process(["-ar","chti211,9.1.0.ADMIN-UIMIG-185"])
 			cli.process(["-ar","chei212,9.1.0.ADMIN-UIMIG-100"])
 			cli.process(["-ar","chei211,9.1.0.ADMIN-UIMIG-50"])
-			cli.process(["-spr","9.1.0.ADMIN-UIMIG-5000"])
+			cli.process(["-ar","chpi211,9.1.0.ADMIN-UIMIG-5000"])
 			cli.process(["-nr"])
 			revAsJson = new JsonSlurper().parse(revFile)
 		then:
-			revAsJson.lastProdRev.toString() == "9.1.0.ADMIN-UIMIG-5000"
 			revAsJson.nextRev.toInteger() == 2
 			revAsJson.chti211.revisions.size() == 2
 			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
@@ -384,11 +386,12 @@ class RevisionCliIntegrationTest extends Specification {
 			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-100")
 			revAsJson.chei211.revisions.size() == 1
 			revAsJson.chei211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
+			revAsJson.chpi211.revisions.size() == 1
+			revAsJson.chpi211.revisions.contains("9.1.0.ADMIN-UIMIG-5000")
 		when:
-			result = cli.process(["-rr","chti215"])
+			result = cli.process(["-rr","chpi211,chti215"])
 			revAsJson = new JsonSlurper().parse(revFile)
 		then:
-			revAsJson.lastProdRev.toString() == "9.1.0.ADMIN-UIMIG-5000"
 			revAsJson.nextRev.toInteger() == 2
 			revAsJson.chti211.revisions.size() == 2
 			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
@@ -396,6 +399,21 @@ class RevisionCliIntegrationTest extends Specification {
 			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-100")
 			revAsJson.chei211.revisions.size() == 1
 			revAsJson.chei211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
+			revAsJson.chpi211.revisions.size() == 1
+			revAsJson.chpi211.revisions.contains("9.1.0.ADMIN-UIMIG-5000")
+		when:
+			result = cli.process(["-rr","chti215,chei212"])
+			revAsJson = new JsonSlurper().parse(revFile)
+		then:
+			revAsJson.nextRev.toInteger() == 2
+			revAsJson.chti211.revisions.size() == 2
+			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
+			revAsJson.chei212.revisions.size() == 3
+			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-100")
+			revAsJson.chei211.revisions.size() == 1
+			revAsJson.chei211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
+			revAsJson.chpi211.revisions.size() == 1
+			revAsJson.chpi211.revisions.contains("9.1.0.ADMIN-UIMIG-5000")
 		cleanup:
 			revFile.delete()
 	}
