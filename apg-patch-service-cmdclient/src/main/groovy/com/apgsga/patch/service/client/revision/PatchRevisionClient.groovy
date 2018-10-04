@@ -64,7 +64,7 @@ class PatchRevisionClient {
 		revisionFile.write(new JsonBuilder(revFileAsJson).toPrettyString())
 	}
 	
-	private def initRevisionFile() {
+	def initRevisionFile() {
 		revisionFile = new File(config.revision.file.path)
 		if(!revisionFile.exists()) {
 			def builder = new JsonBuilder()
@@ -105,4 +105,5 @@ class PatchRevisionClient {
 			revisionFile.write(new JsonBuilder(revFileAsJson).toPrettyString())
 		}
 	}
+	 
 }

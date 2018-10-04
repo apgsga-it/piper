@@ -45,10 +45,9 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 
 	@Override
 	public String getVersionFor(String group, String name, String bomVersion) {
-		System.out.println("Getting Version for group: " + group + ", name: " + name + " and Bom Version: " + bomVersion);
 		versionsProperties = getProperties(bomVersion);
 		String version = versionsProperties.getProperty(group + ":" + name);
-		System.out.println("Got Version: " + version + "for group: " + group + ", name: " + name + " and Bom Version: " + bomVersion);
+		System.out.println("Got Version: " + version + " for group: " + group + ", name: " + name + " with Bom Version: " + bomVersion);
 		return version;
 
 	}
@@ -92,7 +91,6 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 
 		try {
 			Properties versionsProperties = artifactManager.getVersionsProperties(bomVersion);
-			System.out.println(versionsProperties.toString());
 			return versionsProperties;
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
 			LOGGER.error(ExceptionUtils.getFullStackTrace(e));

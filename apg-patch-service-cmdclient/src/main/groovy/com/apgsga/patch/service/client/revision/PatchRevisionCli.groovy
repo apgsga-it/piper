@@ -129,6 +129,7 @@ class PatchRevisionCli {
 			spr longOpt: 'setProductionRevision', args:1, argName: 'revision', 'Set the last Production revision', required: false
 			nr longOpt: 'nextRevision', args:0, 'Get the next global revision number', required: false
 			rr longOpt: 'resetRevision', args:1, argName: 'target', 'Reset the revision list and last revision for the given target', required: false
+			i longOpt: 'initRevision', args:0 , 'Initialize the Revision Tracking', required: false
 			
 		}
 		
