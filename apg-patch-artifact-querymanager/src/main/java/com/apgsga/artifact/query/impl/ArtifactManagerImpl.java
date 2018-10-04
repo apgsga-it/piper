@@ -143,6 +143,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	@Override
 	public Properties getVersionsProperties(String version)
 			throws DependencyResolutionException, IOException, XmlPullParserException, ArtifactResolutionException {
+		System.out.println("Version: " + version);
 		return getVersionsProperties(loadBomModel(bomGroupId, bomArtefactId, version));
 	}
 

@@ -88,6 +88,7 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 
 		try {
 			Properties versionsProperties = artifactManager.getVersionsProperties(bomVersion);
+			System.out.println(versionsProperties.toString());
 			return versionsProperties;
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
 			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
