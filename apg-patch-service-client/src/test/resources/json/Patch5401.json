@@ -37,7 +37,7 @@
 			"artifactId": "zentraldispo-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": null,
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean"
 		}
 	]

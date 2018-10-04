@@ -24,9 +24,9 @@ class PropertyFileBasedVersionManagerTests extends Specification {
 		def resource = rl.getResource("target/maverepo");
 		def artifactManager = ArtifactVersionManager.create(resource.getURI(),"com.affichage.common.maven","dm-bom")
 		when:
-		def result = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.0.6.ADMIN-UIMIG-SNAPSHOT")
+		def result = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		then:
-		assert result.equals("9.0.6.ADMIN-UIMIG-SNAPSHOT")
+		assert result.equals("9.1.0.ADMIN-UIMIG-SNAPSHOT")
 	}
 	def "With empty File path to Patch File"() {
 		setup:
@@ -34,9 +34,9 @@ class PropertyFileBasedVersionManagerTests extends Specification {
 		def resource = rl.getResource("target/maverepo");
 		def artifactManager = ArtifactVersionManager.create(resource.getURI(),"com.affichage.common.maven","dm-bom", null)
 		when:
-		def result = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.0.6.ADMIN-UIMIG-SNAPSHOT")
+		def result = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		then:
-		assert result.equals("9.0.6.ADMIN-UIMIG-SNAPSHOT")
+		assert result.equals("9.1.0.ADMIN-UIMIG-SNAPSHOT")
 	}
 	
 	def "With additional Path to PatchFile Overriding Version Numbers"() {
@@ -45,10 +45,10 @@ class PropertyFileBasedVersionManagerTests extends Specification {
 		def mavenRepoResource = rl.getResource("target/maverepo");
 		def artifactManager = ArtifactVersionManager.create(mavenRepoResource.getURI(),"com.affichage.common.maven","dm-bom", "src/test/resources/Patch5797.json")
 		when:
-		def resultZentralDispo = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.0.6.ADMIN-UIMIG-SNAPSHOT")
-		def resultCommondao = artifactManager.getVersionFor("com.affichage.it21.adgis","adgis-common-dao","9.0.6.ADMIN-UIMIG-SNAPSHOT")
+		def resultZentralDispo = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.1.0.ADMIN-UIMIG-SNAPSHOT")
+		def resultCommondao = artifactManager.getVersionFor("com.affichage.it21.adgis","adgis-common-dao","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		then:
-		assert resultZentralDispo.equals("9.0.6.ADMIN-UIMIG-SNAPSHOT")
+		assert resultZentralDispo.equals("9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		assert resultCommondao.equals("9.9.9")
 	}
 	
@@ -58,8 +58,8 @@ class PropertyFileBasedVersionManagerTests extends Specification {
 		def mavenRepoResource = rl.getResource("target/maverepo");
 		def artifactManager = ArtifactVersionManager.create(mavenRepoResource.getURI(),"com.affichage.common.maven","dm-bom", "xxxxxxxx/Patch5797.json")
 		when:
-		def resultZentralDispo = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.0.6.ADMIN-UIMIG-SNAPSHOT")
-		def resultCommondao = artifactManager.getVersionFor("com.affichage.it21.adgis","adgis-common-dao","9.0.6.ADMIN-UIMIG-SNAPSHOT")
+		def resultZentralDispo = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.1.0.ADMIN-UIMIG-SNAPSHOT")
+		def resultCommondao = artifactManager.getVersionFor("com.affichage.it21.adgis","adgis-common-dao","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		then:
 		thrown PatchFileAccessException
 	}

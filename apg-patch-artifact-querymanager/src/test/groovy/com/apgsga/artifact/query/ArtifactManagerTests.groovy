@@ -20,7 +20,7 @@ class ArtifactManagerTests extends Specification {
 		setup:
 		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo")
 		when:
-		def results = artifactManager.getAllDependencies("9.0.6.ADMIN-UIMIG-SNAPSHOT")
+		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		def nonApgResults = results.findAll{ (!it.groupId.startsWith("com.apgsga") && ! it.groupId.startsWith("com.affichage"))}
 		then:
 		assert results.size() > 0
@@ -33,7 +33,7 @@ class ArtifactManagerTests extends Specification {
 		setup:
 		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo")
 		when:
-		def results = artifactManager.getAllDependencies("9.0.6.ADMIN-UIMIG-SNAPSHOT",SearchCondition.ALL)
+		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT",SearchCondition.ALL)
 		println results.size()
 		def nonApplicationResults = results.findAll{ (!it.groupId.startsWith("com.apgsga") && ! it.groupId.startsWith("com.affichage"))}
 		def applicationResults = results.findAll{ (it.groupId.startsWith("com.apgsga") ||  it.groupId.startsWith("com.affichage"))}
@@ -48,7 +48,7 @@ class ArtifactManagerTests extends Specification {
 		setup:
 		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo")
 		when:
-		def results = artifactManager.getAllDependencies("9.0.6.ADMIN-UIMIG-SNAPSHOT",SearchCondition.APPLICATION)
+		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT",SearchCondition.APPLICATION)
 		def nonApgResults = results.findAll{ (!it.groupId.startsWith("com.apgsga") && ! it.groupId.startsWith("com.affichage"))}
 		then:
 		assert results.size() > 0
@@ -59,7 +59,7 @@ class ArtifactManagerTests extends Specification {
 		setup:
 		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo")
 		when:
-		def results = artifactManager.getAllDependencies("9.0.6.ADMIN-UIMIG-SNAPSHOT",SearchCondition.APPLICATION)
+		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT",SearchCondition.APPLICATION)
 		def numberOfFilesBefore = artifactManager.getMavenLocalRepo().listFiles().length
 		artifactManager.cleanLocalMavenRepo()
 		def numberOfFilesAfter = artifactManager.getMavenLocalRepo().listFiles().length

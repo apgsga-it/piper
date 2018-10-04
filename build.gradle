@@ -9,7 +9,7 @@ project.ext {
 allprojects  {
 	apply plugin: 'maven'
 	group = 'com.apgsga.patchframework'
-	version  = '1.2.11'
+	version  = '1.2.12'
 }
 
 subprojects {
@@ -38,7 +38,7 @@ subprojects {
 
 	dependencyManagement { 
 		imports {  
-			mavenBom 'com.affichage.common.maven:dm-bom:9.0.6.ADMIN-UIMIG-SNAPSHOT' 
+			mavenBom 'com.affichage.common.maven:dm-bom:9.1.0.ADMIN-UIMIG-SNAPSHOT' 
 		} 
 		dependencies {
         	dependency 'com.google.guava:guava:18.0'

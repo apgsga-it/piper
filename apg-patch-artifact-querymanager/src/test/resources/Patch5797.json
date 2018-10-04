@@ -8,7 +8,7 @@
 	"patchTag": "",
 	"tagNr": 0,
 	"installationTarget": null,
-	"baseVersionNumber": "9.0.6",
+	"baseVersionNumber": "9.1.0",
 	"revisionMnemoPart": "ADMIN-UIMIG",
 	"revisionNumber": null,
 	"lastRevisionNumber": null,
@@ -20,7 +20,7 @@
 			"artifactId": "zentraldispo-ui",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.ui",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 0
 		},
 		{
@@ -28,7 +28,7 @@
 			"artifactId": "zentraldispo-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.dao",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 0
 		},
 		{
@@ -36,7 +36,7 @@
 			"artifactId": "gp-dao",
 			"groupId": "com.affichage.it21.gp",
 			"name": "com.affichage.it21.gp.dao",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 0
 		},
 		{
@@ -44,7 +44,7 @@
 			"artifactId": "gp-ui",
 			"groupId": "com.affichage.it21.gp",
 			"name": "com.affichage.it21.gp.ui",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 0
 		},
 		{
@@ -153,7 +153,7 @@
 			"artifactId": "zentraldispo-ui",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.ui",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 0
 		},
 		{
@@ -161,7 +161,7 @@
 			"artifactId": "zentraldispo-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.dao",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 0
 		},
 		{
@@ -169,7 +169,7 @@
 			"artifactId": "gp-dao",
 			"groupId": "com.affichage.it21.gp",
 			"name": "com.affichage.it21.gp.dao",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 0
 		},
 		{
@@ -177,7 +177,7 @@
 			"artifactId": "gp-ui",
 			"groupId": "com.affichage.it21.gp",
 			"name": "com.affichage.it21.gp.ui",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 0
 		}
 	],

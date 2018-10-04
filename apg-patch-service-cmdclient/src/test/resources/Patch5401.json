@@ -39,7 +39,7 @@
 			"artifactId": "zentraldispo-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": null,
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 0
 		}
 	],
@@ -59,7 +59,7 @@
 			"artifactId": "zentraldispo-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": null,
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 0
 		}
 	]

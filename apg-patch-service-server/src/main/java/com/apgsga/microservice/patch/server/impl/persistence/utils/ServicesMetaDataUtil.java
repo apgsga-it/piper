@@ -31,11 +31,11 @@ public class ServicesMetaDataUtil {
 		jadasStarter.setGroupId("com.apgsga.it21.ui.mdt");
 		jadasStarter.setName("jadas-app-starter");
 
-		final ServiceMetaData it21Ui = new ServiceMetaDataBean("It21Ui", "it21_release_9_0_6_admin_uimig", "9.0.6",
+		final ServiceMetaData it21Ui = new ServiceMetaDataBean("It21Ui", "it21_release_9_0_6_admin_uimig", "9.1.0",
 				"ADMIN-UIMIG");
 		serviceList.add(it21Ui);
 		final ServiceMetaData someOtherService = new ServiceMetaDataBean("SomeOtherService",
-				"it21_release_9_0_6_some_tag", "9.0.6", "SOME-TAG");
+				"it21_release_9_0_6_some_tag", "9.1.0", "SOME-TAG");
 		serviceList.add(someOtherService);
 	}
 

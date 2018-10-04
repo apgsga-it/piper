@@ -25,14 +25,14 @@
 			"artifactId": "zentraldispo-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.dao",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean"
 		},
 		{
 			"artifactId": "zentraldispo-ui",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.ui",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean"
 		}
 	]

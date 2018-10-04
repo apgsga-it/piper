@@ -8,7 +8,7 @@
 	"patchTag": "Patch_0900C1_5730_1",
 	"tagNr": 1,
 	"installationTarget": null,
-	"baseVersionNumber": "9.0.6",
+	"baseVersionNumber": "9.1.0",
 	"revisionMnemoPart": "ADMIN-UIMIG",
 	"revisionNumber": null,
 	"lastRevisionNumber": null,
@@ -20,7 +20,7 @@
 			"artifactId": "datetime-utils",
 			"groupId": "com.affichage.datetime",
 			"name": "com.affichage.datetime.utils",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 3
 		},
 		{
@@ -28,7 +28,7 @@
 			"artifactId": "gp-dao",
 			"groupId": "com.affichage.it21.gp",
 			"name": "com.affichage.it21.gp.dao",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 2
 		},
 		{
@@ -36,7 +36,7 @@
 			"artifactId": "gp-ui",
 			"groupId": "com.affichage.it21.gp",
 			"name": "com.affichage.it21.gp.ui",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 0
 		},
 		{
@@ -44,7 +44,7 @@
 			"artifactId": "dbj-dao",
 			"groupId": "com.affichage.it21.dbj",
 			"name": "com.affichage.it21.dbj.dao",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 3
 		},
 		{
@@ -52,7 +52,7 @@
 			"artifactId": "fotomanager",
 			"groupId": "com.affichage.it21.fotomanager",
 			"name": "com.affichage.it21.fotomanager.impl",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 3
 		},
 		{
@@ -60,7 +60,7 @@
 			"artifactId": "ibus-dao",
 			"groupId": "com.affichage.it21.ibus",
 			"name": "com.affichage.it21.ibus.dao",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 3
 		},
 		{
@@ -68,7 +68,7 @@
 			"artifactId": "ppix-dao",
 			"groupId": "com.affichage.it21.ppix",
 			"name": "com.affichage.it21.ppix.dao",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 3
 		},
 		{
@@ -76,7 +76,7 @@
 			"artifactId": "qq-dao",
 			"groupId": "com.affichage.it21.qq",
 			"name": "com.affichage.it21.qq.dao",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 3
 		},
 		{
@@ -84,7 +84,7 @@
 			"artifactId": "arep-ui",
 			"groupId": "com.affichage.it21.arep",
 			"name": "com.affichage.it21.arep.ui",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 2
 		},
 	{
@@ -92,7 +92,7 @@
 			"artifactId": "dao-domainwerte",
 			"groupId": "com.affichage",
 			"name": "com.affichage.it21.domainwerte",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 61
 		},
 		{
@@ -100,7 +100,7 @@
 			"artifactId": "adgis-api-dao",
 			"groupId": "com.affichage.it21.adgis",
 			"name": "com.affichage.it21.adgis.api.dao",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 43
 		},
 		{
@@ -108,7 +108,7 @@
 			"artifactId": "adgis-api-ui",
 			"groupId": "com.affichage.it21.adgis",
 			"name": "com.affichage.it21.adgis.api.ui",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 42
 		},
 		{
@@ -116,7 +116,7 @@
 			"artifactId": "adgis-common-dao",
 			"groupId": "com.affichage.it21.adgis",
 			"name": "com.affichage.it21.adgis.common.dao",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 41
 		},
 		{
@@ -124,7 +124,7 @@
 			"artifactId": "common-rep-dao",
 			"groupId": "com.apgsga.common.rep",
 			"name": "com.apgsga.common.rep.dao",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 38
 		},
 		{
@@ -132,7 +132,7 @@
 			"artifactId": "bd-ui",
 			"groupId": "com.affichage.it21.bd",
 			"name": "com.affichage.it21.bd.ui",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 2
 		},
 		{
@@ -140,7 +140,7 @@
 			"artifactId": "faktura-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.faktura.dao",
-			"version": "9.0.6.ADMIN-UIMIG-SNAPSHOT",
+			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 			"dependencyLevel": 0
 		}
 	],

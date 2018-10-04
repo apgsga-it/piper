@@ -8,7 +8,7 @@
 	"patchTag": "Patch_0900C1_5476_1",
 	"tagNr": 1,
 	"installationTarget": "CHEI212",
-	"baseVersionNumber": "9.0.6",
+	"baseVersionNumber": "9.1.0",
 	"revisionMnemoPart": "ADMIN-UIMIG",
 	"revisionNumber": null,
 	"lastRevisionNumber": null,
@@ -20,7 +20,7 @@
 			"artifactId": "datetime-utils",
 			"groupId": "com.affichage.datetime",
 			"name": "com.affichage.datetime.utils",
-			"version": "9.0.6.ADMIN-UIMIG-20180112.132308-89"
+			"version": "9.1.0.ADMIN-UIMIG-20180112.132308-89"
 		}
 	]
 }
