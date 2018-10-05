@@ -107,7 +107,7 @@ class PatchRevisionCli {
 			lr longOpt: 'lastRevision', args:1, argName: 'target', 'Get last revision for the given target', required: false
 			nr longOpt: 'nextRevision', args:0, 'Get the next global revision number', required: false
 			rr longOpt: 'resetRevision', args:2, valueSeparator: ",", argName: 'source,target', 'Reset the revision list and last revision for the given target', required: false
-			
+			i longOpt: 'initRevision', args:0 , 'Initialize the Revision Tracking', required: false
 		}
 		
 		def options = cli.parse(args)
