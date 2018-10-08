@@ -176,7 +176,7 @@ class PatchCli {
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
 			// TODO (CHE,13.9) Get rid of the component parameter, needs to be coordinated with current Patch System (PatchOMat)
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can only be aps ', required: false
-			oc longOpt: 'onclone', args:2, argName: 'source,target', 'Call Patch Service onClone REST API', required: false
+			oc longOpt: 'onclone', args:2, valueSeparator: ",", argName: 'source,target', 'Call Patch Service onClone REST API', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
 			// TODO (JHE, CHE, 12.9 ) move this to own cli
 			cr longOpt: 'cleanReleases', args:1, argName: 'target', 'Clean release Artifacts for a given target on Artifactory', required: false
