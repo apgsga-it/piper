@@ -165,8 +165,8 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@RequestMapping(value = "/onClone", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	@Override
-	public void onClone(@RequestParam("target") String target) {
-		patchService.onClone(target);
+	public void onClone(@RequestParam("source") String source, @RequestParam("target") String target) {
+		patchService.onClone(source,target);
 	}
 
 	@RequestMapping(value = "/cleanLocalMavenRepo", method = RequestMethod.POST)

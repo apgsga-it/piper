@@ -212,7 +212,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 	}
 
 	@Override
-	public void onClone(String target) {
+	public void onClone(String source, String target) {
 		String jobName = "onClone";
 
 		LOGGER.info("Starting onClone process for " + target + ". " + jobName + " pipeline will be started.");
@@ -223,6 +223,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 			Map<String, String> jobParm = Maps.newHashMap();
 			jobParm.put(TOKEN_CONS, jobName);
 			jobParm.put("target", target);
+			jobParm.put("source", source);
 			PipelineBuild result = triggerPipelineJobAndWaitUntilBuilding(jenkinsServer, jobName, jobParm, true);
 			BuildWithDetails details = result.details();
 			if (details.isBuilding()) {

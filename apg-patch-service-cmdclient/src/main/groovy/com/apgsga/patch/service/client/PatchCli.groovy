@@ -176,7 +176,7 @@ class PatchCli {
 			lf longOpt: "listFiles", args:1, argName: 'prefix', 'List all files on server with prefix', required: false
 			// TODO (CHE,13.9) Get rid of the component parameter, needs to be coordinated with current Patch System (PatchOMat)
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can only be aps ', required: false
-			oc longOpt: 'onclone', args:1, argName: 'target', 'Call Patch Service onClone REST API', required: false
+			oc longOpt: 'onclone', args:2, argName: 'source,target', 'Call Patch Service onClone REST API', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
 			// TODO (JHE, CHE, 12.9 ) move this to own cli
 			cr longOpt: 'cleanReleases', args:1, argName: 'target', 'Clean release Artifacts for a given target on Artifactory', required: false
@@ -321,8 +321,8 @@ class PatchCli {
 			}
 		}
 		if (options.oc) {
-			if(options.ocs.size() != 1 || options.ocs[0] == null) {
-				println "You have to provide the target for which the onClone method will be done."
+			if(options.ocs.size() != 2) {
+				println "You have to provide the source and target for which the onClone method will be done."
 				error = true
 			}
 		}
@@ -531,9 +531,10 @@ class PatchCli {
 
 
 	def onClone(def patchClient,def options) {
-		println "Performing onClone for ${options.ocs[0]}"
-		def target = options.ocs[0]
-		patchClient.onClone(target)
+		println "Performing onClone for source=${options.ocs[0]} and target=${options.ocs[1]}"
+		def source = options.ocs[0]
+		def target = options.ocs[1]
+		patchClient.onClone(source,target)
 	}
 
 	def cleanReleases(def options) {

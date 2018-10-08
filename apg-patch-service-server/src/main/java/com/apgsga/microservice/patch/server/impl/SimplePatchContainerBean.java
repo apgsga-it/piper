@@ -300,8 +300,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public void onClone(String target) {
-		jenkinsClient.onClone(target);
+	public void onClone(String source, String target) {
+		jenkinsClient.onClone(source,target);
 	}
 
 	public ArtifactDependencyResolver getDependecyResolver() {

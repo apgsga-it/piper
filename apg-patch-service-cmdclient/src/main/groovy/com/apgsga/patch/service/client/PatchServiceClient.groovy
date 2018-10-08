@@ -147,8 +147,8 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 
 
 	@Override
-	public void onClone(String target) {
-		restTemplate.postForLocation(getRestBaseUri() + "/onClone?target=${target}", null)
+	public void onClone(String source, String target) {
+		restTemplate.postForLocation(getRestBaseUri() + "/onClone?source=${source}&target=${target}", null)
 	}
 
 	class PatchServiceErrorHandler implements ResponseErrorHandler {

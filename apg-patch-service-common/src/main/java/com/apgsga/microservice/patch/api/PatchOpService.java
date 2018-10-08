@@ -31,10 +31,11 @@ public interface PatchOpService {
 	/**
 	 * Clone a specific target
 	 * 
+	 * @param source
 	 * @param target
-	 *            eg.: CHEI212
+	 *             eg.: CHPI211,CHEI212
 	 */
-	public void onClone(String target);
+	public void onClone(String source,String target);
 
 	/**
 	 * Clean local Mavenrepo

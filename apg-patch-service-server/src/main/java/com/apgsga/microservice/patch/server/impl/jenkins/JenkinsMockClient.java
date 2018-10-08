@@ -55,8 +55,8 @@ public class JenkinsMockClient implements JenkinsClient {
 	}
 	
 	@Override
-	public void onClone(String target) {
-		LOGGER.info("onClone for " + target);		
+	public void onClone(String source, String target) {
+		LOGGER.info("onClone for source=" + source + " , target=" + target);		
 	}	
 
 }
