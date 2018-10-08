@@ -82,7 +82,7 @@ class PatchRevisionCli {
 	
 	private def addRevision(def options) {
 		def patchRevClient = new PatchRevisionClient(config)
-		patchRevClient.addRevision(options.ars[0],options.ars[1])
+		patchRevClient.addRevision(options.ars[0],options.ars[1],options.ars[2])
 	}
 	
 	private def nextRevision() {
@@ -103,11 +103,11 @@ class PatchRevisionCli {
 		cli.with {
 			// TODO (CHE, 13.9) Factor out Revision Operations into Interface
 			h longOpt: 'help', 'Show usage information', required: false
-			ar longOpt: 'addRevision', args:2, valueSeparator: ",", argName: 'target,revision', 'Add a new revision number to the revision list of the given target', required: false
+			ar longOpt: 'addRevision', args:3, valueSeparator: ",", argName: 'target,revision,fullRevisionPrefix', 'Add a new revision number to the revision list of the given target', required: false
 			lr longOpt: 'lastRevision', args:1, argName: 'target', 'Get last revision for the given target', required: false
 			nr longOpt: 'nextRevision', args:0, 'Get the next global revision number', required: false
 			rr longOpt: 'resetRevision', args:2, valueSeparator: ",", argName: 'source,target', 'Reset the revision list and last revision for the given target', required: false
-			// TODO JHE: to be implemented, probably while working on JAVA8MIG-
+			// TODO JHE: to be implemented, probably while working on JAVA8MIG-431
 			i longOpt: 'initRevision', args:0 , 'Initialize the Revision Tracking', required: false
 		}
 		
@@ -129,8 +129,8 @@ class PatchRevisionCli {
 
 		// TODO JHE: Really need this one ??? Shouldn't it be done within cli.parse ??		
 		if(options.ar) {
-			if(options.ars.size() != 2) {
-				println "-ar option required 2 parameters!"
+			if(options.ars.size() != 3) {
+				println "-ar option required 3 parameters!"
 			}
 			else {
 				error = false

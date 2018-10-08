@@ -15,20 +15,20 @@ class PatchRevisionClient {
 		initRevisionFile()
 	}
 	
-	def addRevision(def target, def revision) {
+	def addRevision(def target, def revision, def fullRevisionPrefix) {
 		def revFileAsJson = new JsonSlurper().parse(revisionFile)
 		if(revFileAsJson."${target}" == null) {
 			def builder = new JsonBuilder(revFileAsJson)
 			builder{
 				"${target}"{
 					lastRevision(revision)
-					revisions([revision])
+					revisions(["${fullRevisionPrefix}${revision}"])
 				}
 			}
 			addNewContentToExistingRevisionFile(builder)
 		}
 		else {
-			revFileAsJson."${target}".revisions.add(revision)
+			revFileAsJson."${target}".revisions.add("${fullRevisionPrefix}${revision}")
 			revFileAsJson."${target}".lastRevision = revision
 			revisionFile.write(new JsonBuilder(revFileAsJson).toPrettyString())
 		}

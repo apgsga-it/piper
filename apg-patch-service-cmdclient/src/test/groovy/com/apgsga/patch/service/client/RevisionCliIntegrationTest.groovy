@@ -143,7 +143,7 @@ class RevisionCliIntegrationTest extends Specification {
 			def nextGlobalRevision
 			def result
 		when:
-			result = cli.process(["-ar","chei212,9.1.0.ADMIN-UIMIG-123"])
+			result = cli.process(["-ar","chei212,123,9.1.0.ADMIN-UIMIG-"])
 			revAsJson = new JsonSlurper().parse(revFile)
 		then:
 			revFile.exists()
@@ -153,9 +153,9 @@ class RevisionCliIntegrationTest extends Specification {
 			// TODO JHE: verify that we can access chei212 by using a variable
 			revAsJson.chei212.revisions.size() == 1
 			revAsJson.chei212.revisions[0].toString() == "9.1.0.ADMIN-UIMIG-123"
-			revAsJson.chei212.lastRevision.toString() == "9.1.0.ADMIN-UIMIG-123"
+			revAsJson.chei212.lastRevision.toString() == "123"
 		when:
-			result = cli.process(["-ar","chei212,9.1.0.ADMIN-UIMIG-234"])
+			result = cli.process(["-ar","chei212,234,9.1.0.ADMIN-UIMIG-"])
 			revAsJson = new JsonSlurper().parse(revFile)
 		then:
 			revFile.exists()
@@ -166,9 +166,9 @@ class RevisionCliIntegrationTest extends Specification {
 			revAsJson.chei212.revisions.size() == 2
 			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-123")
 			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-234")
-			revAsJson.chei212.lastRevision.toString() == "9.1.0.ADMIN-UIMIG-234"
+			revAsJson.chei212.lastRevision.toString() == "234"
 		when:
-			result = cli.process(["-ar","chti211,9.1.0.ADMIN-UIMIG-15"])
+			result = cli.process(["-ar","chti211,15,9.1.0.ADMIN-UIMIG-"])
 			revAsJson = new JsonSlurper().parse(revFile)
 		then:
 			revFile.exists()
@@ -179,13 +179,13 @@ class RevisionCliIntegrationTest extends Specification {
 			revAsJson.chei212.revisions.size() == 2
 			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-123")
 			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-234")
-			revAsJson.chei212.lastRevision.toString() == "9.1.0.ADMIN-UIMIG-234"
+			revAsJson.chei212.lastRevision.toString() == "234"
 			revAsJson.chti211.revisions.size() == 1
 			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-15")
-			revAsJson.chti211.lastRevision.toString() == "9.1.0.ADMIN-UIMIG-15"
+			revAsJson.chti211.lastRevision.toString() == "15"
 		when:
-			result = cli.process(["-ar","chti211,9.1.0.ADMIN-UIMIG-18"])
-			result = cli.process(["-ar","chei212,9.1.0.ADMIN-UIMIG-77"])
+			result = cli.process(["-ar","chti211,18,9.1.0.ADMIN-UIMIG-"])
+			result = cli.process(["-ar","chei212,77,9.1.0.ADMIN-UIMIG-"])
 			revAsJson = new JsonSlurper().parse(revFile)
 		then:
 			revFile.exists()
@@ -197,11 +197,11 @@ class RevisionCliIntegrationTest extends Specification {
 			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-123")
 			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-234")
 			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-77")
-			revAsJson.chei212.lastRevision.toString() == "9.1.0.ADMIN-UIMIG-77"
+			revAsJson.chei212.lastRevision.toString() == "77"
 			revAsJson.chti211.revisions.size() == 2
 			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-15")
 			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
-			revAsJson.chti211.lastRevision.toString() == "9.1.0.ADMIN-UIMIG-18"
+			revAsJson.chti211.lastRevision.toString() == "18"
 		cleanup:
 			revFile.delete()
 	}
@@ -213,12 +213,12 @@ class RevisionCliIntegrationTest extends Specification {
 			def buffer
 			def result
 			def revFile = new File("src/test/resources/Revisions.json")
-			cli.process(["-ar","chti211,9.1.0.ADMIN-UIMIG-18"])
-			cli.process(["-ar","chei212,9.1.0.ADMIN-UIMIG-77"])
-			cli.process(["-ar","chei212,9.1.0.ADMIN-UIMIG-88"])
-			cli.process(["-ar","chti211,9.1.0.ADMIN-UIMIG-185"])
-			cli.process(["-ar","chei212,9.1.0.ADMIN-UIMIG-100"])
-			cli.process(["-ar","chei211,9.1.0.ADMIN-UIMIG-50"])
+			cli.process(["-ar","chti211,18,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,77,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,88,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chti211,185,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,100,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei211,50,9.1.0.ADMIN-UIMIG-"])
 		when:
 			oldStream = System.out;
 			buffer = new ByteArrayOutputStream()
@@ -228,7 +228,7 @@ class RevisionCliIntegrationTest extends Specification {
 		then:
 			revFile.exists()
 			result.returnCode == 0
-			buffer.toString().toString().trim() == "9.1.0.ADMIN-UIMIG-100"
+			buffer.toString().toString().trim() == "100"
 		when:
 			oldStream = System.out;
 			buffer = new ByteArrayOutputStream()
@@ -238,7 +238,7 @@ class RevisionCliIntegrationTest extends Specification {
 		then:
 			revFile.exists()
 			result.returnCode == 0
-			buffer.toString().toString().trim() == "9.1.0.ADMIN-UIMIG-185"
+			buffer.toString().toString().trim() == "185"
 		when:
 			oldStream = System.out;
 			buffer = new ByteArrayOutputStream()
@@ -248,7 +248,7 @@ class RevisionCliIntegrationTest extends Specification {
 		then:
 			revFile.exists()
 			result.returnCode == 0
-			buffer.toString().toString().trim() == "9.1.0.ADMIN-UIMIG-50"
+			buffer.toString().toString().trim() == "50"
 		when:
 			oldStream = System.out;
 			buffer = new ByteArrayOutputStream()
@@ -270,13 +270,13 @@ class RevisionCliIntegrationTest extends Specification {
 			def result
 			def revAsJson
 		when:
-			cli.process(["-ar","chti211,9.1.0.ADMIN-UIMIG-18"])
-			cli.process(["-ar","chei212,9.1.0.ADMIN-UIMIG-77"])
-			cli.process(["-ar","chei212,9.1.0.ADMIN-UIMIG-88"])
-			cli.process(["-ar","chti211,9.1.0.ADMIN-UIMIG-185"])
-			cli.process(["-ar","chei212,9.1.0.ADMIN-UIMIG-100"])
-			cli.process(["-ar","chei211,9.1.0.ADMIN-UIMIG-50"])
-			cli.process(["-ar","chpi211,9.1.0.ADMIN-UIMIG-5000"])
+			cli.process(["-ar","chti211,18,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,77,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,88,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chti211,185,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,100,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei211,50,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,5000,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-nr"])
 			revAsJson = new JsonSlurper().parse(revFile)
 		then:
@@ -297,7 +297,7 @@ class RevisionCliIntegrationTest extends Specification {
 			revAsJson.chti211.revisions.size() == 2
 			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
 			revAsJson.chei212.revisions.size() == 0
-			revAsJson.chei212.lastRevision == "9.1.0.ADMIN-UIMIG-5000"
+			revAsJson.chei212.lastRevision == "5000"
 			revAsJson.chei211.revisions.size() == 1
 			revAsJson.chei211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
 			revAsJson.chpi211.revisions.size() == 1
@@ -313,13 +313,13 @@ class RevisionCliIntegrationTest extends Specification {
 			def result
 			def revAsJson
 		when:
-			cli.process(["-ar","chti211,9.1.0.ADMIN-UIMIG-18"])
-			cli.process(["-ar","chei212,9.1.0.ADMIN-UIMIG-77"])
-			cli.process(["-ar","chei212,9.1.0.ADMIN-UIMIG-88"])
-			cli.process(["-ar","chti211,9.1.0.ADMIN-UIMIG-185"])
-			cli.process(["-ar","chei212,9.1.0.ADMIN-UIMIG-100"])
-			cli.process(["-ar","chei211,9.1.0.ADMIN-UIMIG-50"])
-			cli.process(["-ar","chpi211,9.1.0.ADMIN-UIMIG-5000"])
+			cli.process(["-ar","chti211,18,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,77,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,88,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chti211,185,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,100,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei211,50,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,5000,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-nr"])
 			revAsJson = new JsonSlurper().parse(revFile)
 		then:
