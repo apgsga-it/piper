@@ -538,7 +538,7 @@ class PatchCli {
 	}
 
 	def cleanReleases(def options) {
-		def target = options.crs[0]
+		def target = options.crs[0].toUpperCase()
 		def patchArtifactoryClient = new PatchArtifactoryClient(config)
 		patchArtifactoryClient.cleanReleases(target)
 	}
