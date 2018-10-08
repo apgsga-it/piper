@@ -42,7 +42,6 @@ class PatchArtifactoryClient {
 		def dryRun = config.onclone.delete.artifact.dryrun
 		
 		if(revision != null) {
-			println "Following revision would have been deleted"
 			revision.each {
 				// Will delete all published JAR, POM, ZIP, etc ... for the given version/revision
 				removeArtifacts("*-${it}.*", dryRun)
