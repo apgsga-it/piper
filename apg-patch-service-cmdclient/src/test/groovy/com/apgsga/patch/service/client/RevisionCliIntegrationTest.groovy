@@ -151,9 +151,9 @@ class RevisionCliIntegrationTest extends Specification {
 			revAsJson.nextRev == 1 // because we started with a brand new Revision -> although it has no meaning for this particular test
 			revAsJson.prodRevision == null // because we started with a brand new Revision -> although it has no meaning for this particular test
 			// TODO JHE: verify that we can access chei212 by using a variable
-			revAsJson.chei212.revisions.size() == 1
-			revAsJson.chei212.revisions[0].toString() == "9.1.0.ADMIN-UIMIG-123"
-			revAsJson.chei212.lastRevision.toString() == "123"
+			revAsJson.CHEI212.revisions.size() == 1
+			revAsJson.CHEI212.revisions[0].toString() == "9.1.0.ADMIN-UIMIG-123"
+			revAsJson.CHEI212.lastRevision.toString() == "123"
 		when:
 			result = cli.process(["-ar","chei212,234,9.1.0.ADMIN-UIMIG-"])
 			revAsJson = new JsonSlurper().parse(revFile)
@@ -163,10 +163,10 @@ class RevisionCliIntegrationTest extends Specification {
 			revAsJson.nextRev == 1 // because we started with a brand new Revision -> although it has no meaning for this particular test
 			revAsJson.prodRevision == null // because we started with a brand new Revision -> although it has no meaning for this particular test
 			// TODO JHE: verify that we can access chei212 by using a variable
-			revAsJson.chei212.revisions.size() == 2
-			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-123")
-			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-234")
-			revAsJson.chei212.lastRevision.toString() == "234"
+			revAsJson.CHEI212.revisions.size() == 2
+			revAsJson.CHEI212.revisions.contains("9.1.0.ADMIN-UIMIG-123")
+			revAsJson.CHEI212.revisions.contains("9.1.0.ADMIN-UIMIG-234")
+			revAsJson.CHEI212.lastRevision.toString() == "234"
 		when:
 			result = cli.process(["-ar","chti211,15,9.1.0.ADMIN-UIMIG-"])
 			revAsJson = new JsonSlurper().parse(revFile)
@@ -176,13 +176,13 @@ class RevisionCliIntegrationTest extends Specification {
 			revAsJson.nextRev == 1 // because we started with a brand new Revision -> although it has no meaning for this particular test
 			revAsJson.prodRevision == null // because we started with a brand new Revision -> although it has no meaning for this particular test
 			// TODO JHE: verify that we can access chei212 by using a variable
-			revAsJson.chei212.revisions.size() == 2
-			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-123")
-			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-234")
-			revAsJson.chei212.lastRevision.toString() == "234"
-			revAsJson.chti211.revisions.size() == 1
-			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-15")
-			revAsJson.chti211.lastRevision.toString() == "15"
+			revAsJson.CHEI212.revisions.size() == 2
+			revAsJson.CHEI212.revisions.contains("9.1.0.ADMIN-UIMIG-123")
+			revAsJson.CHEI212.revisions.contains("9.1.0.ADMIN-UIMIG-234")
+			revAsJson.CHEI212.lastRevision.toString() == "234"
+			revAsJson.CHTI211.revisions.size() == 1
+			revAsJson.CHTI211.revisions.contains("9.1.0.ADMIN-UIMIG-15")
+			revAsJson.CHTI211.lastRevision.toString() == "15"
 		when:
 			result = cli.process(["-ar","chti211,18,9.1.0.ADMIN-UIMIG-"])
 			result = cli.process(["-ar","chei212,77,9.1.0.ADMIN-UIMIG-"])
@@ -193,15 +193,15 @@ class RevisionCliIntegrationTest extends Specification {
 			revAsJson.nextRev == 1 // because we started with a brand new Revision -> although it has no meaning for this particular test
 			revAsJson.prodRevision == null // because we started with a brand new Revision -> although it has no meaning for this particular test
 			// TODO JHE: verify that we can access chei212 by using a variable
-			revAsJson.chei212.revisions.size() == 3
-			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-123")
-			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-234")
-			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-77")
-			revAsJson.chei212.lastRevision.toString() == "77"
-			revAsJson.chti211.revisions.size() == 2
-			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-15")
-			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
-			revAsJson.chti211.lastRevision.toString() == "18"
+			revAsJson.CHEI212.revisions.size() == 3
+			revAsJson.CHEI212.revisions.contains("9.1.0.ADMIN-UIMIG-123")
+			revAsJson.CHEI212.revisions.contains("9.1.0.ADMIN-UIMIG-234")
+			revAsJson.CHEI212.revisions.contains("9.1.0.ADMIN-UIMIG-77")
+			revAsJson.CHEI212.lastRevision.toString() == "77"
+			revAsJson.CHTI211.revisions.size() == 2
+			revAsJson.CHTI211.revisions.contains("9.1.0.ADMIN-UIMIG-15")
+			revAsJson.CHTI211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
+			revAsJson.CHTI211.lastRevision.toString() == "18"
 		cleanup:
 			revFile.delete()
 	}
@@ -281,27 +281,27 @@ class RevisionCliIntegrationTest extends Specification {
 			revAsJson = new JsonSlurper().parse(revFile)
 		then:
 			revAsJson.nextRev.toInteger() == 2
-			revAsJson.chti211.revisions.size() == 2
-			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
-			revAsJson.chei212.revisions.size() == 3
-			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-100")
-			revAsJson.chei211.revisions.size() == 1
-			revAsJson.chei211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
-			revAsJson.chpi211.revisions.size() == 1
-			revAsJson.chpi211.revisions.contains("9.1.0.ADMIN-UIMIG-5000")
+			revAsJson.CHTI211.revisions.size() == 2
+			revAsJson.CHTI211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
+			revAsJson.CHEI212.revisions.size() == 3
+			revAsJson.CHEI212.revisions.contains("9.1.0.ADMIN-UIMIG-100")
+			revAsJson.CHEI211.revisions.size() == 1
+			revAsJson.CHEI211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
+			revAsJson.CHPI211.revisions.size() == 1
+			revAsJson.CHPI211.revisions.contains("9.1.0.ADMIN-UIMIG-5000")
 		when:
 			result = cli.process(["-rr","chpi211,chei212"])
 			revAsJson = new JsonSlurper().parse(revFile)
 		then:
 			revAsJson.nextRev.toInteger() == 2
-			revAsJson.chti211.revisions.size() == 2
-			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
-			revAsJson.chei212.revisions.size() == 0
-			revAsJson.chei212.lastRevision == "5000"
-			revAsJson.chei211.revisions.size() == 1
-			revAsJson.chei211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
-			revAsJson.chpi211.revisions.size() == 1
-			revAsJson.chpi211.revisions.contains("9.1.0.ADMIN-UIMIG-5000")
+			revAsJson.CHTI211.revisions.size() == 2
+			revAsJson.CHTI211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
+			revAsJson.CHEI212.revisions.size() == 0
+			revAsJson.CHEI212.lastRevision == "5000"
+			revAsJson.CHEI211.revisions.size() == 1
+			revAsJson.CHEI211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
+			revAsJson.CHPI211.revisions.size() == 1
+			revAsJson.CHPI211.revisions.contains("9.1.0.ADMIN-UIMIG-5000")
 		cleanup:
 			revFile.delete()
 	}
@@ -324,40 +324,40 @@ class RevisionCliIntegrationTest extends Specification {
 			revAsJson = new JsonSlurper().parse(revFile)
 		then:
 			revAsJson.nextRev.toInteger() == 2
-			revAsJson.chti211.revisions.size() == 2
-			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
-			revAsJson.chei212.revisions.size() == 3
-			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-100")
-			revAsJson.chei211.revisions.size() == 1
-			revAsJson.chei211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
-			revAsJson.chpi211.revisions.size() == 1
-			revAsJson.chpi211.revisions.contains("9.1.0.ADMIN-UIMIG-5000")
+			revAsJson.CHTI211.revisions.size() == 2
+			revAsJson.CHTI211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
+			revAsJson.CHEI212.revisions.size() == 3
+			revAsJson.CHEI212.revisions.contains("9.1.0.ADMIN-UIMIG-100")
+			revAsJson.CHEI211.revisions.size() == 1
+			revAsJson.CHEI211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
+			revAsJson.CHPI211.revisions.size() == 1
+			revAsJson.CHPI211.revisions.contains("9.1.0.ADMIN-UIMIG-5000")
 		when:
 			result = cli.process(["-rr","chpi211,chti215"])
 			revAsJson = new JsonSlurper().parse(revFile)
 		then:
 			revAsJson.nextRev.toInteger() == 2
-			revAsJson.chti211.revisions.size() == 2
-			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
-			revAsJson.chei212.revisions.size() == 3
-			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-100")
-			revAsJson.chei211.revisions.size() == 1
-			revAsJson.chei211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
-			revAsJson.chpi211.revisions.size() == 1
-			revAsJson.chpi211.revisions.contains("9.1.0.ADMIN-UIMIG-5000")
+			revAsJson.CHTI211.revisions.size() == 2
+			revAsJson.CHTI211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
+			revAsJson.CHEI212.revisions.size() == 3
+			revAsJson.CHEI212.revisions.contains("9.1.0.ADMIN-UIMIG-100")
+			revAsJson.CHEI211.revisions.size() == 1
+			revAsJson.CHEI211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
+			revAsJson.CHPI211.revisions.size() == 1
+			revAsJson.CHPI211.revisions.contains("9.1.0.ADMIN-UIMIG-5000")
 		when:
 			result = cli.process(["-rr","chti215,chei212"])
 			revAsJson = new JsonSlurper().parse(revFile)
 		then:
 			revAsJson.nextRev.toInteger() == 2
-			revAsJson.chti211.revisions.size() == 2
-			revAsJson.chti211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
-			revAsJson.chei212.revisions.size() == 3
-			revAsJson.chei212.revisions.contains("9.1.0.ADMIN-UIMIG-100")
-			revAsJson.chei211.revisions.size() == 1
-			revAsJson.chei211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
-			revAsJson.chpi211.revisions.size() == 1
-			revAsJson.chpi211.revisions.contains("9.1.0.ADMIN-UIMIG-5000")
+			revAsJson.CHTI211.revisions.size() == 2
+			revAsJson.CHTI211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
+			revAsJson.CHEI212.revisions.size() == 3
+			revAsJson.CHEI212.revisions.contains("9.1.0.ADMIN-UIMIG-100")
+			revAsJson.CHEI211.revisions.size() == 1
+			revAsJson.CHEI211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
+			revAsJson.CHPI211.revisions.size() == 1
+			revAsJson.CHPI211.revisions.contains("9.1.0.ADMIN-UIMIG-5000")
 		cleanup:
 			revFile.delete()
 	}
