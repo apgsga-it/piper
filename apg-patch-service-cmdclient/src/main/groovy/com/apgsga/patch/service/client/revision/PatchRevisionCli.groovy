@@ -77,12 +77,12 @@ class PatchRevisionCli {
 	
 	private def lastRevision(def options) {
 		def patchRevClient = new PatchRevisionClient(config)
-		patchRevClient.lastRevision(options.lrs[0])
+		patchRevClient.lastRevision(options.lrs[0].toUpperCase())
 	}
 	
 	private def addRevision(def options) {
 		def patchRevClient = new PatchRevisionClient(config)
-		patchRevClient.addRevision(options.ars[0],options.ars[1],options.ars[2])
+		patchRevClient.addRevision(options.ars[0].toUpperCase(),options.ars[1],options.ars[2])
 	}
 	
 	private def nextRevision() {
@@ -92,7 +92,7 @@ class PatchRevisionCli {
 	
 	private def resetRevisions(def options) {
 		def patchRevClient = new PatchRevisionClient(config)
-		patchRevClient.resetRevisions(options.rrs[0], options.rrs[1])
+		patchRevClient.resetRevisions(options.rrs[0].toUpperCase(), options.rrs[1].toUpperCase())
 	}
 	
 	private def validateOpts(def args) {
