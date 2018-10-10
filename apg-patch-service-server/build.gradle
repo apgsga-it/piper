@@ -182,7 +182,7 @@ artifactory {
         repository {
             repoKey = 'yumrepodev'   
             username ="${repoUser}"
-            password = "${repoPassword}"
+            password = System.env.REPO_RO_PASSWD
             ivy {
                  artifactLayout = "${buildRpm.outputs.getFiles().getSingleFile().getName()}"
             }

@@ -30,7 +30,7 @@ subprojects {
 		maven { 
 		  credentials {
             	username "$repoUser"
-            	password "$repoPassword"
+            	password System.env.REPO_RO_PASSWD
         	}
 			url "${mavenRepoBaseUrl}/repo" 
 		}
@@ -98,7 +98,7 @@ subprojects {
 				url  "${mavenRepoBaseUrl}/${repoTarget}/"				
 				credentials {
 					username = repoUser
-					password = repoPassword
+					password = System.env.REPO_RO_PASSWD
 				}
 			}
 		}

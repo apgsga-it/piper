@@ -19,7 +19,9 @@ class PatchArtifactoryClient {
 	
 	def PatchArtifactoryClient(def configuration) {
 		config = configuration
-		artifactory = ArtifactoryClientBuilder.create().setUrl(config.artifactory.url).setUsername(config.artifactory.user).setPassword(config.artifactory.password).build();
+		def pass = System.getenv('REPO_RO_PASSWD')
+		assert pass != null
+		artifactory = ArtifactoryClientBuilder.create().setUrl(config.artifactory.url).setUsername(config.artifactory.user).setPassword(pass).build();
 	}
 	
 	public def removeArtifacts(String regex, boolean dryRun) {
@@ -48,17 +50,6 @@ class PatchArtifactoryClient {
 				// Will delete all published sources jar for the given version/revision
 				removeArtifacts("*-${it}-sources.jar", dryRun)
 			}
-					
-			// Cleaning Docker Image as well
-			// TODO JHE: Uncomment and adapt it as soon as JAVA8MIG-375 will be solved.
-			/*
-			if(!dryRun) {
-				def jadasCleanupCmd = "/opt/apgops/cleanup_jadas_images.sh ${originalFrom} ${lastRevision}"
-				println "Following command will be started to clean Jadas images : ${jadasCleanupCmd}"
-				['bash', '-c', jadasCleanupCmd].execute().getOutputStream().println()
-				println "Jadas Images have been deleted for ${target}"
-			}
-			*/
 		}			
 		else {
 			println("No release to clean for ${target}. We probably never have any patch installed directly on ${target}, or no patch has been newly installed since last clone.")
