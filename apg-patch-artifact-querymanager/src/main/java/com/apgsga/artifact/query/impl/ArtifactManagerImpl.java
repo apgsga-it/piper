@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -40,6 +41,7 @@ import com.apgsga.microservice.patch.api.SearchCondition;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 
 public class ArtifactManagerImpl implements ArtifactManager {
@@ -49,6 +51,14 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	private static final String DEFAULT_BOM_GROUP_ID = "com.affichage.common.maven";
 
 	private static final String DEFAULT_BOM_ARTIFACT_ID = "dm-bom";
+
+	private static Map<SearchCondition, String> templateMap = Maps.newConcurrentMap();
+
+	static {
+		templateMap.put(SearchCondition.FORMS2JAVA, "classpath:templateForms2Java.json");
+		templateMap.put(SearchCondition.PERSISTENT, "classpath:templatePersistence.json");
+		templateMap.put(SearchCondition.IT21UI, "classpath:templateIt21Ui.json");
+	}
 
 	private final RepositorySystem system;
 
@@ -113,7 +123,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		try {
 			if (!root.equals(p)) {
 				Files.delete(p);
-				LOGGER.info("Deleted: " + p.toAbsolutePath());
+				LOGGER.info("Deleted: {} ", p.toAbsolutePath());
 			}
 		} catch (IOException e) {
 			LOGGER.error("File : " + p.toFile().getAbsolutePath() + " could'nt be deleted", e);
@@ -161,8 +171,8 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		} catch (IOException | XmlPullParserException e) {
 			LOGGER.error("Error Loading Bom Model", e);
 			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"ArtifactManagerImpl.loadBomModel.exception", new Object[] { e.getMessage() }, e);
+			throw ExceptionFactory.createPatchServiceRuntimeException("ArtifactManagerImpl.loadBomModel.exception",
+					new Object[] { e.getMessage() }, e);
 		} finally {
 			if (fileReader != null) {
 				try {
@@ -217,21 +227,33 @@ public class ArtifactManagerImpl implements ArtifactManager {
 			throws ArtifactResolutionException {
 		Model model = loadBomModel(bomGroupId, bomArtefactId, bomVersion);
 		List<MavenArtifact> artifacts = getArtifacts(model);
-		List<MavenArtifact> selectedArts = null;
 		Properties properties = model.getProperties();
 		normalizeVersions(artifacts, properties);
 		if (searchFilter.equals(SearchCondition.ALL)) {
-			selectedArts = artifacts;
+			return artifacts;
 		} else if (searchFilter.equals(SearchCondition.APPLICATION)) {
-			selectedArts = artifacts.stream()
+			return artifacts.stream()
 					.filter(artifact -> (artifact.getGroupId().startsWith("com.apgsga")
 							|| artifact.getGroupId().startsWith("com.affichage"))
 							&& artifact.getVersion().endsWith("SNAPSHOT"))
 					.collect(Collectors.toList());
 		} else {
-			selectedArts = Collections.EMPTY_LIST;
+			if (templateMap.containsKey(searchFilter)) {
+				ResourceLoader rl = new FileSystemResourceLoader();
+				Resource resource = rl.getResource(templateMap.get(searchFilter));
+				ObjectMapper mapper = new ObjectMapper();
+				try {
+					MavenArtifact[] template = mapper.readValue(resource.getInputStream(), MavenArtifact[].class);
+					List<MavenArtifact> templateList = Arrays.asList(template);
+					return artifacts.stream().filter(artifact -> templateList.contains(artifact)).collect(Collectors.toList());
+				} catch (IOException e) {
+					throw ExceptionFactory.createPatchServiceRuntimeException(
+							"ArtifactManagerImpl.getArtifactsWithVersionFromBom.exception",
+							new Object[] { e.getMessage() }, e);
+				}
+			}
+			return Collections.emptyList();
 		}
-		return selectedArts;
 	}
 
 	/*

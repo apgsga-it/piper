@@ -1,7 +1,6 @@
 package com.apgsga.microservice.patch.api;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -11,14 +10,13 @@ import com.google.common.collect.Maps;
 
 public enum SearchCondition {
 
-	APPLICATION("application"), 
-	ALL("all");
-	
-	private final String enumName; 
-	
+	APPLICATION("application"), ALL("all"), IT21UI("it21ui"), FORMS2JAVA("forms2java"), PERSISTENT("persistent"); 
+
+	private final String enumName;
+
 	private SearchCondition(String enumName) {
 		this.enumName = enumName;
-		Holder.ENUMMAP.put(enumName,this); 
+		Holder.ENUMMAP.put(enumName, this);
 	}
 
 	@JsonCreator
@@ -30,10 +28,9 @@ public enum SearchCondition {
 	public String toValue() {
 		return enumName;
 	}
-	
+
 	private static class Holder {
 		static Map<String, SearchCondition> ENUMMAP = Maps.newHashMap();
 	}
-
 
 }
