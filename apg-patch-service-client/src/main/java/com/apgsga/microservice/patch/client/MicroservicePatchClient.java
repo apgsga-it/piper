@@ -40,7 +40,7 @@ public class MicroservicePatchClient implements PatchService {
 
 	private static final String REMOVE = "/remove";
 
-	protected final Log LOGGER = LogFactory.getLog(getClass());
+	protected static Log LOGGER = LogFactory.getLog(MicroservicePatchClient.class.getName());
 
 	private String baseUrl;
 
