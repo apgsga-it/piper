@@ -83,6 +83,16 @@ public class MavenArtifactBean extends AbstractTransientEntity implements MavenA
 	public void augmentDependencyLevel() {
 		dependencyLevel  = dependencyLevel + 1;
 	}
+	
+	@Override
+	public boolean hasConflict() {
+		return this.hasConflict;
+	}
+
+	@Override
+	public void setHasConflict(boolean hasConflict) {
+		this.hasConflict = hasConflict;
+	}
 
 	@Override
 	public int hashCode() {
@@ -92,6 +102,7 @@ public class MavenArtifactBean extends AbstractTransientEntity implements MavenA
 		result = prime * result + ((groupId == null) ? 0 : groupId.hashCode());
 		return result;
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {
@@ -117,19 +128,10 @@ public class MavenArtifactBean extends AbstractTransientEntity implements MavenA
 
 	@Override
 	public String toString() {
-		return "MavenArtifactImpl [artifactId=" + artifactId + ", groupId=" + groupId + ", name=" + name + ", version="
-				+ version + "]";
+		return "MavenArtifactBean [artifactId=" + artifactId + ", groupId=" + groupId + ", name=" + name + ", version="
+				+ version + ", hasConflict=" + hasConflict + ", dependencyLevel=" + dependencyLevel + "]";
 	}
 
-	@Override
-	public boolean hasConflict() {
-		return this.hasConflict;
-	}
-
-	@Override
-	public void setHasConflict(boolean hasConflict) {
-		this.hasConflict = hasConflict;
-	}
 	
 	
 

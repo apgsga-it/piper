@@ -1,0 +1,122 @@
+[
+	{
+		"artifactId": "gt-swing-enhancements",
+		"groupId": "org.geotools",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
+	},
+	{
+		"artifactId": "ibus-domainwerte",
+		"groupId": "com.apgsga.it21.ibus",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
+	},
+	{
+		"artifactId": "apg-jasperreport",
+		"groupId": "com.apgsga",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
+	},
+	{
+		"artifactId": "it21-mail-dao",
+		"groupId": "com.apgsga.it21",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
+	},
+	{
+		"artifactId": "it21-mail-api",
+		"groupId": "com.apgsga.it21",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
+	},
+	{
+		"artifactId": "forms2java",
+		"groupId": "com.apgsga",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
+	},
+	{
+		"artifactId": "common-rep-ui",
+		"groupId": "com.apgsga.common.rep",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
+	},
+	{
+		"artifactId": "common-rep-dao",
+		"groupId": "com.apgsga.common.rep",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
+	},
+	{
+		"artifactId": "jgoodies-utils",
+		"groupId": "com.affichage.ui.utils",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
+	},
+	{
+		"artifactId": "adgis-common-dao",
+		"groupId": "com.affichage.it21.adgis",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
+	},
+	{
+		"artifactId": "adgis-api-ui",
+		"groupId": "com.affichage.it21.adgis",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
+	},
+	{
+		"artifactId": "adgis-api-dao",
+		"groupId": "com.affichage.it21.adgis",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
+	},
+	{
+		"artifactId": "geo-lib",
+		"groupId": "com.affichage.geo.lib",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
+	},
+	{
+		"artifactId": "common-messaging",
+		"groupId": "com.affichage.common",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
+	},
+	{
+		"artifactId": "adgis-component",
+		"groupId": "com.affichage.adgis.component",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
+	}
+]
