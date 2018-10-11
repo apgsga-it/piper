@@ -43,42 +43,7 @@ class DbCliIntegrationTest extends Specification {
 		cleanup:
 		outputFile.delete()
 	}
-
-
-	@Requires({patchExists("22222")})
-	def "Patch DB Cli  returns predecessor States of Patch"() {
-		setup:
-		def patchDbCli = PatchDbCli.create()
-		def result
-		def savedOut
-		def buffer
-		when:
-		savedOut = System.out;
-		buffer = new ByteArrayOutputStream()
-		System.setOut(new PrintStream(buffer))
-		result = patchDbCli.process(["-rsta", "5792"])
-		System.setOut(savedOut)
-		then:
-		result != null
-		result.returnCode == 0
-	 	result.result == 'ProduktionInstallationsbereit'
-		buffer.toString().trim() == result.result
-
-	}
 	
-	@Requires({dbAvailable()})
-	def "Patch DB Cli tries to retrieve predecessor States non existing Patch"() {
-		setup:
-		def patchDbCli = PatchDbCli.create()
-		def result
-		when:
-		result = patchDbCli.process(["-rsta", "99999"])
-		then:
-		result != null
-		result.returnCode == 1
-		result.error.getClass().getName() == "java.lang.IllegalArgumentException"
-		result.error.message == "Patch with Id: 99999 not found"
-	}
 	
 	@Requires({patchExists("5799")})
 	def "Patch DB Cli  update status of Patch"() {
