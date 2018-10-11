@@ -17,11 +17,11 @@ import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.eclipse.aether.util.repository.AuthenticationBuilder;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 public class RepositorySystemFactory {
 	// TODO (che, 9.3 ) : Temporory fix
-	private static final String REPO_PASSWD = "dev1234";
 	private static final String REPO_USER = "dev";
 	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = "https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/repo";
 
@@ -63,7 +63,9 @@ public class RepositorySystemFactory {
 	}
 
 	private static RemoteRepository newCentralRepository(String name, String url) {
-        Authentication auth = new AuthenticationBuilder().addUsername(REPO_USER).addPassword( REPO_PASSWD ).build();
+		String repoPasswd = System.getenv("REPO_RO_PASSWD"); 
+		Preconditions.checkNotNull(repoPasswd,"Repo password should'nt be null");
+        Authentication auth = new AuthenticationBuilder().addUsername(REPO_USER).addPassword( repoPasswd ).build();
 		return new RemoteRepository.Builder(name, "default", url).setAuthentication( auth ).build();
 	}
 

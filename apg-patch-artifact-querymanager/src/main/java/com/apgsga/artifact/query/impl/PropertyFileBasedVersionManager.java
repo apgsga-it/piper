@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
@@ -13,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.StringUtils;
 
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.artifact.query.ArtifactVersionManager;
@@ -21,9 +21,8 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
-	
-	protected static final Logger LOGGER = LoggerFactory.getLogger(ArtifactsDependencyResolverImpl.class);
 
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ArtifactsDependencyResolverImpl.class);
 
 	private ArtifactManager artifactManager;
 	private Properties versionsProperties;
@@ -35,12 +34,13 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 		this.artifactManager = ArtifactManager.create(bomGroupId, bomArtifactId, mavenLocalPath.getPath());
 
 	}
-	
-	public PropertyFileBasedVersionManager(URI mavenLocalPath, String bomGroupId, String bomArtifactId, String patchFilePath) {
+
+	public PropertyFileBasedVersionManager(URI mavenLocalPath, String bomGroupId, String bomArtifactId,
+			String patchFilePath) {
 		super();
 		this.artifactManager = ArtifactManager.create(bomGroupId, bomArtifactId, mavenLocalPath.getPath());
-		this.patchFilePath = patchFilePath; 
-		
+		this.patchFilePath = patchFilePath;
+
 	}
 
 	@Override
@@ -53,21 +53,17 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 
 	private synchronized Properties getProperties(String bomVersion) {
 		if (versionsProperties == null || !bomVersion.equals(lastBomVersion)) {
-			Properties overrideVersionProperties = convertToProperties(patchFilePath); 
-			versionsProperties = intialLoad(artifactManager,bomVersion);
-			for (Object key : overrideVersionProperties.keySet()) {
-				versionsProperties.put(key, overrideVersionProperties.get(key)); 
+			versionsProperties = intialLoad(artifactManager, bomVersion);
+			if (!StringUtils.isEmpty(patchFilePath)) {
+				Patch patch = loadPatchFile(patchFilePath);
+				mergeProperties(patch, versionsProperties);
 			}
-			lastBomVersion = bomVersion; 
+			lastBomVersion = bomVersion;
 		}
 		return versionsProperties;
 	}
 
-	private Properties convertToProperties(String patchFilePath) {
-		final Properties properties = new Properties();
-		if (StringUtils.isEmpty(patchFilePath)) {
-			return properties;
-		}
+	private Patch loadPatchFile(String patchFilePath) {
 		ResourceLoader rl = new FileSystemResourceLoader();
 		ObjectMapper mapper = new ObjectMapper();
 		Patch patch;
@@ -75,24 +71,29 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 			patch = mapper.readValue(rl.getResource(patchFilePath).getFile(), Patch.class);
 		} catch (IOException e) {
 			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
-			throw new PatchFileAccessException(e);	
+			throw new PatchFileAccessException(e);
 		}
-		for (MavenArtifact art : patch.getMavenArtifacts()) {
-			if (!art.getVersion().endsWith("SNAPSHOT")) {
-				properties.put(art.getGroupId() + ":" + art.getArtifactId(), art.getVersion()); 
-			}
-		}
-		return properties; 
+		return patch;
 	}
 
-	private static Properties intialLoad(ArtifactManager artifactManager,String bomVersion) {
+	private void mergeProperties(Patch patch, Properties currentProperties) {
+		for (MavenArtifact art : patch.getMavenArtifacts()) {
+			String key = art.getGroupId() + ":" + art.getArtifactId();
+			// If Patch File contains a "Library" or a new Artifact , it needs to get merged
+			if (!art.getVersion().endsWith("SNAPSHOT") || !currentProperties.containsKey(key)) {
+				currentProperties.put(key, art.getVersion());
+			}
+		}
+	}
+
+	private static Properties intialLoad(ArtifactManager artifactManager, String bomVersion) {
 
 		try {
 			Properties versionsProperties = artifactManager.getVersionsProperties(bomVersion);
 			return versionsProperties;
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
 			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
-			throw new PatchFileAccessException(e);		
+			throw new PatchFileAccessException(e);
 		}
 	}
 }
