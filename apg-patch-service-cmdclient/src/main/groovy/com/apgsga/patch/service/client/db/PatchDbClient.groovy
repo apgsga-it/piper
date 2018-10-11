@@ -45,33 +45,5 @@ class PatchDbClient {
 		listPatchFile.write(new JsonBuilder(patchlist:patchNumbers).toPrettyString())
 	}
 
-	public def retrieveRedoToState(def patchNumber) {
-		def id = patchNumber as Long
-		def patchCode = sqlRetrievePatchStatus(id)
-		def relevantToStateCode = TargetSystemMappings.instance.relevantStateCode(patchCode,fromToStates())
-		Assert.notNull(relevantToStateCode, "No relevant State found for ${patchNumber} with ${patchCode}")
-		def redoToState = TargetSystemMappings.instance.findState(relevantToStateCode)
-		println redoToState
-		redoToState
-	}
-
-
-	private def sqlRetrievePatchStatus(def id) {
-		def sql = 'select status from  cm_patch_f where id = :patchNumber';
-		def row = dbConnection.firstRow(sql, [patchNumber:id])
-		Assert.notNull(row,"Patch with Id: ${id} not found")
-		Assert.notNull(row.STATUS,"Unexpected Column for sql: ${sql}")
-		def patchStatus =  row.STATUS
-		patchStatus
-	}
-	
-	// TODO (che , 20.9 ) Would be nice, but the required predecessor state are not complete
-	private def fromToStates() {
-		def sql = 'select von_status fromState, zu_status toState from cm_patch_berechtigung_f where user_id in (select user from dual)';
-		def allowedStateChanges = dbConnection.rows(sql)
-		Assert.isTrue(!allowedStateChanges.empty, "Unexpected result")
-		allowedStateChanges
-	}
-
 
 }

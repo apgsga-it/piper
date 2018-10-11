@@ -44,8 +44,6 @@ class PatchDbCli {
 			if(options.lpac) {
 				def status = options.lpacs[0]
 				cmdResults.result = dbCli.listPatchAfterClone(status,config.postclone.list.patch.file.path)
-			} else if (options.rsta) {
-				cmdResults.result  = dbCli.retrieveRedoToState(options.rsta)
 			} else if (options.sta) {
 				def patchNumber = options.stas[0]
 				def toState = options.stas[1]
@@ -93,7 +91,6 @@ class PatchDbCli {
 		cli.with {
 			h longOpt: 'help', 'Show usage information', required: false
 			lpac longOpt: 'listPatchAfterClone', args:1, argName: 'status', 'Get list of patches to be re-installed after a clone', required: false
-			rsta longOpt: 'retrievePatchStatus', args:1, argName: 'patchNumber', 'Get the Status for the Patch with PatchNumber', required: false
 			sta longOpt: 'stateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to the database', required: false
 		}
 
@@ -114,13 +111,6 @@ class PatchDbCli {
 		if(options.lpac) {
 			if(options.lpacs.size() != 1) {
 				println("Target status is required when fetching list of patch to be re-installed.")
-				error = true
-			}
-		}
-
-		if(options.rsta) {
-			if (!options.rsta.isInteger()) {
-				println "Patchnumber ${options.rsta} is not a Integer"
 				error = true
 			}
 		}

@@ -105,6 +105,10 @@ public interface Patch extends ServiceMetaData {
 
 	public void setRunningNr(String runningNr);
 	
+	public String getTargetToState(); 
+	
+	public void setTargetToState(String targetToState);
+	
 	public boolean getInstallOnEmptyModules();
 	
 	public void setInstallOnEmptyModules(boolean installOnEmptyModules);
