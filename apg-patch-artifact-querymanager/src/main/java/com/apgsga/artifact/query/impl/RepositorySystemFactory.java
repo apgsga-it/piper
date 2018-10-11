@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 public class RepositorySystemFactory {
 	// TODO (che, 9.3 ) : Temporory fix
 	private static final String REPO_USER = "dev";
+	private static final String REPO_PASS = "dev1234"; 
 	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = "https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/repo";
 
 	private RepositorySystemFactory() {
@@ -63,9 +64,10 @@ public class RepositorySystemFactory {
 	}
 
 	private static RemoteRepository newCentralRepository(String name, String url) {
-		String repoPasswd = System.getenv("REPO_RO_PASSWD"); 
-		Preconditions.checkNotNull(repoPasswd,"Repo password should'nt be null");
-        Authentication auth = new AuthenticationBuilder().addUsername(REPO_USER).addPassword( repoPasswd ).build();
+		// TODO (che, 11.10) 
+		// String repoPasswd = System.getenv("REPO_RO_PASSWD"); 
+		// Preconditions.checkNotNull(repoPasswd,"Repo password should'nt be null");
+        Authentication auth = new AuthenticationBuilder().addUsername(REPO_USER).addPassword( REPO_PASS ).build();
 		return new RemoteRepository.Builder(name, "default", url).setAuthentication( auth ).build();
 	}
 
