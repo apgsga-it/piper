@@ -70,7 +70,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	@Override
 	public void startInstallPipeline(Patch patch) {
-		startPipeline(patch, "onDemand", false);
+		startPipeline(patch, "OnDemand", false);
 
 	}
 
