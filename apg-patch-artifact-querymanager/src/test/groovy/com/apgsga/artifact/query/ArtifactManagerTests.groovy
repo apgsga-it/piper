@@ -99,10 +99,15 @@ class ArtifactManagerTests extends Specification {
 		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT",SearchCondition.APPLICATION)
 		def numberOfFilesBefore = artifactManager.getMavenLocalRepo().listFiles().length
 		artifactManager.cleanLocalMavenRepo()
-		def numberOfFilesAfter = artifactManager.getMavenLocalRepo().listFiles().length
+		def localRepo = artifactManager.getMavenLocalRepo(); 
+		def comAffichage = new File(localRepo, "com/affichage")
+		def comAffichageNumberOfFilesAfter = comAffichage.listFiles().length
+		def comApgsga = new File(localRepo, "com/apgsga")
+		def comApgsgaNumberOfFilesAfter = comApgsga.listFiles().length
 		then:
 		assert results.size() > 0
 		assert numberOfFilesBefore > 0
-		assert numberOfFilesAfter == 0
+		assert comAffichageNumberOfFilesAfter == 0
+		assert comApgsgaNumberOfFilesAfter == 0
 	}
 }
