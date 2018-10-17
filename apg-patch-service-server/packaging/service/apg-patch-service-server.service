@@ -2,7 +2,6 @@
 Description=Apg Patch Service Server
 
 [Service]
-Enviroment=REPO_RO_PASSWD=dev1234
 ExecStart=/usr/bin/java -jar /opt/apg-patch-service-server/bin/apg-patch-service-server.jar --spring.config.location=file:/etc/opt/apg-patch-service-server/application.properties,file:/etc/opt/apg-patch-service-server/ops.properties  --logging.config=/etc/opt/apg-patch-service-server/logback.xml
 User=apg-patch-service-server
 WorkingDirectory=/var/opt/apg-patch-service-server

@@ -424,22 +424,6 @@
 		"dependencyLevel": 0
 	},
 	{
-		"artifactId": "xscube-dao",
-		"groupId": "com.affichage.it21.xscube",
-		"name": null,
-		"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
-		"dependencyLevel": 0
-	},
-	{
-		"artifactId": "xscube-ui",
-		"groupId": "com.affichage.it21.xscube",
-		"name": null,
-		"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
-		"dependencyLevel": 0
-	},
-	{
 		"artifactId": "zo-dao",
 		"groupId": "com.affichage.it21.zo",
 		"name": null,
