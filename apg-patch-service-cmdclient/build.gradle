@@ -23,8 +23,6 @@ mainClassName = 'pliStarter'
 def repoTarget= version.endsWith("SNAPSHOT") ? "snapshots" : "releases"
 jar {
 	baseName = "${finalName}"
- // TODO (jhe, 3.7) 
- //	exclude('**/apscli.properties')
 } 
 
 
@@ -59,14 +57,6 @@ dependencies {
 
 }
 
-sourceSets {
-  test {
-    resources {
-      srcDir 'src/test/groovy'
-      include '**/*.properties'
-    }
-  }
-}
 
 task pkgAsGTar(type: Tar) {
 	from "$project.buildDir/${finalName}"

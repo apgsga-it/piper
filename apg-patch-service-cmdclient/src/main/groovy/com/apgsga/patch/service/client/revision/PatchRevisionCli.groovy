@@ -5,6 +5,7 @@ import org.springframework.core.io.ClassPathResource
 
 import com.apgsga.patch.service.client.PatchArtifactoryClient
 import com.apgsga.patch.service.client.PatchClientServerException
+import com.apgsga.patch.service.client.utils.AppContext
 
 class PatchRevisionCli {
 	
@@ -19,7 +20,7 @@ class PatchRevisionCli {
 
 	def process(def args) {
 		
-		config = parseConfig()
+		config = AppContext.instance.load()
 		
 		def cmdResults = new Expando();
 		cmdResults.returnCode = 1
@@ -145,18 +146,4 @@ class PatchRevisionCli {
 		options
 	}
 	
-	
-	private def parseConfig() {
-		ClassPathResource res = new ClassPathResource('apscli.properties')
-		assert res.exists() : "apscli.properties doesn't exist or is not accessible!"
-		ConfigObject conf = new ConfigSlurper(profile).parse(res.URL);
-		return conf
-	}
-	
-	private getProfile() {
-		def apsCliEnv = System.getProperty("apscli.env")
-		// If apscli.env is not define, we assume we're testing
-		def prof =  apsCliEnv ?: "test"
-		return prof
-	}
 }

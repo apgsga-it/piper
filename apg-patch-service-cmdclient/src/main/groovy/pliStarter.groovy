@@ -6,7 +6,7 @@ import com.apgsga.patch.service.client.revision.PatchRevisionCli
 
 def client = args[0]
 
-// We remove with "pli", "pliDb" pr "pliRev from args as they have no meaning for PatchCli or PatchDbCli
+// We remove with "pli", "pliDb" or "pliRev from args as they have no meaning for PatchCli or PatchDbCli
 args = args - "pli"
 args = args - "pliDb"
 args = args - "pliRev"
@@ -27,5 +27,4 @@ if(client.equalsIgnoreCase("pliRev")) {
 }
 
 println "pliStarter couldn't find an pli to be started with name ${client}."
-// Even if no error occured, we inform the caller (by returing an error status) that pli couldn't achieve any job. 
 System.exit(1)

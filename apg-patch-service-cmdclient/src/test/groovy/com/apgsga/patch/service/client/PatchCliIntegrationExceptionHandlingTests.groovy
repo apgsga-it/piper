@@ -18,7 +18,7 @@ import spock.lang.Specification;
 
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = [MicroPatchServer.class ])
-@TestPropertySource(locations = "application-test.properties")
+@TestPropertySource(locations = ["classpath:config/server-test.properties"])
 @ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
 public class PatchCliIntegrationExceptionHandlingTests extends Specification {
 
@@ -40,6 +40,8 @@ public class PatchCliIntegrationExceptionHandlingTests extends Specification {
 			def created = buildFolder.mkdir()
 			println ("Buildfolder has been created ${created}")
 		}
+		System.properties['appPropertiesFile'] = 'classpath:config/app-test.properties'
+		System.properties['opsPropertiesFile'] = 'classpath:config/ops-test.properties'
 	}
 
 	def "Patch Cli should print Server Exception and return returnCode > 0 for invalid findById"() {

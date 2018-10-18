@@ -18,6 +18,15 @@ import spock.lang.Specification
 
 class DbCliIntegrationTest extends Specification {
 	
+	def setup() {
+		def buildFolder = new File("build")
+		if (!buildFolder.exists()) {
+			def created = buildFolder.mkdir()
+			println ("Buildfolder has been created ${created}")
+		}
+		System.properties['appPropertiesFile'] = 'classpath:config/app-test.properties'
+		System.properties['opsPropertiesFile'] = 'classpath:config/ops-test.properties'
+	}
 
 	def "Patch DB Cli should print out help without errors"() {
 		def result = PatchDbCli.create().process(["-h"])

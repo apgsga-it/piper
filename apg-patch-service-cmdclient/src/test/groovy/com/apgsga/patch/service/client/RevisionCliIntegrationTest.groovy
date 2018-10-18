@@ -16,14 +16,22 @@ class RevisionCliIntegrationTest extends Specification {
 	
 	def usageString = "usage: apsrevpli.sh -[h|ar|lr|nr|rr]"
 	
+	def setup() {
+		def buildFolder = new File("build")
+		if (!buildFolder.exists()) {
+			def created = buildFolder.mkdir()
+			println ("Buildfolder has been created ${created}")
+		}
+		System.properties['appPropertiesFile'] = 'classpath:config/app-test.properties'
+		System.properties['opsPropertiesFile'] = 'classpath:config/ops-test.properties'
+		
+	}
+	
 	def "Patch Revision Cli validate behavior when no option has been passed"() {
-		setup:
-			PatchRevisionCli cli = PatchRevisionCli.create()
-			PrintStream oldStream
-			def buffer
 		when:
-			oldStream = System.out;
-			buffer = new ByteArrayOutputStream()
+			PatchRevisionCli cli = PatchRevisionCli.create()
+			PrintStream oldStream = System.out;
+			def buffer = new ByteArrayOutputStream()
 			System.setOut(new PrintStream(buffer))
 			def result = cli.process([])
 			System.setOut(oldStream)
@@ -34,13 +42,10 @@ class RevisionCliIntegrationTest extends Specification {
 	}
 	
 	def "Patch Revision Cli validate help"() {
-		setup:
-			PatchRevisionCli cli = PatchRevisionCli.create()
-			PrintStream oldStream
-			def buffer
 		when:
-			oldStream = System.out;
-			buffer = new ByteArrayOutputStream()
+			PatchRevisionCli cli = PatchRevisionCli.create()
+			PrintStream oldStream = System.out;
+			def buffer = new ByteArrayOutputStream()
 			System.setOut(new PrintStream(buffer))
 			def result = cli.process(["-h"])
 			System.setOut(oldStream)
@@ -51,14 +56,11 @@ class RevisionCliIntegrationTest extends Specification {
 	}
 	
 	def "Patch Revision Cli validate add revision to target without any parameter"() {
-		setup:
+		when:
 			PatchRevisionCli cli = PatchRevisionCli.create()
 			def revFile = new File("src/test/resources/Revisions.json")
-			PrintStream oldStream
-			def buffer
-		when:
-			oldStream = System.out;
-			buffer = new ByteArrayOutputStream()
+			def oldStream = System.out;
+			def buffer = new ByteArrayOutputStream()
 			System.setOut(new PrintStream(buffer))
 			def result = cli.process(["-ar"])
 			System.setOut(oldStream)
@@ -70,14 +72,11 @@ class RevisionCliIntegrationTest extends Specification {
 	}
 	
 	def "Patch Revision Cli validate get next global Revision when no revision file exist"() {
-		setup:
+		when:
 			PatchRevisionCli cli = PatchRevisionCli.create()
 			def revFile = new File("src/test/resources/Revisions.json")
-			PrintStream oldStream
-			def buffer
-		when:
-			oldStream = System.out;
-			buffer = new ByteArrayOutputStream()
+			def oldStream = System.out;
+			def buffer = new ByteArrayOutputStream()
 			System.setOut(new PrintStream(buffer))
 			def result = cli.process(["-nr"])
 			System.setOut(oldStream)
@@ -90,17 +89,15 @@ class RevisionCliIntegrationTest extends Specification {
 	}
 	
 	def "Patch Revision Cli validate get next global Revision"() {
-		setup:
+		when:
 			PatchRevisionCli cli = PatchRevisionCli.create()
 			def revFile = new File("src/test/resources/Revisions.json")
-			PrintStream oldStream
-			def buffer
-			def result
-		when:
-			oldStream = System.out;
-			buffer = new ByteArrayOutputStream()
-			System.setOut(new PrintStream(buffer))
-			result = cli.process(["-nr"])
+			def oldStream = System.out;
+			def buffer = new ByteArrayOutputStream()
+			def printStream = new PrintStream(buffer)
+			System.setOut(printStream)
+			def result = cli.process(["-nr"])
+			printStream.flush()
 			System.setOut(oldStream)
 		then:
 			revFile.exists()
@@ -133,18 +130,15 @@ class RevisionCliIntegrationTest extends Specification {
 	}
 	
 	def "Patch Revision Cli validate add revision to target"() {
-		setup:
+		when:
 			PatchRevisionCli cli = PatchRevisionCli.create()
 			def revFile = new File("src/test/resources/Revisions.json")
-			def revAsJson
 			def chei212Revisions
 			def prodRevision
 			def lastChei212Revision
 			def nextGlobalRevision
-			def result
-		when:
-			result = cli.process(["-ar","chei212,123,9.1.0.ADMIN-UIMIG-"])
-			revAsJson = new JsonSlurper().parse(revFile)
+			def result = cli.process(["-ar","chei212,123,9.1.0.ADMIN-UIMIG-"])
+			def revAsJson = new JsonSlurper().parse(revFile)
 		then:
 			revFile.exists()
 			result.returnCode == 0
@@ -207,11 +201,8 @@ class RevisionCliIntegrationTest extends Specification {
 	}
 	
 	def "Patch Revision Cli validate get last revision for a given target"() {
-		setup:
+		when:
 			PatchRevisionCli cli = PatchRevisionCli.create()
-			PrintStream oldStream
-			def buffer
-			def result
 			def revFile = new File("src/test/resources/Revisions.json")
 			cli.process(["-ar","chti211,18,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chei212,77,9.1.0.ADMIN-UIMIG-"])
@@ -219,11 +210,10 @@ class RevisionCliIntegrationTest extends Specification {
 			cli.process(["-ar","chti211,185,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chei212,100,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chei211,50,9.1.0.ADMIN-UIMIG-"])
-		when:
-			oldStream = System.out;
-			buffer = new ByteArrayOutputStream()
+			def oldStream = System.out;
+			def buffer = new ByteArrayOutputStream()
 			System.setOut(new PrintStream(buffer))
-			result = cli.process(["-lr","chei212"])
+			def result = cli.process(["-lr","chei212"])
 			System.setOut(oldStream)
 		then:
 			revFile.exists()
@@ -264,12 +254,10 @@ class RevisionCliIntegrationTest extends Specification {
 	}
 	
 	def "Patch Revision Cli validate reset revision for a given target"() {
-		setup:
+		when:
 			PatchRevisionCli cli = PatchRevisionCli.create()	
 			def revFile = new File("src/test/resources/Revisions.json")
 			def result
-			def revAsJson
-		when:
 			cli.process(["-ar","chti211,18,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chei212,77,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chei212,88,9.1.0.ADMIN-UIMIG-"])
@@ -278,7 +266,7 @@ class RevisionCliIntegrationTest extends Specification {
 			cli.process(["-ar","chei211,50,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chpi211,5000,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-nr"])
-			revAsJson = new JsonSlurper().parse(revFile)
+			def revAsJson = new JsonSlurper().parse(revFile)
 		then:
 			revAsJson.nextRev.toInteger() == 2
 			revAsJson.CHTI211.revisions.size() == 2
@@ -307,12 +295,10 @@ class RevisionCliIntegrationTest extends Specification {
 	}
 	
 	def "Patch Revision Cli validate reset revision if the given target or source is not within the revision file"() {
-		setup:
+		when:
 			PatchRevisionCli cli = PatchRevisionCli.create()
 			def revFile = new File("src/test/resources/Revisions.json")
 			def result
-			def revAsJson
-		when:
 			cli.process(["-ar","chti211,18,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chei212,77,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chei212,88,9.1.0.ADMIN-UIMIG-"])
@@ -321,7 +307,7 @@ class RevisionCliIntegrationTest extends Specification {
 			cli.process(["-ar","chei211,50,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chpi211,5000,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-nr"])
-			revAsJson = new JsonSlurper().parse(revFile)
+			def revAsJson = new JsonSlurper().parse(revFile)
 		then:
 			revAsJson.nextRev.toInteger() == 2
 			revAsJson.CHTI211.revisions.size() == 2

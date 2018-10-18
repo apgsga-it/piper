@@ -2,6 +2,8 @@ package com.apgsga.patch.service.client
 
 
 import org.codehaus.groovy.runtime.StackTraceUtils
+import org.springframework.context.ApplicationContext
+import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.io.ClassPathResource
 
 import com.apgsga.microservice.patch.api.DbModules
@@ -9,6 +11,7 @@ import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.patch.service.client.utils.TargetSystemMappings
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.apgsga.patch.service.client.utils.AppContext
 
 import groovy.json.JsonSlurper
 
@@ -28,9 +31,7 @@ class PatchCli {
 	def config
 
 	def process(def args) {
-		println "apscli running with ${profile} profile"
-		println args
-		config = parseConfig()
+		config = AppContext.instance.load()
 		TargetSystemMappings.instance.load(config)
 		def cmdResults = new Expando();
 		cmdResults.returnCode = 1
@@ -135,20 +136,6 @@ class PatchCli {
 			cmdResults.results['error'] = e
 			return cmdResults
 		}
-	}
-
-	private def parseConfig() {
-		ClassPathResource res = new ClassPathResource('apscli.properties')
-		assert res.exists() : "apscli.properties doesn't exist or is not accessible!"
-		ConfigObject conf = new ConfigSlurper(profile).parse(res.URL);
-		return conf
-	}
-
-	private getProfile() {
-		def apsCliEnv = System.getProperty("apscli.env")
-		// If apscli.env is not define, we assume we're testing
-		def prof =  apsCliEnv ?: "test"
-		return prof
 	}
 
 	def validateOpts(args) {
