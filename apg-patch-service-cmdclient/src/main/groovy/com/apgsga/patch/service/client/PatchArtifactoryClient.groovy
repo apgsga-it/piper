@@ -54,7 +54,7 @@ class PatchArtifactoryClient {
 				removeArtifacts("*-${it}-sources.jar", dryRun)
 				
 				revisionAsString = it.toString()
-				revisionAsString = revisionAsString.substring(revisionAsString.substring(revisionAsString.lastIndexOf("-")+1, revisionAsString.length()))
+				revisionAsString = revisionAsString.substring(revisionAsString.lastIndexOf("-")+1, revisionAsString.length())
 				revAsListToCleanJadas = revAsListToCleanJadas + " " + revisionAsString
 			}
 			
