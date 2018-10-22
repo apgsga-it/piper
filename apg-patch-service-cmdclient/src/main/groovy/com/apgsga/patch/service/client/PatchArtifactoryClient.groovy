@@ -42,6 +42,9 @@ class PatchArtifactoryClient {
 		def revisionClient = new PatchRevisionClient(config)
 		def revision = revisionClient.getInstalledRevisions(target)
 		def dryRun = config.onclone.delete.artifact.dryrun
+		def revAsListToCleanJadas = ""
+		def jadasCleanupCmd = "/opt/apgops/cleanup_jadas_images_by_revision_DEV.sh"
+		def revisionAsString
 		
 		if(revision != null) {
 			revision.each {
@@ -49,6 +52,18 @@ class PatchArtifactoryClient {
 				removeArtifacts("*-${it}.*", dryRun)
 				// Will delete all published sources jar for the given version/revision
 				removeArtifacts("*-${it}-sources.jar", dryRun)
+				
+				revisionAsString = it.toString()
+				revisionAsString = revisionAsString.substring(revisionAsString.substring(revisionAsString.lastIndexOf("-")+1, revisionAsString.length()))
+				revAsListToCleanJadas = revAsListToCleanJadas + " " + revisionAsString
+			}
+			
+			if(!dryRun) {
+				println "Executing: ${jadasCleanupCmd}${revAsListToCleanJadas}"
+				['bash', '-c', "${jadasCleanupCmd}${revAsListToCleanJadas}"].execute().in.text
+			}
+			else {
+				println "Following script would have been called to clean Jadas images: ${jadasCleanupCmd}${revAsListToCleanJadas}"
 			}
 		}			
 		else {
