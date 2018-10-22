@@ -42,6 +42,7 @@ public class PatchCliIntegrationTest extends Specification {
 			def created = buildFolder.mkdir()
 			println ("Buildfolder has been created ${created}")
 		}
+		System.properties['spring_profiles_active'] = 'default'
 		System.properties['appPropertiesFile'] = 'classpath:config/app-test.properties'
 		System.properties['opsPropertiesFile'] = 'classpath:config/ops-test.properties'
 	}

@@ -3,10 +3,12 @@ package com.apgsga.patch.service.client;
 import java.util.Map;
 import java.util.Properties;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
 import com.google.common.collect.Maps;
 
@@ -14,47 +16,23 @@ import groovy.util.ConfigObject;
 import groovy.util.ConfigSlurper;
 
 @Configuration
-@PropertySource({ "${appPropertiesFile}", "${opsPropertiesFile}" })
 public class PliConfig {
 
-	@Value("${revision.file.path}")
-	private String revisionFilePath;
+	@Autowired
+	private Environment env;
+	
+	@Configuration
+    @Profile("default")
+	@PropertySource({ "${appPropertiesFile}" })
+    static class DefaultCliConfig
+    { }
+	
+	@Configuration
+    @Profile("dbcli")
+	@PropertySource({ "${appPropertiesFile}", "${opsPropertiesFile}" })
+    static class DbCliConfig
+    { }
 
-	@Value("${revision.range.step}")
-	private String revisionRangeStep;
-
-	@Value("${host.default:localhost}")
-	private String hostDefault;
-
-	@Value("${config.dir}")
-	private String configDir;
-
-	@Value("${onclone.delete.artifact.dryrun}")
-	private String oncloneDeleteArtifactDryrun;
-
-	@Value("${target.system.mapping.file.name}")
-	private String targetSystemMappingFileName;
-
-	@Value("${artifactory.url")
-	private String artifactoryUrl;
-
-	@Value("${artifactory.user}")
-	private String artifactoryUser;
-
-	@Value("${artifactory.passwd}")
-	private String artifactoryPasswd;
-
-	@Value("${postclone.list.patch.file.path}")
-	private String postcloneListPatchFilePath;
-
-	@Value("${db.url}")
-	private String dbUrl;
-
-	@Value("${db.user}")
-	private String dbUser;
-
-	@Value("${db.passwd}")
-	private String dbPasswd;
 
 	// TODO (che,jhe, 18.10) : This is for backword compatability, needs to be
 	// elimated
@@ -62,18 +40,17 @@ public class PliConfig {
 	public ConfigObject configObject() {
 		ConfigSlurper sl = new ConfigSlurper();
 		Map<String, Object> properties = Maps.newHashMap();
-		properties.put("revision.file.path", revisionFilePath);
-		properties.put("revision.range.step", revisionRangeStep);
-		properties.put("host.default", hostDefault);
-		properties.put("config.dir", configDir);
-		properties.put("onclone.delete.artifact.dryrun", Boolean.getBoolean(oncloneDeleteArtifactDryrun));
-		properties.put("target.system.mapping.file.name", targetSystemMappingFileName);
-		properties.put("artifactory.url", artifactoryUrl);
-		properties.put("artifactory.passwd", artifactoryPasswd);
-		properties.put("postclone.list.patch.file.path", postcloneListPatchFilePath);
-		properties.put("db.url", dbUrl);
-		properties.put("db.user", dbUser);
-		properties.put("db.passwd", dbPasswd);
+		properties.put("revision.file.path", env.getProperty("revision.file.path"));
+		properties.put("revision.range.step", env.getProperty("revision.range.step"));
+		properties.put("host.default", env.getProperty("host.default"));
+		properties.put("config.dir", env.getProperty("config.dir"));
+		properties.put("onclone.delete.artifact.dryrun", Boolean.getBoolean(env.getProperty("onclone.delete.artifact.dryrun")));
+		properties.put("target.system.mapping.file.name", env.getProperty("target.system.mapping.file.name"));
+		properties.put("artifactory.url", env.getProperty("artifactory.url"));
+		properties.put("postclone.list.patch.file.path", env.getProperty("postclone.list.patch.file.path"));
+		properties.put("db.url", env.getProperty("db.url",""));
+		properties.put("db.user", env.getProperty("db.user",""));
+		properties.put("db.passwd", env.getProperty("db.passw",""));
 		Properties config = new Properties();
 		config.putAll(properties);
 		return sl.parse(config);

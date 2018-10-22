@@ -81,7 +81,7 @@ def homeDir = "/opt/${finalName}"
 ospackage {
 	packageName = "${finalName}"
 	version = "${savedVersion}"
-	release = 2
+	release = 6	
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -122,8 +122,8 @@ ospackage {
 	
 	from("packaging/conf") {
 		into "/etc/opt/${finalName}"
-		fileType REPLACE
-		include 'app.properties"
+		fileType CONFIG
+		include 'app.properties'
 		user 'root'
 		addParentDirs false
 		fileMode 0777
