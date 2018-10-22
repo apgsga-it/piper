@@ -113,12 +113,22 @@ ospackage {
 	from("packaging/conf") {
 		into "/etc/opt/${finalName}"
 		fileType CONFIG | NOREPLACE
-		include 'ops.groovy'
+		include 'ops.properties'
 		user 'root'
 		permissionGroup 'jenkins'
 		addParentDirs false
 		fileMode 0740
 	}
+	
+	from("packaging/conf") {
+		into "/etc/opt/${finalName}"
+		fileType REPLACE
+		include 'app.properties"
+		user 'root'
+		addParentDirs false
+		fileMode 0777
+	}
+	
 	
 }
  buildRpm {
