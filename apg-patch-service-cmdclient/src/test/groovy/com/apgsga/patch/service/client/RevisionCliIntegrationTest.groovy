@@ -352,8 +352,7 @@ class RevisionCliIntegrationTest extends Specification {
 			revAsJson.nextRev.toInteger() == 2
 			revAsJson.CHTI211.revisions.size() == 2
 			revAsJson.CHTI211.revisions.contains("9.1.0.ADMIN-UIMIG-18")
-			revAsJson.CHEI212.revisions.size() == 3
-			revAsJson.CHEI212.revisions.contains("9.1.0.ADMIN-UIMIG-100")
+			revAsJson.CHEI212 == null
 			revAsJson.CHEI211.revisions.size() == 1
 			revAsJson.CHEI211.revisions.contains("9.1.0.ADMIN-UIMIG-50")
 			revAsJson.CHPI211.revisions.size() == 1
