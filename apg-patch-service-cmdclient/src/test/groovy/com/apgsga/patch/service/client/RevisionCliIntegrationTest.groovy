@@ -10,8 +10,6 @@ import com.apgsga.patch.service.client.revision.PatchRevisionClient
 import groovy.json.JsonSlurper
 import spock.lang.Specification
 
-@DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
-@TestPropertySource(locations = "application-test.properties")
 class RevisionCliIntegrationTest extends Specification {
 	
 	def usageString = "usage: apsrevpli.sh -[h|ar|lr|nr|rr]"
@@ -24,7 +22,6 @@ class RevisionCliIntegrationTest extends Specification {
 		}
 		System.properties['spring_profiles_active'] = 'default'
 		System.properties['appPropertiesFile'] = 'classpath:config/app-test.properties'
-		System.properties['opsPropertiesFile'] = 'classpath:config/ops-test.properties'
 		
 	}
 	

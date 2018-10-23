@@ -41,7 +41,6 @@ public class PliConfig {
 		ConfigSlurper sl = new ConfigSlurper();
 		Map<String, Object> properties = Maps.newHashMap();
 		properties.put("revision.file.path", env.getProperty("revision.file.path"));
-		properties.put("revision.range.step", env.getProperty("revision.range.step"));
 		properties.put("host.default", env.getProperty("host.default"));
 		properties.put("config.dir", env.getProperty("config.dir"));
 		properties.put("onclone.delete.artifact.dryrun", Boolean.getBoolean(env.getProperty("onclone.delete.artifact.dryrun")));
