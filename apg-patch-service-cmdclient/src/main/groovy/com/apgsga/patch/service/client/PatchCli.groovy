@@ -152,7 +152,6 @@ class PatchCli {
 	}
 
 	def validateOpts(args) {
-		// TODO JHE: Add oc, sr, rr and rtr description here.
 		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-[l|d|dd|dm] <directory>]  [-[e|r] <patchnumber>] [-[s|sa|ud|um] <file>] [-f <patchnumber,directory>] [-sta <patchnumber,toState,[aps]]')
 		cli.formatter.setDescPadding(0)
 		cli.formatter.setLeftPadding(0)
