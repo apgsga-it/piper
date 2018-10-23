@@ -86,11 +86,16 @@ class PatchRevisionClient {
 	
 	def resetRevisions(def source, def target) {
 		def revFileAsJson = new JsonSlurper().parse(revisionFile)
-		if(revFileAsJson."${source}" != null && revFileAsJson."${target}" != null) {
-			revFileAsJson."${target}".revisions = []
-			revFileAsJson."${target}".lastRevision = revFileAsJson."${source}".lastRevision
-			revisionFile.write(new JsonBuilder(revFileAsJson).toPrettyString())
+		if(revFileAsJson."${target}" != null) {
+			if(revFileAsJson."${source}" != null) {
+				revFileAsJson."${target}".revisions = []
+				revFileAsJson."${target}".lastRevision = revFileAsJson."${source}".lastRevision
+				revisionFile.write(new JsonBuilder(revFileAsJson).toPrettyString())
+			}
+			else {
+				revFileAsJson.remove(target)
+				revisionFile.write(new JsonBuilder(revFileAsJson).toPrettyString())
+			}
 		}
 	}
-	 
 }
