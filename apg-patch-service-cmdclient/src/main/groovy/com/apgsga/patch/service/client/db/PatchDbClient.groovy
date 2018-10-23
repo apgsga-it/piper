@@ -7,13 +7,11 @@ import com.apgsga.patch.service.client.utils.TargetSystemMappings
 import groovy.json.JsonBuilder
 class PatchDbClient {
 
-	def config
 	def dbConnection
 
-	private PatchDbClient(def dbConnection, def config) {
+	private PatchDbClient(def dbConnection) {
 		super();
 		this.dbConnection = dbConnection;
-		this.config = config
 	}
 
 	public def executeStateTransitionAction(def patchNumber, def toStatus) {

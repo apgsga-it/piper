@@ -49,7 +49,7 @@ public class PliConfig {
 		properties.put("postclone.list.patch.file.path", env.getProperty("postclone.list.patch.file.path"));
 		properties.put("db.url", env.getProperty("db.url",""));
 		properties.put("db.user", env.getProperty("db.user",""));
-		properties.put("db.passwd", env.getProperty("db.passw",""));
+		properties.put("db.passwd", env.getProperty("db.passwd",""));
 		Properties config = new Properties();
 		config.putAll(properties);
 		return sl.parse(config);

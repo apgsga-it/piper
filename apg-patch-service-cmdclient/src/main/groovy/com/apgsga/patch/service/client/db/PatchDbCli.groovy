@@ -40,10 +40,8 @@ class PatchDbCli {
 			return cmdResults
 		}
 		try {
-			def jdbcConfigFile = new File(config.ops.groovy.file.path)
-			def defaultJdbcConfig = new ConfigSlurper().parse(jdbcConfigFile.toURI().toURL())
-			def dbConnection = Sql.newInstance(defaultJdbcConfig.db.url, defaultJdbcConfig.db.user, defaultJdbcConfig.db.passwd)
-			def dbCli = new PatchDbClient(dbConnection, config)
+			def dbConnection = Sql.newInstance(config.db.url, config.db.user, config.db.passwd)
+			def dbCli = new PatchDbClient(dbConnection)
 			if(options.lpac) {
 				def status = options.lpacs[0]
 				cmdResults.result = dbCli.listPatchAfterClone(status,config.postclone.list.patch.file.path)
