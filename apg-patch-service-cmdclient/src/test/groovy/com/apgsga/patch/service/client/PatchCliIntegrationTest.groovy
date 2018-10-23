@@ -24,8 +24,8 @@ import spock.lang.Ignore
 import spock.lang.Specification;
 
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = [MicroPatchServer.class ])
-@TestPropertySource(locations = "application-test.properties")
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = [MicroPatchServer.class])
+@TestPropertySource(locations = ["classpath:config/server-test.properties"])
 @ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
 public class PatchCliIntegrationTest extends Specification {
 
@@ -42,6 +42,9 @@ public class PatchCliIntegrationTest extends Specification {
 			def created = buildFolder.mkdir()
 			println ("Buildfolder has been created ${created}")
 		}
+		System.properties['spring_profiles_active'] = 'default'
+		System.properties['appPropertiesFile'] = 'classpath:config/app-test.properties'
+		System.properties['opsPropertiesFile'] = 'classpath:config/ops-test.properties'
 	}
 
 	def "Patch Cli should print out help without errors"() {

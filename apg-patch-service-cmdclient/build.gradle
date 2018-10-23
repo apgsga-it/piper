@@ -23,8 +23,6 @@ mainClassName = 'pliStarter'
 def repoTarget= version.endsWith("SNAPSHOT") ? "snapshots" : "releases"
 jar {
 	baseName = "${finalName}"
- // TODO (jhe, 3.7) 
- //	exclude('**/apscli.properties')
 } 
 
 
@@ -59,14 +57,6 @@ dependencies {
 
 }
 
-sourceSets {
-  test {
-    resources {
-      srcDir 'src/test/groovy'
-      include '**/*.properties'
-    }
-  }
-}
 
 task pkgAsGTar(type: Tar) {
 	from "$project.buildDir/${finalName}"
@@ -91,7 +81,7 @@ def homeDir = "/opt/${finalName}"
 ospackage {
 	packageName = "${finalName}"
 	version = "${savedVersion}"
-	release = 2
+	release = 1
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -123,12 +113,22 @@ ospackage {
 	from("packaging/conf") {
 		into "/etc/opt/${finalName}"
 		fileType CONFIG | NOREPLACE
-		include 'ops.groovy'
+		include 'ops.properties'
 		user 'root'
 		permissionGroup 'jenkins'
 		addParentDirs false
 		fileMode 0740
 	}
+	
+	from("packaging/conf") {
+		into "/etc/opt/${finalName}"
+		fileType CONFIG
+		include 'app.properties'
+		user 'root'
+		addParentDirs false
+		fileMode 0777
+	}
+	
 	
 }
  buildRpm {

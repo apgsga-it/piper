@@ -3,9 +3,12 @@ package com.apgsga.patch.service.client.db
 import org.apache.commons.lang.exception.ExceptionUtils
 import org.codehaus.groovy.runtime.StackTraceUtils
 import org.springframework.core.io.ClassPathResource
+import org.springframework.core.io.FileSystemResourceLoader
 
 import com.apgsga.patch.service.client.utils.TargetSystemMappings
 import com.apgsga.patch.service.client.PatchClientServerException
+import com.apgsga.patch.service.client.utils.AppContext
+
 
 import groovy.sql.Sql
 
@@ -27,7 +30,7 @@ class PatchDbCli {
 	}
 
 	def process(def args) {
-		config = parseConfig()
+		config = AppContext.instance.load()
 		TargetSystemMappings.instance.load(config)
 		def cmdResults = new Expando();
 		cmdResults.returnCode = 1
@@ -69,19 +72,6 @@ class PatchDbCli {
 		}
 	}
 
-	private def parseConfig() {
-		ClassPathResource res = new ClassPathResource('apscli.properties')
-		assert res.exists() : "apscli.properties doesn't exist or is not accessible!"
-		ConfigObject conf = new ConfigSlurper(profile).parse(res.URL);
-		return conf
-	}
-
-	private getProfile() {
-		def apsCliEnv = System.getProperty("apscli.env")
-		// If apscli.env is not define, we assume we're testing
-		def prof =  apsCliEnv ?: "test"
-		return prof
-	}
 
 	private def validateOpts(def args) {
 		def cli = new CliBuilder(usage: 'apsdbpli.sh -[h|lpac|[rsta,patchNumber]')

@@ -3,6 +3,7 @@ package com.apgsga.patch.service.client.utils
 import groovy.json.JsonSlurper
 import groovy.transform.Synchronized
 
+// TODO (che, jhe, 18.10 ): Move Bootstrapping to AppContext
 @Singleton()
 public class TargetSystemMappings {
 	

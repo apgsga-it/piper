@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-java -Dapscli.env=production -jar /opt/apg-patch-cli/bin/apg-patch-cli.jar pliRev $@  
+java -Dlogback.statusListenerClass=ch.qos.logback.core.status.NopStatusListener -Dspring.profiles.active=default -DappPropertiesFile=file:/etc/opt/apg-patch-cli/application.properties -jar /opt/apg-patch-cli/bin/apg-patch-cli.jar pliRev $@  
