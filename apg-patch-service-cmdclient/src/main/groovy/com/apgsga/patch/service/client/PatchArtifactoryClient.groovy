@@ -60,7 +60,9 @@ class PatchArtifactoryClient {
 			
 			if(!dryRun) {
 				println "Executing: ${jadasCleanupCmd}${revAsListToCleanJadas}"
-				['bash', '-c', "${jadasCleanupCmd}${revAsListToCleanJadas}"].execute().in.text
+				def output = ['bash', '-c', "${jadasCleanupCmd}${revAsListToCleanJadas}"].execute().in.text
+				println "Result of ${jadasCleanupCmd}${revAsListToCleanJadas}:"
+				println output
 			}
 			else {
 				println "Following script would have been called to clean Jadas images: ${jadasCleanupCmd}${revAsListToCleanJadas}"
