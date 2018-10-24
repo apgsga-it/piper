@@ -43,7 +43,7 @@ class PatchArtifactoryClient {
 		def revision = revisionClient.getInstalledRevisions(target)
 		def dryRun = config.onclone.delete.artifact.dryrun
 		def revAsListToCleanJadas = ""
-		def jadasCleanupCmd = "/opt/apgops/cleanup_jadas_images_by_revision_DEV.sh"
+		def jadasCleanupCmd = "/opt/apgops/cleanup_jadas_images_by_revision.sh"
 		def revisionAsString
 		
 		if(revision != null) {
