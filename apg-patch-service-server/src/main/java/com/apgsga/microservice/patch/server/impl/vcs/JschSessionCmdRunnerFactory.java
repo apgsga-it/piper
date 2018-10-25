@@ -27,6 +27,7 @@ public class JschSessionCmdRunnerFactory implements VcsCommandRunnerFactory {
 		Session session;
 		try {
 			session = jsch.getSession(user, host, 22);
+			LOGGER.info("Got ssh Session on: " + host + " for: " + user);
 		} catch (JSchException e) {
 			throw new RuntimeException(e);
 		}
