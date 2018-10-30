@@ -45,6 +45,7 @@ public interface PatchService {
 	 * @param filter Filter, which should be applied for search
 	 * @return list of Maven Arifacts relevant for Patch
 	 */
+	// TODO (che, 30.10) this really should'nt be dependent of the Patch
 	public List<MavenArtifact> listMavenArtifacts(Patch patch, SearchCondition filter); 
 	/**
 	 * List all Maven Artifacts 
