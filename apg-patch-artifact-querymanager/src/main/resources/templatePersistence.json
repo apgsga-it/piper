@@ -30,5 +30,13 @@
 		"version": "",
 		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
 		"dependencyLevel": 0
+	},
+	{
+		"groupId": "com.affichage.persistence.java.service",
+		"artifactId": "tests-javaservices",
+		"name": null,
+		"version": "",
+		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"dependencyLevel": 0
 	}
 ]

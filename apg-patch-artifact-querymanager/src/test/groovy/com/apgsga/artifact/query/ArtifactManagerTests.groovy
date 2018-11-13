@@ -65,7 +65,7 @@ class ArtifactManagerTests extends Specification {
 		ObjectMapper mapper = new ObjectMapper();
 		def expectedTemplate = Arrays.asList(mapper.readValue(new File("src/test/resources/templatePersistence.json"),MavenArtifact[].class)).toSorted()
 		then:
-		assert results.size() == 4
+		assert results.size() == 5
 		assert results.equals(expectedTemplate)
 	}
 	
