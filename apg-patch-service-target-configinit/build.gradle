@@ -45,11 +45,12 @@ dependencies {
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
+	compile group: 'org.springframework', name: 'spring-web'
 	runtime group: 'commons-cli' , name: 'commons-cli'
 	testCompile group: 'cglib' ,name: 'cglib-nodep' // for stubbing of classes
-
+	testCompile group: 'org.spockframework' ,name: 'spock-spring'
+	testCompile group: 'org.springframework', name: 'spring-test'
 }
-
 
 task pkgAsGTar(type: Tar) {
 	from "$project.buildDir/${finalName}"
