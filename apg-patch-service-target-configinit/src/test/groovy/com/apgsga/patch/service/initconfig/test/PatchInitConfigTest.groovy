@@ -8,7 +8,7 @@ import javax.imageio.ImageIO.ContainsFilter
 import org.spockframework.util.Assert
 
 import com.apgsga.patch.service.bootstrap.config.PatchInitConfigCli
-
+import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import spock.lang.Specification
 
@@ -19,6 +19,8 @@ class PatchInitConfigTest extends Specification {
 	def targetSystemMappingBackupFileName = "src/test/resources/etc/opt/apg-patch-common/TargetSystemMappings.json.backup"
 	
 	def targetSystemMappingFileName = "src/test/resources/etc/opt/apg-patch-common/TargetSystemMappings.json"
+	
+	def targetSystemMappingOriFileName = "src/test/resources/etc/opt/apg-patch-common/TargetSystemMappings.json.ori"
 	
 	def setup() {
 		println "TODO Setup if required ..."
@@ -81,14 +83,16 @@ class PatchInitConfigTest extends Specification {
 		when:
 			PatchInitConfigCli cli = PatchInitConfigCli.create()
 			def targetSystemMappingFile = new File(targetSystemMappingFileName)
+			def targetSystemMappingOriContent = new JsonSlurper().parse(targetSystemMappingFile)
 			def result = cli.process(["-i","src/test/resources/initconfig.properties"])
 		then:
 			result.returnCode == 0
-			new File(targetSystemMappingBackupFileName).exists()
+			def targetSystemMappingBackupFile = new File(targetSystemMappingBackupFileName)
+			targetSystemMappingBackupFile.exists()
 			targetSystemMappingFile.exists()
 			
 			// Validate content of backup file
-			def targetSystemMappingBackupFileContent = new JsonSlurper().parse(targetSystemMappingFile)
+			def targetSystemMappingBackupFileContent = new JsonSlurper().parse(targetSystemMappingBackupFile)
 			targetSystemMappingBackupFileContent.targetSystems.each({targetSystem -> 
 				switch(targetSystem.name) {
 					case "Entwicklung":
@@ -122,7 +126,7 @@ class PatchInitConfigTest extends Specification {
 						Assert.that(targetSystem.target.equals("CHEI211"), "New target for Informatiktest should be CHEI211!")
 						break
 					case "Produktion":
-						Assert.that(targetSystem.target.equals("CHEI212"), "New target for Produktion should be CHPI211!")
+						Assert.that(targetSystem.target.equals("CHEI212"), "New target for Produktion should be CHEI212!")
 						break
 					default:
 						Assert.fail("Default case is invalid, all target system should be known!")
@@ -136,6 +140,7 @@ class PatchInitConfigTest extends Specification {
 			
 		cleanup:
 			new File(targetSystemMappingBackupFileName).delete()
+			targetSystemMappingFile.write(new JsonBuilder(targetSystemMappingOriContent).toPrettyString())
 	}
 	
 }
