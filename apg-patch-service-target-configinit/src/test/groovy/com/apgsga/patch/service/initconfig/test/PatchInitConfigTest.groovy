@@ -14,18 +14,40 @@ import spock.lang.Specification
 
 class PatchInitConfigTest extends Specification {
 	
-	def usageString = "usage: patchinitcli.sh -[h|i|]"	
+	def usageString = "usage: patchinitcli.sh -[h|i|]"
 	
-	def targetSystemMappingBackupFileName = "src/test/resources/etc/opt/apg-patch-common/TargetSystemMappings.json.backup"
+	def etcOptPath = "src/test/resources/etc/opt"	
 	
-	def targetSystemMappingFileName = "src/test/resources/etc/opt/apg-patch-common/TargetSystemMappings.json"
+	def targetSystemMappingFileName = "${etcOptPath}/apg-patch-common/TargetSystemMappings.json"
 	
-	def targetSystemMappingOriFileName = "src/test/resources/etc/opt/apg-patch-common/TargetSystemMappings.json.ori"
+	def targetSystemMappingBackupFileName = "${targetSystemMappingFileName}.backup"
+	
+	def patchCliApplicationPropertiesFileName = "${etcOptPath}/apg-patch-cli/application.properties"
+	
+	def patchCliApplicationPropertiesBackupFileName = "${patchCliApplicationPropertiesFileName}.backup"
+	
+	def patchCliOpsPropertiesFileName = "${etcOptPath}/apg-patch-cli/ops.properties"
+	
+	def patchCliOpsPropertiesBackupFileName = "${patchCliOpsPropertiesFileName}.backup"
+	
+	def patchServerApplicationPropertiesFileName = "${etcOptPath}/apg-patch-service-server/application.properties"
+	
+	def patchServerApplicationPropertiesBackupFileName = "${patchServerApplicationPropertiesFileName}.backup"
+	
+	def patchServerOpsPropertiesFileName = "${etcOptPath}/apg-patch-service-server/ops.properties"
+	
+	def patchServerOpsPropertiesBackupFileName = "${patchServerOpsPropertiesFileName}.backup"
+	
+	def targetSystemMappingOriContent
 	
 	def setup() {
-		println "TODO Setup if required ..."
+		keepCopyOfOriginalTestFiles()
 	}
 	
+	def cleanup() {
+		cleanAllBackupFiles()
+		restoreContentOfOriginalTestFiles()
+	}
 	
 	def "PatchInitConfig validate behavior when no option has been passed"() {
 		when:
@@ -79,11 +101,10 @@ class PatchInitConfigTest extends Specification {
 			result.returnCode == 1
 	}
 	
-	def "PatchInitConfig validate init for TargetSystemMapping File"() {
+	def "PatchInitConfig validate init did the job for TargetSystemMapping File"() {
 		when:
 			PatchInitConfigCli cli = PatchInitConfigCli.create()
 			def targetSystemMappingFile = new File(targetSystemMappingFileName)
-			def targetSystemMappingOriContent = new JsonSlurper().parse(targetSystemMappingFile)
 			def result = cli.process(["-i","src/test/resources/initconfig.properties"])
 		then:
 			result.returnCode == 0
@@ -137,10 +158,49 @@ class PatchInitConfigTest extends Specification {
 			targetSystemMappingBackupFileContent.otherTargetInstances.contains("CHEI211")
 			targetSystemMappingBackupFileContent.otherTargetInstances.contains("CHTI212")
 			targetSystemMappingBackupFileContent.otherTargetInstances.contains("CHTI213")
+	}
+	
+	def "PatchInitConfig validate init did the job for all patch Service *.properties files"() {
+		when:
+			PatchInitConfigCli cli = PatchInitConfigCli.create()
+			def cliApplicationPropertiesFile = new File(patchCliApplicationPropertiesFileName)
+			def cliApplicationPropertiesBackupFile = new File(patchCliApplicationPropertiesBackupFileName)
+			def cliOpsPropertiesFile = new File(patchCliOpsPropertiesFileName)
+			def cliOpsPropertiesBackupFile = new File(patchCliOpsPropertiesBackupFileName)
+			def serverApplicationPropertiesFile = new File(patchServerApplicationPropertiesFileName)
+			def serverApplicationPropertiesBackupFile = new File(patchServerApplicationPropertiesBackupFileName)
+			def serveropsPropertiesFile = new File(patchServerOpsPropertiesFileName)
+			def serveropsPropertiesBackupFile = new File(patchServerOpsPropertiesBackupFileName)
+			def result = cli.process(["-i","src/test/resources/initconfig.properties"])
+		then:
+			result.returnCode == 0
+			cliApplicationPropertiesFile.exists()
+			cliApplicationPropertiesBackupFile.exists()
+			cliOpsPropertiesFile.exists()
+			cliOpsPropertiesBackupFile.exists()
+			serverApplicationPropertiesFile.exists()
+			serverApplicationPropertiesBackupFile.exists()
+			serveropsPropertiesFile.exists()
+			serveropsPropertiesBackupFile.exists()
 			
-		cleanup:
-			new File(targetSystemMappingBackupFileName).delete()
-			targetSystemMappingFile.write(new JsonBuilder(targetSystemMappingOriContent).toPrettyString())
+			//todo JHE: check content of files
+	}
+	
+	private def keepCopyOfOriginalTestFiles() {
+		targetSystemMappingOriContent = new JsonSlurper().parse(new File(targetSystemMappingFileName))
+	}
+	
+	private def restoreContentOfOriginalTestFiles() {
+		def targetSystemMappingFile = new File(targetSystemMappingFileName)
+		targetSystemMappingFile.write(new JsonBuilder(targetSystemMappingOriContent).toPrettyString())
+	}
+	
+	private def cleanAllBackupFiles() {
+		new File(targetSystemMappingBackupFileName).delete()
+		new File(patchCliApplicationPropertiesBackupFileName).delete()
+		new File(patchCliOpsPropertiesBackupFileName).delete()
+		new File(patchServerApplicationPropertiesBackupFileName).delete()
+		new File(patchServerOpsPropertiesBackupFileName).delete()
 	}
 	
 }

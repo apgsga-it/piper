@@ -1,5 +1,6 @@
 package com.apgsga.patch.service.bootstrap.config
 
+import groovy.io.FileType
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import java.nio.file.Files
@@ -15,10 +16,10 @@ class PatchInitConfigClient {
 	}
 	
 	def initAll() {
-		println "init all started ... Init config is:"
+		println "init all started ... "
 
 		initTargetSystemMapping()
-		initPatchServiceProperties()
+		initPiperProperties()
 		initMavenSettings()
 		initGradleSettings()
 				
@@ -28,10 +29,22 @@ class PatchInitConfigClient {
 		println "Initialisation of targetSystemMapping started ..."
 		backupFile(initConfig.targetSystemMappings)
 		changeTargetSystemMappingContent()
+		println "Initialisation of targetSystemMapping done!"
 	}
 
-	def initPatchServiceProperties() {
+	def initPiperProperties() {
 		println "Initialisation of patch service properties started ..."
+		
+		def listFiles = []
+		def dir = new File("src/test/resources/etc/opt")
+		
+		
+		dir.traverse(type: FileType.FILES, nameFilter: ~/.*\.properties/) {
+			backupFile(it.getPath())
+		}
+		
+		println "Initialisation of patch service properties done!"
+		
 	}
 	
 	def initMavenSettings() {
@@ -81,6 +94,7 @@ class PatchInitConfigClient {
 		def originalFile = new File(originalFileName)
 		def backupFile = new File("${originalFileName}.backup")
 		Files.copy(originalFile.toPath(), backupFile.toPath())
+		println "Backup created for ${originalFileName} : ${backupFile.getPath()}"
 	}
 
 }
