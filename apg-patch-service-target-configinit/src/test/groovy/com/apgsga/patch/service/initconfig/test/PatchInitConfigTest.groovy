@@ -5,9 +5,12 @@ import java.nio.file.Paths
 
 import javax.imageio.ImageIO.ContainsFilter
 
+import org.apache.commons.io.FileUtils
 import org.spockframework.util.Assert
 
 import com.apgsga.patch.service.bootstrap.config.PatchInitConfigCli
+import com.apgsga.patch.service.configinit.util.ConfigInitUtil
+
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import spock.lang.Specification
@@ -39,6 +42,14 @@ class PatchInitConfigTest extends Specification {
 	def patchServerOpsPropertiesBackupFileName = "${patchServerOpsPropertiesFileName}.backup"
 	
 	def targetSystemMappingOriContent
+	
+	def ConfigObject patchCliOriApplicationPropsOriContent
+	
+	def ConfigObject patchCliOpsPropsOriContent
+	
+	def ConfigObject patchServerApplicationPropsOriContent
+	
+	def ConfigObject patchServerOpsPropsOriContent
 	
 	def setup() {
 		keepCopyOfOriginalTestFiles()
@@ -182,17 +193,82 @@ class PatchInitConfigTest extends Specification {
 			serverApplicationPropertiesBackupFile.exists()
 			serveropsPropertiesFile.exists()
 			serveropsPropertiesBackupFile.exists()
+		
+			// Some files shouldn't have change at all
+			FileUtils.contentEquals(cliApplicationPropertiesFile, cliApplicationPropertiesBackupFile)
+			FileUtils.contentEquals(serveropsPropertiesFile, serveropsPropertiesBackupFile)
 			
-			//todo JHE: check content of files
+			// apg-patch-cli ops.properties + backup	
+			def cliOpsProps = slurpProperties(cliOpsPropertiesFile)
+			cliOpsProps.db.url == "jdbc:oracle:thin:@test.apgsga.ch:1521:test"
+			cliOpsProps.db.user == "newUser"
+			cliOpsProps.db.passwd == "newPassword"
+			def cliOpsBackupProps = slurpProperties(cliOpsPropertiesBackupFile)
+			cliOpsBackupProps.db.url == "jdbc:oracle:thin:@prod.apgsga.ch:1521:prod"
+			cliOpsBackupProps.db.user == "oldUser"
+			cliOpsBackupProps.db.passwd == "oldPassword"
+			
+			// apg-patch-service-server application.properties + backup
+			def serverApplicationProps = slurpProperties(serverApplicationPropertiesFile)
+			serverApplicationProps.vcs.host == "cvs-t.apgsga.ch"
+			serverApplicationProps.vcs.user == "testCvsUser"
+			serverApplicationProps.jenkins.host == "https://jenkinsTest.apgsga.ch/"
+			serverApplicationProps.jenkins.user == "jenkinsTestUser"
+			serverApplicationProps.jenkins.authkey == "jenkinsTestAuthkey"
+			def serverApplicationBackupProps = slurpProperties(serverApplicationPropertiesBackupFile)
+			serverApplicationBackupProps.vcs.host == "cvs.apgsga.ch"
+			serverApplicationBackupProps.vcs.user == "cvsProdUser"
+			serverApplicationBackupProps.jenkins.host == "https://jenkins.apgsga.ch/"
+			serverApplicationBackupProps.jenkins.user == "jenkinsProdUser"
+			serverApplicationBackupProps.jenkins.authkey == "jenkinsProdAuthKey"
+	}
+	
+	private def slurpProperties(def propertyFile) {
+		ConfigSlurper cs = new ConfigSlurper()
+		
+		def props = new Properties()
+		propertyFile.withInputStream{ stream ->
+			props.load(stream)
+		}
+		
+		def config = cs.parse(props)
+		config
 	}
 	
 	private def keepCopyOfOriginalTestFiles() {
 		targetSystemMappingOriContent = new JsonSlurper().parse(new File(targetSystemMappingFileName))
+		patchCliOriApplicationPropsOriContent = ConfigInitUtil.slurpProperties(new File(patchCliApplicationPropertiesFileName))
+		patchCliOpsPropsOriContent = ConfigInitUtil.slurpProperties(new File(patchCliOpsPropertiesFileName))
+		patchServerApplicationPropsOriContent = ConfigInitUtil.slurpProperties(new File(patchServerApplicationPropertiesFileName))
+		patchServerOpsPropsOriContent = ConfigInitUtil.slurpProperties(new File(patchServerOpsPropertiesFileName))
 	}
 	
 	private def restoreContentOfOriginalTestFiles() {
 		def targetSystemMappingFile = new File(targetSystemMappingFileName)
 		targetSystemMappingFile.write(new JsonBuilder(targetSystemMappingOriContent).toPrettyString())
+		
+		Map<ConfigObject,File> configToBeRestored = [:]
+		configToBeRestored.put(patchCliOriApplicationPropsOriContent, new File(patchCliApplicationPropertiesFileName))
+		configToBeRestored.put(patchCliOpsPropsOriContent, new File(patchCliOpsPropertiesFileName))	
+		configToBeRestored.put(patchServerApplicationPropsOriContent, new File(patchServerApplicationPropertiesFileName))
+		configToBeRestored.put(patchServerOpsPropsOriContent, new File(patchServerOpsPropertiesFileName))
+		
+		configToBeRestored.each({configObj,file -> 
+			PrintWriter pw = new PrintWriter(file)
+			pw.write("")
+			
+			Properties props = new Properties()
+			props.putAll(configObj.flatten())
+			
+			props.each({key,value ->
+				pw.write("${key}=${value}")
+				pw.write(System.getProperty("line.separator"))
+			})
+	
+			pw.close()
+		})
+		
+		
 	}
 	
 	private def cleanAllBackupFiles() {

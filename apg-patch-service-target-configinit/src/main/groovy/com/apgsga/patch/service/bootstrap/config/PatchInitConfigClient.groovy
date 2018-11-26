@@ -7,6 +7,8 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
+import com.apgsga.patch.service.configinit.util.ConfigInitUtil
+
 class PatchInitConfigClient {
 	
 	ConfigObject initConfig
@@ -35,15 +37,70 @@ class PatchInitConfigClient {
 	def initPiperProperties() {
 		println "Initialisation of patch service properties started ..."
 		
-		def listFiles = []
+		// TODO JHE: get dir path from init property file
 		def dir = new File("src/test/resources/etc/opt")
-		
-		
 		dir.traverse(type: FileType.FILES, nameFilter: ~/.*\.properties/) {
 			backupFile(it.getPath())
+			adaptContentForPiperPropertiesFile(it)
 		}
 		
 		println "Initialisation of patch service properties done!"
+		
+	}
+	
+	def adaptContentForPiperPropertiesFile(File file) {
+		
+		
+		println "Process file : " + file.getPath()
+		
+		def piperPropertiesFromInitConfig = initConfig.flatten()
+		Properties propsToBeUpdated = new Properties()
+		file.withInputStream{ stream ->
+			propsToBeUpdated.load(stream)
+		}
+		
+		piperPropertiesFromInitConfig.forEach({key,value -> 
+			println "init key = ${key} , init value = ${value}"
+		})
+
+		println "======================================================================================="
+		println "======================================================================================="		
+
+		def needToUpdateFile = false
+		Properties newProps = new Properties()
+		propsToBeUpdated.each({key,value -> 
+			
+			//println "key = ${key} , value = ${value}"
+			
+			def String searchedKey = "piper.${key}"
+			println "piper key = piper.${key}"
+			if(piperPropertiesFromInitConfig.containsKey(searchedKey)) {
+				def newValue = piperPropertiesFromInitConfig.get(searchedKey)
+				println "${key} will be updated with: ${newValue}"
+				newProps.put(key, newValue)
+				needToUpdateFile = true
+			}
+			
+		})
+
+		if(needToUpdateFile) {
+			propsToBeUpdated.putAll(newProps)
+			
+			PrintWriter pw = new PrintWriter(file)
+			pw.write("")
+			
+			propsToBeUpdated.each({key,value -> 
+				pw.write("${key}=${value}")
+				pw.write(System.getProperty("line.separator"))
+			})
+
+			pw.close()			
+//			propsToBeUpdated.store(file.newWriter(),null)
+		}
+		
+		
+		
+		println "done"
 		
 	}
 	
