@@ -39,6 +39,7 @@ class PatchInitConfigClient {
 		
 		// TODO JHE: get dir path from init property file
 		def dir = new File("src/test/resources/etc/opt")
+		//TODO JHE: get ".properties" from init property file
 		dir.traverse(type: FileType.FILES, nameFilter: ~/.*\.properties/) {
 			backupFile(it.getPath())
 			adaptContentForPiperPropertiesFile(it)
