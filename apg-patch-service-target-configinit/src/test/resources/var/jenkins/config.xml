@@ -1,0 +1,505 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<hudson>
+  <disabledAdministrativeMonitors>
+    <string>hudson.diagnosis.ReverseProxySetupMonitor</string>
+  </disabledAdministrativeMonitors>
+  <version>2.121.1</version>
+  <installStateName>RESTART</installStateName>
+  <numExecutors>12</numExecutors>
+  <mode>NORMAL</mode>
+  <useSecurity>true</useSecurity>
+  <authorizationStrategy class="hudson.security.GlobalMatrixAuthorizationStrategy">
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Create:grpJenkinsWrite</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Delete:grpJenkinsWrite</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.ManageDomains:grpJenkinsWrite</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Update:grpJenkinsWrite</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.View:grpJenkinsRead</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.View:grpJenkinsWrite</permission>
+    <permission>hudson.model.Computer.Build:grpJenkinsWrite</permission>
+    <permission>hudson.model.Computer.Configure:grpJenkinsWrite</permission>
+    <permission>hudson.model.Computer.Connect:grpJenkinsWrite</permission>
+    <permission>hudson.model.Computer.Create:grpJenkinsWrite</permission>
+    <permission>hudson.model.Computer.Delete:grpJenkinsWrite</permission>
+    <permission>hudson.model.Computer.Disconnect:grpJenkinsWrite</permission>
+    <permission>hudson.model.Hudson.Administer:grpJenkinsWrite</permission>
+    <permission>hudson.model.Hudson.Read:anonymous</permission>
+    <permission>hudson.model.Hudson.Read:authenticated</permission>
+    <permission>hudson.model.Hudson.Read:grpJenkinsRead</permission>
+    <permission>hudson.model.Hudson.Read:grpJenkinsWrite</permission>
+    <permission>hudson.model.Hudson.Read:svcJenkinsClient </permission>
+    <permission>hudson.model.Item.Build:grpJenkinsWrite</permission>
+    <permission>hudson.model.Item.Build:svcJenkinsClient </permission>
+    <permission>hudson.model.Item.Cancel:grpJenkinsWrite</permission>
+    <permission>hudson.model.Item.Cancel:svcJenkinsClient </permission>
+    <permission>hudson.model.Item.Configure:grpJenkinsWrite</permission>
+    <permission>hudson.model.Item.Create:grpJenkinsWrite</permission>
+    <permission>hudson.model.Item.Delete:grpJenkinsWrite</permission>
+    <permission>hudson.model.Item.Discover:grpJenkinsWrite</permission>
+    <permission>hudson.model.Item.Move:grpJenkinsWrite</permission>
+    <permission>hudson.model.Item.Read:grpJenkinsRead</permission>
+    <permission>hudson.model.Item.Read:grpJenkinsWrite</permission>
+    <permission>hudson.model.Item.Read:svcJenkinsClient </permission>
+    <permission>hudson.model.Item.Workspace:grpJenkinsRead</permission>
+    <permission>hudson.model.Item.Workspace:grpJenkinsWrite</permission>
+    <permission>hudson.model.Run.Delete:grpJenkinsWrite</permission>
+    <permission>hudson.model.Run.Replay:grpJenkinsWrite</permission>
+    <permission>hudson.model.Run.Update:grpJenkinsWrite</permission>
+    <permission>hudson.model.View.Configure:grpJenkinsWrite</permission>
+    <permission>hudson.model.View.Create:grpJenkinsWrite</permission>
+    <permission>hudson.model.View.Delete:grpJenkinsWrite</permission>
+    <permission>hudson.model.View.Read:grpJenkinsRead</permission>
+    <permission>hudson.model.View.Read:grpJenkinsWrite</permission>
+    <permission>hudson.scm.SCM.Tag:grpJenkinsWrite</permission>
+  </authorizationStrategy>
+  <securityRealm class="hudson.plugins.active_directory.ActiveDirectorySecurityRealm" plugin="active-directory@2.6">
+    <domains>
+      <hudson.plugins.active__directory.ActiveDirectoryDomain>
+        <name>affichage-p.ch</name>
+        <bindPassword>{AQAAABAAAAAQht9ZemfnXnNmWDRvj2XnnA4V3d0DloUSPmgwBDLEnJc=}</bindPassword>
+      </hudson.plugins.active__directory.ActiveDirectoryDomain>
+    </domains>
+    <startTls>true</startTls>
+    <groupLookupStrategy>AUTO</groupLookupStrategy>
+    <removeIrrelevantGroups>false</removeIrrelevantGroups>
+    <tlsConfiguration>TRUST_ALL_CERTIFICATES</tlsConfiguration>
+  </securityRealm>
+  <disableRememberMe>false</disableRememberMe>
+  <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$DefaultProjectNamingStrategy"/>
+  <workspaceDir>${JENKINS_HOME}/workspace/${ITEM_FULLNAME}</workspaceDir>
+  <buildsDir>${ITEM_ROOTDIR}/builds</buildsDir>
+  <markupFormatter class="hudson.markup.EscapedMarkupFormatter"/>
+  <jdks>
+    <jdk>
+      <name>default</name>
+      <home>/usr/java/jdk1.8.0_131</home>
+      <properties/>
+    </jdk>
+  </jdks>
+  <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
+  <myViewsTabBar class="hudson.views.DefaultMyViewsTabBar"/>
+  <clouds/>
+  <quietPeriod>5</quietPeriod>
+  <scmCheckoutRetryCount>0</scmCheckoutRetryCount>
+  <views>
+    <hudson.model.AllView>
+      <owner class="hudson" reference="../../.."/>
+      <name>all</name>
+      <description>Willkommen :-)&#xd;
+Diese Lasche zeigt eine Übersicht aller existierenden Jenkins Jobs - prinzipiell sollte eigentlich niemand mit dieser Lasche arbeiten ;-)</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+    </hudson.model.AllView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>Java8Mig</name>
+      <description>Alle Projekte in dieser Sicht sollten auf dem it21_release_9_1_0_admin_uimig Branch sein und die Artifact Version 9.1.0.ADMIN-UIMIG-SNAPSHOT haben (9.1.0.ADMIN-$revision})</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <string>Java8Mig _dm-pom</string>
+        <string>Java8Mig _dm_bom</string>
+        <string>Java8Mig com.affichage.common.maven.dao.parentpom</string>
+        <string>Java8Mig com.affichage.common.maven.parentpom</string>
+        <string>Java8Mig com.affichage.common.maven.ui.parentpom</string>
+        <string>Java8Mig com.affichage.ibds.ds.dao</string>
+        <string>Java8Mig com.affichage.it21.aenv.dao</string>
+        <string>Java8Mig com.affichage.it21.aenv.ui</string>
+        <string>Java8Mig com.affichage.it21.alog.dao</string>
+        <string>Java8Mig com.affichage.it21.alog.ui</string>
+        <string>Java8Mig com.affichage.it21.apmgmt.dao</string>
+        <string>Java8Mig com.affichage.it21.apmgmt.ui</string>
+        <string>Java8Mig com.affichage.it21.arep.dao</string>
+        <string>Java8Mig com.affichage.it21.arep.ui</string>
+        <string>Java8mig com.affichage.it21.au.tracking.ui</string>
+        <string>Java8Mig com.affichage.it21.bd.dao</string>
+        <string>Java8Mig com.affichage.it21.bd.ui</string>
+        <string>Java8Mig com.affichage.it21.cm.dao</string>
+        <string>Java8Mig com.affichage.it21.cm.ui</string>
+        <string>Java8Mig com.affichage.it21.common.dao</string>
+        <string>Java8Mig com.affichage.it21.dbj.dao</string>
+        <string>Java8Mig com.affichage.it21.dbj.ui</string>
+        <string>Java8Mig com.affichage.it21.domainwerte</string>
+        <string>Java8Mig com.affichage.it21.fm.flaechen.dao</string>
+        <string>Java8Mig com.affichage.it21.fm.flaechen.ui</string>
+        <string>Java8Mig com.affichage.it21.fm.proc</string>
+        <string>Java8Mig com.affichage.it21.fm.ui</string>
+        <string>Java8Mig com.affichage.it21.fotomanager.impl</string>
+        <string>Java8Mig com.affichage.it21.gp.dao</string>
+        <string>Java8Mig com.affichage.it21.gp.ui</string>
+        <string>Java8Mig com.affichage.it21.ibus.dao</string>
+        <string>Java8Mig com.affichage.it21.ibus.ui</string>
+        <string>Java8Mig com.affichage.it21.iz.dao</string>
+        <string>Java8Mig com.affichage.it21.iz.ui</string>
+        <string>Java8Mig com.affichage.it21.lo.abwicklung.ui</string>
+        <string>Java8Mig com.affichage.it21.lo.aushang.ui</string>
+        <string>Java8Mig com.affichage.it21.lo.dao</string>
+        <string>Java8Mig com.affichage.it21.lo.lager.ui</string>
+        <string>Java8Mig com.affichage.it21.lo.module.ui</string>
+        <string>Java8Mig com.affichage.it21.lo.planung.ui</string>
+        <string>Java8Mig com.affichage.it21.lo.spezial.dao</string>
+        <string>Java8Mig com.affichage.it21.lo.spezial.ui</string>
+        <string>Java8Mig com.affichage.it21.lo.ui</string>
+        <string>Java8Mig com.affichage.it21.pe.dao</string>
+        <string>Java8Mig com.affichage.it21.pm.dao</string>
+        <string>Java8Mig com.affichage.it21.pm.ui</string>
+        <string>Java8Mig com.affichage.it21.ppix.dao</string>
+        <string>Java8Mig com.affichage.it21.ppix.ui</string>
+        <string>Java8Mig com.affichage.it21.qq.dao</string>
+        <string>Java8Mig com.affichage.it21.qq.ui</string>
+        <string>Java8Mig com.affichage.it21.system.ui</string>
+        <string>Java8Mig com.affichage.it21.ui</string>
+        <string>Java8Mig com.affichage.it21.ui.runtime</string>
+        <string>Java8Mig com.affichage.it21.vk.ausstrahlungsnachweis</string>
+        <string>Java8Mig com.affichage.it21.vk.faktura.dao</string>
+        <string>Java8Mig com.affichage.it21.vk.faktura.ui</string>
+        <string>Java8Mig com.affichage.it21.vk.papier.dao</string>
+        <string>Java8Mig com.affichage.it21.vk.papier.ui</string>
+        <string>Java8Mig com.affichage.it21.vk.ui</string>
+        <string>Java8Mig com.affichage.it21.vk.utils</string>
+        <string>Java8Mig com.affichage.it21.vk.zentraldispo.dao</string>
+        <string>Java8Mig com.affichage.it21.vk.zentraldispo.ui</string>
+        <string>Java8Mig com.affichage.it21.vs.dao</string>
+        <string>Java8Mig com.affichage.it21.zo.dao</string>
+        <string>Java8Mig com.affichage.it21.zo.ui</string>
+        <string>Java8Mig com.affichage.itext.utils</string>
+        <string>Java8Mig com.apgsga.it21.jfmt.tests</string>
+        <string>Java8Mig it21-ui-bundle</string>
+        <string>Java8Mig it21-ui-patch</string>
+        <string>Java8Mig it21ui-app-starter</string>
+        <string>Java8Mig jadas-app-starter</string>
+        <string>Java8Mig jadas-framework-starter</string>
+        <string>Java8Mig javaforms-starter</string>
+        <string>Java8Mig maven-artifact-uploader</string>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+      <includeRegex>Java8Mig.*</includeRegex>
+      <recurse>false</recurse>
+    </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>Patches</name>
+      <description>Patches die aktuell in Entwicklung/Bearbeitung sind und potentiell zukünftig in Produktion gehen werden.&#xd;
+Ansprechpartner: J. Helbling, S. Brandenberger, U. Genner</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <string>Patch5848</string>
+        <string>Patch5848OnDemand</string>
+        <string>Patch5851</string>
+        <string>Patch5851OnDemand</string>
+        <string>Patch5910</string>
+        <string>Patch5910OnDemand</string>
+        <string>Patch5918</string>
+        <string>Patch5918OnDemand</string>
+        <string>Patch5919</string>
+        <string>Patch5919OnDemand</string>
+        <string>Patch5920</string>
+        <string>Patch5920OnDemand</string>
+        <string>Patch5921</string>
+        <string>Patch5921OnDemand</string>
+        <string>Patch5924</string>
+        <string>Patch5924OnDemand</string>
+        <string>Patch5925</string>
+        <string>Patch5925OnDemand</string>
+        <string>Patch5926</string>
+        <string>Patch5926OnDemand</string>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.plugins.release.ReleaseButtonColumn plugin="release@2.8"/>
+      </columns>
+      <recurse>false</recurse>
+    </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>PLSQL Cop</name>
+      <description>Metrik-Erstellung für PL/SQL-Code&#xd;
+Ansprechpartner: D. Rohner, F. Soremski, P. Salvisberg</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <string>plsqlcop-test-fm</string>
+        <string>plsqlcop-test-pz</string>
+        <string>plsqlcop-test-vk</string>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+        <org.jenkins.plugins.builton.BuiltOnColumn plugin="built-on-column@1.1"/>
+      </columns>
+      <recurse>false</recurse>
+    </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>ProductivePatches</name>
+      <description>Patches die schon in Produktion installiert sind.&#xd;
+Patches mit letztem Job älter als 30 Tage werden archiviert. Die Logs sind sichtbar unter \\jenkins.apgsga.ch\patch_log_archive\&#xd;
+Ansprechpartner: J. Helbling, S. Brandenberger, U. Genner</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <string>Patch5856</string>
+        <string>Patch5856OnDemand</string>
+        <string>Patch5860</string>
+        <string>Patch5860OnDemand</string>
+        <string>Patch5865</string>
+        <string>Patch5865OnDemand</string>
+        <string>Patch5872</string>
+        <string>Patch5872OnDemand</string>
+        <string>Patch5873</string>
+        <string>Patch5873OnDemand</string>
+        <string>Patch5875</string>
+        <string>Patch5875OnDemand</string>
+        <string>Patch5877</string>
+        <string>Patch5877OnDemand</string>
+        <string>Patch5879</string>
+        <string>Patch5879OnDemand</string>
+        <string>Patch5880</string>
+        <string>Patch5880OnDemand</string>
+        <string>Patch5881</string>
+        <string>Patch5881OnDemand</string>
+        <string>Patch5882</string>
+        <string>Patch5882OnDemand</string>
+        <string>Patch5883</string>
+        <string>Patch5883OnDemand</string>
+        <string>Patch5887</string>
+        <string>Patch5887OnDemand</string>
+        <string>Patch5888OnDemand</string>
+        <string>Patch5890</string>
+        <string>Patch5890OnDemand</string>
+        <string>Patch5893</string>
+        <string>Patch5893OnDemand</string>
+        <string>Patch5898</string>
+        <string>Patch5898OnDemand</string>
+        <string>Patch5900</string>
+        <string>Patch5900OnDemand</string>
+        <string>Patch5915</string>
+        <string>Patch5915OnDemand</string>
+        <string>Patch5916</string>
+        <string>Patch5916OnDemand</string>
+        <string>Patch5923</string>
+        <string>Patch5923OnDemand</string>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+        <org.jenkins.plugins.builton.BuiltOnColumn plugin="built-on-column@1.1"/>
+        <hudson.plugins.favorite.column.FavoriteColumn plugin="favorite@2.3.1"/>
+      </columns>
+      <recurse>false</recurse>
+    </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>PatchUtils</name>
+      <description>Jenkins Jobs / Pipelines, welche das Patch System unterstützen&#xd;
+Ansprechpartner: J. Helbing, S. Brandenberger, U. Genner</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../listView[4]/jobNames/comparator"/>
+        <string>onClone</string>
+        <string>PatchArchiver</string>
+        <string>PatchBuilder</string>
+        <string>PatchCleaner</string>
+        <string>PatchPostBuilder</string>
+        <string>reinstallPatchAfterClone</string>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+        <org.jenkins.plugins.builton.BuiltOnColumn plugin="built-on-column@1.1"/>
+        <hudson.plugins.favorite.column.FavoriteColumn plugin="favorite@2.3.1"/>
+      </columns>
+      <recurse>false</recurse>
+    </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>Jenkins Admin</name>
+      <description>Jobs für die Administration von der Apg Jenkins Instance selbst.&#xd;
+Ansprechpartner: J. Helbing, S. Brandenberger, U. Genner</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <string>Check for Maven Version</string>
+        <string>Clean-up Workspace</string>
+        <string>createNewBranchForModulesPipeline</string>
+        <string>Delete Lockable Resources</string>
+        <string>Reinitialize Jenkins</string>
+        <string>scheduleBranchPipelineForJobsOfView</string>
+        <string>updateCvsBranchForJobsOfView</string>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+        <org.jenkins.plugins.builton.BuiltOnColumn plugin="built-on-column@1.1"/>
+        <hudson.plugins.favorite.column.FavoriteColumn plugin="favorite@2.3.1"/>
+      </columns>
+      <recurse>false</recurse>
+    </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>Framework Builds</name>
+      <description>Builds für die in Apg entwickelten und verwendeten Libraries&#xd;
+Ansprechpartner: S. Brandenberger, J. Helbling, D. Rohner</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../listView[6]/jobNames/comparator"/>
+        <string>Framework Forms2Java Version Java8Mig 1.2.x</string>
+        <string>Framework Forms2Java Version Java8Mig 1.9.9</string>
+        <string>Framework Forms2Java Version Java8Mig 2.0.x</string>
+        <string>Framework Persistence Version Java8Mig 1.9.6</string>
+        <string>Framework Persistence Version Java8Mig 1.9.x</string>
+        <string>Generator Build JavaForms</string>
+        <string>Generator Build Microservices</string>
+        <string>PatchFramework jenkins-client</string>
+        <string>PatchFramework patch services 1.2.x Branch</string>
+        <string>Rad 2 Generator Build</string>
+        <string>Rad 2 Generator Build TMP</string>
+        <string>Rad 3 Generator Build</string>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+        <org.jenkins.plugins.builton.BuiltOnColumn plugin="built-on-column@1.1"/>
+        <hudson.plugins.favorite.column.FavoriteColumn plugin="favorite@2.3.1"/>
+      </columns>
+      <recurse>false</recurse>
+    </listView>
+    <listView>
+      <owner class="hudson" reference="../../.."/>
+      <name>LIGHT 3.0</name>
+      <description>LIGHT Instance Provisioning</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <string>LIGHT-3.0-prepareLightBase</string>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+        <org.jenkins.plugins.builton.BuiltOnColumn plugin="built-on-column@1.1"/>
+        <hudson.plugins.favorite.column.FavoriteColumn plugin="favorite@2.3.1"/>
+      </columns>
+      <recurse>false</recurse>
+    </listView>
+  </views>
+  <primaryView>all</primaryView>
+  <slaveAgentPort>0</slaveAgentPort>
+  <disabledAgentProtocols>
+    <string>JNLP-connect</string>
+    <string>JNLP2-connect</string>
+  </disabledAgentProtocols>
+  <label></label>
+  <crumbIssuer class="hudson.security.csrf.DefaultCrumbIssuer">
+    <excludeClientIPFromCrumb>false</excludeClientIPFromCrumb>
+  </crumbIssuer>
+  <nodeProperties/>
+  <globalNodeProperties>
+    <hudson.slaves.EnvironmentVariablesNodeProperty>
+      <envVars serialization="custom">
+        <unserializable-parents/>
+        <tree-map>
+          <default>
+            <comparator class="hudson.util.CaseInsensitiveComparator"/>
+          </default>
+          <int>14</int>
+          <string></string>
+          <string></string>
+          <string>ARTIFACTORY_SERVER_ID</string>
+          <string>artifactory4t4apgsga</string>
+          <string>CVS_FW_ROOT</string>
+          <string>:ext:svcCvsClient@cvs.apgsga.ch:/var/local/cvs/root</string>
+          <string>CVS_ROOT</string>
+          <string>:ext:svcCvsClient@cvs.apgsga.ch:/var/local/cvs/root</string>
+          <string>CVS_RSH</string>
+          <string>ssh</string>
+          <string>GITHUB_JENKINS_VERSION</string>
+          <string>refs/heads/1.0.x</string>
+          <string>GRADLE_OPTS</string>
+          <string>-Dgradle.user.home=/var/jenkins/gradle/home -Dorg.gradle.daemon=false</string>
+          <string>JENKINS_MAVEN_AGENT_DISABLED</string>
+          <string>true</string>
+          <string>PATCH_DB_FOLDER</string>
+          <string>/var/opt/apg-patch-service-server/db/</string>
+          <string>PATCH_FILE_PREFIX</string>
+          <string>Patch</string>
+          <string>PATCH_SERVICE_TEST</string>
+          <string>xxxxxfail=Informatiktest</string>
+          <string>REPO_RO_PASSWD</string>
+          <string>dev1234</string>
+          <string>WINDOWS_INSTALLER_LABEL</string>
+          <string>jenkins_installer_windows</string>
+          <string>WINDOWS_INSTALLER_OLDSTYLE_LABEL</string>
+          <string>jenkins_installer_windows_oldstyle</string>
+        </tree-map>
+      </envVars>
+    </hudson.slaves.EnvironmentVariablesNodeProperty>
+  </globalNodeProperties>
+</hudson>

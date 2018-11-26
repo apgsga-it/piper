@@ -22,9 +22,16 @@ class PatchInitConfigClient {
 
 		initTargetSystemMapping()
 		initPiperProperties()
+		initJenkinsConfig()
 		initMavenSettings()
 		initGradleSettings()
 				
+	}
+	
+	def initJenkinsConfig() {
+		println "Initialisation of Jenkins config.xml started ..."
+		backupFile(initConfig.jenkins.jenkinsConfigFileLocation)
+		println "Initialisation of Jenkins config.xml done!"
 	}
 
 	def initTargetSystemMapping() {

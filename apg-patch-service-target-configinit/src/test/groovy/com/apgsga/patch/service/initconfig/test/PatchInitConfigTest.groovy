@@ -19,7 +19,9 @@ class PatchInitConfigTest extends Specification {
 	
 	def usageString = "usage: patchinitcli.sh -[h|i|]"
 	
-	def etcOptPath = "src/test/resources/etc/opt"	
+	def etcOptPath = "src/test/resources/etc/opt"
+	
+	def varJenkinsPath = "src/test/resources/var/jenkins"
 	
 	def targetSystemMappingFileName = "${etcOptPath}/apg-patch-common/TargetSystemMappings.json"
 	
@@ -40,6 +42,10 @@ class PatchInitConfigTest extends Specification {
 	def patchServerOpsPropertiesFileName = "${etcOptPath}/apg-patch-service-server/ops.properties"
 	
 	def patchServerOpsPropertiesBackupFileName = "${patchServerOpsPropertiesFileName}.backup"
+	
+	def jenkinsConfigXmlFileName = "${varJenkinsPath}/config.xml"
+	
+	def jenkinsConfigXmlBackupFileName = "${jenkinsConfigXmlFileName}.backup"
 	
 	def targetSystemMappingOriContent
 	
@@ -223,6 +229,21 @@ class PatchInitConfigTest extends Specification {
 			serverApplicationBackupProps.jenkins.authkey == "jenkinsProdAuthKey"
 	}
 	
+	def "PatchInitConfig validate init did the job for jenkins config.xml"() {
+		when:
+			PatchInitConfigCli cli = PatchInitConfigCli.create()
+			def result = cli.process(["-i","src/test/resources/initconfig.properties"])
+			def jenkinsConfigOriFile = new File(jenkinsConfigXmlFileName)
+			def jenkinsConfigBackupFile = new File(jenkinsConfigXmlBackupFileName)
+		then:
+		    result.returnCode == 0
+			jenkinsConfigOriFile.exists()
+			jenkinsConfigBackupFile.exists()
+			
+			//TODO JHE: validate content of new config file
+			
+	}
+	
 	private def slurpProperties(def propertyFile) {
 		ConfigSlurper cs = new ConfigSlurper()
 		
@@ -277,6 +298,7 @@ class PatchInitConfigTest extends Specification {
 		new File(patchCliOpsPropertiesBackupFileName).delete()
 		new File(patchServerApplicationPropertiesBackupFileName).delete()
 		new File(patchServerOpsPropertiesBackupFileName).delete()
+		new File(jenkinsConfigXmlBackupFileName).delete()
 	}
 	
 }
