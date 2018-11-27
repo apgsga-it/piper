@@ -1,5 +1,4 @@
-<?xml version='1.1' encoding='UTF-8'?>
-<hudson>
+<?xml version="1.0" encoding="UTF-8"?><hudson>
   <disabledAdministrativeMonitors>
     <string>hudson.diagnosis.ReverseProxySetupMonitor</string>
   </disabledAdministrativeMonitors>
@@ -51,7 +50,7 @@
     <permission>hudson.model.View.Read:grpJenkinsWrite</permission>
     <permission>hudson.scm.SCM.Tag:grpJenkinsWrite</permission>
   </authorizationStrategy>
-  <securityRealm class="hudson.plugins.active_directory.ActiveDirectorySecurityRealm" plugin="active-directory@2.6">
+  <securityRealm plugin="active-directory@2.6" class="hudson.plugins.active_directory.ActiveDirectorySecurityRealm">
     <domains>
       <hudson.plugins.active__directory.ActiveDirectoryDomain>
         <name>affichage-p.ch</name>
@@ -82,16 +81,16 @@
   <scmCheckoutRetryCount>0</scmCheckoutRetryCount>
   <views>
     <hudson.model.AllView>
-      <owner class="hudson" reference="../../.."/>
+      <owner reference="../../.." class="hudson"/>
       <name>all</name>
-      <description>Willkommen :-)&#xd;
+      <description>Willkommen :-)
 Diese Lasche zeigt eine Übersicht aller existierenden Jenkins Jobs - prinzipiell sollte eigentlich niemand mit dieser Lasche arbeiten ;-)</description>
       <filterExecutors>false</filterExecutors>
       <filterQueue>false</filterQueue>
       <properties class="hudson.model.View$PropertyList"/>
     </hudson.model.AllView>
     <listView>
-      <owner class="hudson" reference="../../.."/>
+      <owner reference="../../.." class="hudson"/>
       <name>Java8Mig</name>
       <description>Alle Projekte in dieser Sicht sollten auf dem it21_release_9_1_0_admin_uimig Branch sein und die Artifact Version 9.1.0.ADMIN-UIMIG-SNAPSHOT haben (9.1.0.ADMIN-$revision})</description>
       <filterExecutors>false</filterExecutors>
@@ -188,9 +187,9 @@ Diese Lasche zeigt eine Übersicht aller existierenden Jenkins Jobs - prinzipiel
       <recurse>false</recurse>
     </listView>
     <listView>
-      <owner class="hudson" reference="../../.."/>
+      <owner reference="../../.." class="hudson"/>
       <name>Patches</name>
-      <description>Patches die aktuell in Entwicklung/Bearbeitung sind und potentiell zukünftig in Produktion gehen werden.&#xd;
+      <description>Patches die aktuell in Entwicklung/Bearbeitung sind und potentiell zukünftig in Produktion gehen werden.
 Ansprechpartner: J. Helbling, S. Brandenberger, U. Genner</description>
       <filterExecutors>false</filterExecutors>
       <filterQueue>false</filterQueue>
@@ -231,9 +230,9 @@ Ansprechpartner: J. Helbling, S. Brandenberger, U. Genner</description>
       <recurse>false</recurse>
     </listView>
     <listView>
-      <owner class="hudson" reference="../../.."/>
+      <owner reference="../../.." class="hudson"/>
       <name>PLSQL Cop</name>
-      <description>Metrik-Erstellung für PL/SQL-Code&#xd;
+      <description>Metrik-Erstellung für PL/SQL-Code
 Ansprechpartner: D. Rohner, F. Soremski, P. Salvisberg</description>
       <filterExecutors>false</filterExecutors>
       <filterQueue>false</filterQueue>
@@ -258,10 +257,10 @@ Ansprechpartner: D. Rohner, F. Soremski, P. Salvisberg</description>
       <recurse>false</recurse>
     </listView>
     <listView>
-      <owner class="hudson" reference="../../.."/>
+      <owner reference="../../.." class="hudson"/>
       <name>ProductivePatches</name>
-      <description>Patches die schon in Produktion installiert sind.&#xd;
-Patches mit letztem Job älter als 30 Tage werden archiviert. Die Logs sind sichtbar unter \\jenkins.apgsga.ch\patch_log_archive\&#xd;
+      <description>Patches die schon in Produktion installiert sind.
+Patches mit letztem Job älter als 30 Tage werden archiviert. Die Logs sind sichtbar unter \\jenkins.apgsga.ch\patch_log_archive\
 Ansprechpartner: J. Helbling, S. Brandenberger, U. Genner</description>
       <filterExecutors>false</filterExecutors>
       <filterQueue>false</filterQueue>
@@ -325,15 +324,15 @@ Ansprechpartner: J. Helbling, S. Brandenberger, U. Genner</description>
       <recurse>false</recurse>
     </listView>
     <listView>
-      <owner class="hudson" reference="../../.."/>
+      <owner reference="../../.." class="hudson"/>
       <name>PatchUtils</name>
-      <description>Jenkins Jobs / Pipelines, welche das Patch System unterstützen&#xd;
+      <description>Jenkins Jobs / Pipelines, welche das Patch System unterstützen
 Ansprechpartner: J. Helbing, S. Brandenberger, U. Genner</description>
       <filterExecutors>false</filterExecutors>
       <filterQueue>false</filterQueue>
       <properties class="hudson.model.View$PropertyList"/>
       <jobNames>
-        <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../listView[4]/jobNames/comparator"/>
+        <comparator reference="../../../listView[4]/jobNames/comparator" class="hudson.util.CaseInsensitiveComparator"/>
         <string>onClone</string>
         <string>PatchArchiver</string>
         <string>PatchBuilder</string>
@@ -356,9 +355,9 @@ Ansprechpartner: J. Helbing, S. Brandenberger, U. Genner</description>
       <recurse>false</recurse>
     </listView>
     <listView>
-      <owner class="hudson" reference="../../.."/>
+      <owner reference="../../.." class="hudson"/>
       <name>Jenkins Admin</name>
-      <description>Jobs für die Administration von der Apg Jenkins Instance selbst.&#xd;
+      <description>Jobs für die Administration von der Apg Jenkins Instance selbst.
 Ansprechpartner: J. Helbing, S. Brandenberger, U. Genner</description>
       <filterExecutors>false</filterExecutors>
       <filterQueue>false</filterQueue>
@@ -388,15 +387,15 @@ Ansprechpartner: J. Helbing, S. Brandenberger, U. Genner</description>
       <recurse>false</recurse>
     </listView>
     <listView>
-      <owner class="hudson" reference="../../.."/>
+      <owner reference="../../.." class="hudson"/>
       <name>Framework Builds</name>
-      <description>Builds für die in Apg entwickelten und verwendeten Libraries&#xd;
+      <description>Builds für die in Apg entwickelten und verwendeten Libraries
 Ansprechpartner: S. Brandenberger, J. Helbling, D. Rohner</description>
       <filterExecutors>false</filterExecutors>
       <filterQueue>false</filterQueue>
       <properties class="hudson.model.View$PropertyList"/>
       <jobNames>
-        <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../listView[6]/jobNames/comparator"/>
+        <comparator reference="../../../listView[6]/jobNames/comparator" class="hudson.util.CaseInsensitiveComparator"/>
         <string>Framework Forms2Java Version Java8Mig 1.2.x</string>
         <string>Framework Forms2Java Version Java8Mig 1.9.9</string>
         <string>Framework Forms2Java Version Java8Mig 2.0.x</string>
@@ -425,7 +424,7 @@ Ansprechpartner: S. Brandenberger, J. Helbling, D. Rohner</description>
       <recurse>false</recurse>
     </listView>
     <listView>
-      <owner class="hudson" reference="../../.."/>
+      <owner reference="../../.." class="hudson"/>
       <name>LIGHT 3.0</name>
       <description>LIGHT Instance Provisioning</description>
       <filterExecutors>false</filterExecutors>
@@ -456,7 +455,7 @@ Ansprechpartner: S. Brandenberger, J. Helbling, D. Rohner</description>
     <string>JNLP-connect</string>
     <string>JNLP2-connect</string>
   </disabledAgentProtocols>
-  <label></label>
+  <label/>
   <crumbIssuer class="hudson.security.csrf.DefaultCrumbIssuer">
     <excludeClientIPFromCrumb>false</excludeClientIPFromCrumb>
   </crumbIssuer>
@@ -470,8 +469,8 @@ Ansprechpartner: S. Brandenberger, J. Helbling, D. Rohner</description>
             <comparator class="hudson.util.CaseInsensitiveComparator"/>
           </default>
           <int>14</int>
-          <string></string>
-          <string></string>
+          <string/>
+          <string/>
           <string>ARTIFACTORY_SERVER_ID</string>
           <string>artifactory4t4apgsga</string>
           <string>CVS_FW_ROOT</string>
@@ -493,7 +492,7 @@ Ansprechpartner: S. Brandenberger, J. Helbling, D. Rohner</description>
           <string>PATCH_SERVICE_TEST</string>
           <string>xxxxxfail=Informatiktest</string>
           <string>REPO_RO_PASSWD</string>
-          <string>dev1234</string>
+          <string>prodPass</string>
           <string>WINDOWS_INSTALLER_LABEL</string>
           <string>jenkins_installer_windows</string>
           <string>WINDOWS_INSTALLER_OLDSTYLE_LABEL</string>

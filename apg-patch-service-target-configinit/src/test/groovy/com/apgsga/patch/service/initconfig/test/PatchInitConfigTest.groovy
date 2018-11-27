@@ -13,6 +13,7 @@ import com.apgsga.patch.service.configinit.util.ConfigInitUtil
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
+import groovy.xml.XmlUtil
 import spock.lang.Specification
 
 class PatchInitConfigTest extends Specification {
@@ -56,6 +57,8 @@ class PatchInitConfigTest extends Specification {
 	def ConfigObject patchServerApplicationPropsOriContent
 	
 	def ConfigObject patchServerOpsPropsOriContent
+	
+	def jenkinsConfixXmlOriContent
 	
 	def setup() {
 		keepCopyOfOriginalTestFiles()
@@ -231,17 +234,57 @@ class PatchInitConfigTest extends Specification {
 	
 	def "PatchInitConfig validate init did the job for jenkins config.xml"() {
 		when:
+			def jenkinsConfigOriFile = new File(jenkinsConfigXmlFileName)
+			def startConfig = new XmlSlurper().parse(jenkinsConfigOriFile)
+		then:
+			// Ensure we start from the original configuration ....
+			Assert.that(startConfig.numExecutors.equals("12") , "Seems the config.xml file has not been re-initiliased.!")
+		when:
 			PatchInitConfigCli cli = PatchInitConfigCli.create()
 			def result = cli.process(["-i","src/test/resources/initconfig.properties"])
-			def jenkinsConfigOriFile = new File(jenkinsConfigXmlFileName)
 			def jenkinsConfigBackupFile = new File(jenkinsConfigXmlBackupFileName)
 		then:
 		    result.returnCode == 0
 			jenkinsConfigOriFile.exists()
 			jenkinsConfigBackupFile.exists()
 			
-			//TODO JHE: validate content of new config file
+			def newConfig = new XmlSlurper().parse(jenkinsConfigOriFile)
 			
+			Assert.that(newConfig.numExecutors.equals("5") , "numExecutor within Jenkins config.xml wrong!") 
+			
+			boolean iscvsFwRootOnNextIter = false
+			boolean iscvsRootOnNextIter = false
+			boolean isRepoRoPasswdOnNextIter = false
+			newConfig.globalNodeProperties."hudson.slaves.EnvironmentVariablesNodeProperty".envVars."tree-map".string.size() > 0
+			newConfig.globalNodeProperties."hudson.slaves.EnvironmentVariablesNodeProperty".envVars."tree-map".string.each({p -> 
+				
+				if(iscvsFwRootOnNextIter) {
+					Assert.that(p.equals("ext:svcCvsClient@cvs-t.apgsga.ch:/var/local/cvs/root") , "CVS_FW_ROOT within Jenkins config.xml wrong!")
+					iscvsFwRootOnNextIter = false
+				}
+				
+				if(iscvsRootOnNextIter) {
+					Assert.that(p.equals(":ext:svcCvsClient@cvs-t.apgsga.ch:/var/local/cvs/root") , "CVS_ROOT within Jenkins config.xml wrong!")
+					iscvsRootOnNextIter = false
+				}
+				
+				if(isRepoRoPasswdOnNextIter) {
+					Assert.that(p.equals("testPwd") , "REPO_RO_PASSWD within Jenkins config.xml wrong!")
+					isRepoRoPasswdOnNextIter = false
+				}
+				
+				if(p.equals("CVS_FW_ROOT")) {
+					iscvsFwRootOnNextIter = true
+				}
+				
+				if(p.equals("CVS_ROOT")) {
+					iscvsRootOnNextIter = true
+				}
+				
+				if(p.equals("REPO_RO_PASSWD")) {
+					isRepoRoPasswdOnNextIter = true
+				}
+			})
 	}
 	
 	private def slurpProperties(def propertyFile) {
@@ -262,6 +305,7 @@ class PatchInitConfigTest extends Specification {
 		patchCliOpsPropsOriContent = ConfigInitUtil.slurpProperties(new File(patchCliOpsPropertiesFileName))
 		patchServerApplicationPropsOriContent = ConfigInitUtil.slurpProperties(new File(patchServerApplicationPropertiesFileName))
 		patchServerOpsPropsOriContent = ConfigInitUtil.slurpProperties(new File(patchServerOpsPropertiesFileName))
+		jenkinsConfixXmlOriContent = new XmlSlurper().parse(new File(jenkinsConfigXmlFileName))
 	}
 	
 	private def restoreContentOfOriginalTestFiles() {
@@ -289,7 +333,10 @@ class PatchInitConfigTest extends Specification {
 			pw.close()
 		})
 		
-		
+		FileOutputStream fos = new FileOutputStream(new File(jenkinsConfigXmlFileName))
+		XmlUtil xmlUtil = new XmlUtil()
+		xmlUtil.serialize(jenkinsConfixXmlOriContent,fos)
+		fos.close()
 	}
 	
 	private def cleanAllBackupFiles() {

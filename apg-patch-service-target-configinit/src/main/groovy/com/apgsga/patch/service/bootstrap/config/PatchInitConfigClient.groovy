@@ -3,6 +3,9 @@ package com.apgsga.patch.service.bootstrap.config
 import groovy.io.FileType
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
+import groovy.util.slurpersupport.NodeChild
+import groovy.xml.XmlUtil
+
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -31,6 +34,7 @@ class PatchInitConfigClient {
 	def initJenkinsConfig() {
 		println "Initialisation of Jenkins config.xml started ..."
 		backupFile(initConfig.jenkins.jenkinsConfigFileLocation)
+		adaptJenkinsConfig()		
 		println "Initialisation of Jenkins config.xml done!"
 	}
 
@@ -118,6 +122,67 @@ class PatchInitConfigClient {
 	
 	def initGradleSettings() {
 		println "Initialisation of graddle settings started ..."
+	}
+	
+	private def adaptJenkinsConfig() {
+		
+		def jenkinsConfig = new XmlSlurper().parse(new File(initConfig.jenkins.jenkinsConfigFileLocation))
+		
+		
+		jenkinsConfig.numExecutors = 5
+
+		boolean iscvsFwRootOnNextIter = false
+		boolean iscvsRootOnNextIter = false
+		boolean isRepoRoPasswdOnNextIter = false
+		
+		// JHE: Well, rather bad to iterate like below ... but we need to deal with such a list:
+		/*
+		 *<string>ARTIFACTORY_SERVER_ID</string>
+          <string>artifactory4t4apgsga</string>
+          <string>CVS_FW_ROOT</string>
+          <string>:ext:svcCvsClient@cvs.apgsga.ch:/var/local/cvs/root</string>
+          <string>CVS_ROOT</string>
+          <string>:ext:svcCvsClient@cvs.apgsga.ch:/var/local/cvs/root</string>
+          <string>CVS_RSH</string>
+          <string>ssh</string>
+          <string>GITHUB_JENKINS_VERSION</string>
+          <string>refs/heads/1.0.x</string>
+		 * 
+		 */
+		jenkinsConfig.globalNodeProperties."hudson.slaves.EnvironmentVariablesNodeProperty".envVars."tree-map".string.each({NodeChild p ->
+
+			if(iscvsFwRootOnNextIter) {
+				p.replaceBody(initConfig.jenkins.cvsFwRoot)
+				iscvsFwRootOnNextIter = false
+			}
+			
+			if(iscvsRootOnNextIter) {
+				p.replaceBody(initConfig.jenkins.cvsRoot)
+				iscvsRootOnNextIter = false
+			}
+			
+			if(isRepoRoPasswdOnNextIter) {
+				p.replaceBody(initConfig.jenkins.repo_ro_password)
+				isRepoRoPasswdOnNextIter = false
+			}
+			
+			if(p.equals("CVS_FW_ROOT")) {
+				iscvsFwRootOnNextIter = true
+			}
+			
+			if(p.equals("CVS_ROOT")) {
+				iscvsRootOnNextIter = true
+			}
+			
+			if(p.equals("REPO_RO_PASSWD")) {
+				isRepoRoPasswdOnNextIter = true
+			}
+		})
+		
+		FileOutputStream fos = new FileOutputStream(new File(initConfig.jenkins.jenkinsConfigFileLocation))
+		XmlUtil xmlUtil = new XmlUtil()
+		xmlUtil.serialize(jenkinsConfig,fos)
+		fos.close()
 	}
 	
 	private def changeTargetSystemMappingContent() {
