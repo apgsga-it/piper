@@ -21,14 +21,11 @@ class PatchInitConfigClient {
 	}
 	
 	def initAll() {
-		println "Init all started ... "
-
 		initTargetSystemMapping()
 		initPiperProperties()
 		initJenkinsConfig()
 		initMavenSettings()
 		initGradleSettings()
-				
 	}
 	
 	def initJenkinsConfig() {
@@ -47,12 +44,12 @@ class PatchInitConfigClient {
 
 	def initPiperProperties() {
 		println "Initialisation of patch service properties started ..."
-		// TODO JHE: get dir path from init property file
-		def dir = new File("src/test/resources/etc/opt")
-		//TODO JHE: get ".properties" from init property file
-		dir.traverse(type: FileType.FILES, nameFilter: ~/.*\.properties/) {
-			backupFile(it.getPath())
-			adaptContentForPiperPropertiesFile(it)
+		def dir = new File(initConfig.piper.config.path)
+		dir.traverse(type: FileType.DIRECTORIES, nameFilter: ~/${initConfig.piper.config.folder.prefix}.*/) {
+			it.traverse(type: FileType.FILES, nameFilter: ~/.*\.${initConfig.piper.config.file.suffix}/) {
+				backupFile(it.getPath())
+				adaptContentForPiperPropertiesFile(it)
+			}
 		}
 		println "Initialisation of patch service properties done!"
 	}
