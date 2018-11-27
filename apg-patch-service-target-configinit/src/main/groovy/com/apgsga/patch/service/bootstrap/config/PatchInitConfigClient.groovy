@@ -21,7 +21,7 @@ class PatchInitConfigClient {
 	}
 	
 	def initAll() {
-		println "init all started ... "
+		println "Init all started ... "
 
 		initTargetSystemMapping()
 		initPiperProperties()
@@ -47,7 +47,6 @@ class PatchInitConfigClient {
 
 	def initPiperProperties() {
 		println "Initialisation of patch service properties started ..."
-		
 		// TODO JHE: get dir path from init property file
 		def dir = new File("src/test/resources/etc/opt")
 		//TODO JHE: get ".properties" from init property file
@@ -55,15 +54,12 @@ class PatchInitConfigClient {
 			backupFile(it.getPath())
 			adaptContentForPiperPropertiesFile(it)
 		}
-		
 		println "Initialisation of patch service properties done!"
-		
 	}
 	
 	def adaptContentForPiperPropertiesFile(File file) {
 		
-		
-		println "Process file : " + file.getPath()
+		println "Processing file : " + file.getPath()
 		
 		def piperPropertiesFromInitConfig = initConfig.flatten()
 		Properties propsToBeUpdated = new Properties()
@@ -71,28 +67,15 @@ class PatchInitConfigClient {
 			propsToBeUpdated.load(stream)
 		}
 		
-		piperPropertiesFromInitConfig.forEach({key,value -> 
-			println "init key = ${key} , init value = ${value}"
-		})
-
-		println "======================================================================================="
-		println "======================================================================================="		
-
 		def needToUpdateFile = false
 		Properties newProps = new Properties()
 		propsToBeUpdated.each({key,value -> 
-			
-			//println "key = ${key} , value = ${value}"
-			
 			def String searchedKey = "piper.${key}"
-			println "piper key = piper.${key}"
 			if(piperPropertiesFromInitConfig.containsKey(searchedKey)) {
 				def newValue = piperPropertiesFromInitConfig.get(searchedKey)
-				println "${key} will be updated with: ${newValue}"
 				newProps.put(key, newValue)
 				needToUpdateFile = true
 			}
-			
 		})
 
 		if(needToUpdateFile) {
@@ -107,21 +90,17 @@ class PatchInitConfigClient {
 			})
 
 			pw.close()			
-//			propsToBeUpdated.store(file.newWriter(),null)
 		}
 		
-		
-		
-		println "done"
-		
+		println "Update from ${file.getPath()} done."
 	}
 	
 	def initMavenSettings() {
-		println "Initialisation of maven settings started ..."
+		println "Initialisation of maven settings started ... TODO"
 	}
 	
 	def initGradleSettings() {
-		println "Initialisation of graddle settings started ..."
+		println "Initialisation of graddle settings started ... TODO"
 	}
 	
 	private def adaptJenkinsConfig() {
