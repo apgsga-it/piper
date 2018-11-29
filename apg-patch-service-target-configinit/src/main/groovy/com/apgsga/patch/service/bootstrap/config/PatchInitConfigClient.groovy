@@ -93,17 +93,40 @@ class PatchInitConfigClient {
 	}
 	
 	def initMavenSettings() {
-		println "Initialisation of maven settings started ... TODO"
+		println "Initialisation of maven settings started ..."
+		backupFile(initConfig.maven.config.file.path)
+		adaptMavenSettings()
+		println "Initialisation of maven settings done!"
 	}
 	
 	def initGradleSettings() {
 		println "Initialisation of graddle settings started ... TODO"
 	}
 	
+	private def adaptMavenSettings() {
+		def mavenSettings = new XmlSlurper().parse(new File(initConfig.maven.config.file.path))
+		
+		mavenSettings.servers.server.each({s ->
+			s.username = initConfig.maven.servers.server.username
+			s.password = initConfig.maven.servers.server.password
+			def String newId = s.id
+			s.id = "${newId}-test"
+			 
+		})
+		
+		saveXmlConfiguration(mavenSettings, initConfig.maven.config.file.path)
+	}
+	
+	private def saveXmlConfiguration(def xmlContent, def fileName) {
+		FileOutputStream fos = new FileOutputStream(new File(fileName))
+		XmlUtil xmlUtil = new XmlUtil()
+		xmlUtil.serialize(xmlContent,fos)
+		fos.close()
+	}
+	
 	private def adaptJenkinsConfig() {
 		
 		def jenkinsConfig = new XmlSlurper().parse(new File(initConfig.jenkins.jenkinsConfigFileLocation))
-		
 		
 		jenkinsConfig.numExecutors = 5
 
@@ -155,10 +178,7 @@ class PatchInitConfigClient {
 			}
 		})
 		
-		FileOutputStream fos = new FileOutputStream(new File(initConfig.jenkins.jenkinsConfigFileLocation))
-		XmlUtil xmlUtil = new XmlUtil()
-		xmlUtil.serialize(jenkinsConfig,fos)
-		fos.close()
+		saveXmlConfiguration(jenkinsConfig, initConfig.jenkins.jenkinsConfigFileLocation)
 	}
 	
 	private def changeTargetSystemMappingContent() {

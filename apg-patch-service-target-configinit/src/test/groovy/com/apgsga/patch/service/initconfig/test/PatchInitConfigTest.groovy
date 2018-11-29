@@ -24,6 +24,8 @@ class PatchInitConfigTest extends Specification {
 	
 	def varJenkinsPath = "src/test/resources/var/jenkins"
 	
+	def mavenSettingPath = "src/test/resources/home/jenkins/.m2"
+	
 	def targetSystemMappingFileName = "${etcOptPath}/apg-patch-common/TargetSystemMappings.json"
 	
 	def targetSystemMappingBackupFileName = "${targetSystemMappingFileName}.backup"
@@ -47,6 +49,10 @@ class PatchInitConfigTest extends Specification {
 	def jenkinsConfigXmlFileName = "${varJenkinsPath}/config.xml"
 	
 	def jenkinsConfigXmlBackupFileName = "${jenkinsConfigXmlFileName}.backup"
+	
+	def mavenSettingFileName = "${mavenSettingPath}/settings.xml"
+	
+	def mavenSettingBackupFileName = "${mavenSettingFileName}.backup"
 	
 	def targetSystemMappingOriContent
 	
@@ -287,6 +293,32 @@ class PatchInitConfigTest extends Specification {
 			})
 	}
 	
+	def "PatchInitConfig validate init did the job for maven settings.xml"() {
+		when:
+			def mavenSettingFile = new File(mavenSettingFileName)
+			def startConfig = new XmlSlurper().parse(mavenSettingFile)
+		then:
+			// Ensure we start from the original configuration ....
+			Assert.that(startConfig.servers.server[0].password.equals("prodPass") , "Seems the settings.xml file has not been re-initiliased.!")
+		when:
+			PatchInitConfigCli cli = PatchInitConfigCli.create()
+			def result = cli.process(["-i","src/test/resources/initconfig.properties"])
+			def mavenSettingBackupFile = new File(mavenSettingBackupFileName)
+			def mavenSettings = new XmlSlurper().parse(mavenSettingFile)
+		then:
+			result.returnCode == 0
+			mavenSettingFile.exists()
+			mavenSettingBackupFile.exists()
+			
+			mavenSettings.servers.server.each({s -> 
+				Assert.that(s.password.equals("testPass"), "Maven settings.xml, server pwd wrongly set for ${s.id}")
+				Assert.that(s.username.equals("devTest"), "Maven settings.xml, server pwd wrongly set for ${s.id}")
+				Assert.that(s.id in ["central-test","snapshots-test","releases-test"], "Maven settings.xml, id wrongly set for ${s.id}")
+			})
+			
+			//TODO JHE: CHeck other Maven settings..			
+	}
+	
 	private def slurpProperties(def propertyFile) {
 		ConfigSlurper cs = new ConfigSlurper()
 		
@@ -346,6 +378,7 @@ class PatchInitConfigTest extends Specification {
 		new File(patchServerApplicationPropertiesBackupFileName).delete()
 		new File(patchServerOpsPropertiesBackupFileName).delete()
 		new File(jenkinsConfigXmlBackupFileName).delete()
+		new File(mavenSettingBackupFileName).delete()
 	}
 	
 }
