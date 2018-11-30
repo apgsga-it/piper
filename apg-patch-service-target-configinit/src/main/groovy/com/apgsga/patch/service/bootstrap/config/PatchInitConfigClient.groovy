@@ -105,16 +105,52 @@ class PatchInitConfigClient {
 	
 	private def adaptMavenSettings() {
 		def mavenSettings = new XmlSlurper().parse(new File(initConfig.maven.config.file.path))
-		
+		adaptMavenSettingsServer(mavenSettings)
+		adaptMavenSettingsRepository(mavenSettings)
+		adaptMavenSettingsPluginRepository(mavenSettings)
+		adaptMavenSettingsProfileIds(mavenSettings)
+		saveXmlConfiguration(mavenSettings, initConfig.maven.config.file.path)
+	}
+	
+	private def adaptMavenSettingsProfileIds(def mavenSettings) {
+		NodeChild defaultProfile = mavenSettings.profiles.getAt(0)
+		def String newProfileId = "${defaultProfile.profile.id}${initConfig.maven.profile.id.suffix}"
+		def String newActiveProfileId = "${mavenSettings.activeProfiles.getAt(0).activeProfile}${initConfig.maven.profile.id.suffix}"
+		defaultProfile.profile.id = newProfileId
+		mavenSettings.activeProfiles.getAt(0).activeProfile = newActiveProfileId
+	}
+	
+	private def adaptMavenSettingsPluginRepository(def mavenSettings) {
+		NodeChild defaultProfile = mavenSettings.profiles.getAt(0)
+		defaultProfile.profile.pluginRepositories.pluginRepository.each({NodeChild pluginRepo ->
+			def String newId = "${pluginRepo.id}${initConfig.maven.plugin.repository.suffix}"
+			def String newName = "${pluginRepo.name}${initConfig.maven.plugin.repository.suffix}"
+			def String newUrl = "${pluginRepo.url}${initConfig.maven.plugin.repository.suffix}"
+			pluginRepo.id = newId
+			pluginRepo.name = newName
+			pluginRepo.url = newUrl
+		})
+	}
+	
+	private def adaptMavenSettingsRepository(def mavenSettings) {
+		NodeChild defaultProfile = mavenSettings.profiles.getAt(0)
+		defaultProfile.profile.repositories.repository.each({repo ->
+			def String newId = "${repo.id}${initConfig.maven.repository.suffix}"
+			def String newName = "${repo.name}${initConfig.maven.repository.suffix}"
+			def String newUrl = "${repo.url}${initConfig.maven.repository.suffix}"
+			repo.id = newId
+			repo.name = newName
+			repo.url = newUrl
+		})
+	}
+	
+	private def adaptMavenSettingsServer(def mavenSettings) {
 		mavenSettings.servers.server.each({s ->
 			s.username = initConfig.maven.servers.server.username
 			s.password = initConfig.maven.servers.server.password
-			def String newId = s.id
-			s.id = "${newId}-test"
-			 
+			def String newId = "${s.id}${initConfig.maven.servers.server.suffix}"
+			s.id = newId
 		})
-		
-		saveXmlConfiguration(mavenSettings, initConfig.maven.config.file.path)
 	}
 	
 	private def saveXmlConfiguration(def xmlContent, def fileName) {

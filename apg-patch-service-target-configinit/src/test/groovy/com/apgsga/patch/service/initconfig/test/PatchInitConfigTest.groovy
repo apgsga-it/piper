@@ -13,6 +13,7 @@ import com.apgsga.patch.service.configinit.util.ConfigInitUtil
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
+import groovy.util.slurpersupport.NodeChild
 import groovy.xml.XmlUtil
 import spock.lang.Specification
 
@@ -316,8 +317,35 @@ class PatchInitConfigTest extends Specification {
 				Assert.that(s.id in ["central-test","snapshots-test","releases-test"], "Maven settings.xml, id wrongly set for ${s.id}")
 			})
 			
-			//TODO JHE: CHeck other Maven settings..			
+			mavenSettings.profiles.size() == 1
+			NodeChild defaultProfile = mavenSettings.profiles.getAt(0)
+			Assert.that(defaultProfile != null)
+			defaultProfile.profile.repositories.repository.each({NodeChild repo ->
+				Assert.that(repo.id in ["snapshots-test","central-test"])
+				Assert.that(repo.name in ["public-test","public-snapshots-test"])
+				Assert.that(repo.url in ["https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/public-snapshots-test","https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/public-test"])
+			})			
+
+			defaultProfile.profile.pluginRepositories.pluginRepository.each({NodeChild pluginRepo ->
+				Assert.that(pluginRepo.id in ["central-test","snapshots-test"])
+				Assert.that(pluginRepo.name in ["public-test","public-snapshots-test"])
+				Assert.that(pluginRepo.url in ["https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/public-test","https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/public-snapshots-test"])
+			})
+			
+			// TODO JHE : check that profile Id is OK
+			defaultProfile.profile.id == "artifactory-test"
+			mavenSettings.activeProfiles.getAt(0).activeProfile == "artifactory-test"
 	}
+	
+//	def "Quick test"() {
+//		when:
+//			def mavenSettings = new XmlSlurper().parse(new File(mavenSettingFileName))
+//		then:
+//			NodeChild defaultProfile = mavenSettings.profiles.getAt(0)
+//			println defaultProfile.profile.id
+//			println mavenSettings.activeProfiles.getAt(0).activeProfile
+//			println ""
+//	}
 	
 	private def slurpProperties(def propertyFile) {
 		ConfigSlurper cs = new ConfigSlurper()
