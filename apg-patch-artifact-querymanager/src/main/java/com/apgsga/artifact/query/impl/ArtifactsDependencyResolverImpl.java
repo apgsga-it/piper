@@ -58,9 +58,9 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 		}
 	}
 
-	public ArtifactsDependencyResolverImpl(String localRepo) {
+	public ArtifactsDependencyResolverImpl(String localRepo, String repoUser, String repoUrl) {
 		init(localRepo);
-		this.system = RepositorySystemFactory.newRepositorySystem();
+		this.system = RepositorySystemFactory.newRepositorySystem(repoUser,repoUrl);
 		this.session = RepositorySystemFactory.newRepositorySystemSession(system, localRepo);
 		this.repos = RepositorySystemFactory.newRepositories();
 

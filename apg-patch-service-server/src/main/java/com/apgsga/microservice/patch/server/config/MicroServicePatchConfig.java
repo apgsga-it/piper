@@ -69,7 +69,13 @@ public class MicroServicePatchConfig {
 	private Integer corePoolSize; 
 	
 	@Value("${taskexecutor.maxPoolSize:20}")
-	private Integer maxPoolSize; 
+	private Integer maxPoolSize;
+	
+	@Value("${artifactory.user}")
+	private String repoUser;
+	
+	@Value("${artifactory.url}")
+	private String repoUrl;
 
 	@Bean(name = "patchPersistence")
 	public PatchPersistence patchFilebasePersistence() throws IOException {
@@ -84,7 +90,7 @@ public class MicroServicePatchConfig {
 	@Bean(name = "dependencyResolver")
 	@Profile("live")
 	public ArtifactDependencyResolver dependencyResolver() {
-		return ArtifactDependencyResolver.create(localRepo);
+		return ArtifactDependencyResolver.create(localRepo, repoUser, repoUrl);
 	}
 
 	@Bean(name = "dependencyResolver")
@@ -96,7 +102,7 @@ public class MicroServicePatchConfig {
 	@Bean(name = "artifactManager")
 	@Profile({"live","mavenRepo"})
 	public ArtifactManager artifactManager() {
-		return ArtifactManager.create(localRepo);
+		return ArtifactManager.create(localRepo, repoUser, repoUrl);
 	}
 
 	@Bean(name = "artifactManager")

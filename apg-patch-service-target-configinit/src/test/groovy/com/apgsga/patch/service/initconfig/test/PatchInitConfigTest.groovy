@@ -67,6 +67,8 @@ class PatchInitConfigTest extends Specification {
 	
 	def jenkinsConfixXmlOriContent
 	
+	def mavenSettingsOriContent
+	
 	def setup() {
 		keepCopyOfOriginalTestFiles()
 	}
@@ -337,16 +339,6 @@ class PatchInitConfigTest extends Specification {
 			mavenSettings.activeProfiles.getAt(0).activeProfile == "artifactory-test"
 	}
 	
-//	def "Quick test"() {
-//		when:
-//			def mavenSettings = new XmlSlurper().parse(new File(mavenSettingFileName))
-//		then:
-//			NodeChild defaultProfile = mavenSettings.profiles.getAt(0)
-//			println defaultProfile.profile.id
-//			println mavenSettings.activeProfiles.getAt(0).activeProfile
-//			println ""
-//	}
-	
 	private def slurpProperties(def propertyFile) {
 		ConfigSlurper cs = new ConfigSlurper()
 		
@@ -366,6 +358,7 @@ class PatchInitConfigTest extends Specification {
 		patchServerApplicationPropsOriContent = ConfigInitUtil.slurpProperties(new File(patchServerApplicationPropertiesFileName))
 		patchServerOpsPropsOriContent = ConfigInitUtil.slurpProperties(new File(patchServerOpsPropertiesFileName))
 		jenkinsConfixXmlOriContent = new XmlSlurper().parse(new File(jenkinsConfigXmlFileName))
+		mavenSettingsOriContent = new XmlSlurper().parse(new File(mavenSettingFileName))
 	}
 	
 	private def restoreContentOfOriginalTestFiles() {
@@ -393,10 +386,15 @@ class PatchInitConfigTest extends Specification {
 			pw.close()
 		})
 		
-		FileOutputStream fos = new FileOutputStream(new File(jenkinsConfigXmlFileName))
 		XmlUtil xmlUtil = new XmlUtil()
-		xmlUtil.serialize(jenkinsConfixXmlOriContent,fos)
-		fos.close()
+		FileOutputStream jenkinsFos = new FileOutputStream(new File(jenkinsConfigXmlFileName))
+		xmlUtil.serialize(jenkinsConfixXmlOriContent,jenkinsFos)
+		jenkinsFos.close()
+		
+		FileOutputStream mavenFos = new FileOutputStream(new File(mavenSettingFileName))
+		xmlUtil.serialize(mavenSettingsOriContent,mavenFos)
+		mavenFos.close()
+		
 	}
 	
 	private def cleanAllBackupFiles() {

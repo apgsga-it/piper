@@ -22,14 +22,15 @@ import com.google.common.collect.Lists;
 
 public class RepositorySystemFactory {
 	// TODO (che, 9.3 ) : Temporory fix
-	private static final String REPO_USER = "dev";
-	private static final String REPO_PASS = "dev1234"; 
-	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = "https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/repo";
+	private static String REPO_USER;
+	private static String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC;
 
 	private RepositorySystemFactory() {
 	}
 
-	public static RepositorySystem newRepositorySystem() {
+	public static RepositorySystem newRepositorySystem(String repoUser, String mavenRepoUrl) {
+		REPO_USER = repoUser;
+		HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = mavenRepoUrl;
 		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
 		locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
 		locator.addService(TransporterFactory.class, FileTransporterFactory.class);
@@ -64,10 +65,9 @@ public class RepositorySystemFactory {
 	}
 
 	private static RemoteRepository newCentralRepository(String name, String url) {
-		// TODO (che, 11.10) 
-		// String repoPasswd = System.getenv("REPO_RO_PASSWD"); 
-		// Preconditions.checkNotNull(repoPasswd,"Repo password should'nt be null");
-        Authentication auth = new AuthenticationBuilder().addUsername(REPO_USER).addPassword( REPO_PASS ).build();
+		String repoPasswd = System.getenv("REPO_RO_PASSWD"); 
+		Preconditions.checkNotNull(repoPasswd,"Repo password should'nt be null");
+        Authentication auth = new AuthenticationBuilder().addUsername(REPO_USER).addPassword( repoPasswd ).build();
 		return new RemoteRepository.Builder(name, "default", url).setAuthentication( auth ).build();
 	}
 

@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.context.annotation.PropertySource
+import org.springframework.context.annotation.Configuration
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource;
 
 import com.apgsga.microservice.patch.api.DbModules
@@ -17,6 +20,7 @@ import com.apgsga.microservice.patch.api.PatchPersistence
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.apgsga.patch.service.client.revision.PatchRevisionCli
+import com.apgsga.test.config.TestConfig
 import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
@@ -28,7 +32,7 @@ import spock.lang.Specification;
 @TestPropertySource(locations = ["classpath:config/server-test.properties"])
 @ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
 public class PatchCliIntegrationTest extends Specification {
-
+	
 	@Value('${json.db.location}')
 	private String dbLocation;
 

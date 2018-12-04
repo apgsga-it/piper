@@ -10,27 +10,40 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
+import com.apgsga.test.config.TestConfig;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
+@ContextConfiguration(classes = TestConfig.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 public class ArtifactsDependencyResolverImplTests {
+	
+	@Value("${artifactory.user.name}")
+	String repoUser;
+	
+	@Value("${artifactory.url}")
+	String repoUrl;
 
 	@Test
 	public void testNoArtifact() {
-		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo");
+		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", repoUser, repoUrl);
 		List<MavenArtWithDependencies> result = depResolver.resolveDependenciesInternal(Lists.newArrayList());
 		assert(result.size() == 0);		
 	}
 	
 	@Test
 	public void testSingleArtifact() {
-		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo");
+		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", repoUser, repoUrl);
 		MavenArtifactBean mavenArtifactBean = new MavenArtifactBean("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
 		List<MavenArtWithDependencies> result = depResolver.resolveDependenciesInternal(Lists.newArrayList(mavenArtifactBean));
 		assert(result.size() == 1);
@@ -41,7 +54,7 @@ public class ArtifactsDependencyResolverImplTests {
 	
 	@Test
 	public void testTwoArtifacts() {
-		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo");
+		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", repoUser, repoUrl);
 		MavenArtifactBean mavenArtifactGpUi = new MavenArtifactBean("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
 		MavenArtifactBean mavenArtifactGpDao = new MavenArtifactBean("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
 		List<MavenArtWithDependencies> result = depResolver.resolveDependenciesInternal(Lists.newArrayList(mavenArtifactGpUi,mavenArtifactGpDao));
@@ -59,7 +72,7 @@ public class ArtifactsDependencyResolverImplTests {
 	
 	@Test
 	public void testMoreArtifactsNestedDependencies() {
-		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo");
+		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", repoUser, repoUrl);
 		MavenArtifactBean mavenArtifactGpUi = new MavenArtifactBean("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
 		MavenArtifactBean mavenArtifactGpDao = new MavenArtifactBean("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
 		MavenArtifactBean mavenArtifactFakturaDao = new MavenArtifactBean("faktura-dao","com.affichage.it21.vk","9.1.0.ADMIN-UIMIG-SNAPSHOT");
@@ -83,7 +96,7 @@ public class ArtifactsDependencyResolverImplTests {
 	
 	@Test
 	public void testTwoArtifactsWithDependencyLevel() {
-		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo");
+		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", repoUser, repoUrl);
 		MavenArtifactBean mavenArtifactGpUi = new MavenArtifactBean("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
 		MavenArtifactBean mavenArtifactGpDao = new MavenArtifactBean("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
 		ArrayList<MavenArtifact> artefacts = Lists.newArrayList(mavenArtifactGpUi,mavenArtifactGpDao);
@@ -96,7 +109,7 @@ public class ArtifactsDependencyResolverImplTests {
 	
 	@Test
 	public void testMoreArtifactsNestedDependenciesWithDependencyLevel() {
-		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo");
+		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", repoUser, repoUrl);
 		MavenArtifactBean mavenArtifactGpUi = new MavenArtifactBean("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
 		MavenArtifactBean mavenArtifactGpDao = new MavenArtifactBean("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
 		MavenArtifactBean mavenArtifactFakturaDao = new MavenArtifactBean("faktura-dao","com.affichage.it21.vk","9.1.0.ADMIN-UIMIG-SNAPSHOT");
@@ -114,7 +127,7 @@ public class ArtifactsDependencyResolverImplTests {
 	
 	@Test
 	public void testMegaPatchWithDependencyLevels() throws JsonParseException, JsonMappingException, IOException {
-		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo");
+		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", repoUser, repoUrl);
 		File patchFile = new File("src/test/resources/Patch5731.json");
 		ObjectMapper mapper = new ObjectMapper();
 		Patch patchData = mapper.readValue(patchFile, Patch.class);

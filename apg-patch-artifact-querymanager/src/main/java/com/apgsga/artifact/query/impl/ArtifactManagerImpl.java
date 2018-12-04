@@ -72,11 +72,11 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
 	private Resource lcoalRepoResource;
 
-	public ArtifactManagerImpl(String localRepo, String bomGroupId, String bomArtefactId) {
+	public ArtifactManagerImpl(String localRepo, String bomGroupId, String bomArtefactId, String repoUser, String repoUrl) {
 		super();
 		this.localRepo = localRepo;
 		init();
-		this.system = RepositorySystemFactory.newRepositorySystem();
+		this.system = RepositorySystemFactory.newRepositorySystem(repoUser,repoUrl);
 		this.session = RepositorySystemFactory.newRepositorySystemSession(system, localRepo);
 		this.bomGroupId = bomGroupId;
 		this.bomArtefactId = bomArtefactId;
@@ -96,9 +96,9 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		}
 	}
 
-	public ArtifactManagerImpl(String localRepo) {
+	public ArtifactManagerImpl(String localRepo,String repoUser, String repoUrl) {
 		super();
-		this.system = RepositorySystemFactory.newRepositorySystem();
+		this.system = RepositorySystemFactory.newRepositorySystem(repoUser,repoUrl);
 		this.session = RepositorySystemFactory.newRepositorySystemSession(system, localRepo);
 		this.localRepo = localRepo;
 	}

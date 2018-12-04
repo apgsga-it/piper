@@ -11,8 +11,8 @@ import com.apgsga.microservice.patch.api.MavenArtifact;
  */
 public interface ArtifactDependencyResolver {
 	
-	public static ArtifactDependencyResolver create(String localRep) {
-		return new ArtifactsDependencyResolverImpl(localRep);
+	public static ArtifactDependencyResolver create(String localRep, String repoUser, String repoUrl) {
+		return new ArtifactsDependencyResolverImpl(localRep,repoUser,repoUrl);
 	}
 	
 	public static ArtifactDependencyResolver createMock(String localRep) {
