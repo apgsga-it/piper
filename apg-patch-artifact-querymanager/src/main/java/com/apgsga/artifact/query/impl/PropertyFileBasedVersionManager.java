@@ -29,16 +29,16 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 	private String patchFilePath = "";
 	private String lastBomVersion = "";
 
-	public PropertyFileBasedVersionManager(URI mavenLocalPath, String bomGroupId, String bomArtifactId, String repoUser, String repoUrl) {
+	public PropertyFileBasedVersionManager(URI mavenLocalPath, String bomGroupId, String bomArtifactId, RepositorySystemFactory systemFactory) {
 		super();
-		this.artifactManager = ArtifactManager.create(bomGroupId, bomArtifactId, mavenLocalPath.getPath(), repoUser, repoUrl);
+		this.artifactManager = ArtifactManager.create(bomGroupId, bomArtifactId, mavenLocalPath.getPath(), systemFactory);
 
 	}
 
 	public PropertyFileBasedVersionManager(URI mavenLocalPath, String bomGroupId, String bomArtifactId,
-			String patchFilePath, String repoUser, String repoUrl) {
+			String patchFilePath, RepositorySystemFactory systemFactory) {
 		super();
-		this.artifactManager = ArtifactManager.create(bomGroupId, bomArtifactId, mavenLocalPath.getPath(), repoUser, repoUrl);
+		this.artifactManager = ArtifactManager.create(bomGroupId, bomArtifactId, mavenLocalPath.getPath(), systemFactory);
 		this.patchFilePath = patchFilePath;
 
 	}

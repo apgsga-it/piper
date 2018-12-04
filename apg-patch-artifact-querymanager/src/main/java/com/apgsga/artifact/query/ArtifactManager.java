@@ -11,18 +11,19 @@ import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 
 import com.apgsga.artifact.query.impl.ArtifactManagerImpl;
+import com.apgsga.artifact.query.impl.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.SearchCondition;
 
 public interface ArtifactManager {
 	
 
-	public static  ArtifactManager create(String groupId, String artefactId, String localRep, String repoUser, String repoUrl) {
-		return new ArtifactManagerImpl(localRep, groupId, artefactId, repoUser, repoUrl);
+	public static  ArtifactManager create(String groupId, String artefactId, String localRep, RepositorySystemFactory systemFactory) {
+		return new ArtifactManagerImpl(localRep, groupId, artefactId, systemFactory);
 	}
 
-	public static ArtifactManager create(String localRep, String repoUser, String repoUrl) {
-		return new ArtifactManagerImpl(localRep, repoUser, repoUrl);
+	public static ArtifactManager create(String localRep, RepositorySystemFactory systemFactory) {
+		return new ArtifactManagerImpl(localRep, systemFactory);
 	}
 	
 	public static ArtifactManager createMock(String localRep) {

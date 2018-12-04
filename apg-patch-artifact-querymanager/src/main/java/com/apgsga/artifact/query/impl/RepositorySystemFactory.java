@@ -20,17 +20,18 @@ import org.eclipse.aether.util.repository.AuthenticationBuilder;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
+
 public class RepositorySystemFactory {
 	// TODO (che, 9.3 ) : Temporory fix
-	private static String REPO_USER;
-	private static String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC;
+	private String REPO_USER;
+	private String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC;
 
-	private RepositorySystemFactory() {
-	}
+//	private RepositorySystemFactory() {
+//	}
 
-	public static RepositorySystem newRepositorySystem(String repoUser, String mavenRepoUrl) {
-		REPO_USER = repoUser;
-		HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = mavenRepoUrl;
+	public RepositorySystem newRepositorySystem() {
+//		REPO_USER = repoUser;
+//		HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = mavenRepoUrl;
 		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
 		locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
 		locator.addService(TransporterFactory.class, FileTransporterFactory.class);
@@ -45,7 +46,7 @@ public class RepositorySystemFactory {
 		return locator.getService(RepositorySystem.class);
 	}
 
-	public static DefaultRepositorySystemSession newRepositorySystemSession(RepositorySystem system,
+	public DefaultRepositorySystemSession newRepositorySystemSession(RepositorySystem system,
 			String localRepoPath) {
 		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 
@@ -58,17 +59,34 @@ public class RepositorySystemFactory {
 		return session;
 	}
 
-	public static List<RemoteRepository> newRepositories() {
+	public List<RemoteRepository> newRepositories() {
 		List<RemoteRepository> remoteRepos = Lists.newArrayList();
 		remoteRepos.add(newCentralRepository("central", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC));
 		return new ArrayList<RemoteRepository>(remoteRepos);
 	}
 
-	private static RemoteRepository newCentralRepository(String name, String url) {
+	private RemoteRepository newCentralRepository(String name, String url) {
 		String repoPasswd = System.getenv("REPO_RO_PASSWD"); 
 		Preconditions.checkNotNull(repoPasswd,"Repo password should'nt be null");
         Authentication auth = new AuthenticationBuilder().addUsername(REPO_USER).addPassword( repoPasswd ).build();
 		return new RemoteRepository.Builder(name, "default", url).setAuthentication( auth ).build();
+	}
+
+	public String getREPO_USER() {
+		return REPO_USER;
+	}
+
+	public void setREPO_USER(String rEPO_USER) {
+		REPO_USER = rEPO_USER;
+	}
+
+	public String getHTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC() {
+		return HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC;
+	}
+
+	public void setHTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC(
+			String hTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC) {
+		HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = hTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC;
 	}
 
 }

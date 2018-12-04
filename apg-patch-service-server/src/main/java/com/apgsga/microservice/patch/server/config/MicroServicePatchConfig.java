@@ -15,6 +15,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
+import com.apgsga.artifact.query.impl.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.server.impl.GroovyScriptActionExecutorFactory;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
@@ -98,11 +99,19 @@ public class MicroServicePatchConfig {
 	public ArtifactDependencyResolver mockDependencyResolver() {
 		return ArtifactDependencyResolver.createMock(localRepo);
 	}
+	
+	@Bean(name = "repositorySystemFactory")
+	public RepositorySystemFactory repositorySystemFactory() {
+		RepositorySystemFactory systemFactory = new RepositorySystemFactory();
+		systemFactory.setHTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC(repoUrl);
+		systemFactory.setREPO_USER(repoUser);
+		return systemFactory;
+	}
 
 	@Bean(name = "artifactManager")
 	@Profile({"live","mavenRepo"})
 	public ArtifactManager artifactManager() {
-		return ArtifactManager.create(localRepo, repoUser, repoUrl);
+		return ArtifactManager.create(localRepo, repositorySystemFactory());
 	}
 
 	@Bean(name = "artifactManager")

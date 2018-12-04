@@ -40,6 +40,8 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 	private static final PatternInclusionsDependencyFilter filter2 = new PatternInclusionsDependencyFilter("com.affichage.*");
 	private static final OrDependencyFilter DEPENDENCYFIlTER = new OrDependencyFilter(filter1, filter2);
 
+	private final RepositorySystemFactory systemFactory;
+	
 	private final RepositorySystem system;
 
 	private final RepositorySystemSession session;
@@ -60,9 +62,12 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 
 	public ArtifactsDependencyResolverImpl(String localRepo, String repoUser, String repoUrl) {
 		init(localRepo);
-		this.system = RepositorySystemFactory.newRepositorySystem(repoUser,repoUrl);
-		this.session = RepositorySystemFactory.newRepositorySystemSession(system, localRepo);
-		this.repos = RepositorySystemFactory.newRepositories();
+		this.systemFactory = new RepositorySystemFactory();
+		systemFactory.setHTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC(repoUrl);
+		systemFactory.setREPO_USER(repoUser);
+		this.system = systemFactory.newRepositorySystem();
+		this.session = systemFactory.newRepositorySystemSession(system, localRepo);
+		this.repos = systemFactory.newRepositories();
 
 	}
  

@@ -3,17 +3,19 @@ package com.apgsga.artifact.query;
 import java.net.URI;
 
 import com.apgsga.artifact.query.impl.PropertyFileBasedVersionManager;
+import com.apgsga.artifact.query.impl.RepositorySystemFactory;
 
 public interface ArtifactVersionManager {
 
 	public static ArtifactVersionManager create(URI mavenLocalPath, String bomGroupId,
-			String bomArtifactId, String repoUser, String repoUrl) {
-		return new PropertyFileBasedVersionManager(mavenLocalPath, bomGroupId, bomArtifactId, repoUser, repoUrl);
+			String bomArtifactId, RepositorySystemFactory systemFactory) {
+		return new PropertyFileBasedVersionManager(mavenLocalPath, bomGroupId, bomArtifactId, systemFactory);
 	}
 	
+	// Stays so because of bundle
 	public static ArtifactVersionManager create(URI mavenLocalPath, String bomGroupId,
-			String bomArtifactId, String patchFilePath, String repoUser, String repoUrl) {
-		return new PropertyFileBasedVersionManager(mavenLocalPath, bomGroupId, bomArtifactId, patchFilePath, repoUser, repoUrl);
+			String bomArtifactId, String patchFilePath, RepositorySystemFactory systemFactory) {
+		return new PropertyFileBasedVersionManager(mavenLocalPath, bomGroupId, bomArtifactId, patchFilePath, systemFactory);
 	}
 
 	public String getVersionFor(String group, String name, String bomVersion);
