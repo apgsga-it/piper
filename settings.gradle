@@ -4,11 +4,9 @@ include ':apg-patch-service-common'
 include ':apg-patch-service-server'
 include ':apg-patch-service-cmdclient'
 include ':apg-patch-artifact-querymanager'
-include ':apg-patch-service-target-configinit'
 
 project(':apg-patch-service-client').projectDir = "$rootDir/apg-patch-service-client" as File
 project(':apg-patch-service-common').projectDir = "$rootDir/apg-patch-service-common" as File
 project(':apg-patch-service-server').projectDir = "$rootDir/apg-patch-service-server" as File
 project(':apg-patch-service-cmdclient').projectDir = "$rootDir/apg-patch-service-cmdclient" as File
 project(':apg-patch-artifact-querymanager').projectDir = "$rootDir/apg-patch-artifact-querymanager" as File
-project(':apg-patch-service-target-configinit').projectDir = "$rootDir/apg-patch-service-target-configinit" as File
