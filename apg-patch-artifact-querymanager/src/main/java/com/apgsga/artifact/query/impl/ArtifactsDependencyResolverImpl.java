@@ -60,17 +60,13 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 		}
 	}
 
-	public ArtifactsDependencyResolverImpl(String localRepo, String repoUser, String repoUrl) {
+	public ArtifactsDependencyResolverImpl(String localRepo, RepositorySystemFactory systemFactory) {
 		init(localRepo);
-		this.systemFactory = new RepositorySystemFactory();
-		systemFactory.setHttpPublicArtifactoryMavenRepo(repoUrl);
-		systemFactory.setRepoUser(repoUser);
+		this.systemFactory = systemFactory;
 		this.system = systemFactory.newRepositorySystem();
 		this.session = systemFactory.newRepositorySystemSession(system, localRepo);
 		this.repos = systemFactory.newRepositories();
-
 	}
- 
 
 	public List<MavenArtWithDependencies> resolveDependenciesInternal(List<MavenArtifact> artifacts) {
 		List<MavenArtWithDependencies> resolvedDependencies = Lists.newArrayList();

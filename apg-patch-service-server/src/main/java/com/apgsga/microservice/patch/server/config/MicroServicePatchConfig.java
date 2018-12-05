@@ -91,7 +91,7 @@ public class MicroServicePatchConfig {
 	@Bean(name = "dependencyResolver")
 	@Profile("live")
 	public ArtifactDependencyResolver dependencyResolver() {
-		return ArtifactDependencyResolver.create(localRepo, repoUser, repoUrl);
+		return ArtifactDependencyResolver.create(localRepo, repositorySystemFactory());
 	}
 
 	@Bean(name = "dependencyResolver")
