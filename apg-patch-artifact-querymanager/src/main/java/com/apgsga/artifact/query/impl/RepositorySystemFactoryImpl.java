@@ -68,7 +68,7 @@ public class RepositorySystemFactoryImpl implements RepositorySystemFactory {
 
 	public List<RemoteRepository> newRepositories() {
 		List<RemoteRepository> remoteRepos = Lists.newArrayList();
-		remoteRepos.add(newCentralRepository("central", mavenRepoBaseUrl + mavenRepoName));
+		remoteRepos.add(newCentralRepository("central", mavenRepoBaseUrl + "/" + mavenRepoName));
 		return new ArrayList<RemoteRepository>(remoteRepos);
 	}
 
