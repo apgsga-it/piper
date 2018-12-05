@@ -27,6 +27,16 @@ public class RepositorySystemFactoryImpl implements RepositorySystemFactory {
 	private String mavenRepoUsername;
 	private String mavenRepoBaseUrl;
 	private String mavenRepoName;
+	
+	public RepositorySystemFactoryImpl(){
+		
+	}
+	
+	public RepositorySystemFactoryImpl(String mavenRepoUsername, String mavenRepoBaseUrl, String mavenRepoName) {
+		this.mavenRepoBaseUrl = mavenRepoBaseUrl;
+		this.mavenRepoName = mavenRepoName;
+		this.mavenRepoUsername = mavenRepoUsername;
+	}
 
 	public RepositorySystem newRepositorySystem() {
 		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();

@@ -11,11 +11,7 @@ import com.apgsga.artifact.query.impl.RepositorySystemFactoryImpl;
 public interface RepositorySystemFactory {
 	
 	public static RepositorySystemFactory create(String baseUrl, String repoName, String user) {
-		RepositorySystemFactoryImpl systemFactory = new RepositorySystemFactoryImpl();
-		systemFactory.setMavenRepoBaseUrl(baseUrl);
-		systemFactory.setMavenRepoUsername(user);
-		systemFactory.setMavenRepoName(repoName);
-		return systemFactory;
+		return new RepositorySystemFactoryImpl(user,baseUrl,repoName);
 	}
 	
 	public List<RemoteRepository> newRepositories();
