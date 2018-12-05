@@ -22,16 +22,10 @@ import com.google.common.collect.Lists;
 
 
 public class RepositorySystemFactory {
-	// TODO (che, 9.3 ) : Temporory fix
-	private String REPO_USER;
-	private String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC;
-
-//	private RepositorySystemFactory() {
-//	}
+	private String repoUser;
+	private String httpPublicArtifactoryMavenRepo;
 
 	public RepositorySystem newRepositorySystem() {
-//		REPO_USER = repoUser;
-//		HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = mavenRepoUrl;
 		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
 		locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
 		locator.addService(TransporterFactory.class, FileTransporterFactory.class);
@@ -61,32 +55,32 @@ public class RepositorySystemFactory {
 
 	public List<RemoteRepository> newRepositories() {
 		List<RemoteRepository> remoteRepos = Lists.newArrayList();
-		remoteRepos.add(newCentralRepository("central", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC));
+		remoteRepos.add(newCentralRepository("central", httpPublicArtifactoryMavenRepo));
 		return new ArrayList<RemoteRepository>(remoteRepos);
 	}
 
 	private RemoteRepository newCentralRepository(String name, String url) {
 		String repoPasswd = System.getenv("REPO_RO_PASSWD"); 
 		Preconditions.checkNotNull(repoPasswd,"Repo password should'nt be null");
-        Authentication auth = new AuthenticationBuilder().addUsername(REPO_USER).addPassword( repoPasswd ).build();
+        Authentication auth = new AuthenticationBuilder().addUsername(repoUser).addPassword( repoPasswd ).build();
 		return new RemoteRepository.Builder(name, "default", url).setAuthentication( auth ).build();
 	}
 
-	public String getREPO_USER() {
-		return REPO_USER;
+	public String getRepoUser() {
+		return repoUser;
 	}
 
-	public void setREPO_USER(String rEPO_USER) {
-		REPO_USER = rEPO_USER;
+	public void setRepoUser(String repUser) {
+		repoUser = repUser;
 	}
 
-	public String getHTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC() {
-		return HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC;
+	public String getHttpPublicArtifactoryMavenRepo() {
+		return httpPublicArtifactoryMavenRepo;
 	}
 
-	public void setHTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC(
-			String hTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC) {
-		HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = hTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC;
+	public void setHttpPublicArtifactoryMavenRepo(
+			String p_httpPublicArtifactoryMavenRepo) {
+		httpPublicArtifactoryMavenRepo = p_httpPublicArtifactoryMavenRepo;
 	}
 
 }

@@ -20,7 +20,6 @@ import com.apgsga.microservice.patch.api.PatchPersistence
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.apgsga.patch.service.client.revision.PatchRevisionCli
-import com.apgsga.test.config.TestConfig
 import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper

@@ -103,8 +103,8 @@ public class MicroServicePatchConfig {
 	@Bean(name = "repositorySystemFactory")
 	public RepositorySystemFactory repositorySystemFactory() {
 		RepositorySystemFactory systemFactory = new RepositorySystemFactory();
-		systemFactory.setHTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC(repoUrl);
-		systemFactory.setREPO_USER(repoUser);
+		systemFactory.setHttpPublicArtifactoryMavenRepo(repoUrl);
+		systemFactory.setRepoUser(repoUser);
 		return systemFactory;
 	}
 

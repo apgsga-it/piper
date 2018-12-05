@@ -12,12 +12,11 @@ public interface ArtifactVersionManager {
 		return new PropertyFileBasedVersionManager(mavenLocalPath, bomGroupId, bomArtifactId, systemFactory);
 	}
 	
-	// Stays so because of bundle
 	public static ArtifactVersionManager create(URI mavenLocalPath, String bomGroupId,
 			String bomArtifactId, String patchFilePath, RepositorySystemFactory systemFactory) {
 		return new PropertyFileBasedVersionManager(mavenLocalPath, bomGroupId, bomArtifactId, patchFilePath, systemFactory);
 	}
-
+	
 	public String getVersionFor(String group, String name, String bomVersion);
 
 }

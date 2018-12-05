@@ -13,6 +13,7 @@ import org.springframework.util.FileSystemUtils
 
 import com.apgsga.artifact.query.impl.PatchFileAccessException
 import com.apgsga.artifact.query.impl.PropertyFileBasedVersionManager
+import com.apgsga.artifact.query.impl.RepositorySystemFactory
 import com.apgsga.microservice.patch.api.SearchCondition
 import com.apgsga.test.config.TestConfig
 import com.google.common.collect.Count
@@ -27,12 +28,20 @@ class PropertyFileBasedVersionManagerTests extends Specification {
 	
 	@Value('${artifactory.url}')
 	def repoUrl
+	
+	def RepositorySystemFactory systemFactory
+	
+	def setup() {
+		systemFactory = new RepositorySystemFactory()
+		systemFactory.setHttpPublicArtifactoryMavenRepo(repoUrl)
+		systemFactory.setRepoUser(repoUser)
+	}
 
 	def "Without additional path to Patch File "() {
 		setup:
 		def rl = new FileSystemResourceLoader();
 		def resource = rl.getResource("target/maverepo");
-		def artifactManager = ArtifactVersionManager.create(resource.getURI(),"com.affichage.common.maven","dm-bom", repoUser, repoUrl)
+		def artifactManager = ArtifactVersionManager.create(resource.getURI(),"com.affichage.common.maven","dm-bom", systemFactory)
 		when:
 		def result = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		then:
@@ -42,7 +51,7 @@ class PropertyFileBasedVersionManagerTests extends Specification {
 		setup:
 		def rl = new FileSystemResourceLoader();
 		def resource = rl.getResource("target/maverepo");
-		def artifactManager = ArtifactVersionManager.create(resource.getURI(),"com.affichage.common.maven","dm-bom", repoUser, repoUrl)
+		def artifactManager = ArtifactVersionManager.create(resource.getURI(),"com.affichage.common.maven","dm-bom", systemFactory)
 		when:
 		def result = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		then:
@@ -53,7 +62,7 @@ class PropertyFileBasedVersionManagerTests extends Specification {
 		setup:
 		def rl = new FileSystemResourceLoader();
 		def mavenRepoResource = rl.getResource("target/maverepo");
-		def artifactManager = ArtifactVersionManager.create(mavenRepoResource.getURI(),"com.affichage.common.maven","dm-bom", "src/test/resources/Patch5797.json", repoUser, repoUrl)
+		def artifactManager = ArtifactVersionManager.create(mavenRepoResource.getURI(),"com.affichage.common.maven","dm-bom", "src/test/resources/Patch5797.json", systemFactory)
 		when:
 		def resultZentralDispo = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		def resultCommondao = artifactManager.getVersionFor("com.affichage.it21.adgis","adgis-common-dao","9.1.0.ADMIN-UIMIG-SNAPSHOT")
@@ -66,7 +75,7 @@ class PropertyFileBasedVersionManagerTests extends Specification {
 		setup:
 		def rl = new FileSystemResourceLoader();
 		def mavenRepoResource = rl.getResource("target/maverepo");
-		def artifactManager = ArtifactVersionManager.create(mavenRepoResource.getURI(),"com.affichage.common.maven","dm-bom", "src/test/resources/Patch5799.json", repoUser, repoUrl)
+		def artifactManager = ArtifactVersionManager.create(mavenRepoResource.getURI(),"com.affichage.common.maven","dm-bom", "src/test/resources/Patch5799.json", systemFactory)
 		when:
 		def resultNewArtifactId = artifactManager.getVersionFor("newGroupid","newArtifactID","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		def resultZentraiDispoDao = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-dao","9.1.0.ADMIN-UIMIG-SNAPSHOT")
@@ -79,7 +88,7 @@ class PropertyFileBasedVersionManagerTests extends Specification {
 		setup:
 		def rl = new FileSystemResourceLoader();
 		def mavenRepoResource = rl.getResource("target/maverepo");
-		def artifactManager = ArtifactVersionManager.create(mavenRepoResource.getURI(),"com.affichage.common.maven","dm-bom", "xxxxxxxx/Patch5797.json", repoUser, repoUrl)
+		def artifactManager = ArtifactVersionManager.create(mavenRepoResource.getURI(),"com.affichage.common.maven","dm-bom", "xxxxxxxx/Patch5797.json", systemFactory)
 		when:
 		def resultZentralDispo = artifactManager.getVersionFor("com.affichage.it21.vk","zentraldispo-ui","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		def resultCommondao = artifactManager.getVersionFor("com.affichage.it21.adgis","adgis-common-dao","9.1.0.ADMIN-UIMIG-SNAPSHOT")

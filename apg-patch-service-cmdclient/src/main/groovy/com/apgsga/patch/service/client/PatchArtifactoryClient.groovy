@@ -2,10 +2,6 @@ package com.apgsga.patch.service.client
 
 import org.jfrog.artifactory.client.Artifactory
 import org.jfrog.artifactory.client.model.RepoPath
-import org.mockito.internal.matchers.NotNull
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.util.Assert
 
 import com.apgsga.patch.service.client.revision.PatchRevisionClient
 

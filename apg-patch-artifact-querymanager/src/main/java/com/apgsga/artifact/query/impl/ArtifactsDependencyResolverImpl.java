@@ -63,8 +63,8 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 	public ArtifactsDependencyResolverImpl(String localRepo, String repoUser, String repoUrl) {
 		init(localRepo);
 		this.systemFactory = new RepositorySystemFactory();
-		systemFactory.setHTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC(repoUrl);
-		systemFactory.setREPO_USER(repoUser);
+		systemFactory.setHttpPublicArtifactoryMavenRepo(repoUrl);
+		systemFactory.setRepoUser(repoUser);
 		this.system = systemFactory.newRepositorySystem();
 		this.session = systemFactory.newRepositorySystemSession(system, localRepo);
 		this.repos = systemFactory.newRepositories();

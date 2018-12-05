@@ -11,6 +11,7 @@ import org.springframework.core.io.ResourceLoader
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.util.FileSystemUtils
 
+import com.apgsga.artifact.query.impl.RepositorySystemFactory
 import com.apgsga.microservice.patch.api.MavenArtifact
 import com.apgsga.microservice.patch.api.SearchCondition
 import com.apgsga.test.config.TestConfig
@@ -28,9 +29,17 @@ class ArtifactManagerTests extends Specification {
 	@Value('${artifactory.url}')
 	def repoUrl
 
+	def RepositorySystemFactory systemFactory
+	
+	def setup() {
+		systemFactory = new RepositorySystemFactory()
+		systemFactory.setHttpPublicArtifactoryMavenRepo(repoUrl)
+		systemFactory.setRepoUser(repoUser)
+	}
+	
 	def "Default Filter Selection of Artifacts"() {
 		setup:
-		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", repoUser, repoUrl)
+		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", systemFactory)
 		when:
 		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		def nonApgResults = results.findAll{ (!it.groupId.startsWith("com.apgsga") && ! it.groupId.startsWith("com.affichage"))}
@@ -43,7 +52,7 @@ class ArtifactManagerTests extends Specification {
 
 	def "With All Filter Selection of Artifacts"() {
 		setup:
-		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", repoUser, repoUrl)
+		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", systemFactory)
 		when:
 		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT",SearchCondition.ALL)
 		println results.size()
@@ -57,7 +66,7 @@ class ArtifactManagerTests extends Specification {
 
 	def "With Application Filter Selection IT21UI of Artifacts"() {
 		setup:
-		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", repoUser, repoUrl)
+		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", systemFactory)
 		when:
 		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT",SearchCondition.IT21UI)
 		ObjectMapper mapper = new ObjectMapper();
@@ -69,7 +78,7 @@ class ArtifactManagerTests extends Specification {
 	
 	def "With Application Filter Selection Persistence of Artifacts"() {
 		setup:
-		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", repoUser, repoUrl)
+		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", systemFactory)
 		when:
 		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT",SearchCondition.PERSISTENT).toSorted()
 		ObjectMapper mapper = new ObjectMapper();
@@ -81,7 +90,7 @@ class ArtifactManagerTests extends Specification {
 	
 	def "With Application Filter Selection Forms2Java of Artifacts"() {
 		setup:
-		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", repoUser, repoUrl)
+		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", systemFactory)
 		when:
 		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT",SearchCondition.FORMS2JAVA).toSorted()
 		ObjectMapper mapper = new ObjectMapper();
@@ -93,7 +102,7 @@ class ArtifactManagerTests extends Specification {
 	
 	def "With Application Filter Selection of Artifacts"() {
 		setup:
-		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", repoUser, repoUrl)
+		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", systemFactory)
 		when:
 		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT",SearchCondition.APPLICATION)
 		def nonApgResults = results.findAll{ (!it.groupId.startsWith("com.apgsga") && ! it.groupId.startsWith("com.affichage"))}
@@ -104,7 +113,7 @@ class ArtifactManagerTests extends Specification {
 	
 	def "Clean local Mavenrepo"() {
 		setup:
-		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", repoUser, repoUrl)
+		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", systemFactory)
 		when:
 		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT",SearchCondition.APPLICATION)
 		def numberOfFilesBefore = artifactManager.getMavenLocalRepo().listFiles().length
