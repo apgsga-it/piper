@@ -3,7 +3,6 @@ package com.apgsga.artifact.query;
 import java.net.URI;
 
 import com.apgsga.artifact.query.impl.PropertyFileBasedVersionManager;
-import com.apgsga.artifact.query.impl.RepositorySystemFactory;
 
 public interface ArtifactVersionManager {
 

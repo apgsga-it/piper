@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
@@ -29,19 +30,20 @@ import com.google.common.collect.Lists;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ArtifactsDependencyResolverImplTests {
 	
-	@Value("${artifactory.user.name}")
+	@Value("${mavenrepo.user.name}")
 	String repoUser;
 	
-	@Value("${artifactory.url}")
+	@Value("${mavenrepo.baseurl}")
 	String repoUrl;
+	
+	@Value("${mavenrepo.name}")
+	String repoName;
 	
 	RepositorySystemFactory systemFactory;
 	
 	@Before
 	public void before() {
-		systemFactory = new RepositorySystemFactory();
-		systemFactory.setHttpPublicArtifactoryMavenRepo(repoUrl);
-		systemFactory.setRepoUser(repoUser);
+		systemFactory = RepositorySystemFactory.create(repoUrl, repoName, repoUser);
 	}
 
 	@Test

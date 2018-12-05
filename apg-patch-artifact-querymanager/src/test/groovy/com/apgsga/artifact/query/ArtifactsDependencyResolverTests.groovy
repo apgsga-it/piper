@@ -19,15 +19,24 @@ import spock.lang.Specification;
 @ContextConfiguration(classes = TestConfig.class)
 class ArtifactsDependencyResolverTests extends Specification {
 	
-	@Value('${artifactory.user.name}')
+	@Value('${mavenrepo.user.name}')
 	def repoUser
 	
-	@Value('${artifactory.url}')
+	@Value('${mavenrepo.baseurl}')
 	def repoUrl
+	
+	@Value('${mavenrepo.name}')
+	def repoName
+	
+	def systemFactory
+	
+	def setup() {
+		systemFactory = RepositorySystemFactory.create(repoUrl, repoName, repoUser)
+	}
 
 	def "Collect Artefacts by Dependencylevel"() {
 		setup:
-		def depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", repoUser, repoUrl)
+		def depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory)
 		def mavenArtifactGpUi = new MavenArtifactBean("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		def mavenArtifactGpDao = new MavenArtifactBean("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		def mavenArtifactFakturaDao = new MavenArtifactBean("faktura-dao","com.affichage.it21.vk","9.1.0.ADMIN-UIMIG-SNAPSHOT")
@@ -55,7 +64,7 @@ class ArtifactsDependencyResolverTests extends Specification {
 	
 	def "Collect and Process Artefacts by Dependencylevel"() {
 		setup:
-		def depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", repoUser, repoUrl)
+		def depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory)
 		def mavenArtifactGpUi = new MavenArtifactBean("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		def mavenArtifactGpDao = new MavenArtifactBean("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		def mavenArtifactFakturaDao = new MavenArtifactBean("faktura-dao","com.affichage.it21.vk","9.1.0.ADMIN-UIMIG-SNAPSHOT")

@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.artifact.query.ArtifactVersionManager;
+import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.fasterxml.jackson.databind.ObjectMapper;

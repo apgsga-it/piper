@@ -11,7 +11,6 @@ import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 
 import com.apgsga.artifact.query.impl.ArtifactManagerImpl;
-import com.apgsga.artifact.query.impl.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.SearchCondition;
 

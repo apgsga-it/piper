@@ -17,13 +17,16 @@ import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.eclipse.aether.util.repository.AuthenticationBuilder;
 
+import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 
-public class RepositorySystemFactory {
-	private String repoUser;
-	private String httpPublicArtifactoryMavenRepo;
+public class RepositorySystemFactoryImpl implements RepositorySystemFactory {
+	
+	private String mavenRepoUsername;
+	private String mavenRepoBaseUrl;
+	private String mavenRepoName;
 
 	public RepositorySystem newRepositorySystem() {
 		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
@@ -55,32 +58,40 @@ public class RepositorySystemFactory {
 
 	public List<RemoteRepository> newRepositories() {
 		List<RemoteRepository> remoteRepos = Lists.newArrayList();
-		remoteRepos.add(newCentralRepository("central", httpPublicArtifactoryMavenRepo));
+		remoteRepos.add(newCentralRepository("central", mavenRepoBaseUrl + mavenRepoName));
 		return new ArrayList<RemoteRepository>(remoteRepos);
 	}
 
 	private RemoteRepository newCentralRepository(String name, String url) {
 		String repoPasswd = System.getenv("REPO_RO_PASSWD"); 
 		Preconditions.checkNotNull(repoPasswd,"Repo password should'nt be null");
-        Authentication auth = new AuthenticationBuilder().addUsername(repoUser).addPassword( repoPasswd ).build();
+        Authentication auth = new AuthenticationBuilder().addUsername(mavenRepoUsername).addPassword( repoPasswd ).build();
 		return new RemoteRepository.Builder(name, "default", url).setAuthentication( auth ).build();
 	}
 
-	public String getRepoUser() {
-		return repoUser;
+	public String getMavenRepoUsername() {
+		return mavenRepoUsername;
 	}
 
-	public void setRepoUser(String repUser) {
-		repoUser = repUser;
+	public void setMavenRepoUsername(String mavenRepoUsername) {
+		this.mavenRepoUsername = mavenRepoUsername;
 	}
 
-	public String getHttpPublicArtifactoryMavenRepo() {
-		return httpPublicArtifactoryMavenRepo;
+	public String getMavenRepoBaseUrl() {
+		return mavenRepoBaseUrl;
 	}
 
-	public void setHttpPublicArtifactoryMavenRepo(
-			String p_httpPublicArtifactoryMavenRepo) {
-		httpPublicArtifactoryMavenRepo = p_httpPublicArtifactoryMavenRepo;
+	public void setMavenRepoBaseUrl(
+			String mavenRepoBaseUrl) {
+		this.mavenRepoBaseUrl = mavenRepoBaseUrl;
+	}
+
+	public String getMavenRepoName() {
+		return mavenRepoName;
+	}
+
+	public void setMavenRepoName(String mavenRepoName) {
+		this.mavenRepoName = mavenRepoName;
 	}
 
 }

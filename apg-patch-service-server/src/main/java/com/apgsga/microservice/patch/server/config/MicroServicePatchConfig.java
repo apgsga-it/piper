@@ -15,7 +15,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
-import com.apgsga.artifact.query.impl.RepositorySystemFactory;
+import com.apgsga.artifact.query.RepositorySystemFactory;
+import com.apgsga.artifact.query.impl.RepositorySystemFactoryImpl;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.server.impl.GroovyScriptActionExecutorFactory;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
@@ -72,11 +73,14 @@ public class MicroServicePatchConfig {
 	@Value("${taskexecutor.maxPoolSize:20}")
 	private Integer maxPoolSize;
 	
-	@Value("${artifactory.user}")
-	private String repoUser;
+	@Value("${mavenrepo.user.name}")
+	private String mavenRepoUsername;
 	
-	@Value("${artifactory.url}")
-	private String repoUrl;
+	@Value("${mavenrepo.baseurl}")
+	private String mavenRepoBaseUrl;
+	
+	@Value("${mavenrepo.name}")
+	private String mavenRepoName;
 
 	@Bean(name = "patchPersistence")
 	public PatchPersistence patchFilebasePersistence() throws IOException {
@@ -102,10 +106,7 @@ public class MicroServicePatchConfig {
 	
 	@Bean(name = "repositorySystemFactory")
 	public RepositorySystemFactory repositorySystemFactory() {
-		RepositorySystemFactory systemFactory = new RepositorySystemFactory();
-		systemFactory.setHttpPublicArtifactoryMavenRepo(repoUrl);
-		systemFactory.setRepoUser(repoUser);
-		return systemFactory;
+		return RepositorySystemFactory.create(mavenRepoBaseUrl, mavenRepoName, mavenRepoUsername);
 	}
 
 	@Bean(name = "artifactManager")

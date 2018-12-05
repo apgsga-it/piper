@@ -11,7 +11,7 @@ import org.springframework.core.io.ResourceLoader
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.util.FileSystemUtils
 
-import com.apgsga.artifact.query.impl.RepositorySystemFactory
+import com.apgsga.artifact.query.impl.RepositorySystemFactoryImpl
 import com.apgsga.microservice.patch.api.MavenArtifact
 import com.apgsga.microservice.patch.api.SearchCondition
 import com.apgsga.test.config.TestConfig
@@ -23,18 +23,19 @@ import spock.lang.Specification;
 @ContextConfiguration(classes = TestConfig.class)
 class ArtifactManagerTests extends Specification {
 	
-	@Value('${artifactory.user.name}')
+	@Value('${mavenrepo.user.name}')
 	def repoUser
 	
-	@Value('${artifactory.url}')
+	@Value('${mavenrepo.baseurl}')
 	def repoUrl
+	
+	@Value('${mavenrepo.name}')
+	def repoName
 
 	def RepositorySystemFactory systemFactory
 	
 	def setup() {
-		systemFactory = new RepositorySystemFactory()
-		systemFactory.setHttpPublicArtifactoryMavenRepo(repoUrl)
-		systemFactory.setRepoUser(repoUser)
+		systemFactory = RepositorySystemFactory.create(repoUrl, repoName, repoUser);
 	}
 	
 	def "Default Filter Selection of Artifacts"() {
