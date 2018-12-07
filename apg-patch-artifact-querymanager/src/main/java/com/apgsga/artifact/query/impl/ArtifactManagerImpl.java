@@ -36,6 +36,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import com.apgsga.artifact.query.ArtifactManager;
+import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.SearchCondition;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
@@ -60,6 +61,8 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		templateMap.put(SearchCondition.IT21UI, "classpath:templateIt21Ui.json");
 	}
 
+	private final RepositorySystemFactory systemFactory;
+	
 	private final RepositorySystem system;
 
 	private final RepositorySystemSession session;
@@ -72,12 +75,13 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
 	private Resource lcoalRepoResource;
 
-	public ArtifactManagerImpl(String localRepo, String bomGroupId, String bomArtefactId) {
+	public ArtifactManagerImpl(String localRepo, String bomGroupId, String bomArtefactId, RepositorySystemFactory systemFactory) {
 		super();
 		this.localRepo = localRepo;
 		init();
-		this.system = RepositorySystemFactory.newRepositorySystem();
-		this.session = RepositorySystemFactory.newRepositorySystemSession(system, localRepo);
+		this.systemFactory = systemFactory;
+		this.system = systemFactory.newRepositorySystem();
+		this.session = systemFactory.newRepositorySystemSession(system, localRepo);
 		this.bomGroupId = bomGroupId;
 		this.bomArtefactId = bomArtefactId;
 
@@ -96,10 +100,11 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		}
 	}
 
-	public ArtifactManagerImpl(String localRepo) {
+	public ArtifactManagerImpl(String localRepo, RepositorySystemFactory systemFactory) {
 		super();
-		this.system = RepositorySystemFactory.newRepositorySystem();
-		this.session = RepositorySystemFactory.newRepositorySystemSession(system, localRepo);
+		this.systemFactory = systemFactory;
+		this.system = systemFactory.newRepositorySystem();
+		this.session = systemFactory.newRepositorySystemSession(system, localRepo);
 		this.localRepo = localRepo;
 	}
 
@@ -194,7 +199,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		Artifact artifact = new DefaultArtifact(groupId, artifactId, "pom", version);
 		ArtifactRequest artifactRequest = new ArtifactRequest();
 		artifactRequest.setArtifact(artifact);
-		artifactRequest.setRepositories(RepositorySystemFactory.newRepositories());
+		artifactRequest.setRepositories(this.systemFactory.newRepositories());
 		try {
 			ArtifactResult artifactResult = system.resolveArtifact(session, artifactRequest);
 			artifact = artifactResult.getArtifact();

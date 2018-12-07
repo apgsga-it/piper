@@ -2,20 +2,44 @@ package com.apgsga.artifact.query
 import java.util.ArrayList
 import java.util.Comparator
 import java.util.function.Function
+
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.test.context.ContextConfiguration
+
 import com.apgsga.artifact.query.impl.ArtifactsDependencyResolverImpl
 import com.apgsga.microservice.patch.api.MavenArtifact
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean
+import com.apgsga.test.config.TestConfig
 import com.google.common.collect.Lists
 import static java.util.stream.Collectors.groupingBy;
 
 
 import spock.lang.Specification;
 
+@ContextConfiguration(classes = TestConfig.class)
 class ArtifactsDependencyResolverTests extends Specification {
+	
+	@Value('${mavenrepo.user.name}')
+	def repoUser
+	
+	@Value('${mavenrepo.baseurl}')
+	def repoUrl
+	
+	@Value('${mavenrepo.name}')
+	def repoName
+	
+	@Value('${mavenrepo.user.encryptedPwd}')
+	def mavenRepoUserEncryptedPwd
+	
+	def systemFactory
+	
+	def setup() {
+		systemFactory = RepositorySystemFactory.create(repoUrl, repoName, repoUser, mavenRepoUserEncryptedPwd, System.getenv('REPO_USER_DECRYPT_KEY'));
+	}
 
 	def "Collect Artefacts by Dependencylevel"() {
 		setup:
-		def depResolver = new ArtifactsDependencyResolverImpl("target/maverepo")
+		def depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory)
 		def mavenArtifactGpUi = new MavenArtifactBean("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		def mavenArtifactGpDao = new MavenArtifactBean("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		def mavenArtifactFakturaDao = new MavenArtifactBean("faktura-dao","com.affichage.it21.vk","9.1.0.ADMIN-UIMIG-SNAPSHOT")
@@ -43,7 +67,7 @@ class ArtifactsDependencyResolverTests extends Specification {
 	
 	def "Collect and Process Artefacts by Dependencylevel"() {
 		setup:
-		def depResolver = new ArtifactsDependencyResolverImpl("target/maverepo")
+		def depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory)
 		def mavenArtifactGpUi = new MavenArtifactBean("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		def mavenArtifactGpDao = new MavenArtifactBean("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT")
 		def mavenArtifactFakturaDao = new MavenArtifactBean("faktura-dao","com.affichage.it21.vk","9.1.0.ADMIN-UIMIG-SNAPSHOT")

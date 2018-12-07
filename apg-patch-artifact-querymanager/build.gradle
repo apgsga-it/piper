@@ -27,6 +27,7 @@ dependencies {
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
 	compile group: 'commons-io', name: 'commons-io'
 	compile group: 'commons-lang', name: 'commons-lang'
+	compile group: 'org.jasypt', name: 'jasypt'
 	testCompile group: 'junit', name: 'junit'
 	testCompile group: 'commons-collections', name: 'commons-collections'
 	testCompile group: 'org.springframework', name: 'spring-test'

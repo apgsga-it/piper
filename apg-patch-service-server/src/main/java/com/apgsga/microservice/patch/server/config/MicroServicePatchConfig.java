@@ -2,6 +2,7 @@ package com.apgsga.microservice.patch.server.config;
 
 import java.io.IOException;
 
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
+import com.apgsga.artifact.query.RepositorySystemFactory;
+import com.apgsga.artifact.query.impl.RepositorySystemFactoryImpl;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.server.impl.GroovyScriptActionExecutorFactory;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
@@ -69,7 +72,22 @@ public class MicroServicePatchConfig {
 	private Integer corePoolSize; 
 	
 	@Value("${taskexecutor.maxPoolSize:20}")
-	private Integer maxPoolSize; 
+	private Integer maxPoolSize;
+	
+	@Value("${mavenrepo.user.name}")
+	private String mavenRepoUsername;
+	
+	@Value("${mavenrepo.baseurl}")
+	private String mavenRepoBaseUrl;
+	
+	@Value("${mavenrepo.name}")
+	private String mavenRepoName;
+	
+	@Value("${mavenrepo.user.encryptedPwd}")
+	private String mavenRepoUserEncryptedPwd;
+
+	@Value("${mavenrepo.user.decryptpwd.key:#{environment.REPO_USER_DECRYPT_KEY}}")
+	private String mavenRepoUserDecryptKey;
 
 	@Bean(name = "patchPersistence")
 	public PatchPersistence patchFilebasePersistence() throws IOException {
@@ -84,7 +102,7 @@ public class MicroServicePatchConfig {
 	@Bean(name = "dependencyResolver")
 	@Profile("live")
 	public ArtifactDependencyResolver dependencyResolver() {
-		return ArtifactDependencyResolver.create(localRepo);
+		return ArtifactDependencyResolver.create(localRepo, repositorySystemFactory());
 	}
 
 	@Bean(name = "dependencyResolver")
@@ -92,11 +110,22 @@ public class MicroServicePatchConfig {
 	public ArtifactDependencyResolver mockDependencyResolver() {
 		return ArtifactDependencyResolver.createMock(localRepo);
 	}
+	
+	@Bean(name = "repositorySystemFactory")
+	public RepositorySystemFactory repositorySystemFactory() {
+		return RepositorySystemFactory.create(mavenRepoBaseUrl, mavenRepoName, mavenRepoUsername, decryptPwd());
+	}
+
+	private String decryptPwd() {
+		BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+		textEncryptor.setPassword(this.mavenRepoUserDecryptKey);
+		return textEncryptor.decrypt(this.mavenRepoUserEncryptedPwd);
+	}
 
 	@Bean(name = "artifactManager")
 	@Profile({"live","mavenRepo"})
 	public ArtifactManager artifactManager() {
-		return ArtifactManager.create(localRepo);
+		return ArtifactManager.create(localRepo, repositorySystemFactory());
 	}
 
 	@Bean(name = "artifactManager")

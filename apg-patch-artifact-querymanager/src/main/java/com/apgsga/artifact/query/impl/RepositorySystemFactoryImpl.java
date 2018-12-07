@@ -17,19 +17,29 @@ import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.eclipse.aether.util.repository.AuthenticationBuilder;
 
-import com.google.common.base.Preconditions;
+import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.google.common.collect.Lists;
 
-public class RepositorySystemFactory {
-	// TODO (che, 9.3 ) : Temporory fix
-	private static final String REPO_USER = "dev";
-	private static final String REPO_PASS = "dev1234"; 
-	private static final String HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC = "https://artifactory4t4apgsga.jfrog.io/artifactory4t4apgsga/repo";
 
-	private RepositorySystemFactory() {
+public class RepositorySystemFactoryImpl implements RepositorySystemFactory {
+	
+	private String mavenRepoUsername;
+	private String mavenRepoBaseUrl;
+	private String mavenRepoName;
+	private String mavenRepoUserPwd;
+	
+	public RepositorySystemFactoryImpl(){
+		
+	}
+	
+	public RepositorySystemFactoryImpl(String mavenRepoUsername, String mavenRepoBaseUrl, String mavenRepoName, String mavenRepoUserPwd) {
+		this.mavenRepoBaseUrl = mavenRepoBaseUrl;
+		this.mavenRepoName = mavenRepoName;
+		this.mavenRepoUsername = mavenRepoUsername;
+		this.mavenRepoUserPwd = mavenRepoUserPwd;
 	}
 
-	public static RepositorySystem newRepositorySystem() {
+	public RepositorySystem newRepositorySystem() {
 		DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
 		locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
 		locator.addService(TransporterFactory.class, FileTransporterFactory.class);
@@ -44,7 +54,7 @@ public class RepositorySystemFactory {
 		return locator.getService(RepositorySystem.class);
 	}
 
-	public static DefaultRepositorySystemSession newRepositorySystemSession(RepositorySystem system,
+	public DefaultRepositorySystemSession newRepositorySystemSession(RepositorySystem system,
 			String localRepoPath) {
 		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 
@@ -57,18 +67,40 @@ public class RepositorySystemFactory {
 		return session;
 	}
 
-	public static List<RemoteRepository> newRepositories() {
+	public List<RemoteRepository> newRepositories() {
 		List<RemoteRepository> remoteRepos = Lists.newArrayList();
-		remoteRepos.add(newCentralRepository("central", HTTP_MAVENREPO_APGSGA_CH_NEXUS_CONTENT_GROUPS_PUBLIC));
+		remoteRepos.add(newCentralRepository("central", mavenRepoBaseUrl + "/" + mavenRepoName));
 		return new ArrayList<RemoteRepository>(remoteRepos);
 	}
 
-	private static RemoteRepository newCentralRepository(String name, String url) {
-		// TODO (che, 11.10) 
-		// String repoPasswd = System.getenv("REPO_RO_PASSWD"); 
-		// Preconditions.checkNotNull(repoPasswd,"Repo password should'nt be null");
-        Authentication auth = new AuthenticationBuilder().addUsername(REPO_USER).addPassword( REPO_PASS ).build();
+	private RemoteRepository newCentralRepository(String name, String url) {
+        Authentication auth = new AuthenticationBuilder().addUsername(mavenRepoUsername).addPassword( this.mavenRepoUserPwd ).build();
 		return new RemoteRepository.Builder(name, "default", url).setAuthentication( auth ).build();
+	}
+
+	public String getMavenRepoUsername() {
+		return mavenRepoUsername;
+	}
+
+	public void setMavenRepoUsername(String mavenRepoUsername) {
+		this.mavenRepoUsername = mavenRepoUsername;
+	}
+
+	public String getMavenRepoBaseUrl() {
+		return mavenRepoBaseUrl;
+	}
+
+	public void setMavenRepoBaseUrl(
+			String mavenRepoBaseUrl) {
+		this.mavenRepoBaseUrl = mavenRepoBaseUrl;
+	}
+
+	public String getMavenRepoName() {
+		return mavenRepoName;
+	}
+
+	public void setMavenRepoName(String mavenRepoName) {
+		this.mavenRepoName = mavenRepoName;
 	}
 
 }

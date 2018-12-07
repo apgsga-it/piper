@@ -17,12 +17,12 @@ import com.apgsga.microservice.patch.api.SearchCondition;
 public interface ArtifactManager {
 	
 
-	public static  ArtifactManager create(String groupId, String artefactId, String localRep) {
-		return new ArtifactManagerImpl(localRep, groupId, artefactId);
+	public static  ArtifactManager create(String groupId, String artefactId, String localRep, RepositorySystemFactory systemFactory) {
+		return new ArtifactManagerImpl(localRep, groupId, artefactId, systemFactory);
 	}
 
-	public static ArtifactManager create(String localRep) {
-		return new ArtifactManagerImpl(localRep);
+	public static ArtifactManager create(String localRep, RepositorySystemFactory systemFactory) {
+		return new ArtifactManagerImpl(localRep, systemFactory);
 	}
 	
 	public static ArtifactManager createMock(String localRep) {

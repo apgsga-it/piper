@@ -13,18 +13,21 @@ class PatchArtifactoryClient {
 	
 	private Artifactory artifactory;
 	
-	private final String RELEASE_REPO = "releases"
+	private final String RELEASE_REPO
 	
-	private final String DB_PATCH_REPO = "dbpatch"
+	private final String DB_PATCH_REPO
 	
 	def PatchArtifactoryClient(def configuration) {
 		config = configuration
 		def pass = System.getenv('REPO_RO_PASSWD')
 		assert pass != null
 		artifactory = ArtifactoryClientBuilder.create().setUrl(config.artifactory.url).setUsername(config.artifactory.user).setPassword(pass).build();
+		RELEASE_REPO = config.artifactory.release.repo.name
+		DB_PATCH_REPO = config.artifactory.dbpatch.repo.name
 	}
 	
 	public def removeArtifacts(String regex, boolean dryRun) {
+
 		List<RepoPath> searchItems = artifactory.searches().repositories(RELEASE_REPO,DB_PATCH_REPO).artifactsByName(regex).doSearch();
 		searchItems.each{repoPath ->
 			if(dryRun) {

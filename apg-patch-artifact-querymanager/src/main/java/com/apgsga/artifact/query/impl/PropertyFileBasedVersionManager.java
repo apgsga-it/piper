@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.artifact.query.ArtifactVersionManager;
+import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,16 +30,16 @@ public class PropertyFileBasedVersionManager implements ArtifactVersionManager {
 	private String patchFilePath = "";
 	private String lastBomVersion = "";
 
-	public PropertyFileBasedVersionManager(URI mavenLocalPath, String bomGroupId, String bomArtifactId) {
+	public PropertyFileBasedVersionManager(URI mavenLocalPath, String bomGroupId, String bomArtifactId, RepositorySystemFactory systemFactory) {
 		super();
-		this.artifactManager = ArtifactManager.create(bomGroupId, bomArtifactId, mavenLocalPath.getPath());
+		this.artifactManager = ArtifactManager.create(bomGroupId, bomArtifactId, mavenLocalPath.getPath(), systemFactory);
 
 	}
 
 	public PropertyFileBasedVersionManager(URI mavenLocalPath, String bomGroupId, String bomArtifactId,
-			String patchFilePath) {
+			String patchFilePath, RepositorySystemFactory systemFactory) {
 		super();
-		this.artifactManager = ArtifactManager.create(bomGroupId, bomArtifactId, mavenLocalPath.getPath());
+		this.artifactManager = ArtifactManager.create(bomGroupId, bomArtifactId, mavenLocalPath.getPath(), systemFactory);
 		this.patchFilePath = patchFilePath;
 
 	}

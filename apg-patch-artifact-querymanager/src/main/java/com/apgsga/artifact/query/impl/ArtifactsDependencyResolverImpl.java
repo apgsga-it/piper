@@ -28,6 +28,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import com.apgsga.artifact.query.ArtifactDependencyResolver;
+import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.google.common.collect.Lists;
@@ -40,6 +41,8 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 	private static final PatternInclusionsDependencyFilter filter2 = new PatternInclusionsDependencyFilter("com.affichage.*");
 	private static final OrDependencyFilter DEPENDENCYFIlTER = new OrDependencyFilter(filter1, filter2);
 
+	private final RepositorySystemFactory systemFactory;
+	
 	private final RepositorySystem system;
 
 	private final RepositorySystemSession session;
@@ -58,14 +61,13 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 		}
 	}
 
-	public ArtifactsDependencyResolverImpl(String localRepo) {
+	public ArtifactsDependencyResolverImpl(String localRepo, RepositorySystemFactory systemFactory) {
 		init(localRepo);
-		this.system = RepositorySystemFactory.newRepositorySystem();
-		this.session = RepositorySystemFactory.newRepositorySystemSession(system, localRepo);
-		this.repos = RepositorySystemFactory.newRepositories();
-
+		this.systemFactory = systemFactory;
+		this.system = systemFactory.newRepositorySystem();
+		this.session = systemFactory.newRepositorySystemSession(system, localRepo);
+		this.repos = systemFactory.newRepositories();
 	}
- 
 
 	public List<MavenArtWithDependencies> resolveDependenciesInternal(List<MavenArtifact> artifacts) {
 		List<MavenArtWithDependencies> resolvedDependencies = Lists.newArrayList();
