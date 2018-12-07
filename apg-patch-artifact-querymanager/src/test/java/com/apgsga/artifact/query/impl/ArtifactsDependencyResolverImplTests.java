@@ -43,7 +43,7 @@ public class ArtifactsDependencyResolverImplTests {
 	
 	@Before
 	public void before() {
-		systemFactory = RepositorySystemFactory.create(repoUrl, repoName, repoUser);
+		systemFactory = RepositorySystemFactory.create(repoUrl, repoName, repoUser, System.getenv("REPO_RO_PASSWD"));
 	}
 
 	@Test

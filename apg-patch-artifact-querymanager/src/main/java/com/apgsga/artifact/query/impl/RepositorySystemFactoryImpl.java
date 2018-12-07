@@ -18,7 +18,6 @@ import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.eclipse.aether.util.repository.AuthenticationBuilder;
 
 import com.apgsga.artifact.query.RepositorySystemFactory;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 
@@ -27,15 +26,17 @@ public class RepositorySystemFactoryImpl implements RepositorySystemFactory {
 	private String mavenRepoUsername;
 	private String mavenRepoBaseUrl;
 	private String mavenRepoName;
+	private String mavenRepoUserPwd;
 	
 	public RepositorySystemFactoryImpl(){
 		
 	}
 	
-	public RepositorySystemFactoryImpl(String mavenRepoUsername, String mavenRepoBaseUrl, String mavenRepoName) {
+	public RepositorySystemFactoryImpl(String mavenRepoUsername, String mavenRepoBaseUrl, String mavenRepoName, String mavenRepoUserPwd) {
 		this.mavenRepoBaseUrl = mavenRepoBaseUrl;
 		this.mavenRepoName = mavenRepoName;
 		this.mavenRepoUsername = mavenRepoUsername;
+		this.mavenRepoUserPwd = mavenRepoUserPwd;
 	}
 
 	public RepositorySystem newRepositorySystem() {
@@ -73,9 +74,7 @@ public class RepositorySystemFactoryImpl implements RepositorySystemFactory {
 	}
 
 	private RemoteRepository newCentralRepository(String name, String url) {
-		String repoPasswd = System.getenv("REPO_RO_PASSWD"); 
-		Preconditions.checkNotNull(repoPasswd,"Repo password should'nt be null");
-        Authentication auth = new AuthenticationBuilder().addUsername(mavenRepoUsername).addPassword( repoPasswd ).build();
+        Authentication auth = new AuthenticationBuilder().addUsername(mavenRepoUsername).addPassword( this.mavenRepoUserPwd ).build();
 		return new RemoteRepository.Builder(name, "default", url).setAuthentication( auth ).build();
 	}
 

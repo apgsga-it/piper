@@ -2,6 +2,7 @@ package com.apgsga.microservice.patch.server.config;
 
 import java.io.IOException;
 
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -81,6 +82,12 @@ public class MicroServicePatchConfig {
 	
 	@Value("${mavenrepo.name}")
 	private String mavenRepoName;
+	
+	@Value("${mavenrepo.user.encryptedPwd}")
+	private String mavenRepoUserEncryptedPwd;
+
+	@Value("${mavenrepo.user.decryptpwd.key:#{environment.REPO_USER_DECRYPT_KEY}}")
+	private String mavenRepoUserDecryptKey;
 
 	@Bean(name = "patchPersistence")
 	public PatchPersistence patchFilebasePersistence() throws IOException {
@@ -106,7 +113,13 @@ public class MicroServicePatchConfig {
 	
 	@Bean(name = "repositorySystemFactory")
 	public RepositorySystemFactory repositorySystemFactory() {
-		return RepositorySystemFactory.create(mavenRepoBaseUrl, mavenRepoName, mavenRepoUsername);
+		return RepositorySystemFactory.create(mavenRepoBaseUrl, mavenRepoName, mavenRepoUsername, decryptPwd());
+	}
+
+	private String decryptPwd() {
+		BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+		textEncryptor.setPassword(this.mavenRepoUserDecryptKey);
+		return textEncryptor.decrypt(this.mavenRepoUserEncryptedPwd);
 	}
 
 	@Bean(name = "artifactManager")

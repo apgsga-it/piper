@@ -32,10 +32,13 @@ class PropertyFileBasedVersionManagerTests extends Specification {
 	@Value('${mavenrepo.name}')
 	def repoName
 	
+	@Value('${mavenrepo.user.encryptedPwd}')
+	def mavenRepoUserEncryptedPwd
+	
 	def RepositorySystemFactory systemFactory
 	
 	def setup() {
-		systemFactory = RepositorySystemFactory.create(repoUrl, repoName, repoUser);
+		systemFactory = RepositorySystemFactory.create(repoUrl, repoName, repoUser, mavenRepoUserEncryptedPwd, System.getenv('REPO_USER_DECRYPT_KEY'));
 	}
 
 	def "Without additional path to Patch File "() {
