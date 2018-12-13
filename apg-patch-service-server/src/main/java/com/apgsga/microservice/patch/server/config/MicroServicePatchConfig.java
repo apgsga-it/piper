@@ -113,7 +113,7 @@ public class MicroServicePatchConfig {
 	
 	@Bean(name = "repositorySystemFactory")
 	public RepositorySystemFactory repositorySystemFactory() {
-		return RepositorySystemFactory.create(mavenRepoBaseUrl, mavenRepoName, mavenRepoUsername, mavenRepoUserDecryptKey);
+		return RepositorySystemFactory.create(mavenRepoBaseUrl, mavenRepoName, mavenRepoUsername, mavenRepoUserEncryptedPwd, mavenRepoUserDecryptKey);
 	}
 
 
