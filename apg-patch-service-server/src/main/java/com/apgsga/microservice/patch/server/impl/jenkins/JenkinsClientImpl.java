@@ -161,13 +161,14 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	private void inputActionForPipeline(Patch patch, String action, PipelineBuild lastBuild)
 			throws IOException, InterruptedException {
-		while (waitForAndProcessInput(patch, action, lastBuild)) {
+		int i = 0; 
+		while (waitForAndProcessInput(patch, action, lastBuild,i) && i < 10) {
 			// Loops with condition
 
 		}
 	}
 
-	private boolean waitForAndProcessInput(Patch patch, String action, PipelineBuild lastBuild)
+	private boolean waitForAndProcessInput(Patch patch, String action, PipelineBuild lastBuild, int loops)
 			throws IOException, InterruptedException {
 		WorkflowRun wfRun = lastBuild.getWorkflowRun();
 		LOGGER.info("Workflow status: " + wfRun.getStatus());
@@ -175,7 +176,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 			LOGGER.warn(PIPELINE_CONS + wfRun.getName() + IS_NOT_BUILDING_CONS);
 			return false;
 		} else if (wfRun.isInProgress()) {
-			Thread.sleep(1000);
+			Thread.sleep(2000);
 			return true;
 		} else {
 			boolean actionFound = false;

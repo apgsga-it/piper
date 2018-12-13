@@ -86,7 +86,7 @@ public class MicroServicePatchConfig {
 	@Value("${mavenrepo.user.encryptedPwd}")
 	private String mavenRepoUserEncryptedPwd;
 
-	@Value("${mavenrepo.user.decryptpwd.key:#{environment.REPO_USER_DECRYPT_KEY}}")
+	@Value("${mavenrepo.user.decryptpwd.key:}")
 	private String mavenRepoUserDecryptKey;
 
 	@Bean(name = "patchPersistence")
@@ -113,14 +113,9 @@ public class MicroServicePatchConfig {
 	
 	@Bean(name = "repositorySystemFactory")
 	public RepositorySystemFactory repositorySystemFactory() {
-		return RepositorySystemFactory.create(mavenRepoBaseUrl, mavenRepoName, mavenRepoUsername, decryptPwd());
+		return RepositorySystemFactory.create(mavenRepoBaseUrl, mavenRepoName, mavenRepoUsername, mavenRepoUserDecryptKey);
 	}
 
-	private String decryptPwd() {
-		BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-		textEncryptor.setPassword(this.mavenRepoUserDecryptKey);
-		return textEncryptor.decrypt(this.mavenRepoUserEncryptedPwd);
-	}
 
 	@Bean(name = "artifactManager")
 	@Profile({"live","mavenRepo"})

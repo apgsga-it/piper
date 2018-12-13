@@ -17,7 +17,7 @@ public interface RepositorySystemFactory {
 	
 	public static RepositorySystemFactory create(String baseUrl, String repoName, String user, String encryptedPassword, String decryptKey) {
 		BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-		textEncryptor.setPassword(decryptKey);
+		textEncryptor.setPassword(decryptKey == null || decryptKey.isEmpty() ? "apgdevops" : decryptKey);
 		String decryptedPwd = textEncryptor.decrypt(encryptedPassword);
 		return create(baseUrl,repoName,user,decryptedPwd);
 	}

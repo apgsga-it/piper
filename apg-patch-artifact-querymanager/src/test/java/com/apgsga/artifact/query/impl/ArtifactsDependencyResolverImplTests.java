@@ -41,12 +41,15 @@ public class ArtifactsDependencyResolverImplTests {
 	
 	@Value("${mavenrepo.user.encryptedPwd}")
 	String mavenRepoUserEncryptedPwd;
+
+	@Value("${mavenrepo.user.decryptpwd.key:}")
+	private String mavenRepoUserDecryptKey;
 	
 	RepositorySystemFactory systemFactory;
 	
 	@Before
 	public void before() {
-		systemFactory = RepositorySystemFactory.create(repoUrl, repoName, repoUser, mavenRepoUserEncryptedPwd, System.getenv("REPO_USER_DECRYPT_KEY"));
+		systemFactory = RepositorySystemFactory.create(repoUrl, repoName, repoUser, mavenRepoUserEncryptedPwd, mavenRepoUserDecryptKey);
 	}
 
 	@Test

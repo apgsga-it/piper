@@ -40,8 +40,6 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 	private static final PatternInclusionsDependencyFilter filter1 = new PatternInclusionsDependencyFilter("com.apgsga.*");
 	private static final PatternInclusionsDependencyFilter filter2 = new PatternInclusionsDependencyFilter("com.affichage.*");
 	private static final OrDependencyFilter DEPENDENCYFIlTER = new OrDependencyFilter(filter1, filter2);
-
-	private final RepositorySystemFactory systemFactory;
 	
 	private final RepositorySystem system;
 
@@ -63,7 +61,6 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 
 	public ArtifactsDependencyResolverImpl(String localRepo, RepositorySystemFactory systemFactory) {
 		init(localRepo);
-		this.systemFactory = systemFactory;
 		this.system = systemFactory.newRepositorySystem();
 		this.session = systemFactory.newRepositorySystemSession(system, localRepo);
 		this.repos = systemFactory.newRepositories();

@@ -31,10 +31,14 @@ class ArtifactsDependencyResolverTests extends Specification {
 	@Value('${mavenrepo.user.encryptedPwd}')
 	def mavenRepoUserEncryptedPwd
 	
+	@Value('${mavenrepo.user.decryptpwd.key:}')
+	def mavenRepoUserDecryptKey;
+
+	
 	def systemFactory
 	
 	def setup() {
-		systemFactory = RepositorySystemFactory.create(repoUrl, repoName, repoUser, mavenRepoUserEncryptedPwd, System.getenv('REPO_USER_DECRYPT_KEY'));
+		systemFactory = RepositorySystemFactory.create(repoUrl, repoName, repoUser, mavenRepoUserEncryptedPwd,mavenRepoUserDecryptKey);
 	}
 
 	def "Collect Artefacts by Dependencylevel"() {
