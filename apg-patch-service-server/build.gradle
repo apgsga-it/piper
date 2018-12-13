@@ -69,7 +69,7 @@ def homeDir = "/opt/${project.name}"
 ospackage {
 	packageName = "${project.name}"
 	version = "${pkgVersion}"
-	release = 4
+	release = 5
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -121,7 +121,7 @@ ospackage {
 		permissionGroup "root"
 		// TODO (che 22.5) :  we need a common group for this directory
 		fileMode 0644 
-		fileType NOREPLACE
+		fileType CONFIG | NOREPLACE
 	}
 	
 
@@ -135,7 +135,7 @@ ospackage {
 	
 	from("packaging/db") {
 		into "/var/opt/${project.name}/db"
-		fileType NOREPLACE
+		fileType CONFIG | NOREPLACE
 		user "root"
 		permissionGroup "root"
 		fileMode 0755 
