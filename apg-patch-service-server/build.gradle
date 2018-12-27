@@ -2,7 +2,7 @@ plugins {
   	id 'groovy'
    	id 'application'
  	id 'org.springframework.boot' version '1.5.9.RELEASE'
-  	id 'nebula.ospackage' version '4.6.0'
+  	id 'nebula.ospackage' version '5.2.0'
   	id 'ivy-publish'  
   
 }
@@ -182,8 +182,8 @@ artifactory {
 
         repository {
             repoKey = 'yumrepodev'   
-            username ="${repoUser}"
-            password = System.env.REPO_RO_PASSWD
+            username = mavenRepoUser
+            password = mavenRepoPwd
             ivy {
                  artifactLayout = "${buildRpm.outputs.getFiles().getSingleFile().getName()}"
             }

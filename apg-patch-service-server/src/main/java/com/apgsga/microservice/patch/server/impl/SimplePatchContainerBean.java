@@ -214,7 +214,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				List<String> result = vcsCmdRunner.run(PatchVcsCommand
 						.createDiffPatchModulesCmd(patch.getDbPatchBranch(), patch.getProdBranch(), dbModule));
 				List<String> files = result.stream()
-						.filter(s -> s.startsWith("Index: ") && (s.endsWith("sql") || s.endsWith("deleted")))
+						.filter(s -> s.startsWith("Index: "))
 						.map(s -> s.substring(7)).collect(Collectors.toList());
 				files.stream().forEach(file -> {
 					DbObject dbObject = new DbObjectBean();
