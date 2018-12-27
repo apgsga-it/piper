@@ -2,7 +2,7 @@ plugins {
   	id 'groovy'
    	id 'application'
  	id 'org.springframework.boot' version '1.5.9.RELEASE'
-  	id 'nebula.ospackage' version '5.2.0'
+  	id 'nebula.ospackage' version '4.10.0'
   	id 'ivy-publish'  
   
 }

@@ -3,7 +3,7 @@ plugins {
   	id 'groovy'
     id 'application'
 	id 'com.github.johnrengelman.shadow' version '2.0.2'
-  	id 'nebula.ospackage' version '5.2.0'
+  	id 'nebula.ospackage' version '4.10.0'
   	id 'ivy-publish' 
 }
 apply plugin: 'groovy'
