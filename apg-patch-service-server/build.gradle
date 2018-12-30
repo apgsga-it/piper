@@ -69,7 +69,7 @@ def homeDir = "/opt/${project.name}"
 ospackage {
 	packageName = "${project.name}"
 	version = "${pkgVersion}"
-	release = 5
+	release = 1
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -155,7 +155,7 @@ ospackage {
 	//Log dir
 	directory("/var/opt/${project.name}/log", 0755 )
 	
-		//Log dir
+		//DB dir
 	directory("/var/opt/${project.name}/dbwork", 0755 )
 	
 	// Local Maven Repo
