@@ -54,6 +54,7 @@ public class PliConfig {
 		properties.put("db.passwd", env.getProperty("db.passwd",""));
 		properties.put("artifactory.release.repo.name", env.getProperty("artifactory.release.repo.name"));
 		properties.put("artifactory.dbpatch.repo.name", env.getProperty("artifactory.dbpatch.repo.name"));
+		properties.put("artifactory.patch.rpm.repo.name", env.getProperty("artifactory.patch.rpm.repo.name"));
 		Properties config = new Properties();
 		config.putAll(properties);
 		return sl.parse(config);
