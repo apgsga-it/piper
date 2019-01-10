@@ -17,6 +17,8 @@ class PatchArtifactoryClient {
 	
 	private final String DB_PATCH_REPO
 	
+	private final String RPM_PATCH_REPO
+	
 	def PatchArtifactoryClient(def configuration) {
 		config = configuration
 		def pass = System.getenv('REPO_RO_PASSWD')
@@ -24,11 +26,12 @@ class PatchArtifactoryClient {
 		artifactory = ArtifactoryClientBuilder.create().setUrl(config.artifactory.url).setUsername(config.artifactory.user).setPassword(pass).build();
 		RELEASE_REPO = config.artifactory.release.repo.name
 		DB_PATCH_REPO = config.artifactory.dbpatch.repo.name
+		RPM_PATCH_REPO = config.artifactory.patch.rpm.repo.name
 	}
 	
 	public def removeArtifacts(String regex, boolean dryRun) {
 
-		List<RepoPath> searchItems = artifactory.searches().repositories(RELEASE_REPO,DB_PATCH_REPO).artifactsByName(regex).doSearch();
+		List<RepoPath> searchItems = artifactory.searches().repositories(RELEASE_REPO,DB_PATCH_REPO,RPM_PATCH_REPO).artifactsByName(regex).doSearch();
 		searchItems.each{repoPath ->
 			if(dryRun) {
 				println "${repoPath} would have been deleted."
@@ -45,9 +48,6 @@ class PatchArtifactoryClient {
 		def revisionClient = new PatchRevisionClient(config)
 		def revision = revisionClient.getInstalledRevisions(target)
 		def dryRun = config.onclone.delete.artifact.dryrun
-		def revAsListToCleanJadas = ""
-		def jadasCleanupCmd = "/opt/apgops/cleanup_jadas_images_by_revision.sh"
-		def revisionAsString
 		
 		if(revision != null) {
 			revision.each {
@@ -55,20 +55,6 @@ class PatchArtifactoryClient {
 				removeArtifacts("*-${it}.*", dryRun)
 				// Will delete all published sources jar for the given version/revision
 				removeArtifacts("*-${it}-sources.jar", dryRun)
-				
-				revisionAsString = it.toString()
-				revisionAsString = revisionAsString.substring(revisionAsString.lastIndexOf("-")+1, revisionAsString.length())
-				revAsListToCleanJadas = revAsListToCleanJadas + " " + revisionAsString
-			}
-			
-			if(!dryRun) {
-				println "Executing: ${jadasCleanupCmd}${revAsListToCleanJadas}"
-				def output = ['bash', '-c', "${jadasCleanupCmd}${revAsListToCleanJadas}"].execute().in.text
-				println "Result of ${jadasCleanupCmd}${revAsListToCleanJadas}:"
-				println output
-			}
-			else {
-				println "Following script would have been called to clean Jadas images: ${jadasCleanupCmd}${revAsListToCleanJadas}"
 			}
 		}			
 		else {
