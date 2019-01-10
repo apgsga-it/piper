@@ -58,6 +58,7 @@ public class PliConfig {
 		Properties config = new Properties();
 		config.putAll(properties);
 		return sl.parse(config);
+		
 	}
 
 }
