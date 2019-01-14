@@ -55,8 +55,6 @@ class PatchArtifactoryClient {
 				removeArtifacts("*-${it}.*", dryRun)
 				// Will delete all published sources jar for the given version/revision
 				removeArtifacts("*-${it}-sources.jar", dryRun)
-				// Will remove all RPM from patch Repo for the given revision
-				
 			}
 		}			
 		else {
