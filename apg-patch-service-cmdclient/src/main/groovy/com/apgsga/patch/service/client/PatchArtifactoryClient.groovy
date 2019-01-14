@@ -29,7 +29,7 @@ class PatchArtifactoryClient {
 		RPM_PATCH_REPO = config.patchRepoName
 	}
 	
-	public def removeArtifacts(String regex, boolean dryRun) {
+	private def removeArtifacts(String regex, boolean dryRun) {
 
 		List<RepoPath> searchItems = artifactory.searches().repositories(RELEASE_REPO,DB_PATCH_REPO,RPM_PATCH_REPO).artifactsByName(regex).doSearch();
 		searchItems.each{repoPath ->
@@ -55,6 +55,8 @@ class PatchArtifactoryClient {
 				removeArtifacts("*-${it}.*", dryRun)
 				// Will delete all published sources jar for the given version/revision
 				removeArtifacts("*-${it}-sources.jar", dryRun)
+				// Will remove all RPM from patch Repo for the given revision
+				
 			}
 		}			
 		else {
