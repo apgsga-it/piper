@@ -23,7 +23,7 @@ class PatchArtifactoryClient {
 		config = configuration
 		def pass = System.getenv('REPO_RO_PASSWD')
 		assert pass != null
-		artifactory = ArtifactoryClientBuilder.create().setUrl(config.mavenRepoBaseUrl).setUsername(config.mavenRepoUser).setPassword(pass).build();
+		artifactory = ArtifactoryClientBuilder.create().setUrl(config.mavenrepo.baseurl).setUsername(config.mavenrepo.user.name).setPassword(pass).build();
 		RELEASE_REPO = config.artifactory.release.repo.name
 		DB_PATCH_REPO = config.artifactory.dbpatch.repo.name
 		RPM_PATCH_REPO = config.patchRepoName
