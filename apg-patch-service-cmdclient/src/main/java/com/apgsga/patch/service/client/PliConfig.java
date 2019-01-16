@@ -43,7 +43,7 @@ public class PliConfig {
 		properties.put("revision.file.path", env.getProperty("revision.file.path"));
 		properties.put("host.default", env.getProperty("host.default"));
 		properties.put("config.dir", env.getProperty("config.dir"));
-		properties.put("onclone.delete.artifact.dryrun", Boolean.getBoolean(env.getProperty("onclone.delete.artifact.dryrun")));
+		properties.put("onclone.delete.artifact.dryrun", Boolean.valueOf(env.getProperty("onclone.delete.artifact.dryrun")));
 		properties.put("target.system.mapping.file.name", env.getProperty("target.system.mapping.file.name"));
 		properties.put("mavenrepo.user.name", env.getProperty("mavenRepoUser"));
 		properties.put("mavenrepo.baseurl", env.getProperty("mavenRepoBaseUrl"));
