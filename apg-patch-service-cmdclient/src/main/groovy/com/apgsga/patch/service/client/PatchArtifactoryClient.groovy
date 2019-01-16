@@ -29,9 +29,9 @@ class PatchArtifactoryClient {
 		RPM_PATCH_REPO = config.artifactory.patch.rpm.repo.name
 	}
 	
-	private def removeArtifacts(String regex, boolean dryRun) {
+	private def removeArtifacts(String regex, boolean dryRun, Iterable<String> repos) {
 
-		List<RepoPath> searchItems = artifactory.searches().repositories(RELEASE_REPO,DB_PATCH_REPO,RPM_PATCH_REPO).artifactsByName(regex).doSearch();
+		List<RepoPath> searchItems = artifactory.searches().repositories(repos.join(",")).artifactsByName(regex).doSearch();
 		searchItems.each{repoPath ->
 			if(dryRun) {
 				println "${repoPath} would have been deleted."
@@ -52,9 +52,13 @@ class PatchArtifactoryClient {
 		if(revision != null) {
 			revision.each {
 				// Will delete all published JAR, POM, ZIP, etc ... for the given version/revision
-				removeArtifacts("*-${it}.*", dryRun)
+				removeArtifacts("*-${it}.*", dryRun, [RELEASE_REPO,DB_PATCH_REPO])
 				// Will delete all published sources jar for the given version/revision
-				removeArtifacts("*-${it}-sources.jar", dryRun)
+				removeArtifacts("*-${it}-sources.jar", dryRun, [RELEASE_REPO,DB_PATCH_REPO])
+				// Will delete all Jadas RPMs (and corresponding XMLx)
+				// Jadas revision doesn't contain the "MAVEN Version", we have to extract only the revision number (all from the last "-")
+				def jadasRevision = "${it}".substring("${it}".lastIndexOf("-"),"${it}".length())
+				removeArtifacts("*${jadasRevision}.????-*", dryRun, [RPM_PATCH_REPO])
 			}
 		}			
 		else {
