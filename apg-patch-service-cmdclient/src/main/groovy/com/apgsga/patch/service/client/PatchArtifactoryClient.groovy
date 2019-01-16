@@ -26,7 +26,7 @@ class PatchArtifactoryClient {
 		artifactory = ArtifactoryClientBuilder.create().setUrl(config.mavenrepo.baseurl).setUsername(config.mavenrepo.user.name).setPassword(pass).build();
 		RELEASE_REPO = config.artifactory.release.repo.name
 		DB_PATCH_REPO = config.artifactory.dbpatch.repo.name
-		RPM_PATCH_REPO = config.patchRepoName
+		RPM_PATCH_REPO = config.artifactory.patch.rpm.repo.name
 	}
 	
 	private def removeArtifacts(String regex, boolean dryRun) {
