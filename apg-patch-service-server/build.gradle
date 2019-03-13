@@ -53,7 +53,7 @@ sourceSets {
   test {
     resources {
       srcDir 'src/test/java'
-      include '**/*.properties'
+      include '**/*.properties' 
     }
   }
 }
