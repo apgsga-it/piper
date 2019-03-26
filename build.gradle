@@ -90,7 +90,7 @@ subprojects {
 				artifact sourcesJar
 			}
 		}
-		def repoTarget = version.endsWith("SNAPSHOT") ? "snapshots" : "releases"
+		def repoTarget = version.endsWith("SNAPSHOT") ? "${mavenSnapshotsRepoName}" : "${mavenReleasesRepoName}"
 		repositories {
 			maven {
 				name ='deployRepo'
