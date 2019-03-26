@@ -60,7 +60,7 @@ sourceSets {
 
 
 def pkgVersion = version
-def repoTarget= version.endsWith("SNAPSHOT") ? "snapshots" : "releases"
+def repoTarget= version.endsWith("SNAPSHOT") ? "${mavenSnapshotsRepoName}" : "${mavenReleasesRepoName}"
 
 def homeDir = "/opt/${project.name}"
 
@@ -181,7 +181,7 @@ artifactory {
     publish {
 
         repository {
-            repoKey = 'yumrepodev'   
+            repoKey = "${yumRepoDevName}"   
             username = mavenRepoUser
             password = mavenRepoPwd
             ivy {
