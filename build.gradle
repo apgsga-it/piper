@@ -31,7 +31,7 @@ subprojects {
             	username mavenRepoUser
             	password mavenRepoPwd
         	}
-			url "${mavenRepoBaseUrl}/repo" 
+			url "${mavenRepoBaseUrl}/${mavenRepoName}" 
 		}
 	}
 
