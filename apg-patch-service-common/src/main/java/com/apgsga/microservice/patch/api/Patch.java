@@ -26,6 +26,8 @@ public interface Patch extends ServiceMetaData {
 	public static final String TAG_NR = "tagNr";
 
 	public static final String PATCH_TAG = "patchTag";
+	
+	public static final String DEVELOPER_BRANCH = "developerBranch";
 
 	public static final String INSTALLS_TARGET = "installationTarget";
 	
@@ -88,6 +90,10 @@ public interface Patch extends ServiceMetaData {
 	public String getPatchTag();
 
 	void setPatchTag(String patchTag);
+	
+	public String getDeveloperBranch();
+
+	void setDeveloperBranch(String developerBranch);
 
 	public String getInstallationTarget();
 
