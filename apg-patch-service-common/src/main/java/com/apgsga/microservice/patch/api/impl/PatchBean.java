@@ -21,6 +21,7 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	private String dbPatchBranch;
 	private String prodBranch = PROD_BRANCH_DEFAULT;
 	private String patchTag = "";
+	private String developerBranch = "";
 	private Integer tagNr = 0;
 	private String installationTarget;
 	private String targetToState;
@@ -104,6 +105,18 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		final Object oldValue = this.prodBranch;
 		this.prodBranch = prodBranch;
 		firePropertyChangeAndMarkDirty(PROD_BRANCH, oldValue, prodBranch);
+	}
+	
+	@Override
+	public String getDeveloperBranch() {
+		return developerBranch;
+	}
+
+	@Override
+	public void setDeveloperBranch(String developerBranch) {
+		final Object oldValue = this.developerBranch;
+		this.developerBranch = developerBranch;
+		firePropertyChangeAndMarkDirty(DEVELOPER_BRANCH, oldValue, developerBranch);
 	}
 
 	@Override
@@ -308,6 +321,7 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		result = prime * result + ((baseVersionNumber == null) ? 0 : baseVersionNumber.hashCode());
 		result = prime * result + ((dbObjects == null) ? 0 : dbObjects.hashCode());
 		result = prime * result + ((dbPatchBranch == null) ? 0 : dbPatchBranch.hashCode());
+		result = prime * result + ((developerBranch == null) ? 0 : developerBranch.hashCode());
 		result = prime * result + (installOnEmptyModules ? 1231 : 1237);
 		result = prime * result + ((installationTarget == null) ? 0 : installationTarget.hashCode());
 		result = prime * result + ((lastRevision == null) ? 0 : lastRevision.hashCode());
@@ -337,84 +351,106 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		if (baseVersionNumber == null) {
 			if (other.baseVersionNumber != null)
 				return false;
-		} else if (!baseVersionNumber.equals(other.baseVersionNumber))
+		}
+		else if (!baseVersionNumber.equals(other.baseVersionNumber))
 			return false;
 		if (dbObjects == null) {
 			if (other.dbObjects != null)
 				return false;
-		} else if (!dbObjects.equals(other.dbObjects))
+		}
+		else if (!dbObjects.equals(other.dbObjects))
 			return false;
 		if (dbPatchBranch == null) {
 			if (other.dbPatchBranch != null)
 				return false;
-		} else if (!dbPatchBranch.equals(other.dbPatchBranch))
+		}
+		else if (!dbPatchBranch.equals(other.dbPatchBranch))
+			return false;
+		if (developerBranch == null) {
+			if (other.developerBranch != null)
+				return false;
+		}
+		else if (!developerBranch.equals(other.developerBranch))
 			return false;
 		if (installOnEmptyModules != other.installOnEmptyModules)
 			return false;
 		if (installationTarget == null) {
 			if (other.installationTarget != null)
 				return false;
-		} else if (!installationTarget.equals(other.installationTarget))
+		}
+		else if (!installationTarget.equals(other.installationTarget))
 			return false;
 		if (lastRevision == null) {
 			if (other.lastRevision != null)
 				return false;
-		} else if (!lastRevision.equals(other.lastRevision))
+		}
+		else if (!lastRevision.equals(other.lastRevision))
 			return false;
 		if (mavenArtifacts == null) {
 			if (other.mavenArtifacts != null)
 				return false;
-		} else if (!mavenArtifacts.equals(other.mavenArtifacts))
+		}
+		else if (!mavenArtifacts.equals(other.mavenArtifacts))
 			return false;
 		if (microServiceBranch == null) {
 			if (other.microServiceBranch != null)
 				return false;
-		} else if (!microServiceBranch.equals(other.microServiceBranch))
+		}
+		else if (!microServiceBranch.equals(other.microServiceBranch))
 			return false;
 		if (patchNummer == null) {
 			if (other.patchNummer != null)
 				return false;
-		} else if (!patchNummer.equals(other.patchNummer))
+		}
+		else if (!patchNummer.equals(other.patchNummer))
 			return false;
 		if (patchTag == null) {
 			if (other.patchTag != null)
 				return false;
-		} else if (!patchTag.equals(other.patchTag))
+		}
+		else if (!patchTag.equals(other.patchTag))
 			return false;
 		if (prodBranch == null) {
 			if (other.prodBranch != null)
 				return false;
-		} else if (!prodBranch.equals(other.prodBranch))
+		}
+		else if (!prodBranch.equals(other.prodBranch))
 			return false;
 		if (revision == null) {
 			if (other.revision != null)
 				return false;
-		} else if (!revision.equals(other.revision))
+		}
+		else if (!revision.equals(other.revision))
 			return false;
 		if (revisionMnemoPart == null) {
 			if (other.revisionMnemoPart != null)
 				return false;
-		} else if (!revisionMnemoPart.equals(other.revisionMnemoPart))
+		}
+		else if (!revisionMnemoPart.equals(other.revisionMnemoPart))
 			return false;
 		if (runningNr == null) {
 			if (other.runningNr != null)
 				return false;
-		} else if (!runningNr.equals(other.runningNr))
+		}
+		else if (!runningNr.equals(other.runningNr))
 			return false;
 		if (serviceName == null) {
 			if (other.serviceName != null)
 				return false;
-		} else if (!serviceName.equals(other.serviceName))
+		}
+		else if (!serviceName.equals(other.serviceName))
 			return false;
 		if (tagNr == null) {
 			if (other.tagNr != null)
 				return false;
-		} else if (!tagNr.equals(other.tagNr))
+		}
+		else if (!tagNr.equals(other.tagNr))
 			return false;
 		if (targetToState == null) {
 			if (other.targetToState != null)
 				return false;
-		} else if (!targetToState.equals(other.targetToState))
+		}
+		else if (!targetToState.equals(other.targetToState))
 			return false;
 		return true;
 	}
@@ -423,13 +459,14 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	public String toString() {
 		return "PatchBean [patchNummer=" + patchNummer + ", serviceName=" + serviceName + ", microServiceBranch="
 				+ microServiceBranch + ", dbPatchBranch=" + dbPatchBranch + ", prodBranch=" + prodBranch + ", patchTag="
-				+ patchTag + ", tagNr=" + tagNr + ", installationTarget=" + installationTarget + ", targetToState="
-				+ targetToState + ", baseVersionNumber=" + baseVersionNumber + ", revisionMnemoPart="
-				+ revisionMnemoPart + ", revision=" + revision + ", lastRevision=" + lastRevision + ", runningNr="
-				+ runningNr + ", dbObjects=" + dbObjects + ", mavenArtifacts=" + mavenArtifacts
-				+ ", installOnEmptyModules=" + installOnEmptyModules + "]";
+				+ patchTag + ", developerBranch=" + developerBranch + ", tagNr=" + tagNr + ", installationTarget="
+				+ installationTarget + ", targetToState=" + targetToState + ", baseVersionNumber=" + baseVersionNumber
+				+ ", revisionMnemoPart=" + revisionMnemoPart + ", revision=" + revision + ", lastRevision="
+				+ lastRevision + ", runningNr=" + runningNr + ", dbObjects=" + dbObjects + ", mavenArtifacts="
+				+ mavenArtifacts + ", installOnEmptyModules=" + installOnEmptyModules + "]";
 	}
 
+	
 	
 
 }

@@ -31,7 +31,7 @@ subprojects {
             	username mavenRepoUser
             	password mavenRepoPwd
         	}
-			url "${mavenRepoBaseUrl}/repo" 
+			url "${mavenRepoBaseUrl}/${mavenRepoName}" 
 		}
 	}
 
@@ -90,7 +90,7 @@ subprojects {
 				artifact sourcesJar
 			}
 		}
-		def repoTarget = version.endsWith("SNAPSHOT") ? "snapshots" : "releases"
+		def repoTarget = version.endsWith("SNAPSHOT") ? "${mavenSnapshotsRepoName}" : "${mavenReleasesRepoName}"
 		repositories {
 			maven {
 				name ='deployRepo'

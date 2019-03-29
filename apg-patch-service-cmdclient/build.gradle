@@ -20,7 +20,7 @@ targetCompatibility = 1.8
 def finalName = 'apg-patch-cli'
 
 mainClassName = 'pliStarter'
-def repoTarget= version.endsWith("SNAPSHOT") ? "snapshots" : "releases"
+def repoTarget= version.endsWith("SNAPSHOT") ? "${mavenSnapshotsRepoName}" : "${mavenReleasesRepoName}"
 jar {
 	baseName = "${finalName}"
 } 
@@ -166,7 +166,7 @@ artifactory {
     publish {
 
         repository {
-            repoKey = 'yumrepodev'   
+            repoKey = "${yumRepoDevName}"   
             username = mavenRepoUser
             password = mavenRepoPwd
             ivy {

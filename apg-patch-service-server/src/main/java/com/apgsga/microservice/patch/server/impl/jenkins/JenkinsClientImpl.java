@@ -98,8 +98,6 @@ public class JenkinsClientImpl implements JenkinsClient {
 			jobParm.put("PARAMETER", patchFile.getAbsolutePath());
 			jobParm.put("RESTART", restart ? "TRUE" : "FALSE");
 
-			// TODO (jhe , che , 12.12. 2017) : hangs, when job fails
-			// immediately
 			LOGGER.info("Triggering Pipeline Job and waiting until Building " + jobName + " with Paramter: "
 					+ jobParm.toString());
 			PipelineBuild result = triggerPipelineJobAndWaitUntilBuilding(jenkinsServer, jobName, jobParm, true);
@@ -244,14 +242,14 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	}
 
-	public PipelineBuild triggerPipelineJobAndWaitUntilBuilding(JenkinsServer server, String jobName,
+	private static synchronized PipelineBuild triggerPipelineJobAndWaitUntilBuilding(JenkinsServer server, String jobName,
 			Map<String, String> params, boolean crumbFlag) throws IOException, InterruptedException {
 		PipelineJobWithDetails job = server.getPipelineJob(jobName);
 		QueueReference queueRef = job.build(params, crumbFlag);
 		return triggerPipelineJobAndWaitUntilBuilding(server, jobName, queueRef);
 	}
 
-	private PipelineBuild triggerPipelineJobAndWaitUntilBuilding(JenkinsServer server, String jobName,
+	private static PipelineBuild triggerPipelineJobAndWaitUntilBuilding(JenkinsServer server, String jobName,
 			QueueReference queueRef) throws IOException, InterruptedException {
 		PipelineJobWithDetails job = server.getPipelineJob(jobName);
 		QueueItem queueItem = server.getQueueItem(queueRef);

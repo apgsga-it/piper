@@ -2,7 +2,6 @@ package com.apgsga.microservice.patch.server.config;
 
 import java.io.IOException;
 
-import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +16,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.artifact.query.RepositorySystemFactory;
-import com.apgsga.artifact.query.impl.RepositorySystemFactoryImpl;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.server.impl.GroovyScriptActionExecutorFactory;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
@@ -66,23 +64,22 @@ public class MicroServicePatchConfig {
 
 	@Value("${patch.action.script.location:classpath:executePatchAction.groovy}")
 	private String groovyScriptFile;
-	
-	
+
 	@Value("${taskexecutor.corePoolSize:5}")
-	private Integer corePoolSize; 
-	
+	private Integer corePoolSize;
+
 	@Value("${taskexecutor.maxPoolSize:20}")
 	private Integer maxPoolSize;
-	
+
 	@Value("${mavenrepo.user.name}")
 	private String mavenRepoUsername;
-	
+
 	@Value("${mavenrepo.baseurl}")
 	private String mavenRepoBaseUrl;
-	
+
 	@Value("${mavenrepo.name}")
 	private String mavenRepoName;
-	
+
 	@Value("${mavenrepo.user.encryptedPwd}")
 	private String mavenRepoUserEncryptedPwd;
 
@@ -110,15 +107,18 @@ public class MicroServicePatchConfig {
 	public ArtifactDependencyResolver mockDependencyResolver() {
 		return ArtifactDependencyResolver.createMock(localRepo);
 	}
-	
+
 	@Bean(name = "repositorySystemFactory")
 	public RepositorySystemFactory repositorySystemFactory() {
-		return RepositorySystemFactory.create(mavenRepoBaseUrl, mavenRepoName, mavenRepoUsername, mavenRepoUserEncryptedPwd, mavenRepoUserDecryptKey);
+		return RepositorySystemFactory.create(mavenRepoBaseUrl,
+				mavenRepoName,
+				mavenRepoUsername,
+				mavenRepoUserEncryptedPwd,
+				mavenRepoUserDecryptKey);
 	}
 
-
 	@Bean(name = "artifactManager")
-	@Profile({"live","mavenRepo"})
+	@Profile({ "live", "mavenRepo" })
 	public ArtifactManager artifactManager() {
 		return ArtifactManager.create(localRepo, repositorySystemFactory());
 	}
@@ -134,7 +134,7 @@ public class MicroServicePatchConfig {
 	public JenkinsClient jenkinsPatchClient() {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource rDbLocation = rl.getResource(dbLocation);
-		return new JenkinsClientImpl(rDbLocation, jenkinsHost, jenkinsUser, jenkinsAuthKey,threadPoolTaskExecutor());
+		return new JenkinsClientImpl(rDbLocation, jenkinsHost, jenkinsUser, jenkinsAuthKey, threadPoolTaskExecutor());
 	}
 
 	@Bean(name = "vcsCmdRunnerFactory")
@@ -167,7 +167,7 @@ public class MicroServicePatchConfig {
 		return new GroovyScriptActionExecutorFactory(configCommon, targetSystemFile, groovyScriptFile);
 	}
 
-	@Bean(name="taskExecutor")
+	@Bean(name = "taskExecutor")
 	public TaskExecutor threadPoolTaskExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 		executor.setCorePoolSize(corePoolSize);
