@@ -21,5 +21,6 @@ public interface JenkinsClient {
 	
 	public void onClone(String source, String target);
 	
-	public boolean isProdPipelineForPatchRunning(String patchNumber);
+	public boolean isProdPatchPipelineRunning(String patchNumber);
+	
 }

@@ -289,7 +289,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 	}
 
 	@Override
-	public boolean isProdPipelineForPatchRunning(String patchNumber) {
+	public boolean isProdPatchPipelineRunning(String patchNumber) {
 		JenkinsServer jenkinsServer;
 		try {
 			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
