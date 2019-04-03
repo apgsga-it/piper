@@ -61,7 +61,13 @@ public class JenkinsMockClient implements JenkinsClient {
 
 	@Override
 	public boolean isProdPatchPipelineRunning(String patchNumber) {
-		LOGGER.info("isProdPipelineForPatchRunning for :" + patchNumber);
+		LOGGER.info("isProdPatchPipelineRunning for :" + patchNumber);
+		return false;
+	}
+
+	@Override
+	public boolean isLastProdPipelineBuildInError(String patchNumber) {
+		LOGGER.info("isLastProdPipelineBuildInError for : " + patchNumber);
 		return false;
 	}	
 }

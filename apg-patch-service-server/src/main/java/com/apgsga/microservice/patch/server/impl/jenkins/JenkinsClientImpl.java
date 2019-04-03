@@ -294,9 +294,21 @@ public class JenkinsClientImpl implements JenkinsClient {
 		try {
 			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
 			PipelineBuild lastBuild = getPipelineBuild(jenkinsServer, patchNumber);
-			return lastBuild.getWorkflowRun().isInProgress();
+			return lastBuild.details().isBuilding();
 		} catch (Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.isProdPipelineForPatchRunning.error", new Object[]{patchNumber});
+		}
+	}
+
+	@Override
+	public boolean isLastProdPipelineBuildInError(String patchNumber) {
+		JenkinsServer jenkinsServer;
+		try {
+			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
+			PipelineBuild lastBuild = getPipelineBuild(jenkinsServer, patchNumber);
+			return lastBuild.details().getResult().equals(BuildResult.FAILURE);
+		} catch (Exception e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.isLastProdPipelineBuildInError.error", new Object[]{patchNumber});
 		}
 	}
 }
