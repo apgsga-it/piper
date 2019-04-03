@@ -3,6 +3,7 @@ package com.apgsga.microservice.patch.server.impl.jenkins;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
@@ -287,4 +288,15 @@ public class JenkinsClientImpl implements JenkinsClient {
 				"JenkinsPatchClientImpl.triggerPipelineJobAndWaitUntilBuilding.error", new Object[] { jobName });
 	}
 
+	@Override
+	public boolean isProdPipelineForPatchRunning(String patchNumber) {
+		JenkinsServer jenkinsServer;
+		try {
+			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
+			PipelineBuild lastBuild = getPipelineBuild(jenkinsServer, patchNumber);
+			return lastBuild.getWorkflowRun().isInProgress();
+		} catch (Exception e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.isProdPipelineForPatchRunning.error", new Object[]{patchNumber});
+		}
+	}
 }
