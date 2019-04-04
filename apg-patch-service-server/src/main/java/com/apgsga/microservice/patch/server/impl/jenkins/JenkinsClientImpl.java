@@ -100,20 +100,35 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 			LOGGER.info("Triggering Pipeline Job and waiting until Building " + jobName + " with Paramter: "
 					+ jobParm.toString());
-			PipelineBuild result = triggerPipelineJobAndWaitUntilBuilding(jenkinsServer, jobName, jobParm, true);
-			LOGGER.info("Getting Result of Pipeline Job " + jobName + ", : " + result.toString());
-			BuildWithDetails details = result.details();
-			if (details.isBuilding()) {
-				LOGGER.info(jobName + " Is Building");
-				LOGGER.info("Buildnumber: " + details.getNumber());
-			} else {
-				throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startPipeline.error",
-						new Object[] { patch.toString(), jobName, details.getConsoleOutputText() });
+			if(jobSuffix.equalsIgnoreCase("ondemand")) {
+				triggerPipelineJobWithoutWaitingOnFeedback(jenkinsServer, jobName, jobParm, true);
+				LOGGER.info("ondemand job for patch " + patch.getPatchNummer() + " has been started. No post-submit verification will be done.");
+			}
+			else {
+				PipelineBuild result = triggerPipelineJobAndWaitUntilBuilding(jenkinsServer, jobName, jobParm, true);	
+				LOGGER.info("Getting Result of Pipeline Job " + jobName + ", : " + result.toString());
+				BuildWithDetails details = result.details();
+				if (details.isBuilding()) {
+					LOGGER.info(jobName + " Is Building");
+					LOGGER.info("Buildnumber: " + details.getNumber());
+				} else {
+					throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startPipeline.error",
+							new Object[] { patch.toString(), jobName, details.getConsoleOutputText() });
+				}
 			}
 
 		} catch (Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startPipeline.exception",
 					new Object[] { e.getMessage(), patch.toString() }, e);
+		}
+	}
+
+	private synchronized void triggerPipelineJobWithoutWaitingOnFeedback(JenkinsServer jenkinsServer, String jobName, Map<String, String> jobParm, boolean crumbFlag) {
+		try {
+			PipelineJobWithDetails job = jenkinsServer.getPipelineJob(jobName);
+			job.build(jobParm, crumbFlag);
+		} catch (IOException e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.triggerPipelineJobWithoutWaitingOnFeedback.exception", new Object[]{e.getMessage(), jobName});
 		}
 	}
 
