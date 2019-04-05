@@ -145,12 +145,16 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 		throw new UnsupportedOperationException("Init not supported by client");
 	}
 
-
 	@Override
 	public void onClone(String source, String target) {
 		restTemplate.postForLocation(getRestBaseUri() + "/onClone?source=${source}&target=${target}", null)
 	}
-
+	
+	@Override
+	public void aggregatePatches(String patchList) {
+		restTemplate.postForLocation(getRestBaseUri() + "/aggregatePatches?patchList=${patchList}",null)
+	}
+	
 	class PatchServiceErrorHandler implements ResponseErrorHandler {
 
 

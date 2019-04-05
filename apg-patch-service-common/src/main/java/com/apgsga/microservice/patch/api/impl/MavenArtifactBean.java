@@ -12,6 +12,7 @@ public class MavenArtifactBean extends AbstractTransientEntity implements MavenA
 	private String groupId;
 	private String name;
 	private String version;
+	private String patchTag;
 	@JsonIgnore
 	private transient boolean hasConflict = false;
 	private Integer dependencyLevel = 0; 
@@ -72,7 +73,17 @@ public class MavenArtifactBean extends AbstractTransientEntity implements MavenA
 		firePropertyChangeAndMarkDirty(VERSION, oldValue, version);
 	}
 	
-	
+	@Override
+	public String getPatchTag() {
+		return patchTag;
+	}
+
+	@Override
+	public void setPatchTag(String patchTag) {
+		final Object oldValue = this.patchTag;
+		this.patchTag = patchTag;
+		firePropertyChangeAndMarkDirty(PATCH_TAG, oldValue, patchTag);
+	}
 
 	@Override
 	public Integer getDependencyLevel() {
@@ -131,8 +142,4 @@ public class MavenArtifactBean extends AbstractTransientEntity implements MavenA
 		return "MavenArtifactBean [artifactId=" + artifactId + ", groupId=" + groupId + ", name=" + name + ", version="
 				+ version + ", hasConflict=" + hasConflict + ", dependencyLevel=" + dependencyLevel + "]";
 	}
-
-	
-	
-
 }

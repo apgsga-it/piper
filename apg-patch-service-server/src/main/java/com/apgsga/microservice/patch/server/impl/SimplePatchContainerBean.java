@@ -31,6 +31,7 @@ import com.apgsga.microservice.patch.api.PatchService;
 import com.apgsga.microservice.patch.api.SearchCondition;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
+import com.apgsga.microservice.patch.api.impl.PatchBean;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsClient;
@@ -330,6 +331,29 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	public TaskExecutor getThreadExecutor() {
 		return threadExecutor;
+	}
+
+	@Override
+	public void aggregatePatches(String patchList) {
+		LOGGER.info("Patch list to be aggregated: " + patchList);
+		Patch p = new PatchBean();
+		//TODO JHE : Add datetime in Patch name -> we want to keep history. first part of the name, or template name could eventually be provided from configuration
+		p.setPatchNummer("aggregated");
+		
+		for(String patchId : patchList.split(",")) {
+			// TODO JHE: Deal with the case where patch can't be found
+			Patch patchToBeAggregated = repo.findById(patchId);
+			for(MavenArtifact ma : patchToBeAggregated.getMavenArtifacts()) {
+				ma.setPatchTag(patchToBeAggregated.getPatchTag());
+				p.addMavenArtifacts(ma);
+			}
+			for(DbObject db : patchToBeAggregated.getDbObjects()) {
+				db.setPatchTag(patchToBeAggregated.getPatchTag());
+				p.addDbObjects(db);
+			}
+		}
+		
+		save(p);
 	}
 
 }

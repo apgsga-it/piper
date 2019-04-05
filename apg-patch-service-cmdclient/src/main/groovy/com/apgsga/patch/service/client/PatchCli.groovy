@@ -2,6 +2,7 @@ package com.apgsga.patch.service.client
 
 
 import org.codehaus.groovy.runtime.StackTraceUtils
+import org.codehaus.plexus.util.cli.shell.CmdShell
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.io.ClassPathResource
@@ -119,6 +120,10 @@ class PatchCli {
 				def result = cleanLocalMavenRepo(patchClient)
 				cmdResults.results['cm'] = result
 			}
+			if (options.ap) {
+				def result = aggregatePatches(patchClient,options)
+				cmdResults.results['ap'] = result
+			}
 			cmdResults.returnCode = 0
 			return cmdResults
 		} catch (PatchClientServerException e) {
@@ -167,6 +172,7 @@ class PatchCli {
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
 			// TODO (JHE, CHE, 12.9 ) move this to own cli
 			cr longOpt: 'cleanReleases', args:1, argName: 'target', 'Clean release Artifacts for a given target on Artifactory', required: false
+			ap longOpt: 'aggregatePatches', args:1, argName: 'patchListFilePath', 'Aggregate all patches in a single big patch', required: false
 		}
 
 		def options = cli.parse(args)
@@ -319,6 +325,12 @@ class PatchCli {
 				error = true
 			}
 		}
+		if(options.ap) {
+			if(options.aps.size() != 1) {
+				println "file path containing list of patch to be aggregated is required"
+				error = true
+			}
+		}
 		if (error) {
 			cli.usage()
 			return null
@@ -331,7 +343,12 @@ class PatchCli {
 		patchClient.cleanLocalMavenRepo();
 		cmdResult
 	}
-
+	
+	def aggregatePatches(def patchClient,def options) {
+		def cmdResult = new Expando();
+		patchClient.aggregatePatches(options.aps[0])
+		cmdResult
+	}
 
 	def stateChangeAction(def patchClient,def options) {
 		def cmdResult = new Expando()

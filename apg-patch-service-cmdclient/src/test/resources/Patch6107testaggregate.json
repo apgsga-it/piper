@@ -1,0 +1,164 @@
+{
+    "baseVersionNumber": "9.1.0",
+    "className": "com.apgsga.microservice.patch.api.impl.PatchBean",
+    "dbObjects": [],
+    "dbObjectsAsVcsPath": [],
+    "dbPatchBranch": "Patch_0900_6107",
+    "developerBranch": "",
+    "installJadasAndGui": true,
+    "installOnEmptyModules": false,
+    "installationTarget": "CHTI211",
+    "lastRevision": "9.1.0.ADMIN-UIMIG-558",
+    "mavenArtifacts": [
+        {
+            "artifactId": "pe-dao",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 8,
+            "groupId": "com.affichage.it21.pe",
+            "name": "com.affichage.it21.pe.dao",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        },
+        {
+            "artifactId": "zentraldispo-ui",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 0,
+            "groupId": "com.affichage.it21.vk",
+            "name": "com.affichage.it21.vk.zentraldispo.ui",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        },
+        {
+            "artifactId": "zentraldispo-dao",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 45,
+            "groupId": "com.affichage.it21.vk",
+            "name": "com.affichage.it21.vk.zentraldispo.dao",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        },
+        {
+            "artifactId": "ausstrahlungsnachweis",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 3,
+            "groupId": "com.affichage.it21.vk",
+            "name": "com.affichage.it21.vk.ausstrahlungsnachweis",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        },
+        {
+            "artifactId": "papier-dao",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 27,
+            "groupId": "com.affichage.it21.vk",
+            "name": "com.affichage.it21.vk.papier.dao",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        },
+        {
+            "artifactId": "papier-ui",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 13,
+            "groupId": "com.affichage.it21.vk",
+            "name": "com.affichage.it21.vk.papier.ui",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        },
+        {
+            "artifactId": "aufgaben-ui",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 11,
+            "groupId": "com.affichage.it21.au",
+            "name": "com.affichage.it21.au.tracking.ui",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        },
+        {
+            "artifactId": "vk-utils",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 21,
+            "groupId": "com.affichage.it21",
+            "name": "com.affichage.it21.vk.utils",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        }
+    ],
+    "mavenArtifactsAsVcsPath": [
+        "com.affichage.it21.pe.dao",
+        "com.affichage.it21.vk.zentraldispo.ui",
+        "com.affichage.it21.vk.zentraldispo.dao",
+        "com.affichage.it21.vk.ausstrahlungsnachweis",
+        "com.affichage.it21.vk.papier.dao",
+        "com.affichage.it21.vk.papier.ui",
+        "com.affichage.it21.au.tracking.ui",
+        "com.affichage.it21.vk.utils"
+    ],
+    "mavenArtifactsToBuild": [
+        {
+            "artifactId": "pe-dao",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 8,
+            "groupId": "com.affichage.it21.pe",
+            "name": "com.affichage.it21.pe.dao",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        },
+        {
+            "artifactId": "zentraldispo-ui",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 0,
+            "groupId": "com.affichage.it21.vk",
+            "name": "com.affichage.it21.vk.zentraldispo.ui",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        },
+        {
+            "artifactId": "zentraldispo-dao",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 45,
+            "groupId": "com.affichage.it21.vk",
+            "name": "com.affichage.it21.vk.zentraldispo.dao",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        },
+        {
+            "artifactId": "ausstrahlungsnachweis",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 3,
+            "groupId": "com.affichage.it21.vk",
+            "name": "com.affichage.it21.vk.ausstrahlungsnachweis",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        },
+        {
+            "artifactId": "papier-dao",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 27,
+            "groupId": "com.affichage.it21.vk",
+            "name": "com.affichage.it21.vk.papier.dao",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        },
+        {
+            "artifactId": "papier-ui",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 13,
+            "groupId": "com.affichage.it21.vk",
+            "name": "com.affichage.it21.vk.papier.ui",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        },
+        {
+            "artifactId": "aufgaben-ui",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 11,
+            "groupId": "com.affichage.it21.au",
+            "name": "com.affichage.it21.au.tracking.ui",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        },
+        {
+            "artifactId": "vk-utils",
+            "className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+            "dependencyLevel": 21,
+            "groupId": "com.affichage.it21",
+            "name": "com.affichage.it21.vk.utils",
+            "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        }
+    ],
+    "microServiceBranch": "it21_release_9_1_1_admin_uimig",
+    "patchNummer": "6107",
+    "patchTag": "Patch_0900_6107_14",
+    "prodBranch": "HEAD",
+    "revision": "559",
+    "revisionMnemoPart": "ADMIN-UIMIG",
+    "runningNr": null,
+    "serviceName": "It21Ui",
+    "tagNr": 14,
+    "targetToState": "Produktion"
+}

@@ -1,29 +1,30 @@
 package com.apgsga.patch.service.client;
 
-import org.junit.Rule
+import java.awt.TextArea
+import java.awt.geom.Path2D.Double.CopyIterator
+import java.nio.file.Files
+import java.util.stream.Nodes.SizedCollectorTask
+
+import org.spockframework.util.Assert
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.context.annotation.PropertySource
-import org.springframework.context.annotation.Configuration
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.TestPropertySource;
 
 import com.apgsga.microservice.patch.api.DbModules
+import com.apgsga.microservice.patch.api.DbObject
+import com.apgsga.microservice.patch.api.MavenArtifact
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.PatchPersistence
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.microservice.patch.server.MicroPatchServer;
-import com.apgsga.patch.service.client.revision.PatchRevisionCli
 import com.fasterxml.jackson.databind.ObjectMapper
-import groovy.json.JsonBuilder
-import groovy.json.JsonSlurper
-import spock.lang.Ignore
+
 import spock.lang.Specification;
 
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
@@ -354,5 +355,106 @@ public class PatchCliIntegrationTest extends Specification {
 		then:
 		result != null
 		result.returnCode == 0
+	}
+	
+	def "Patch Cli list of patches correctly aggregated"() {
+		setup:
+			def client = PatchCli.create()
+			
+			// Ensure previous test has been cleaned up
+			Assert.that(repo.findById("aggregated") == null)
+			
+			// Persist test patches into testdb repo
+			// TODO JHE: Better write it ...
+			def src = new File("src/test/resources/Patch6107testaggregate.json")
+			def dst = new File("build/testdb/Patch6107.json")
+			dst.createNewFile()
+			dst << src.text
+			src = new File("src/test/resources/Patch6132testaggregate.json")
+			dst = new File("build/testdb/Patch6132.json")
+			dst.createNewFile()
+			dst << src.text
+			src = new File("src/test/resources/Patch6152testaggregate.json")
+			dst = new File("build/testdb/Patch6152.json")
+			dst.createNewFile()
+			dst << src.text
+			src = new File("src/test/resources/Patch6173testaggregate.json")
+			dst = new File("build/testdb/Patch6173.json")
+			dst.createNewFile()
+			dst << src.text
+		when:
+			def result = client.process(["-ap", "6107,6132,6152,6173"])
+			//TODO JHE: Chaeck against name which contains as well the datetime in its name
+			def Patch patch = repo.findById("aggregated")
+		then:
+			result != null
+			result.returnCode == 0
+			Assert.that(patch != null)
+			patch.getMavenArtifacts().size() == 11
+			patch.getMavenArtifactsToBuild().size() == 9
+			patch.getDbObjects().size() == 3
+
+			for(MavenArtifact ma : patch.getMavenArtifacts()) {
+				switch(ma.getArtifactId()) {
+					case "pe-dao":
+						Assert.that(ma.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "zentraldispo-ui":
+						Assert.that(ma.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "zentraldispo-dao":
+						Assert.that(ma.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "ausstrahlungsnachweis":
+						Assert.that(ma.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "papier-dao":
+						Assert.that(ma.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "papier-ui":
+						Assert.that(ma.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "aufgaben-ui":
+						Assert.that(ma.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "vk-utils":
+						Assert.that(ma.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "cm-ui":
+						Assert.that(ma.getPatchTag().equals("Patch_0900_6132_9"))
+						break
+					case "apg-patch-service-client":
+						Assert.that(ma.getPatchTag().equals("Patch_0900_6132_9"))
+						break
+					case "apg-patch-service-common":
+						Assert.that(ma.getPatchTag().equals("Patch_0900_6132_9"))
+						break
+					default:
+						Assert.fail("${ma.getArtifactId()} shouldn't be part of aggregated patch.")
+				}
+			}
+			
+			for(DbObject db : patch.getDbObjects()) {
+				switch(db.getModuleName()) {
+					case "com.affichage.it21.sys.sql":
+						Assert.that(db.getPatchTag().equals("Patch_0900_6152_4"))
+						break;
+					case "com.affichage.it21.plzload.sql":
+						Assert.that(db.getPatchTag().equals("Patch_0900_6152_4"))
+						break;
+					case "com.affichage.it21.plzload.sql":
+						Assert.that(db.getPatchTag().equals("Patch_0900_6152_4"))
+						break;
+					default:
+						Assert.fail("${db.getModuleName()} shouldn't be part of aggregated patch.")
+				}
+			}
+			
+		cleanup:
+			repo.removePatch(patch)
+			repo.removePatch(repo.findById("6107"))
+			repo.removePatch(repo.findById("6132"))
+			repo.removePatch(repo.findById("6152"))
+			repo.removePatch(repo.findById("6173"))
 	}
 }

@@ -1,0 +1,48 @@
+{
+    "baseVersionNumber": "9.1.0",
+    "className": "com.apgsga.microservice.patch.api.impl.PatchBean",
+    "dbObjects": [
+        {
+            "className": "com.apgsga.microservice.patch.api.impl.DbObjectBean",
+            "fileName": "sys.plzload.usr.sql",
+            "filePath": "com.affichage.it21.sys.sql/src/main/sql/account/",
+            "moduleName": "com.affichage.it21.sys.sql"
+        },
+        {
+            "className": "com.apgsga.microservice.patch.api.impl.DbObjectBean",
+            "fileName": "plzload.load_plz_data.pkb.sql",
+            "filePath": "com.affichage.it21.plzload.sql/src/main/sql/package/",
+            "moduleName": "com.affichage.it21.plzload.sql"
+        },
+        {
+            "className": "com.apgsga.microservice.patch.api.impl.DbObjectBean",
+            "fileName": "plzload.load_plz_data.pks.sql",
+            "filePath": "com.affichage.it21.plzload.sql/src/main/sql/package/",
+            "moduleName": "com.affichage.it21.plzload.sql"
+        }
+    ],
+    "dbObjectsAsVcsPath": [
+        "com.affichage.it21.sys.sql/src/main/sql/account//sys.plzload.usr.sql",
+        "com.affichage.it21.plzload.sql/src/main/sql/package//plzload.load_plz_data.pkb.sql",
+        "com.affichage.it21.plzload.sql/src/main/sql/package//plzload.load_plz_data.pks.sql"
+    ],
+    "dbPatchBranch": "Patch_0900_6152",
+    "developerBranch": "",
+    "installJadasAndGui": false,
+    "installOnEmptyModules": false,
+    "installationTarget": "CHEI211",
+    "lastRevision": "9.1.0.ADMIN-UIMIG-533",
+    "mavenArtifacts": [],
+    "mavenArtifactsAsVcsPath": [],
+    "mavenArtifactsToBuild": [],
+    "microServiceBranch": "it21_release_9_1_1_admin_uimig",
+    "patchNummer": "6152",
+    "patchTag": "Patch_0900_6152_4",
+    "prodBranch": "HEAD",
+    "revision": "535",
+    "revisionMnemoPart": "ADMIN-UIMIG",
+    "runningNr": null,
+    "serviceName": "It21Ui",
+    "tagNr": 4,
+    "targetToState": "OnDemand"
+}
