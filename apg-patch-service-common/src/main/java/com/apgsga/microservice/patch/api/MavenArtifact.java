@@ -15,6 +15,8 @@ public interface MavenArtifact {
 
 	public static final String VERSION = "version";
 	
+	public static final String PATCH_TAG = "patchTag";
+	
 	public String getArtifactId();
 
 	public void setArtifactId(String artefactid);
@@ -38,5 +40,9 @@ public interface MavenArtifact {
 	public Integer getDependencyLevel(); 
 	
 	public void augmentDependencyLevel();
+	
+	public String getPatchTag();
+	
+	public void setPatchTag(String patchTag);
 
 }

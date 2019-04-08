@@ -12,6 +12,7 @@ public class DbObjectBean extends AbstractTransientEntity implements DbObject {
 	private String fileName;
 	private String filePath;
 	private String moduleName;
+	private String patchTag;
 	@JsonIgnore
 	private transient boolean hasConflict = false;
 
@@ -56,6 +57,18 @@ public class DbObjectBean extends AbstractTransientEntity implements DbObject {
 		final Object oldValue = this.moduleName;
 		this.moduleName = moduleName;
 		firePropertyChangeAndMarkDirty(MODULE_NAME, oldValue, moduleName);
+	}
+	
+	@Override
+	public String getPatchTag() {
+		return patchTag;
+	}
+
+	@Override
+	public void setPatchTag(String patchTag) {
+		final Object oldValue = this.patchTag;
+		this.patchTag = patchTag;
+		firePropertyChangeAndMarkDirty(PATCH_TAG, oldValue, patchTag);
 	}
 
 	@Override
@@ -115,5 +128,4 @@ public class DbObjectBean extends AbstractTransientEntity implements DbObject {
 	public void setHasConflict(boolean hasConflict) {
 		this.hasConflict = hasConflict;
 	}
-
 }

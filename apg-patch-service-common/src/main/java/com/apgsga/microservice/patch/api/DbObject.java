@@ -11,6 +11,7 @@ public interface DbObject  {
 	public static final String MODULE_NAME = "moduleName";
 	public static final String FILE_NAME = "fileName";
 	public static final String FILE_PATH = "filePath";
+	public static final String PATCH_TAG = "patchTag";
 	
 	String getModuleName();
 
@@ -23,6 +24,10 @@ public interface DbObject  {
 	String getFilePath();
 
 	void setFilePath(String filePath);
+	
+	String getPatchTag();
+	
+	void setPatchTag(String patchTag);
 	
 	String asFullPath();
 	

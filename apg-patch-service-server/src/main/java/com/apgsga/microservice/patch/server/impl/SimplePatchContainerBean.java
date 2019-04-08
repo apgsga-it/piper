@@ -343,6 +343,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		for(String patchId : patchList.split(",")) {
 			// TODO JHE: Deal with the case where patch can't be found
 			Patch patchToBeAggregated = repo.findById(patchId);
+			Asserts.notNull(patchToBeAggregated, "SimplePatchContainerBean.aggregatePatches.exception", new Object[] {patchId});
 			for(MavenArtifact ma : patchToBeAggregated.getMavenArtifacts()) {
 				ma.setPatchTag(patchToBeAggregated.getPatchTag());
 				p.addMavenArtifacts(ma);
