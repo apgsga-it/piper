@@ -176,7 +176,7 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		patchService.cleanLocalMavenRepo();
 	}
 
-	@RequestMapping(value = "/aggregatePatches", method = RequestMethod.POST)
+	@RequestMapping(value = "/aggregatePatches", method = RequestMethod.GET)
 	@ResponseBody
 	@Override
 	public String aggregatePatches(@RequestParam("patchList") String patchList) {
