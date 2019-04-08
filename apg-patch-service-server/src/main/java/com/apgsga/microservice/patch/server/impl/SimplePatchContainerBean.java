@@ -1,6 +1,8 @@
 package com.apgsga.microservice.patch.server.impl;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -337,8 +339,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public String aggregatePatches(String patchList) {
 		LOGGER.info("Patch list to be aggregated: " + patchList);
 		Patch p = new PatchBean();
-		//TODO JHE : Add datetime in Patch name -> we want to keep history. first part of the name, or template name could eventually be provided from configuration
-		p.setPatchNummer("aggregated");
+		p.setPatchNummer("aggregated" + new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime()));
 		
 		for(String patchId : patchList.split(",")) {
 			Patch patchToBeAggregated = repo.findById(patchId);
