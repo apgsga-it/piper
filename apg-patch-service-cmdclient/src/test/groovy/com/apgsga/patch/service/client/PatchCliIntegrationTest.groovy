@@ -433,7 +433,42 @@ public class PatchCliIntegrationTest extends Specification {
 						Assert.fail("${ma.getArtifactId()} shouldn't be part of aggregated patch.")
 				}
 			}
-			
+
+			for(MavenArtifact matb : patch.getMavenArtifactsToBuild()) {
+				switch(matb.getArtifactId()) {
+					case "pe-dao":
+						Assert.that(matb.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "zentraldispo-ui":
+						Assert.that(matb.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "zentraldispo-dao":
+						Assert.that(matb.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "ausstrahlungsnachweis":
+						Assert.that(matb.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "papier-dao":
+						Assert.that(matb.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "papier-ui":
+						Assert.that(matb.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "aufgaben-ui":
+						Assert.that(matb.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "vk-utils":
+						Assert.that(matb.getPatchTag().equals("Patch_0900_6107_14"))
+						break
+					case "cm-ui":
+						Assert.that(matb.getPatchTag().equals("Patch_0900_6132_9"))
+						break
+					default:
+						Assert.fail("${matb.getArtifactId()} shouldn't be part of aggregated patch.")
+				}
+			}
+
+						
 			for(DbObject db : patch.getDbObjects()) {
 				switch(db.getModuleName()) {
 					case "com.affichage.it21.sys.sql":
