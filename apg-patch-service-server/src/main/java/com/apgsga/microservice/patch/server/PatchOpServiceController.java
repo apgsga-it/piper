@@ -177,9 +177,9 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	}
 
 	@RequestMapping(value = "/aggregatePatches", method = RequestMethod.POST)
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
 	@Override
-	public void aggregatePatches(@RequestParam("patchList") String patchList) {
-		patchService.aggregatePatches(patchList);		
+	public String aggregatePatches(@RequestParam("patchList") String patchList) {
+		return patchService.aggregatePatches(patchList);		
 	}
 }

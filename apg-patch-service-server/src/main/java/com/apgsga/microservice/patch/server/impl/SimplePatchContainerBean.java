@@ -334,7 +334,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public void aggregatePatches(String patchList) {
+	public String aggregatePatches(String patchList) {
 		LOGGER.info("Patch list to be aggregated: " + patchList);
 		Patch p = new PatchBean();
 		//TODO JHE : Add datetime in Patch name -> we want to keep history. first part of the name, or template name could eventually be provided from configuration
@@ -354,6 +354,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		}
 		
 		save(p);
+		return p.getPatchNummer();
 	}
 
 }

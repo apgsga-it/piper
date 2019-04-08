@@ -47,7 +47,8 @@ public interface PatchOpService {
 	 * Aggregate a list of patches into one single big patch
 	 * 
 	 * @param patchList : comma separated list of patches to be aggregated
+	 * @return Patch Number of the newly aggregated patch
 	 */
 	// JHE (04.04.2019): to be discussed, is that really part of this API ?
-	public void aggregatePatches(String patchList);
+	public String aggregatePatches(String patchList);
 }

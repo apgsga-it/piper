@@ -151,8 +151,8 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 	}
 	
 	@Override
-	public void aggregatePatches(String patchList) {
-		restTemplate.postForLocation(getRestBaseUri() + "/aggregatePatches?patchList=${patchList}",null)
+	public String aggregatePatches(String patchList) {
+		return restTemplate.getForObject(getRestBaseUri() + "/aggregatePatches?patchList=${patchList}",String.class)
 	}
 	
 	class PatchServiceErrorHandler implements ResponseErrorHandler {
