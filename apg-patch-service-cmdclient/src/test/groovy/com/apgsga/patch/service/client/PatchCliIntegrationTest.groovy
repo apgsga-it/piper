@@ -384,11 +384,11 @@ public class PatchCliIntegrationTest extends Specification {
 			dst << src.text
 		when:
 			def result = client.process(["-ap", "6107,6132,6152,6173"])
-			//TODO JHE: Chaeck against name which contains as well the datetime in its name
-			def Patch patch = repo.findById("aggregated")
 		then:
 			result != null
 			result.returnCode == 0
+			def aggregatedPatchName = result.results.ap.aggregatePatchName
+			def Patch patch = repo.findById(aggregatedPatchName)
 			Assert.that(patch != null)
 			patch.getMavenArtifacts().size() == 11
 			patch.getMavenArtifactsToBuild().size() == 9

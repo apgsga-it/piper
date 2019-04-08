@@ -346,7 +346,7 @@ class PatchCli {
 	
 	def aggregatePatches(def patchClient,def options) {
 		def cmdResult = new Expando();
-		patchClient.aggregatePatches(options.aps[0])
+		cmdResult.aggregatePatchName = patchClient.aggregatePatches(options.aps[0])
 		cmdResult
 	}
 
