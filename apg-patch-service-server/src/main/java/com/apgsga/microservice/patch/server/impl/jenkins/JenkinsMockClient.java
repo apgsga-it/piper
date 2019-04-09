@@ -57,6 +57,17 @@ public class JenkinsMockClient implements JenkinsClient {
 	@Override
 	public void onClone(String source, String target) {
 		LOGGER.info("onClone for source=" + source + " , target=" + target);		
-	}	
+	}
 
+	@Override
+	public boolean isProdPatchPipelineRunning(String patchNumber) {
+		LOGGER.info("isProdPatchPipelineRunning for :" + patchNumber);
+		return false;
+	}
+
+	@Override
+	public boolean isLastProdPipelineBuildInError(String patchNumber) {
+		LOGGER.info("isLastProdPipelineBuildInError for : " + patchNumber);
+		return false;
+	}	
 }

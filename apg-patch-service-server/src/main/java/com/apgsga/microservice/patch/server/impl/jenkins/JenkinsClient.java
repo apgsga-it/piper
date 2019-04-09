@@ -20,5 +20,8 @@ public interface JenkinsClient {
 	public void processInputAction(Patch patch, String target, String stage);
 	
 	public void onClone(String source, String target);
-
+	
+	public boolean isProdPatchPipelineRunning(String patchNumber);
+	
+	public boolean isLastProdPipelineBuildInError(String patchNumber);
 }
