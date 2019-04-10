@@ -255,10 +255,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				new Object[] {});
 		Asserts.isTrue((repo.patchExists(patchNumber)),
 				"SimplePatchContainerBean.restartProdPipeline.patch.exists.assert", new Object[] { patchNumber });
+		Asserts.isFalse(jenkinsClient.isProdPatchPipelineRunning(patchNumber), "SimplePatchContainerBean.restartProdPipeline.patch.alreadyRunning", new Object[]{patchNumber});
+		Asserts.isTrue(jenkinsClient.isLastProdPipelineBuildInError(patchNumber), "SimplePatchContainerBean.restartProdPipeline.patch.lastBuildInError", new Object[]{patchNumber});
 		Patch patch = repo.findById(patchNumber);
 		jenkinsClient.restartProdPatchPipeline(patch);
 	}
-
+	
 	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
 
 		VcsCommandRunner cmdRunner = getJschSessionFactory().create();
