@@ -34,6 +34,8 @@ public interface Patch extends ServiceMetaData {
 	public static final String INSTALL_ON_EMPTY_MODULES = "installOnEmptyModules";
 	
 	public static final String INSTALL_JADAS_AND_GUI = "installJadasAndGui";
+	
+	public static final String PIPELINE_TASK = "pipeLineTask";
 
 	String getPatchNummer();
 
@@ -114,6 +116,10 @@ public interface Patch extends ServiceMetaData {
 	public String getTargetToState(); 
 	
 	public void setTargetToState(String targetToState);
+	
+	public String getLastPipelineTask(); 
+	
+	public void setLastPipelineTask(String pipelineTask);
 	
 	public boolean getInstallOnEmptyModules();
 	
