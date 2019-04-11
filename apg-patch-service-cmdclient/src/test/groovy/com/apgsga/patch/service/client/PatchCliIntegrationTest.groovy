@@ -121,8 +121,6 @@ public class PatchCliIntegrationTest extends Specification {
 		repo.clean()
 	}
 	
-	// JHE (11.04.2019) : Deactivate for now, needs to be adapted based on changes made for JAVA8MIG-725
-	@Ignore
 	def "Patch Cli redo's Patch, which has been saved before with -sa"() {
 		setup:
 		def client = PatchCli.create()
