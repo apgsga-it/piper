@@ -26,12 +26,19 @@ class PatchDbClient {
 	public def listPatchAfterClone(def status, def filePath) {
 		def String sql = "SELECT id FROM cm_patch_install_sequence_f WHERE ${status}=1 AND (produktion = 0 OR chronology > trunc(SYSDATE))"
 		def patchNumbers = []
-		dbConnection.eachRow(sql) { row ->
-			def rowId = row.ID
-			println "Patch ${rowId} added to the list of patch to be re-installed."
-			patchNumbers.add(rowId)
-		}
+		try {
+			dbConnection.eachRow(sql) { row ->
+				def rowId = row.ID
+				patchNumbers.add(rowId)
+			}
 
+		}
+		catch(Exception ex) {
+			// TODO JHE(11.04.2019): because the caller will read the stdout in order to determine if all went well ... we can't write the error message. But we need to find a way to log the exception.
+			println false
+			return
+		}
+		
 		// TODO (jhe, che, 19.9) have filePath passed as parameter and not preconfigured
 		// Or write it stdout , but without any other println
 		def listPatchFile = new File(filePath)
@@ -39,9 +46,8 @@ class PatchDbClient {
 		if(listPatchFile.exists()) {
 			listPatchFile.delete()
 		}
-
+		
 		listPatchFile.write(new JsonBuilder(patchlist:patchNumbers).toPrettyString())
+		println true
 	}
-
-
 }
