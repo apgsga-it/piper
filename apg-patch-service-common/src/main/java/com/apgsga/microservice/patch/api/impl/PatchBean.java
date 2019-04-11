@@ -318,7 +318,7 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	
 	@Override
 	public String getLastPipelineTask() {
-		return targetToState;
+		return lastPipelineTask;
 	}
 
 	@Override
