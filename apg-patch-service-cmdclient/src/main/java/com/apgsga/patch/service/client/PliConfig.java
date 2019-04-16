@@ -48,7 +48,7 @@ public class PliConfig {
 		properties.put("mavenrepo.user.name", env.getProperty("mavenRepoUser"));
 		properties.put("mavenrepo.baseurl", env.getProperty("mavenRepoBaseUrl"));
 		properties.put("mavenrepo.name", env.getProperty("mavenRepoName"));
-		properties.put("postclone.list.patch.file.path", env.getProperty("postclone.list.patch.file.path"));
+		properties.put("postclone.list.patch.filepath.template", env.getProperty("postclone.list.patch.filepath.template"));
 		properties.put("db.url", env.getProperty("db.url",""));
 		properties.put("db.user", env.getProperty("db.user",""));
 		properties.put("db.passwd", env.getProperty("db.passwd",""));

@@ -50,7 +50,7 @@ class DbCliIntegrationTest extends Specification {
 	def "Patch DB Cli returns patch ids to be re-installed after a clone"() {
 		when:
 		def patchDbCli = PatchDbCli.create()
-		def outputFile = new File("src/test/resources/patchToBeReinstalled.json")
+		def outputFile = new File("src/test/resources/patchToBeReinstalledInformatiktest.json")
 		def result = patchDbCli.process(["-lpac", "Informatiktest"])
 		then:
 		result != null

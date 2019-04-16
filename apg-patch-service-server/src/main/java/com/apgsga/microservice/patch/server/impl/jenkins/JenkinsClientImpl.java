@@ -228,8 +228,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	@Override
 	public void onClone(String source, String target) {
-		String jobName = "onClone";
-
+		String jobName = "onClone" + target.toUpperCase();
 		LOGGER.info("Starting onClone process for " + target + ". " + jobName + " pipeline will be started.");
 
 		try {
