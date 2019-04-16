@@ -44,7 +44,8 @@ class PatchDbCli {
 			def dbCli = new PatchDbClient(dbConnection)
 			if(options.lpac) {
 				def status = options.lpacs[0]
-				cmdResults.result = dbCli.listPatchAfterClone(status,config.postclone.list.patch.file.path)
+				def filePath = "${config.postclone.list.patch.filepath.template}${status}.json"
+				cmdResults.result = dbCli.listPatchAfterClone(status,filePath)
 			} else if (options.sta) {
 				def patchNumber = options.stas[0]
 				def toState = options.stas[1]
