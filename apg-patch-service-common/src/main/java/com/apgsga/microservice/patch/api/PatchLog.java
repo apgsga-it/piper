@@ -11,15 +11,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "className")
 public interface PatchLog {
 
-	// TODO JHE: not sure if needed/correct
 	public static final String PATCH_NUMBER = "patchNumber";
 	
 	public static final String LOG_DETAILS = "logDetails";
 	
-	// TODO JHE: not sure if needed/correct
 	String getPatchNumber();
 	
-	// TODO JHE: not sure if needed/correct
 	void setPatchNumber(String patchNumber);
 	
 	List<PatchLogDetails> getLogDetails();

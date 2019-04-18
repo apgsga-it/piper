@@ -3,15 +3,19 @@ package com.apgsga.microservice.patch.api;
 import java.io.IOException;
 import java.util.List;
 
-public interface PatchPersistence extends PatchLogPersistence {
+public interface PatchPersistence {
 
 	Patch findById(String patchNummer);
+	
+	PatchLog findPatchLogById(String patchNummer);
 
 	Boolean patchExists(String patchNummber);
 
 	public List<String> findAllPatchIds();
 
 	public void savePatch(Patch patch);
+	
+	public void savePatchLog(PatchLog patchLog);
 
 	public void removePatch(Patch patch);
 

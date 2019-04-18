@@ -20,14 +20,17 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.api.impl.PatchBean;
+import com.apgsga.microservice.patch.api.impl.PatchLogBean;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.impl.GroovyScriptActionExecutor;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutor;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
 import com.apgsga.microservice.patch.server.impl.SimplePatchContainerBean;
+import com.jcraft.jsch.Logger;
 
 @RunWith(SpringRunner.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
@@ -66,6 +69,18 @@ public class MicroServicePatchServerExceptionTests {
 	}
 	
 	@Test
+	public void testFindPatchLogByNullIdException() {
+		try {
+			patchService.findPatchLogById(null);
+			patchService.findPatchLogById("");
+			fail();
+		} catch(PatchServiceRuntimeException e) {
+			LOGGER.info(e.toString());
+			Assert.assertEquals("FilebasedPatchPersistence.findById.patchlognumber.notnullorempty.assert", e.getMessageKey());
+		}
+	}
+	
+	@Test
 	public void testSavePatchNullException() {
 		try {
 			patchService.save(null);
@@ -73,6 +88,17 @@ public class MicroServicePatchServerExceptionTests {
 		} catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
 			Assert.assertEquals("SimplePatchContainerBean.save.patchobject.notnull.assert", e.getMessageKey());
+		}
+	}
+	
+	@Test
+	public void testSavePatchLogNullException() {
+		try {
+			patchService.saveLog(null);
+			fail();
+		} catch(PatchServiceRuntimeException e) {
+			LOGGER.info(e.toString());
+			Assert.assertEquals("SimplePatchContainerBean.save.patchlogobject.notnull.assert", e.getMessageKey());
 		}
 	}
 	
@@ -85,6 +111,18 @@ public class MicroServicePatchServerExceptionTests {
 		} catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
 			Assert.assertEquals("SimplePatchContainerBean.save.patchnumber.notnullorempty.assert", e.getMessageKey());
+		}
+	}
+	
+	@Test
+	public void testSavePatchLogEmptyWithoutId() {
+		PatchLog pl = new PatchLogBean();
+		try {
+			patchService.saveLog(pl);
+			fail();
+		} catch(PatchServiceRuntimeException e) {
+			LOGGER.info(e.toString());
+			Assert.assertEquals("SimplePatchContainerBean.save.patchlognumber.notnullorempty.assert", e.getMessageKey());
 		}
 	}
 	

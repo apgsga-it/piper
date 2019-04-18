@@ -13,12 +13,15 @@ import org.springframework.core.io.Resource;
 
 import com.apgsga.microservice.patch.api.DbModules;
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
@@ -27,6 +30,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	private static final String JSON = ".json";
 
 	private static final String PATCH = "Patch";
+	
+	private static final String PATCH_LOG = "PatchLog";
 
 	private static final String SERVICE_META_DATA_JSON = "ServicesMetaData.json";
 
@@ -58,20 +63,36 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	@Override
 	public synchronized Patch findById(String patchNummer) {
-		Asserts.notNullOrEmpty(patchNummer, "FilebasedPatchPersistence.findById.patchnumber.notnullorempty.assert",
-				new Object[] {});
+		Asserts.notNullOrEmpty(patchNummer, "FilebasedPatchPersistence.findById.patchnumber.notnullorempty.assert",new Object[] {});
 		try {
 			File patchFile = createFile(PATCH + patchNummer + JSON);
-			if (!patchFile.exists()) {
+			return findFile(patchFile, Patch.class);
+		}catch(Exception e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.findById.exception",
+				new Object[] { e.getMessage(), patchNummer }, e);
+		}
+	}
+	
+	@Override
+	public synchronized PatchLog findPatchLogById(String patchNummer) {
+		Asserts.notNullOrEmpty(patchNummer, "FilebasedPatchPersistence.findById.patchlognumber.notnullorempty.assert", new Object[] {});
+		try {
+			File patchFile = createFile(PATCH_LOG + patchNummer + JSON);
+			return findFile(patchFile, PatchLog.class);
+		}catch(Exception e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.findById.exception",
+				new Object[] { e.getMessage(), patchNummer }, e);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T> T findFile(File f, Class<T> clazz) throws JsonParseException, JsonMappingException, IOException {
+			if (!f.exists()) {
 				return null;
 			}
 			ObjectMapper mapper = new ObjectMapper();
-			Patch patchData = mapper.readValue(patchFile, Patch.class);
+			T patchData = (T) mapper.readValue(f, clazz);
 			return patchData;
-		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.findById.exception",
-					new Object[] { e.getMessage(), patchNummer }, e);
-		}
 	}
 
 	@Override
@@ -107,6 +128,13 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		Asserts.notNullOrEmpty(patch.getPatchNummer(),
 				"FilebasedPatchPersistence.save.patchnumber.notnullorempty.assert", new Object[] { patch.toString() });
 		writeToFile(patch, PATCH + patch.getPatchNummer() + JSON);
+	}
+	
+	@Override
+	public void savePatchLog(PatchLog patchLog) {
+		Asserts.notNull(patchLog, "FilebasedPatchPersistence.save.patchlogobject.notnull.assert", new Object[] {});
+		Asserts.notNullOrEmpty(patchLog.getPatchNumber(), "FilebasedPatchPersistence.save.patchlognumber.notnullorempty.assert", new Object[] {patchLog.toString()});
+		writeToFile(patchLog, PATCH_LOG + patchLog.getPatchNumber() + JSON);
 	}
 
 	// TODO (che, 8.5) Do we want remove also "Atomic"
@@ -241,5 +269,4 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	public Resource getTempStoragePath() {
 		return tempStoragePath;
 	}
-
 }

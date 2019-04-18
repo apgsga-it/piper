@@ -1,6 +1,10 @@
 package com.apgsga.microservice.patch.server;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,10 +22,15 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchLog;
+import com.apgsga.microservice.patch.api.PatchLogDetails;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.api.impl.PatchBean;
+import com.apgsga.microservice.patch.api.impl.PatchLogBean;
+import com.apgsga.microservice.patch.api.impl.PatchLogDetailsBean;
+import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutor;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
 import com.apgsga.microservice.patch.server.impl.SimplePatchContainerBean;
@@ -58,6 +67,57 @@ public class MicroServicePatchServerTest {
 		Patch result = patchService.findById("SomeUnqiueNumber1");
 		Assert.assertNotNull(result);
 		Assert.assertEquals(patch, result);
+	}
+	
+	@Test
+	public void testSavePatchLogWithoutCorrespondingPatch() {
+		try {
+			PatchLog pl = new PatchLogBean();
+			pl.setPatchNumber("SomeUniqueNum1");
+			patchService.saveLog(pl);
+			fail();
+		} catch(PatchServiceRuntimeException e) {
+			LOGGER.info(e.toString());
+			Assert.assertEquals("SimplePatchContainerBean.save.patchlog.exists.corresponfingpatch.assert", e.getMessageKey());
+		}
+	}
+	
+	@Test
+	public void testSavePatchLogEmptyWithId() {
+		String patchNumber = "someUniqueNum1";
+		Patch p = new PatchBean();
+		p.setPatchNummer(patchNumber);
+		patchService.save(p);
+		PatchLog pl = new PatchLogBean();
+		pl.setPatchNumber(patchNumber);
+		patchService.saveLog(pl);
+		PatchLog result = patchService.findPatchLogById(patchNumber);
+		Assert.assertNotNull(result);
+		Assert.assertEquals(pl, result);
+	}
+	
+	@Test
+	public void testSavePatchLogNonEmpty() {
+		String patchNumber = "notEmpty1";
+		Patch p = new PatchBean();
+		p.setPatchNummer(patchNumber);
+		patchService.save(p);
+		PatchLog pl = new PatchLogBean();
+		pl.setPatchNumber(patchNumber);
+		PatchLogDetails pld_1 = new PatchLogDetailsBean();
+		pld_1.setDateTime(new Date());
+		pld_1.setStep("Build started");
+		pld_1.setTarget("CHEI211");
+		PatchLogDetails pld_2 = new PatchLogDetailsBean();
+		pld_2.setDateTime(new Date());
+		pld_2.setStep("Build done");
+		pld_2.setTarget("CHEI211");	
+		pl.addLog(pld_1);
+		pl.addLog(pld_2);
+		patchService.saveLog(pl);
+		PatchLog result = patchService.findPatchLogById(patchNumber);
+		Assert.assertNotNull(result);
+		Assert.assertEquals(pl, result);
 	}
 
 	@Test
