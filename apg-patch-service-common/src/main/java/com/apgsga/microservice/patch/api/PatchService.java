@@ -10,7 +10,7 @@ import java.util.List;
  * @author che
  *
  */
-public interface PatchService {
+public interface PatchService extends PatchLogService {
 
 	
 	

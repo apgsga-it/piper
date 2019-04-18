@@ -3,7 +3,7 @@ package com.apgsga.microservice.patch.api;
 import java.io.IOException;
 import java.util.List;
 
-public interface PatchPersistence {
+public interface PatchPersistence extends PatchLogPersistence {
 
 	Patch findById(String patchNummer);
 
