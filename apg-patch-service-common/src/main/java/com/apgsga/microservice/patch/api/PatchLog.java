@@ -1,6 +1,8 @@
 package com.apgsga.microservice.patch.api;
 
 import java.util.Date;
+import java.util.List;
+import java.util.function.LongToDoubleFunction;
 
 import com.affichage.persistence.common.client.EntityRootInterface;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -12,11 +14,7 @@ public interface PatchLog {
 	// TODO JHE: not sure if needed/correct
 	public static final String PATCH_NUMBER = "patchNumber";
 	
-	public static final String DATETIME = "datetime";
-	
-	public static final String TARGET = "target";
-	
-	public static final String STEP = "step";
+	public static final String LOG_DETAILS = "logDetails";
 	
 	// TODO JHE: not sure if needed/correct
 	String getPatchNumber();
@@ -24,15 +22,8 @@ public interface PatchLog {
 	// TODO JHE: not sure if needed/correct
 	void setPatchNumber(String patchNumber);
 	
-	String getDateTime();
+	List<PatchLogDetails> getLogDetails();
 	
-	void setDateTime(Date datetime);
+	void addLog(PatchLogDetails logDetails);
 	
-	String getTarget();
-	
-	void setTarget(String target);
-	
-	String getStep();
-	
-	void setStep(String step);
 }
