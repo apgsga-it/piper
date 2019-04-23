@@ -345,6 +345,16 @@ public class PatchCliIntegrationTest extends Specification {
 		cleanup:
 		repo.clean()
 	}
+	
+	def "Patch Cli Missing configuration for State Change Action"() {
+		setup:
+		def client = PatchCli.create()
+		when:
+		def result = client.process(["-sta", "9999,EntwicklungInstallationsbereit"])
+		then:
+		result != null
+		result.returnCode == 0
+	}
 
 	def "Patch Cli Log Patch activity in PatchLog file "() {
 		setup:
