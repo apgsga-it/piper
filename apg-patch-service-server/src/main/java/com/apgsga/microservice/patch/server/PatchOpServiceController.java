@@ -74,8 +74,8 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@RequestMapping(value = "/savePatchLog", method = RequestMethod.POST)
 	@ResponseBody
 	@Override
-	public void savePatchLog(@RequestBody PatchLog patchLog) {
-		repo.savePatchLog(patchLog);
+	public void savePatchLog(@RequestBody Patch patch) {
+		repo.savePatchLog(patch);
 	}
 
 	@RequestMapping(value = "/savePatch", method = RequestMethod.POST)

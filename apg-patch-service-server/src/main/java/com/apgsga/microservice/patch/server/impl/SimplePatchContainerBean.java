@@ -150,13 +150,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 	
 	@Override
-	public PatchLog saveLog(PatchLog patchLog) {
-		Asserts.notNull(patchLog, "SimplePatchContainerBean.save.patchlogobject.notnull.assert", new Object[] {});
-		Asserts.notNullOrEmpty(patchLog.getPatchNumber(), "SimplePatchContainerBean.save.patchlognumber.notnullorempty.assert", new Object[] {patchLog.toString()});
-		Asserts.notNull(repo.findById(patchLog.getPatchNumber()), "SimplePatchContainerBean.save.patchlog.exists.corresponfingpatch.assert", new Object[] {patchLog.toString()});
+	public void log(Patch patch) {
 		//JHE: To be verified, any other pre-check to be done? Eventually that patchLog.patchLogDetail is correct
-		repo.savePatchLog(patchLog);
-		return patchLog;
+		Asserts.notNull(patch, "SimplePatchContainerBean.log.patch.null.assert", new Object[] {});
+		Asserts.notNullOrEmpty(patch.getPatchNummer(), "SimplePatchContainerBean.log.patchnumber.isnullorempty", new Object[] {});
+		Asserts.notNull(repo.findById(patch.getPatchNummer()), "SimplePatchContainerBean.log.patchisnull", new Object[] {patch.getPatchNummer()});
+		repo.savePatchLog(patch);
 	}
 
 	private void preProcessSave(Patch patch) {

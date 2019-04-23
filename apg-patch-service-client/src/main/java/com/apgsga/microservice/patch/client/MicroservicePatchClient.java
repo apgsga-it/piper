@@ -29,7 +29,7 @@ public class MicroservicePatchClient implements PatchService {
 
 	private static final String SAVE = "/save";
 	
-	private static final String SAVE_PATCH_LOG = "/savePatchLog";
+	private static final String LOG = "/log";
 
 	private static final String LIST_DBMODULES = "/listDbModules";
 
@@ -108,8 +108,8 @@ public class MicroservicePatchClient implements PatchService {
 	}
 	
 	@Override
-	public PatchLog saveLog(PatchLog patchLog) {
-		return restTemplate.postForObject(getRestBaseUri() + SAVE_PATCH_LOG, patchLog, PatchLog.class);
+	public void log(Patch patch) {
+		restTemplate.postForLocation(getRestBaseUri() + LOG, patch);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package com.apgsga.microservice.patch.server.impl.persistence;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,9 +15,12 @@ import org.springframework.core.io.Resource;
 import com.apgsga.microservice.patch.api.DbModules;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchLog;
+import com.apgsga.microservice.patch.api.PatchLogDetails;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
+import com.apgsga.microservice.patch.api.impl.PatchLogBean;
+import com.apgsga.microservice.patch.api.impl.PatchLogDetailsBean;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -131,10 +135,29 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	}
 	
 	@Override
-	public void savePatchLog(PatchLog patchLog) {
-		Asserts.notNull(patchLog, "FilebasedPatchPersistence.save.patchlogobject.notnull.assert", new Object[] {});
-		Asserts.notNullOrEmpty(patchLog.getPatchNumber(), "FilebasedPatchPersistence.save.patchlognumber.notnullorempty.assert", new Object[] {patchLog.toString()});
+	public void savePatchLog(Patch patch) {
+		Asserts.notNull(patch, "FilebasedPatchPersistence.save.patchlog.patch.notnull.assert", new Object[] {});
+		Asserts.notNullOrEmpty(patch.getPatchNummer(), "FilebasedPatchPersistence.save.patchlognumber.notnullorempty.assert", new Object[] {patch.toString()});
+		PatchLog patchLog = findPatchLogById(patch.getPatchNummer());
+		if(patchLog == null) {
+			patchLog = createPatchLog(patch.getPatchNummer());
+		}
+		patchLog.addLog(createPatchLogDetail(patch.getCurrentTarget(),patch.getStep()));
 		writeToFile(patchLog, PATCH_LOG + patchLog.getPatchNumber() + JSON);
+	}
+	
+	private PatchLogDetails createPatchLogDetail(String target, String step) {
+		PatchLogDetails pld = new PatchLogDetailsBean();
+		pld.setStep(step);
+		pld.setTarget(target);
+		pld.setDateTime(new Date());
+		return pld;
+	}
+
+	private PatchLog createPatchLog(String patchNumber) {
+		PatchLogBean pl = new PatchLogBean();
+		pl.setPatchNumber(patchNumber);
+		return pl;
 	}
 
 	// TODO (che, 8.5) Do we want remove also "Atomic"

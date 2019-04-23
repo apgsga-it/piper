@@ -72,7 +72,6 @@ public class MicroServicePatchClientTest {
 		final PatchPersistence per = new FilebasedPatchPersistence(testResources, workDir);
 		Patch testPatch5401 = per.findById("5401");
 		Patch testPatch5402 = per.findById("5402");
-		PatchLog testPatchLog = per.findPatchLogById("5401");
 		repo.clean();
 
 		try {
@@ -85,7 +84,7 @@ public class MicroServicePatchClientTest {
 
 		repo.savePatch(testPatch5401);
 		repo.savePatch(testPatch5402);
-		repo.savePatchLog(testPatchLog);
+		repo.savePatchLog(testPatch5401);
 	}
 
 	@Test
@@ -99,16 +98,21 @@ public class MicroServicePatchClientTest {
 	}
 	
 	@Test
-	public void testSavePatchLogEmptyWithId() {
-		PatchLog pl = new PatchLogBean();
-		pl.setPatchNumber("anotherUniqueId");
+	public void testSavePatchLog() {
 		Patch p = new PatchBean();
 		p.setPatchNummer("anotherUniqueId");
+		p.setCurrentTarget("chei212");
+		p.setStep("Build Started");
 		patchClient.save(p);
-		patchClient.saveLog(pl);
+		patchClient.log(p);
 		PatchLog result = patchClient.findPatchLogById("anotherUniqueId");
 		Assert.assertNotNull(result);
-		Assert.assertEquals(pl, result);
+		Assert.assertTrue(result.getLogDetails().size() == 1);
+		p.setStep("Build done");
+		patchClient.save(p);
+		patchClient.log(p);		
+		result = patchClient.findPatchLogById("anotherUniqueId");
+		Assert.assertTrue(result.getLogDetails().size() == 2);
 	}
 
 	@Test
@@ -138,9 +142,9 @@ public class MicroServicePatchClientTest {
 	
 	@Test
 	public void testSavePatchLogEmptyWithoutId() {
-		PatchLog pl = new PatchLogBean();
+		Patch patch = new PatchBean();
 		try {
-			patchClient.saveLog(pl);
+			patchClient.log(patch);
 			fail();
 		} catch (Throwable e) {
 			// TODO Detail , Exception Handling

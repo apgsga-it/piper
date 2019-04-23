@@ -72,52 +72,50 @@ public class MicroServicePatchServerTest {
 	@Test
 	public void testSavePatchLogWithoutCorrespondingPatch() {
 		try {
-			PatchLog pl = new PatchLogBean();
-			pl.setPatchNumber("SomeUniqueNum1");
-			patchService.saveLog(pl);
+			Patch patch = new PatchBean();
+			patch.setPatchNummer("SomeUnqiueNumber1");
+			patchService.log(patch);
 			fail();
 		} catch(PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("SimplePatchContainerBean.save.patchlog.exists.corresponfingpatch.assert", e.getMessageKey());
+			Assert.assertEquals("SimplePatchContainerBean.log.patchisnull", e.getMessageKey());
 		}
 	}
 	
 	@Test
-	public void testSavePatchLogEmptyWithId() {
+	public void testSavePatchLogWithOneDetail() {
 		String patchNumber = "someUniqueNum1";
 		Patch p = new PatchBean();
 		p.setPatchNummer(patchNumber);
+		p.setCurrentTarget("chei211");
+		p.setStep("Build started");
 		patchService.save(p);
-		PatchLog pl = new PatchLogBean();
-		pl.setPatchNumber(patchNumber);
-		patchService.saveLog(pl);
+		patchService.log(p);
 		PatchLog result = patchService.findPatchLogById(patchNumber);
 		Assert.assertNotNull(result);
-		Assert.assertEquals(pl, result);
+		Assert.assertTrue(result.getLogDetails().size() == 1);
 	}
 	
 	@Test
-	public void testSavePatchLogNonEmpty() {
+	public void testSavePatchLogWithSeveralDetail() {
 		String patchNumber = "notEmpty1";
 		Patch p = new PatchBean();
 		p.setPatchNummer(patchNumber);
+		p.setCurrentTarget("chei211");
+		p.setStep("Build started");
 		patchService.save(p);
-		PatchLog pl = new PatchLogBean();
-		pl.setPatchNumber(patchNumber);
-		PatchLogDetails pld_1 = new PatchLogDetailsBean();
-		pld_1.setDateTime(new Date());
-		pld_1.setStep("Build started");
-		pld_1.setTarget("CHEI211");
-		PatchLogDetails pld_2 = new PatchLogDetailsBean();
-		pld_2.setDateTime(new Date());
-		pld_2.setStep("Build done");
-		pld_2.setTarget("CHEI211");	
-		pl.addLog(pld_1);
-		pl.addLog(pld_2);
-		patchService.saveLog(pl);
+		patchService.log(p);
 		PatchLog result = patchService.findPatchLogById(patchNumber);
 		Assert.assertNotNull(result);
-		Assert.assertEquals(pl, result);
+		Assert.assertTrue(result.getLogDetails().size() == 1);
+		p.setStep("Build done");
+		patchService.save(p);
+		patchService.log(p);
+		p.setStep("Installation started");
+		patchService.save(p);
+		patchService.log(p);
+		result = patchService.findPatchLogById(patchNumber);
+		Assert.assertTrue(result.getLogDetails().size() == 3);
 	}
 
 	@Test

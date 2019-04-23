@@ -94,11 +94,11 @@ public class MicroServicePatchServerExceptionTests {
 	@Test
 	public void testSavePatchLogNullException() {
 		try {
-			patchService.saveLog(null);
+			patchService.log(null);
 			fail();
 		} catch(PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("SimplePatchContainerBean.save.patchlogobject.notnull.assert", e.getMessageKey());
+			Assert.assertEquals("SimplePatchContainerBean.log.patch.null.assert", e.getMessageKey());
 		}
 	}
 	
@@ -111,18 +111,6 @@ public class MicroServicePatchServerExceptionTests {
 		} catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
 			Assert.assertEquals("SimplePatchContainerBean.save.patchnumber.notnullorempty.assert", e.getMessageKey());
-		}
-	}
-	
-	@Test
-	public void testSavePatchLogEmptyWithoutId() {
-		PatchLog pl = new PatchLogBean();
-		try {
-			patchService.saveLog(pl);
-			fail();
-		} catch(PatchServiceRuntimeException e) {
-			LOGGER.info(e.toString());
-			Assert.assertEquals("SimplePatchContainerBean.save.patchlognumber.notnullorempty.assert", e.getMessageKey());
 		}
 	}
 	

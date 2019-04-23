@@ -86,11 +86,10 @@ public interface PatchService {
 	public Patch save(Patch patch);
 	
 	/**
-	 * All changes on a PatchLog Object need to be saved
-	 * @param patchLog a PatchLog object
-	 * @return PatchLog with new saved Data
+	 * Log all steps done for a patch
+	 * @param patch , Patch where to get the information from
 	 */
-	public PatchLog saveLog(PatchLog patchLog);
+	public void log(Patch patch);
 
 	/**
 	 * A Patch object is removed from the PatchContainer

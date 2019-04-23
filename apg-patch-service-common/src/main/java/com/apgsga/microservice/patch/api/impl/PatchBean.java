@@ -34,6 +34,8 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	private List<MavenArtifact> mavenArtifacts = Lists.newArrayList();
 	private boolean installOnEmptyModules = false;
 	private String lastPipelineTask ="";
+	private String currentTarget;
+	private String step;
 
 	public PatchBean() {
 		super();
@@ -229,6 +231,30 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		this.installationTarget = installationTarget;
 		firePropertyChangeEvent(INSTALLS_TARGET, oldValue, installationTarget);
 	}
+	
+	@Override
+	public String getCurrentTarget() {
+		return currentTarget;
+	}
+
+	@Override
+	public void setCurrentTarget(String currentTarget) {
+		final Object oldValue = this.currentTarget;
+		this.currentTarget = currentTarget;
+		firePropertyChangeEvent(CURRENT_TARGET, oldValue, currentTarget);
+	}
+
+	@Override
+	public String getStep() {
+		return step;
+	}
+
+	@Override
+	public void setStep(String step) {
+		final Object oldValue = this.step;
+		this.step = step;
+		firePropertyChangeEvent(STEP, oldValue, step);
+	}
 
 	@Override
 	public String getBaseVersionNumber() {
@@ -349,6 +375,8 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		result = prime * result + ((serviceName == null) ? 0 : serviceName.hashCode());
 		result = prime * result + ((tagNr == null) ? 0 : tagNr.hashCode());
 		result = prime * result + ((targetToState == null) ? 0 : targetToState.hashCode());
+		result = prime * result + ((currentTarget == null) ? 0 : currentTarget.hashCode());
+		result = prime * result + ((step == null) ? 0 : step.hashCode());
 		return result;
 	}
 
@@ -471,6 +499,18 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		}
 		else if (!targetToState.equals(other.targetToState))
 			return false;
+		if(currentTarget == null) {
+			if(other.currentTarget != null)
+				return false;
+		}
+		else if(!currentTarget.equals(other.currentTarget))
+			return false;
+		if(step == null) {
+			if(other.step != null)
+				return false;
+		}
+		else if(!step.equals(other.step))
+			return false;
 		return true;
 	}
 
@@ -483,10 +523,7 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 				+ ", revisionMnemoPart=" + revisionMnemoPart + ", revision=" + revision + ", lastRevision="
 				+ lastRevision + ", runningNr=" + runningNr + ", dbObjects=" + dbObjects + ", mavenArtifacts="
 				+ mavenArtifacts + ", installOnEmptyModules=" + installOnEmptyModules + ", pipelineTask=" + lastPipelineTask
+				+ ", currentTarget=" + currentTarget + ", step=" + step
 				+ "]";
 	}
-
-	
-	
-
 }

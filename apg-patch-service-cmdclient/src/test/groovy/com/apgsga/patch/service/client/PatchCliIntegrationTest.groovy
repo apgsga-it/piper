@@ -1,5 +1,8 @@
 package com.apgsga.patch.service.client;
 
+import java.util.stream.Nodes.SizedCollectorTask
+
+import org.spockframework.util.Assert
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -12,10 +15,13 @@ import org.springframework.test.context.TestPropertySource;
 
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
+import com.apgsga.microservice.patch.api.PatchLog
 import com.apgsga.microservice.patch.api.PatchPersistence
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.microservice.patch.server.MicroPatchServer;
+import com.apgsga.microservice.patch.server.impl.vcs.ProcessBuilderCmdRunner
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.jayway.jsonpath.internal.filter.EvaluatorFactory.ExistsEvaluator
 
 import spock.lang.Ignore
 import spock.lang.Specification;
@@ -340,13 +346,32 @@ public class PatchCliIntegrationTest extends Specification {
 		repo.clean()
 	}
 
-	def "Patch Cli Missing configuration for State Change Action"() {
+	def "Patch Cli Log Patch activity in PatchLog file "() {
 		setup:
-		def client = PatchCli.create()
+			def client = PatchCli.create()
 		when:
-		def result = client.process(["-sta", "9999,EntwicklungInstallationsbereit"])
+			def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"])
 		then:
-		result != null
-		result.returnCode == 0
+			preCondResult != null
+			preCondResult.returnCode == 0
+			File patchFile = new File("${dbLocation}/Patch5401.json")
+			patchFile.exists()
+			ObjectMapper patchMapper = new ObjectMapper();
+			def p = patchMapper.readValue(patchFile,Patch.class)
+			p.setCurrentTarget("chei211")
+			p.setStep("Build started")
+			patchMapper.writeValue(patchFile, p)
+		when:
+			def result = client.process(["-log", "src/test/resources/Patch5401.json"])
+		then:
+			preCondResult != null
+			preCondResult.returnCode == 0
+			File patchLogFile = new File("${dbLocation}/PatchLog5401.json")
+			patchLogFile.exists()
+			ObjectMapper patchLogMapper = new ObjectMapper()
+			def pl = patchLogMapper.readValue(patchLogFile,PatchLog.class)
+			assert pl.logDetails.size() == 1
+		cleanup:
+			repo.clean()
 	}
 }

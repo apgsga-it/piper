@@ -31,11 +31,15 @@ public interface Patch extends ServiceMetaData {
 
 	public static final String INSTALLS_TARGET = "installationTarget";
 	
+	public static final String CURRENT_TARGET = "currentTarget";
+	
 	public static final String INSTALL_ON_EMPTY_MODULES = "installOnEmptyModules";
 	
 	public static final String INSTALL_JADAS_AND_GUI = "installJadasAndGui";
 	
 	public static final String PIPELINE_TASK = "pipeLineTask";
+	
+	public static final String STEP = "step";
 
 	String getPatchNummer();
 
@@ -128,5 +132,13 @@ public interface Patch extends ServiceMetaData {
 	public boolean getInstallJadasAndGui();
 	
 	public void setInstallJadasAndGui();
+	
+	public String getCurrentTarget();
+	
+	public void setCurrentTarget(String currentTarget);
+	
+	public String getStep();
+	
+	public void setStep(String step);
 
 }

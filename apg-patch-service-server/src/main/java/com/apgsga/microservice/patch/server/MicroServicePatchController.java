@@ -49,11 +49,11 @@ public class MicroServicePatchController implements PatchService {
 		return patchService.save(patch);
 	}
 	
-	@RequestMapping(value = "/savePatchLog", method = RequestMethod.POST)
-	@ResponseBody
+	@RequestMapping(value = "/log", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
 	@Override
-	public PatchLog saveLog(@RequestBody PatchLog patchLog) {
-  		return patchService.saveLog(patchLog);
+	public void log(@RequestBody Patch patch) {
+  		patchService.log(patch);
 	}
 
 	@RequestMapping(value = "/remove", method = RequestMethod.POST)

@@ -15,7 +15,7 @@ public interface PatchPersistence {
 
 	public void savePatch(Patch patch);
 	
-	public void savePatchLog(PatchLog patchLog);
+	public void savePatchLog(Patch patch);
 
 	public void removePatch(Patch patch);
 
