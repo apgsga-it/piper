@@ -26,6 +26,7 @@ import org.springframework.util.FileCopyUtils;
 
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.SearchCondition;
 import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
@@ -64,6 +65,7 @@ public class MicroServicePatchClientArtefactQueryTests {
 		final PatchPersistence per = new FilebasedPatchPersistence(testResources, workDir);
 		Patch testPatch5401 = per.findById("5401");
 		Patch testPatch5402 = per.findById("5402");
+		PatchLog testPatchLog5401 = per.findPatchLogById("5401");
 		repo.clean();
 
 		try {
@@ -76,6 +78,7 @@ public class MicroServicePatchClientArtefactQueryTests {
 
 		repo.savePatch(testPatch5401);
 		repo.savePatch(testPatch5402);
+		repo.savePatchLog(testPatchLog5401);
 	}
 
 	@Test
@@ -91,6 +94,17 @@ public class MicroServicePatchClientArtefactQueryTests {
 				return t.getGroupId().startsWith("com.apgsga") || t.getGroupId().startsWith("com.affichage");
 			}
 		}));
+	}
+	
+	@Test
+	public void testFindPatchLog() {
+		PatchLog pl = patchClient.findPatchLogById("5401");
+		Assert.assertNotNull(pl);
+		Assert.assertTrue(pl.getLogDetails().size() == 2);
+		pl.getLogDetails().forEach(ld -> {
+			// JHE (23.04.2019): Not a very good test ... but ok for now
+			Assert.assertTrue(ld.getStep().equals("Build started") || ld.getStep().equals("Build done"));
+		});
 	}
 
 	@Test

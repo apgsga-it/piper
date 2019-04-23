@@ -27,11 +27,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileCopyUtils;
 
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.api.impl.PatchBean;
+import com.apgsga.microservice.patch.api.impl.PatchLogBean;
 import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
+import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.apgsga.microservice.patch.server.impl.persistence.FilebasedPatchPersistence;
 import com.google.common.collect.Lists;
@@ -69,6 +72,7 @@ public class MicroServicePatchClientTest {
 		final PatchPersistence per = new FilebasedPatchPersistence(testResources, workDir);
 		Patch testPatch5401 = per.findById("5401");
 		Patch testPatch5402 = per.findById("5402");
+		PatchLog testPatchLog = per.findPatchLogById("5401");
 		repo.clean();
 
 		try {
@@ -81,6 +85,7 @@ public class MicroServicePatchClientTest {
 
 		repo.savePatch(testPatch5401);
 		repo.savePatch(testPatch5402);
+		repo.savePatchLog(testPatchLog);
 	}
 
 	@Test
@@ -91,6 +96,19 @@ public class MicroServicePatchClientTest {
 		Patch result = patchClient.findById("SomeUnqiueNumber1");
 		Assert.assertNotNull(result);
 		Assert.assertEquals(patch, result);
+	}
+	
+	@Test
+	public void testSavePatchLogEmptyWithId() {
+		PatchLog pl = new PatchLogBean();
+		pl.setPatchNumber("anotherUniqueId");
+		Patch p = new PatchBean();
+		p.setPatchNummer("anotherUniqueId");
+		patchClient.save(p);
+		patchClient.saveLog(pl);
+		PatchLog result = patchClient.findPatchLogById("anotherUniqueId");
+		Assert.assertNotNull(result);
+		Assert.assertEquals(pl, result);
 	}
 
 	@Test
@@ -117,6 +135,17 @@ public class MicroServicePatchClientTest {
 			// Ok
 		}
 	}
+	
+	@Test
+	public void testSavePatchLogEmptyWithoutId() {
+		PatchLog pl = new PatchLogBean();
+		try {
+			patchClient.saveLog(pl);
+			fail();
+		} catch (Throwable e) {
+			// TODO Detail , Exception Handling
+		}
+	}
 
 	@Test
 	public void testSaveWithArtifacts() {
@@ -139,6 +168,12 @@ public class MicroServicePatchClientTest {
 	public void testFindByIds() {
 		List<Patch> patches = patchClient.findByIds(Lists.newArrayList("5401","5402"));
 		Assert.assertEquals(2, patches.size());
+	}
+	
+	@Test
+	public void testFindPatchLogById() {
+		PatchLog pl = patchClient.findPatchLogById("5401");
+		Assert.assertNotNull(pl);
 	}
 	
 
