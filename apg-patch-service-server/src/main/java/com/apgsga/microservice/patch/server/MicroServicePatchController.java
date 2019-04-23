@@ -133,10 +133,10 @@ public class MicroServicePatchController implements PatchService {
 		return patchService.findByIds(patchIds);
 	}
 
-	@RequestMapping(value = "findPatchLogById", method = RequestMethod.POST)
+	@RequestMapping(value = "/findPatchLogById/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	@Override
-	public PatchLog findPatchLogById(@RequestBody String patchNummer) {
+	public PatchLog findPatchLogById(@PathVariable("id") String patchNummer) {
 		return patchService.findPatchLogById(patchNummer);
 	}
 }
