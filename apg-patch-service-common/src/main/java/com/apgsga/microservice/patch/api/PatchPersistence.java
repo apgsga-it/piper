@@ -6,12 +6,16 @@ import java.util.List;
 public interface PatchPersistence {
 
 	Patch findById(String patchNummer);
+	
+	PatchLog findPatchLogById(String patchNummer);
 
 	Boolean patchExists(String patchNummber);
 
 	public List<String> findAllPatchIds();
 
 	public void savePatch(Patch patch);
+	
+	public void savePatchLog(Patch patch);
 
 	public void removePatch(Patch patch);
 

@@ -27,11 +27,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileCopyUtils;
 
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.api.impl.PatchBean;
+import com.apgsga.microservice.patch.api.impl.PatchLogBean;
 import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
+import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.apgsga.microservice.patch.server.impl.persistence.FilebasedPatchPersistence;
 import com.google.common.collect.Lists;
@@ -81,6 +84,7 @@ public class MicroServicePatchClientTest {
 
 		repo.savePatch(testPatch5401);
 		repo.savePatch(testPatch5402);
+		repo.savePatchLog(testPatch5401);
 	}
 
 	@Test
@@ -91,6 +95,22 @@ public class MicroServicePatchClientTest {
 		Patch result = patchClient.findById("SomeUnqiueNumber1");
 		Assert.assertNotNull(result);
 		Assert.assertEquals(patch, result);
+	}
+	
+	@Test
+	public void testSavePatchLog() {
+		Patch p = new PatchBean();
+		p.setPatchNummer("anotherUniqueId");
+		p.setCurrentTarget("chei212");
+		p.setLogText("Build Started");
+		patchClient.save(p);
+		try {
+			patchClient.log(p);
+			fail();
+		}
+		catch(UnsupportedOperationException ex) {
+			Assert.assertEquals(ex.getMessage(), "Logging patch activity not supported");
+		}
 	}
 
 	@Test
@@ -117,6 +137,17 @@ public class MicroServicePatchClientTest {
 			// Ok
 		}
 	}
+	
+	@Test
+	public void testSavePatchLogEmptyWithoutId() {
+		Patch patch = new PatchBean();
+		try {
+			patchClient.log(patch);
+			fail();
+		} catch (Throwable e) {
+			// TODO Detail , Exception Handling
+		}
+	}
 
 	@Test
 	public void testSaveWithArtifacts() {
@@ -139,6 +170,12 @@ public class MicroServicePatchClientTest {
 	public void testFindByIds() {
 		List<Patch> patches = patchClient.findByIds(Lists.newArrayList("5401","5402"));
 		Assert.assertEquals(2, patches.size());
+	}
+	
+	@Test
+	public void testFindPatchLogById() {
+		PatchLog pl = patchClient.findPatchLogById("5401");
+		Assert.assertNotNull(pl);
 	}
 	
 

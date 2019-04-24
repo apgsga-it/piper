@@ -1,6 +1,10 @@
 package com.apgsga.microservice.patch.server;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,10 +22,15 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchLog;
+import com.apgsga.microservice.patch.api.PatchLogDetails;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.api.impl.PatchBean;
+import com.apgsga.microservice.patch.api.impl.PatchLogBean;
+import com.apgsga.microservice.patch.api.impl.PatchLogDetailsBean;
+import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutor;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
 import com.apgsga.microservice.patch.server.impl.SimplePatchContainerBean;
@@ -58,6 +67,59 @@ public class MicroServicePatchServerTest {
 		Patch result = patchService.findById("SomeUnqiueNumber1");
 		Assert.assertNotNull(result);
 		Assert.assertEquals(patch, result);
+	}
+	
+	@Test
+	public void testSavePatchLogWithoutCorrespondingPatch() {
+		try {
+			Patch patch = new PatchBean();
+			patch.setPatchNummer("SomeUnqiueNumber1");
+			patchService.log(patch);
+			fail();
+		} catch(PatchServiceRuntimeException e) {
+			LOGGER.info(e.toString());
+			Assert.assertEquals("SimplePatchContainerBean.log.patchisnull", e.getMessageKey());
+		}
+	}
+	
+	@Test
+	public void testSavePatchLogWithOneDetail() {
+		String patchNumber = "someUniqueNum1";
+		Patch p = new PatchBean();
+		p.setPatchNummer(patchNumber);
+		p.setCurrentTarget("chei211");
+		p.setLogText("started");
+		p.setCurrentPipelineTask("Build");
+		patchService.save(p);
+		patchService.log(p);
+		PatchLog result = patchService.findPatchLogById(patchNumber);
+		Assert.assertNotNull(result);
+		Assert.assertTrue(result.getLogDetails().size() == 1);
+	}
+	
+	@Test
+	public void testSavePatchLogWithSeveralDetail() {
+		String patchNumber = "notEmpty1";
+		Patch p = new PatchBean();
+		p.setPatchNummer(patchNumber);
+		p.setCurrentTarget("chei211");
+		p.setCurrentPipelineTask("Build");
+		p.setLogText("started");
+		patchService.save(p);
+		patchService.log(p);
+		PatchLog result = patchService.findPatchLogById(patchNumber);
+		Assert.assertNotNull(result);
+		Assert.assertTrue(result.getLogDetails().size() == 1);
+		p.setCurrentPipelineTask("Build");
+		p.setLogText("done");
+		patchService.save(p);
+		patchService.log(p);
+		p.setCurrentPipelineTask("Installation");
+		p.setLogText("started");
+		patchService.save(p);
+		patchService.log(p);
+		result = patchService.findPatchLogById(patchNumber);
+		Assert.assertTrue(result.getLogDetails().size() == 3);
 	}
 
 	@Test

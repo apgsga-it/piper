@@ -25,6 +25,7 @@ import com.apgsga.microservice.patch.api.DbModules;
 import com.apgsga.microservice.patch.api.DbObject;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchOpService;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.PatchService;
@@ -122,6 +123,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public Patch findById(String patchNummer) {
 		return repo.findById(patchNummer);
 	}
+	
+	@Override
+	public PatchLog findPatchLogById(String patchNummer) {
+		return repo.findPatchLogById(patchNummer);
+	}
 
 	@Override
 	public List<Patch> findByIds(List<String> patchIds) {
@@ -141,6 +147,15 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		preProcessSave(patch);
 		repo.savePatch(patch);
 		return patch;
+	}
+	
+	@Override
+	public void log(Patch patch) {
+		//JHE: To be verified, any other pre-check to be done? Eventually that patchLog.patchLogDetail is correct
+		Asserts.notNull(patch, "SimplePatchContainerBean.log.patch.null.assert", new Object[] {});
+		Asserts.notNullOrEmpty(patch.getPatchNummer(), "SimplePatchContainerBean.log.patchnumber.isnullorempty", new Object[] {});
+		Asserts.notNull(repo.findById(patch.getPatchNummer()), "SimplePatchContainerBean.log.patchisnull", new Object[] {patch.getPatchNummer()});
+		repo.savePatchLog(patch);
 	}
 
 	private void preProcessSave(Patch patch) {
@@ -333,5 +348,4 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public TaskExecutor getThreadExecutor() {
 		return threadExecutor;
 	}
-
 }

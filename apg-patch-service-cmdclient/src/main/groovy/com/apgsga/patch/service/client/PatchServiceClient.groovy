@@ -6,6 +6,7 @@ import org.springframework.web.client.RestTemplate
 
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
+import com.apgsga.microservice.patch.api.PatchLog
 import com.apgsga.microservice.patch.api.PatchOpService
 import com.apgsga.microservice.patch.api.PatchPersistence
 import com.apgsga.microservice.patch.api.ServiceMetaData
@@ -49,6 +50,11 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 	public Patch findById(String patchNumber) {
 		return restTemplate.getForObject(getRestBaseUri() + "/findById/{id}", Patch.class, [id:patchNumber]);
 	}
+	
+	@Override
+	public PatchLog findPatchLogById(String patchNummer) {
+		return restTemplate.getForObject(getRestBaseUri() + "/findPatchLogById/{id}", PatchLog.class, [id:patchNummer]);
+	}
 
 
 	@Override
@@ -77,7 +83,13 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 		restTemplate.postForLocation(getRestBaseUri() + "/save", patch);
 		println patch.toString() + " Saved Patch."
 	}
-
+	
+	@Override
+	public void savePatchLog(Patch patch) {
+		restTemplate.postForLocation(getRestBaseUri() + "/savePatchLog", patch)
+		println "Saved PatchLog for " + patch.toString()		
+	}
+	
 	@Override
 	public void savePatch(Patch patch) {
 		restTemplate.postForLocation(getRestBaseUri() + "/savePatch", patch);

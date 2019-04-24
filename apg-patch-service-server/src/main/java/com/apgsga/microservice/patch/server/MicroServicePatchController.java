@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.apgsga.microservice.patch.api.DbObject;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchService;
 import com.apgsga.microservice.patch.api.SearchCondition;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
@@ -46,6 +47,13 @@ public class MicroServicePatchController implements PatchService {
 	@Override
 	public Patch save(@RequestBody Patch patch) {
 		return patchService.save(patch);
+	}
+	
+	@RequestMapping(value = "/log", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public void log(@RequestBody Patch patch) {
+  		patchService.log(patch);
 	}
 
 	@RequestMapping(value = "/remove", method = RequestMethod.POST)
@@ -125,4 +133,10 @@ public class MicroServicePatchController implements PatchService {
 		return patchService.findByIds(patchIds);
 	}
 
+	@RequestMapping(value = "/findPatchLogById/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	@Override
+	public PatchLog findPatchLogById(@PathVariable("id") String patchNummer) {
+		return patchService.findPatchLogById(patchNummer);
+	}
 }
