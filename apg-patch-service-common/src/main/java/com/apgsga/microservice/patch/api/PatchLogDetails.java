@@ -13,7 +13,9 @@ public interface PatchLogDetails {
 
 		public static final String TARGET = "target";
 
-		public static final String STEP = "step";
+		public static final String PATCH_PIPELINE_TASK = "patchPipelineTask";
+		
+		public static final String LOG_TEXT = "logText";
 
 		Date getDateTime();
 
@@ -23,7 +25,11 @@ public interface PatchLogDetails {
 
 		void setTarget(String target);
 
-		String getStep();
+		String getPatchPipelineTask();
 
-		void setStep(String step);
+		void setPatchPipelineTask(String patchPipelineTask);
+		
+		String getLogText();
+		
+		void setLogText(String logText);
 }

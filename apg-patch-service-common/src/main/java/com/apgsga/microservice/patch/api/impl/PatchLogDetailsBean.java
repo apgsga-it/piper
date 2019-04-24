@@ -10,7 +10,8 @@ public class PatchLogDetailsBean extends AbstractTransientEntity implements Patc
 	private static final long serialVersionUID = 1L;
 	private Date datetime;
 	private String target;
-	private String step;
+	private String patchPipelineTask;
+	private String logText;
 	
 	@Override
 	public Date getDateTime() {
@@ -35,22 +36,37 @@ public class PatchLogDetailsBean extends AbstractTransientEntity implements Patc
 		this.target = target;
 		firePropertyChange(TARGET, oldValue, target);
 	}
-
+	
 	@Override
-	public String getStep() {
-		return step;
+	public String getPatchPipelineTask() {
+		return patchPipelineTask;
 	}
 
 	@Override
-	public void setStep(String step) {
-		final Object oldValue = this.step;
-		this.step = step;
-		firePropertyChange(STEP, oldValue, step);
+	public void setPatchPipelineTask(String patchPipelineTask) {
+		final Object oldValue = this.patchPipelineTask;
+		this.patchPipelineTask = patchPipelineTask;
+		firePropertyChange(PATCH_PIPELINE_TASK, oldValue, patchPipelineTask);
+	}
+
+	@Override
+	public String getLogText() {
+		return logText;
+	}
+
+	@Override
+	public void setLogText(String logText) {
+		final Object oldValue = this.logText;
+		this.logText = logText;
+		firePropertyChange(LOG_TEXT, oldValue, logText);
 	}
 	
 	@Override
 	public String toString() {
-		return "PatchLogDetailsBean [datetime=" + datetime + ",target=" + target + ",step=" + step + "]";		
+		return "PatchLogDetailsBean [datetime=" + datetime + 
+									 ",target=" + target + 
+									 ",patchPipelineTask=" + patchPipelineTask + 
+									 ",logText=" + logText + "]";		
 	}
 	
 	@Override
@@ -78,12 +94,20 @@ public class PatchLogDetailsBean extends AbstractTransientEntity implements Patc
 		else if(!target.equals(other.getTarget())) {
 			return false;
 		}
-		if(step == null) {
-			if(other.getStep() != null) {
+		if(patchPipelineTask == null) {
+			if(other.getPatchPipelineTask() != null) {
 				return false;
 			}
 		}
-		else if(!step.equals(other.getStep())) {
+		else if(!patchPipelineTask.equals(other.getPatchPipelineTask())) {
+			return false;
+		}
+		if(logText == null) {
+			if(other.getLogText() != null) {
+				return false;
+			}
+		}
+		else if(!logText.equals(other.getLogText())) {
 			return false;
 		}
 		return true;

@@ -35,7 +35,8 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	private boolean installOnEmptyModules = false;
 	private String lastPipelineTask ="";
 	private String currentTarget;
-	private String step;
+	private String currentPipelineTask;
+	private String logText;
 
 	public PatchBean() {
 		super();
@@ -245,15 +246,27 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	}
 
 	@Override
-	public String getStep() {
-		return step;
+	public String getLogText() {
+		return logText;
 	}
 
 	@Override
-	public void setStep(String step) {
-		final Object oldValue = this.step;
-		this.step = step;
-		firePropertyChangeEvent(STEP, oldValue, step);
+	public void setLogText(String logText) {
+		final Object oldValue = this.logText;
+		this.logText = logText;
+		firePropertyChange(LOG_TEXT, oldValue, logText);
+	}
+
+	@Override
+	public String getCurrentPipelineTask() {
+		return currentPipelineTask;
+	}
+
+	@Override
+	public void setCurrentPipelineTask(String currentPipelineTask) {
+		final Object oldValue = this.currentPipelineTask;
+		this.currentPipelineTask = currentPipelineTask;
+		firePropertyChange(CURRENT_PIPELINE_TASK, oldValue, currentPipelineTask);
 	}
 
 	@Override
@@ -376,7 +389,8 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		result = prime * result + ((tagNr == null) ? 0 : tagNr.hashCode());
 		result = prime * result + ((targetToState == null) ? 0 : targetToState.hashCode());
 		result = prime * result + ((currentTarget == null) ? 0 : currentTarget.hashCode());
-		result = prime * result + ((step == null) ? 0 : step.hashCode());
+		result = prime * result + ((currentPipelineTask == null) ? 0 : currentPipelineTask.hashCode());
+		result = prime * result + ((logText == null) ? 0 : logText.hashCode());
 		return result;
 	}
 
@@ -505,12 +519,20 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		}
 		else if(!currentTarget.equals(other.currentTarget))
 			return false;
-		if(step == null) {
-			if(other.step != null)
+		if(currentPipelineTask == null) {
+			if(other.getCurrentPipelineTask() != null)
 				return false;
 		}
-		else if(!step.equals(other.step))
+		else if(!currentPipelineTask.equals(other.getCurrentPipelineTask()))
 			return false;
+		if(logText == null) {
+			if(other.getLogText() != null) {
+				return false;
+			}
+		}
+		else if(!logText.equals(other.getLogText())) {
+			return false;
+		}
 		return true;
 	}
 
@@ -523,7 +545,7 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 				+ ", revisionMnemoPart=" + revisionMnemoPart + ", revision=" + revision + ", lastRevision="
 				+ lastRevision + ", runningNr=" + runningNr + ", dbObjects=" + dbObjects + ", mavenArtifacts="
 				+ mavenArtifacts + ", installOnEmptyModules=" + installOnEmptyModules + ", pipelineTask=" + lastPipelineTask
-				+ ", currentTarget=" + currentTarget + ", step=" + step
+				+ ", currentTarget=" + currentTarget + ", currentPipelineTask=" + currentPipelineTask + ", logText=" + logText
 				+ "]";
 	}
 }

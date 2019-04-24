@@ -102,7 +102,7 @@ public class MicroServicePatchClientTest {
 		Patch p = new PatchBean();
 		p.setPatchNummer("anotherUniqueId");
 		p.setCurrentTarget("chei212");
-		p.setStep("Build Started");
+		p.setLogText("Build Started");
 		patchClient.save(p);
 		try {
 			patchClient.log(p);

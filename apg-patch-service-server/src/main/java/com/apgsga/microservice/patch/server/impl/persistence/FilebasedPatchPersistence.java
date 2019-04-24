@@ -140,23 +140,24 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		Asserts.notNullOrEmpty(patch.getPatchNummer(), "FilebasedPatchPersistence.save.patchlognumber.notnullorempty.assert", new Object[] {patch.toString()});
 		PatchLog patchLog = findPatchLogById(patch.getPatchNummer());
 		if(patchLog == null) {
-			patchLog = createPatchLog(patch.getPatchNummer());
+			patchLog = createPatchLog(patch);
 		}
-		patchLog.addLog(createPatchLogDetail(patch.getCurrentTarget(),patch.getStep()));
+		patchLog.addLog(createPatchLogDetail(patch));
 		writeToFile(patchLog, PATCH_LOG + patchLog.getPatchNumber() + JSON);
 	}
 	
-	private PatchLogDetails createPatchLogDetail(String target, String step) {
+	private PatchLogDetails createPatchLogDetail(Patch patch) {
 		PatchLogDetails pld = new PatchLogDetailsBean();
-		pld.setStep(step);
-		pld.setTarget(target);
+		pld.setLogText(patch.getLogText());
+		pld.setPatchPipelineTask(patch.getCurrentPipelineTask());
+		pld.setTarget(patch.getCurrentTarget());
 		pld.setDateTime(new Date());
 		return pld;
 	}
 
-	private PatchLog createPatchLog(String patchNumber) {
+	private PatchLog createPatchLog(Patch patch) {
 		PatchLogBean pl = new PatchLogBean();
-		pl.setPatchNumber(patchNumber);
+		pl.setPatchNumber(patch.getPatchNummer());
 		return pl;
 	}
 
