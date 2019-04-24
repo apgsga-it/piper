@@ -109,7 +109,7 @@ public class MicroservicePatchClient implements PatchService {
 	
 	@Override
 	public void log(Patch patch) {
-		throw new UnsupportedOperationException("Logging patch activity not supported yet");
+		throw new UnsupportedOperationException("Logging patch activity not supported");
 	}
 
 	@Override

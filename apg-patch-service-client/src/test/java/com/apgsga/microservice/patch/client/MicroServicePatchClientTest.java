@@ -109,7 +109,7 @@ public class MicroServicePatchClientTest {
 			fail();
 		}
 		catch(UnsupportedOperationException ex) {
-			Assert.assertEquals(ex.getMessage(), "Logging patch activity not supported yet");
+			Assert.assertEquals(ex.getMessage(), "Logging patch activity not supported");
 		}
 	}
 
