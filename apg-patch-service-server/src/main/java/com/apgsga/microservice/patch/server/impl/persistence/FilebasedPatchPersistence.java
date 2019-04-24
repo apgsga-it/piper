@@ -95,7 +95,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 				return null;
 			}
 			ObjectMapper mapper = new ObjectMapper();
-			T patchData = (T) mapper.readValue(f, clazz);
+			T patchData = mapper.readValue(f, clazz);
 			return patchData;
 	}
 
