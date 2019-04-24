@@ -104,15 +104,13 @@ public class MicroServicePatchClientTest {
 		p.setCurrentTarget("chei212");
 		p.setStep("Build Started");
 		patchClient.save(p);
-		patchClient.log(p);
-		PatchLog result = patchClient.findPatchLogById("anotherUniqueId");
-		Assert.assertNotNull(result);
-		Assert.assertTrue(result.getLogDetails().size() == 1);
-		p.setStep("Build done");
-		patchClient.save(p);
-		patchClient.log(p);		
-		result = patchClient.findPatchLogById("anotherUniqueId");
-		Assert.assertTrue(result.getLogDetails().size() == 2);
+		try {
+			patchClient.log(p);
+			fail();
+		}
+		catch(UnsupportedOperationException ex) {
+			Assert.assertEquals(ex.getMessage(), "Logging patch activity not supported yet");
+		}
 	}
 
 	@Test

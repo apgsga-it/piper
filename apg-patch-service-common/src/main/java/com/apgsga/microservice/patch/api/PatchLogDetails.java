@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "className")
 public interface PatchLogDetails {
 
-		public static final String DATETIME = "datetime";
+		public static final String DATETIME = "dateTime";
 
 		public static final String TARGET = "target";
 
