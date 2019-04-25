@@ -363,7 +363,8 @@ public class PatchCliIntegrationTest extends Specification {
 			ObjectMapper patchMapper = new ObjectMapper();
 			def p = patchMapper.readValue(patchFile,Patch.class)
 			p.setCurrentTarget("chei211")
-			p.setStep("Build started")
+			p.setCurrentPipelineTask("Build")
+			p.setLogText("started")
 			patchMapper.writeValue(patchFile, p)
 		when:
 			def result = client.process(["-log", "src/test/resources/Patch5401.json"])
