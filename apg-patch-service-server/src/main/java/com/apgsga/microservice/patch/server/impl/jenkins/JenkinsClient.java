@@ -24,4 +24,6 @@ public interface JenkinsClient {
 	public boolean isProdPatchPipelineRunning(String patchNumber);
 	
 	public boolean isLastProdPipelineBuildInError(String patchNumber);
+	
+	public boolean isLastProdPipelineBuildAborted(String patchNumber);
 }

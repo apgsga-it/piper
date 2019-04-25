@@ -271,9 +271,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		Asserts.isTrue((repo.patchExists(patchNumber)),
 				"SimplePatchContainerBean.restartProdPipeline.patch.exists.assert", new Object[] { patchNumber });
 		Asserts.isFalse(jenkinsClient.isProdPatchPipelineRunning(patchNumber), "SimplePatchContainerBean.restartProdPipeline.patch.alreadyRunning", new Object[]{patchNumber});
-		Asserts.isTrue(jenkinsClient.isLastProdPipelineBuildInError(patchNumber), "SimplePatchContainerBean.restartProdPipeline.patch.lastBuildInError", new Object[]{patchNumber});
+		Asserts.isTrue(isLastProdPipelineAbortedOrInError(patchNumber), "SimplePatchContainerBean.restartProdPipeline.patch.lastBuildInErrorOrAborted", new Object[]{patchNumber});
 		Patch patch = repo.findById(patchNumber);
 		jenkinsClient.restartProdPatchPipeline(patch);
+	}
+	
+	private boolean isLastProdPipelineAbortedOrInError(String patchNumber) {
+		return jenkinsClient.isLastProdPipelineBuildInError(patchNumber) || jenkinsClient.isLastProdPipelineBuildAborted(patchNumber);
 	}
 	
 	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
