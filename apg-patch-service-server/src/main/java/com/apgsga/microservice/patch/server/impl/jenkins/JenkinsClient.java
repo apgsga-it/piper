@@ -3,6 +3,7 @@ package com.apgsga.microservice.patch.server.impl.jenkins;
 import java.util.Map;
 
 import com.apgsga.microservice.patch.api.Patch;
+import com.offbytwo.jenkins.model.BuildResult;
 
 public interface JenkinsClient {
 	public void createPatchPipelines(Patch patch);
@@ -23,7 +24,5 @@ public interface JenkinsClient {
 	
 	public boolean isProdPatchPipelineRunning(String patchNumber);
 	
-	public boolean isLastProdPipelineBuildInError(String patchNumber);
-	
-	public boolean isLastProdPipelineBuildAborted(String patchNumber);
+	public BuildResult getProdPipelineBuildResult(String patchNumber);
 }

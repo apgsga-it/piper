@@ -42,6 +42,7 @@ import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.offbytwo.jenkins.model.BuildResult;
 
 @Component("ServerBean")
 public class SimplePatchContainerBean implements PatchService, PatchOpService {
@@ -277,7 +278,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 	
 	private boolean isLastProdPipelineAbortedOrInError(String patchNumber) {
-		return jenkinsClient.isLastProdPipelineBuildInError(patchNumber) || jenkinsClient.isLastProdPipelineBuildAborted(patchNumber);
+		BuildResult result = jenkinsClient.getProdPipelineBuildResult(patchNumber);
+		return result.equals(BuildResult.ABORTED) || result.equals(BuildResult.FAILURE);
 	}
 	
 	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
