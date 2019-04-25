@@ -1,8 +1,5 @@
 package com.apgsga.patch.service.client;
 
-import java.util.stream.Nodes.SizedCollectorTask
-
-import org.spockframework.util.Assert
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -19,11 +16,8 @@ import com.apgsga.microservice.patch.api.PatchLog
 import com.apgsga.microservice.patch.api.PatchPersistence
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.microservice.patch.server.MicroPatchServer;
-import com.apgsga.microservice.patch.server.impl.vcs.ProcessBuilderCmdRunner
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.jayway.jsonpath.internal.filter.EvaluatorFactory.ExistsEvaluator
 
-import spock.lang.Ignore
 import spock.lang.Specification;
 
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
