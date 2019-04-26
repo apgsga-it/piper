@@ -23,14 +23,12 @@ import org.springframework.util.FileCopyUtils;
 
 import com.apgsga.microservice.patch.api.DbModules;
 import com.apgsga.microservice.patch.api.DbObject;
-import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
-import com.apgsga.microservice.patch.api.impl.PatchBean;
 import com.apgsga.microservice.patch.api.impl.ServiceMetaDataBean;
 import com.apgsga.microservice.patch.api.impl.ServicesMetaDataBean;
 
