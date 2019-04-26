@@ -191,4 +191,11 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	public void cleanLocalMavenRepo() {
 		patchService.cleanLocalMavenRepo();
 	}
+
+	@RequestMapping(value = "/findWithObjectName", method = RequestMethod.POST)
+	@ResponseBody
+	@Override
+	public List<Patch> findWithObjectName(@RequestBody String objectName) {
+		return repo.findWithObjectName(objectName);
+	}
 }

@@ -21,6 +21,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.apgsga.microservice.patch.api.DbObject;
+import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchLogDetails;
@@ -189,6 +191,40 @@ public class MicroServicePatchServerTest {
 		patchService.save(patch);
 		PatchActionExecutor patchActionExecutor = patchActionFactory.create(patchService);
 		patchActionExecutor.execute("SomeUnqiueNumber3", "Entwicklung");
+	}
+	
+	@Test
+	public void testFindWithObjectName() {
+		Patch p1 = new PatchBean();
+		p1.setPatchNummer("p1");
+		Patch p2 = new PatchBean();
+		p2.setPatchNummer("p2");
+		patchService.save(p1);
+		patchService.save(p2);
+		Assert.assertNotNull(patchService.findById("p1"));
+		Assert.assertNotNull(patchService.findById("p2"));
+		MavenArtifact ma1 = new MavenArtifactBean("test-ma1", "com.apgsga", "1.0");
+		MavenArtifact ma2 = new MavenArtifactBean("test-ma2", "com.apgsga", "1.0");
+		MavenArtifact ma3 = new MavenArtifactBean("test-ma3", "com.apgsga", "1.0");
+		DbObject db1 = new DbObjectBean("test-db1", "com.apgsga.ch/sql/db/test-db1");
+		db1.setModuleName("test-db1");
+		DbObject db2 = new DbObjectBean("test-db2", "com.apgsga.ch/sql/db/test-db2");
+		db2.setModuleName("test-db2");		
+		p1.addDbObjects(db1);
+		p1.addDbObjects(db2);
+		p1.addMavenArtifacts(ma1);
+		p2.addMavenArtifacts(ma2);
+		p1.addMavenArtifacts(ma3);
+		p2.addMavenArtifacts(ma3);
+		patchService.save(p1);
+		patchService.save(p2);
+		Assert.assertTrue(patchService.findById("p1").getMavenArtifacts().size() == 2);
+		Assert.assertTrue(patchService.findById("p2").getMavenArtifacts().size() == 2);
+		Assert.assertTrue(patchService.findWithObjectName("ma1").size() == 1);
+		Assert.assertTrue(patchService.findWithObjectName("ma2").size() == 1);
+		Assert.assertTrue(patchService.findWithObjectName("ma3").size() == 2);
+		Assert.assertTrue(patchService.findWithObjectName("wrongName").size() == 0);
+		Assert.assertTrue(patchService.findWithObjectName("test-db2").size() == 1);
 	}
 
 }

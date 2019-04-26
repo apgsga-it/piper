@@ -97,5 +97,12 @@ public interface PatchService {
 	 * @throws PatchContainerException
 	 */
 	public void remove(Patch patch);
+	
+	/**
+	 * Search for patches which contains given object name
+	 * @param objectName name of searched object
+	 * @return List of patches containing Object with given name
+	 */
+	public List<Patch> findWithObjectName(String objectName);
 
 }

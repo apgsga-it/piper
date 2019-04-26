@@ -182,4 +182,9 @@ class PatchServiceClient implements PatchOpService, PatchPersistence {
 			System.err.println "Error output : " + response.body.getText("UTF-8")
 		}
 	}
+
+	@Override
+	public List<Patch> findWithObjectName(String objectName) {
+		throw new UnsupportedOperationException("findWithObjectName not supported by client");
+	}
 }

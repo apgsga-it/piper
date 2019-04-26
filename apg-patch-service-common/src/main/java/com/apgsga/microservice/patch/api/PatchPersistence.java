@@ -36,5 +36,6 @@ public interface PatchPersistence {
 	public void clean();
 
 	public void init() throws IOException;
-
+	
+	public List<Patch> findWithObjectName(String objectName);
 }

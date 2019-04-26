@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -13,6 +15,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.Resource;
 
 import com.apgsga.microservice.patch.api.DbModules;
+import com.apgsga.microservice.patch.api.DbObject;
+import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchLogDetails;
@@ -292,5 +296,29 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	public Resource getTempStoragePath() {
 		return tempStoragePath;
+	}
+
+	@Override
+	public List<Patch> findWithObjectName(String objectName) {
+		List<String> patchFiles = listFiles(PATCH);
+		// Filter out "PatchLog" files, and extract Id from patch name
+		List<String> patchFilesReduced = patchFiles.stream().filter(pat -> !pat.contains(PATCH_LOG)).map(pat -> pat.substring(pat.indexOf(PATCH)+PATCH.length(),pat.indexOf(JSON))).collect(Collectors.toList());
+		return patchFilesReduced.stream().filter(p -> containsObject(p,objectName)).map(p -> findById(p)).collect(Collectors.toList());
+	}
+	
+	private boolean containsObject(String patchNumber, String objectName) {
+		Patch patch = findById(patchNumber);
+		for(MavenArtifact ma : patch.getMavenArtifacts()) {
+			// TODO JHE : verifiy if we really want to check only on artifact id, maybe also on name?
+			if(ma.getArtifactId()!= null && ma.getArtifactId().toUpperCase().contains(objectName.toUpperCase()))
+				return true;
+		}
+		for(DbObject dbo : patch.getDbObjects()) {
+			// TODO JHE : verifiy if we really want to check on moduleName
+			if(dbo.getModuleName() != null && dbo.getModuleName().toUpperCase().contains(objectName.toUpperCase())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

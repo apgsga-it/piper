@@ -354,4 +354,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public TaskExecutor getThreadExecutor() {
 		return threadExecutor;
 	}
+
+	@Override
+	public List<Patch> findWithObjectName(String objectName) {
+		return repo.findWithObjectName(objectName);
+	}
 }

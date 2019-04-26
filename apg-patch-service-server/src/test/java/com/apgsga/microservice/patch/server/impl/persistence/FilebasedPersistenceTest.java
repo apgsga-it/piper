@@ -23,12 +23,14 @@ import org.springframework.util.FileCopyUtils;
 
 import com.apgsga.microservice.patch.api.DbModules;
 import com.apgsga.microservice.patch.api.DbObject;
+import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
+import com.apgsga.microservice.patch.api.impl.PatchBean;
 import com.apgsga.microservice.patch.api.impl.ServiceMetaDataBean;
 import com.apgsga.microservice.patch.api.impl.ServicesMetaDataBean;
 
@@ -149,6 +151,40 @@ public class FilebasedPersistenceTest {
 		repo.saveServicesMetaData(data);
 		ServicesMetaData serviceData = repo.getServicesMetaData();
 		assertEquals(data, serviceData);
+	}
+	
+	@Test
+	public void testFindWithObjectName() {
+		Patch p1 = new PatchBean();
+		p1.setPatchNummer("p1");
+		Patch p2 = new PatchBean();
+		p2.setPatchNummer("p2");
+		repo.savePatch(p1);
+		repo.savePatch(p2);
+		Assert.assertNotNull(repo.findById("p1"));
+		Assert.assertNotNull(repo.findById("p2"));
+		MavenArtifact ma1 = new MavenArtifactBean("test-ma1", "com.apgsga", "1.0");
+		MavenArtifact ma2 = new MavenArtifactBean("test-ma2", "com.apgsga", "1.0");
+		MavenArtifact ma3 = new MavenArtifactBean("test-ma3", "com.apgsga", "1.0");
+		DbObject db1 = new DbObjectBean("test-db1", "com.apgsga.ch/sql/db/test-db1");
+		db1.setModuleName("test-db1");
+		DbObject db2 = new DbObjectBean("test-db2", "com.apgsga.ch/sql/db/test-db2");
+		db2.setModuleName("test-db2");		
+		p1.addDbObjects(db1);
+		p1.addDbObjects(db2);
+		p1.addMavenArtifacts(ma1);
+		p2.addMavenArtifacts(ma2);
+		p1.addMavenArtifacts(ma3);
+		p2.addMavenArtifacts(ma3);
+		repo.savePatch(p1);
+		repo.savePatch(p2);
+		Assert.assertTrue(repo.findById("p1").getMavenArtifacts().size() == 2);
+		Assert.assertTrue(repo.findById("p2").getMavenArtifacts().size() == 2);
+		Assert.assertTrue(repo.findWithObjectName("ma1").size() == 1);
+		Assert.assertTrue(repo.findWithObjectName("ma2").size() == 1);
+		Assert.assertTrue(repo.findWithObjectName("ma3").size() == 2);
+		Assert.assertTrue(repo.findWithObjectName("wrongName").size() == 0);
+		Assert.assertTrue(repo.findWithObjectName("test-db2").size() == 1);
 	}
 
 }
