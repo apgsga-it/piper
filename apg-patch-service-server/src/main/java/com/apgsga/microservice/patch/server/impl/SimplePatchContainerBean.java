@@ -357,6 +357,25 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public List<Patch> findWithObjectName(String objectName) {
-		return repo.findWithObjectName(objectName);
+		List<String> patchFiles = repo.listFiles("Patch");
+		// Filter out "PatchLog" files, and extract Id from patch name
+		List<String> patchFilesReduced = patchFiles.stream().filter(pat -> !pat.contains("PatchLog")).map(pat -> pat.substring(pat.indexOf("Patch")+"Patch".length(),pat.indexOf(".json"))).collect(Collectors.toList());
+		return patchFilesReduced.stream().filter(p -> containsObject(p,objectName)).map(p -> findById(p)).collect(Collectors.toList());
+	}
+	
+	private boolean containsObject(String patchNumber, String objectName) {
+		Patch patch = findById(patchNumber);
+		for(MavenArtifact ma : patch.getMavenArtifacts()) {
+			// TODO JHE : verifiy if we really want to check only on artifact id, maybe also on name?
+			if(ma.getArtifactId()!= null && ma.getArtifactId().toUpperCase().contains(objectName.toUpperCase()))
+				return true;
+		}
+		for(DbObject dbo : patch.getDbObjects()) {
+			// TODO JHE : verifiy if we really want to check on moduleName
+			if(dbo.getModuleName() != null && dbo.getModuleName().toUpperCase().contains(objectName.toUpperCase())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
