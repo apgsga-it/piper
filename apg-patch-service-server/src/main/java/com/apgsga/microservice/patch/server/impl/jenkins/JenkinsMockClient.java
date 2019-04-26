@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.apgsga.microservice.patch.api.Patch;
+import com.offbytwo.jenkins.model.BuildResult;
 
 public class JenkinsMockClient implements JenkinsClient {
 
@@ -66,8 +67,8 @@ public class JenkinsMockClient implements JenkinsClient {
 	}
 
 	@Override
-	public boolean isLastProdPipelineBuildInError(String patchNumber) {
-		LOGGER.info("isLastProdPipelineBuildInError for : " + patchNumber);
-		return true;
-	}	
+	public BuildResult getProdPipelineBuildResult(String patchNumber) {
+		LOGGER.info("getProdPipelineBuildResult for : " + patchNumber);
+		return BuildResult.ABORTED;
+	}
 }

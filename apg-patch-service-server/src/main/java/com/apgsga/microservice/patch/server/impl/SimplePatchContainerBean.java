@@ -42,6 +42,7 @@ import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.offbytwo.jenkins.model.BuildResult;
 
 @Component("ServerBean")
 public class SimplePatchContainerBean implements PatchService, PatchOpService {
@@ -271,9 +272,14 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		Asserts.isTrue((repo.patchExists(patchNumber)),
 				"SimplePatchContainerBean.restartProdPipeline.patch.exists.assert", new Object[] { patchNumber });
 		Asserts.isFalse(jenkinsClient.isProdPatchPipelineRunning(patchNumber), "SimplePatchContainerBean.restartProdPipeline.patch.alreadyRunning", new Object[]{patchNumber});
-		Asserts.isTrue(jenkinsClient.isLastProdPipelineBuildInError(patchNumber), "SimplePatchContainerBean.restartProdPipeline.patch.lastBuildInError", new Object[]{patchNumber});
+		Asserts.isTrue(isLastProdPipelineAbortedOrInError(patchNumber), "SimplePatchContainerBean.restartProdPipeline.patch.lastBuildInErrorOrAborted", new Object[]{patchNumber});
 		Patch patch = repo.findById(patchNumber);
 		jenkinsClient.restartProdPatchPipeline(patch);
+	}
+	
+	private boolean isLastProdPipelineAbortedOrInError(String patchNumber) {
+		BuildResult result = jenkinsClient.getProdPipelineBuildResult(patchNumber);
+		return result.equals(BuildResult.ABORTED) || result.equals(BuildResult.FAILURE);
 	}
 	
 	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
