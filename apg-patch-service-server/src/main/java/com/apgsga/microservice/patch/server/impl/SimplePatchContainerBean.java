@@ -371,8 +371,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				return true;
 		}
 		for(DbObject dbo : patch.getDbObjects()) {
-			// TODO JHE : verifiy if we really want to check on moduleName
-			if(dbo.getModuleName() != null && dbo.getModuleName().toUpperCase().contains(objectName.toUpperCase())) {
+			// TODO JHE : verifiy if we really want to check on fileName
+			if(dbo.getFileName() != null && dbo.getFileName().toUpperCase().contains(objectName.toUpperCase())) {
 				return true;
 			}
 		}
