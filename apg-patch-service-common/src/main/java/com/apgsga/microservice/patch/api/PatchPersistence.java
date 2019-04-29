@@ -36,5 +36,4 @@ public interface PatchPersistence {
 	public void clean();
 
 	public void init() throws IOException;
-
 }

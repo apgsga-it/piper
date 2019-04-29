@@ -44,6 +44,8 @@ public class MicroservicePatchClient implements PatchService {
 	private static final String LIST_INSTALLTARGETS = "/listInstallationTargets/{requestingTarget}";
 
 	private static final String REMOVE = "/remove";
+	
+	private static final String FIND_WITH_OBJECT_NAME = "/findWithObjectName";
 
 	protected static Log LOGGER = LogFactory.getLog(MicroservicePatchClient.class.getName());
 
@@ -168,6 +170,12 @@ public class MicroservicePatchClient implements PatchService {
 	@Override
 	public List<Patch> findByIds(List<String> patchIds) {
 		Patch[] result = restTemplate.postForEntity(getRestBaseUri() + FIND_BY_IDS, patchIds, Patch[].class).getBody();
+		return Lists.newArrayList(result);
+	}
+
+	@Override
+	public List<Patch> findWithObjectName(String objectName) {
+		Patch[] result = restTemplate.postForEntity(getRestBaseUri() + FIND_WITH_OBJECT_NAME, objectName, Patch[].class).getBody();
 		return Lists.newArrayList(result);
 	}
 }

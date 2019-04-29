@@ -139,4 +139,11 @@ public class MicroServicePatchController implements PatchService {
 	public PatchLog findPatchLogById(@PathVariable("id") String patchNummer) {
 		return patchService.findPatchLogById(patchNummer);
 	}
+
+	@RequestMapping(value = "/findWithObjectName", method = RequestMethod.POST)
+	@ResponseBody
+	@Override
+	public List<Patch> findWithObjectName(@RequestBody String objectName) {
+		return patchService.findWithObjectName(objectName);
+	}
 }
