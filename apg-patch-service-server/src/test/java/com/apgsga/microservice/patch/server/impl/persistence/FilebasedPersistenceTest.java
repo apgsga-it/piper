@@ -150,5 +150,4 @@ public class FilebasedPersistenceTest {
 		ServicesMetaData serviceData = repo.getServicesMetaData();
 		assertEquals(data, serviceData);
 	}
-
 }

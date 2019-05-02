@@ -2,18 +2,13 @@ package com.apgsga.patch.service.client
 
 
 import org.codehaus.groovy.runtime.StackTraceUtils
-import org.springframework.context.ApplicationContext
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
-import org.springframework.core.io.ClassPathResource
 
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.ServicesMetaData
+import com.apgsga.patch.service.client.utils.AppContext
 import com.apgsga.patch.service.client.utils.TargetSystemMappings
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.apgsga.patch.service.client.utils.AppContext
-
-import groovy.json.JsonSlurper
 
 class PatchCli {
 
@@ -119,6 +114,10 @@ class PatchCli {
 				def result = cleanLocalMavenRepo(patchClient)
 				cmdResults.results['cm'] = result
 			}
+			if (options.log) {
+				def result = logPatchActivity(patchClient,options)
+				cmdResults.results['log'] = result
+			}
 			cmdResults.returnCode = 0
 			return cmdResults
 		} catch (PatchClientServerException e) {
@@ -167,6 +166,7 @@ class PatchCli {
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
 			// TODO (JHE, CHE, 12.9 ) move this to own cli
 			cr longOpt: 'cleanReleases', args:1, argName: 'target', 'Clean release Artifacts for a given target on Artifactory', required: false
+			log longOpt: 'log', args:1, argName: 'patchFile', 'Log a patch steps for a patch', required: false
 		}
 
 		def options = cli.parse(args)
@@ -316,6 +316,13 @@ class PatchCli {
 		if (options.cr) {
 			if(options.crs.size() != 1) {
 				println "target parameter is required when cleaning Artifactory releases."
+				error = true
+			}
+		}
+		if (options.log) {
+			def patchFile = new File(options.log)
+			if (!patchFile.exists() | !patchFile.file) {
+				println "Patch File ${options.log} not valid: either not a file or it doesn't exist"
 				error = true
 			}
 		}
@@ -528,5 +535,12 @@ class PatchCli {
 		def target = options.crs[0].toUpperCase()
 		def patchArtifactoryClient = new PatchArtifactoryClient(config)
 		patchArtifactoryClient.cleanReleases(target)
+	}
+	
+	def logPatchActivity(def patchClient,def options) {
+		println "Logging patch activity for ${options.logs[0]}"
+		ObjectMapper mapper = new ObjectMapper();
+		def patchFile = mapper.readValue(new File("${options.logs[0]}"), Patch.class)
+		patchClient.savePatchLog(patchFile)		
 	}
 }

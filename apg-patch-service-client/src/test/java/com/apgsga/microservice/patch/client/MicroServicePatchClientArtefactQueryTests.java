@@ -26,6 +26,7 @@ import org.springframework.util.FileCopyUtils;
 
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.SearchCondition;
 import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
@@ -76,6 +77,7 @@ public class MicroServicePatchClientArtefactQueryTests {
 
 		repo.savePatch(testPatch5401);
 		repo.savePatch(testPatch5402);
+		repo.savePatchLog(testPatch5401);
 	}
 
 	@Test
@@ -91,6 +93,13 @@ public class MicroServicePatchClientArtefactQueryTests {
 				return t.getGroupId().startsWith("com.apgsga") || t.getGroupId().startsWith("com.affichage");
 			}
 		}));
+	}
+	
+	@Test
+	public void testFindPatchLog() {
+		PatchLog pl = patchClient.findPatchLogById("5401");
+		Assert.assertNotNull(pl);
+		Assert.assertTrue(pl.getLogDetails().size() == 1);
 	}
 
 	@Test

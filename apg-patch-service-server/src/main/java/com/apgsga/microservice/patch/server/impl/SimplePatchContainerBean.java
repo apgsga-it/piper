@@ -25,6 +25,7 @@ import com.apgsga.microservice.patch.api.DbModules;
 import com.apgsga.microservice.patch.api.DbObject;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchOpService;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.PatchService;
@@ -41,6 +42,7 @@ import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunner;
 import com.apgsga.microservice.patch.server.impl.vcs.VcsCommandRunnerFactory;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.offbytwo.jenkins.model.BuildResult;
 
 @Component("ServerBean")
 public class SimplePatchContainerBean implements PatchService, PatchOpService {
@@ -122,6 +124,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public Patch findById(String patchNummer) {
 		return repo.findById(patchNummer);
 	}
+	
+	@Override
+	public PatchLog findPatchLogById(String patchNummer) {
+		return repo.findPatchLogById(patchNummer);
+	}
 
 	@Override
 	public List<Patch> findByIds(List<String> patchIds) {
@@ -141,6 +148,15 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		preProcessSave(patch);
 		repo.savePatch(patch);
 		return patch;
+	}
+	
+	@Override
+	public void log(Patch patch) {
+		//JHE: To be verified, any other pre-check to be done? Eventually that patchLog.patchLogDetail is correct
+		Asserts.notNull(patch, "SimplePatchContainerBean.log.patch.null.assert", new Object[] {});
+		Asserts.notNullOrEmpty(patch.getPatchNummer(), "SimplePatchContainerBean.log.patchnumber.isnullorempty", new Object[] {});
+		Asserts.notNull(repo.findById(patch.getPatchNummer()), "SimplePatchContainerBean.log.patchisnull", new Object[] {patch.getPatchNummer()});
+		repo.savePatchLog(patch);
 	}
 
 	private void preProcessSave(Patch patch) {
@@ -256,9 +272,14 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		Asserts.isTrue((repo.patchExists(patchNumber)),
 				"SimplePatchContainerBean.restartProdPipeline.patch.exists.assert", new Object[] { patchNumber });
 		Asserts.isFalse(jenkinsClient.isProdPatchPipelineRunning(patchNumber), "SimplePatchContainerBean.restartProdPipeline.patch.alreadyRunning", new Object[]{patchNumber});
-		Asserts.isTrue(jenkinsClient.isLastProdPipelineBuildInError(patchNumber), "SimplePatchContainerBean.restartProdPipeline.patch.lastBuildInError", new Object[]{patchNumber});
+		Asserts.isTrue(isLastProdPipelineAbortedOrInError(patchNumber), "SimplePatchContainerBean.restartProdPipeline.patch.lastBuildInErrorOrAborted", new Object[]{patchNumber});
 		Patch patch = repo.findById(patchNumber);
 		jenkinsClient.restartProdPatchPipeline(patch);
+	}
+	
+	private boolean isLastProdPipelineAbortedOrInError(String patchNumber) {
+		BuildResult result = jenkinsClient.getProdPipelineBuildResult(patchNumber);
+		return result.equals(BuildResult.ABORTED) || result.equals(BuildResult.FAILURE);
 	}
 	
 	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
@@ -334,4 +355,27 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		return threadExecutor;
 	}
 
+	@Override
+	public List<Patch> findWithObjectName(String objectName) {
+		List<String> patchFiles = repo.listFiles("Patch");
+		// Filter out "PatchLog" files, and extract Id from patch name
+		List<String> patchFilesReduced = patchFiles.stream().filter(pat -> !pat.contains("PatchLog")).map(pat -> pat.substring(pat.indexOf("Patch")+"Patch".length(),pat.indexOf(".json"))).collect(Collectors.toList());
+		return patchFilesReduced.stream().filter(p -> containsObject(p,objectName)).map(p -> findById(p)).collect(Collectors.toList());
+	}
+	
+	private boolean containsObject(String patchNumber, String objectName) {
+		Patch patch = findById(patchNumber);
+		for(MavenArtifact ma : patch.getMavenArtifacts()) {
+			// TODO JHE : verifiy if we really want to check only on artifact id, maybe also on name?
+			if(ma.getArtifactId()!= null && ma.getArtifactId().toUpperCase().contains(objectName.toUpperCase()))
+				return true;
+		}
+		for(DbObject dbo : patch.getDbObjects()) {
+			// TODO JHE : verifiy if we really want to check on fileName
+			if(dbo.getFileName() != null && dbo.getFileName().toUpperCase().contains(objectName.toUpperCase())) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

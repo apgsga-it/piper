@@ -12,12 +12,12 @@ import org.springframework.test.context.TestPropertySource;
 
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
+import com.apgsga.microservice.patch.api.PatchLog
 import com.apgsga.microservice.patch.api.PatchPersistence
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.fasterxml.jackson.databind.ObjectMapper
 
-import spock.lang.Ignore
 import spock.lang.Specification;
 
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
@@ -339,7 +339,7 @@ public class PatchCliIntegrationTest extends Specification {
 		cleanup:
 		repo.clean()
 	}
-
+	
 	def "Patch Cli Missing configuration for State Change Action"() {
 		setup:
 		def client = PatchCli.create()
@@ -348,5 +348,35 @@ public class PatchCliIntegrationTest extends Specification {
 		then:
 		result != null
 		result.returnCode == 0
+	}
+
+	def "Patch Cli Log Patch activity in PatchLog file "() {
+		setup:
+			def client = PatchCli.create()
+		when:
+			def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"])
+		then:
+			preCondResult != null
+			preCondResult.returnCode == 0
+			File patchFile = new File("${dbLocation}/Patch5401.json")
+			patchFile.exists()
+			ObjectMapper patchMapper = new ObjectMapper();
+			def p = patchMapper.readValue(patchFile,Patch.class)
+			p.setCurrentTarget("chei211")
+			p.setCurrentPipelineTask("Build")
+			p.setLogText("started")
+			patchMapper.writeValue(patchFile, p)
+		when:
+			def result = client.process(["-log", "src/test/resources/Patch5401.json"])
+		then:
+			preCondResult != null
+			preCondResult.returnCode == 0
+			File patchLogFile = new File("${dbLocation}/PatchLog5401.json")
+			patchLogFile.exists()
+			ObjectMapper patchLogMapper = new ObjectMapper()
+			def pl = patchLogMapper.readValue(patchLogFile,PatchLog.class)
+			assert pl.logDetails.size() == 1
+		cleanup:
+			repo.clean()
 	}
 }

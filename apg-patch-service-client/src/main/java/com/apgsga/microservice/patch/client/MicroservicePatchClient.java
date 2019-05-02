@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import com.apgsga.microservice.patch.api.DbObject;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchService;
 import com.apgsga.microservice.patch.api.SearchCondition;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
@@ -21,11 +22,13 @@ public class MicroservicePatchClient implements PatchService {
 	private static final String FIND_BY_IDS = "/findByIds";
 
 	private static final String FIND_BY_ID = "/findById/{id}";
+	
+	private static final String FIND_PATCH_LOG_BY_ID = "/findPatchLogById/{id}";
 
 	private static final String START_INSTALL_PIPELINE = "/startInstallationForTarget";
 
 	private static final String SAVE = "/save";
-
+	
 	private static final String LIST_DBMODULES = "/listDbModules";
 
 	private static final String LIST_MAVENARTIFACTS = "/listMavenArtifacts/{id}";
@@ -39,6 +42,8 @@ public class MicroservicePatchClient implements PatchService {
 	private static final String LIST_INSTALLTARGETS = "/listInstallationTargets/{requestingTarget}";
 
 	private static final String REMOVE = "/remove";
+	
+	private static final String FIND_WITH_OBJECT_NAME = "/findWithObjectName";
 
 	protected static Log LOGGER = LogFactory.getLog(MicroservicePatchClient.class.getName());
 
@@ -88,10 +93,23 @@ public class MicroservicePatchClient implements PatchService {
 		params.put("id", patchNummer);
 		return restTemplate.getForObject(getRestBaseUri() + FIND_BY_ID, Patch.class, params);
 	}
+	
+	@Override
+	public PatchLog findPatchLogById(String patchNummer) {
+		Map<String, String> params = Maps.newHashMap();
+		params.put("id", patchNummer);
+		return restTemplate.getForObject(getRestBaseUri() + FIND_PATCH_LOG_BY_ID, PatchLog.class, params);
+		
+	}
 
 	@Override
 	public Patch save(Patch patch) {
 		return restTemplate.postForObject(getRestBaseUri() + SAVE, patch, Patch.class);
+	}
+	
+	@Override
+	public void log(Patch patch) {
+		throw new UnsupportedOperationException("Logging patch activity not supported");
 	}
 
 	@Override
@@ -153,4 +171,9 @@ public class MicroservicePatchClient implements PatchService {
 		return Lists.newArrayList(result);
 	}
 
+	@Override
+	public List<Patch> findWithObjectName(String objectName) {
+		Patch[] result = restTemplate.postForEntity(getRestBaseUri() + FIND_WITH_OBJECT_NAME, objectName, Patch[].class).getBody();
+		return Lists.newArrayList(result);
+	}
 }

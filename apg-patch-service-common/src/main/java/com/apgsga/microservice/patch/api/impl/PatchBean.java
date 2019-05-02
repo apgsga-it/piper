@@ -33,6 +33,10 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	private List<DbObject> dbObjects = Lists.newArrayList();
 	private List<MavenArtifact> mavenArtifacts = Lists.newArrayList();
 	private boolean installOnEmptyModules = false;
+	private String lastPipelineTask ="";
+	private String currentTarget;
+	private String currentPipelineTask;
+	private String logText;
 
 	public PatchBean() {
 		super();
@@ -228,6 +232,42 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		this.installationTarget = installationTarget;
 		firePropertyChangeEvent(INSTALLS_TARGET, oldValue, installationTarget);
 	}
+	
+	@Override
+	public String getCurrentTarget() {
+		return currentTarget;
+	}
+
+	@Override
+	public void setCurrentTarget(String currentTarget) {
+		final Object oldValue = this.currentTarget;
+		this.currentTarget = currentTarget;
+		firePropertyChangeEvent(CURRENT_TARGET, oldValue, currentTarget);
+	}
+
+	@Override
+	public String getLogText() {
+		return logText;
+	}
+
+	@Override
+	public void setLogText(String logText) {
+		final Object oldValue = this.logText;
+		this.logText = logText;
+		firePropertyChange(LOG_TEXT, oldValue, logText);
+	}
+
+	@Override
+	public String getCurrentPipelineTask() {
+		return currentPipelineTask;
+	}
+
+	@Override
+	public void setCurrentPipelineTask(String currentPipelineTask) {
+		final Object oldValue = this.currentPipelineTask;
+		this.currentPipelineTask = currentPipelineTask;
+		firePropertyChange(CURRENT_PIPELINE_TASK, oldValue, currentPipelineTask);
+	}
 
 	@Override
 	public String getBaseVersionNumber() {
@@ -313,6 +353,17 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	public void setTargetToState(String targetToState) {
 		this.targetToState = targetToState;
 	}
+	
+	
+	@Override
+	public String getLastPipelineTask() {
+		return lastPipelineTask;
+	}
+
+	@Override
+	public void setLastPipelineTask(String pipelineTask) {
+		this.lastPipelineTask = pipelineTask;
+	}
 
 	@Override
 	public int hashCode() {
@@ -329,6 +380,7 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		result = prime * result + ((microServiceBranch == null) ? 0 : microServiceBranch.hashCode());
 		result = prime * result + ((patchNummer == null) ? 0 : patchNummer.hashCode());
 		result = prime * result + ((patchTag == null) ? 0 : patchTag.hashCode());
+		result = prime * result + ((lastPipelineTask == null) ? 0 : lastPipelineTask.hashCode());
 		result = prime * result + ((prodBranch == null) ? 0 : prodBranch.hashCode());
 		result = prime * result + ((revision == null) ? 0 : revision.hashCode());
 		result = prime * result + ((revisionMnemoPart == null) ? 0 : revisionMnemoPart.hashCode());
@@ -336,6 +388,9 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		result = prime * result + ((serviceName == null) ? 0 : serviceName.hashCode());
 		result = prime * result + ((tagNr == null) ? 0 : tagNr.hashCode());
 		result = prime * result + ((targetToState == null) ? 0 : targetToState.hashCode());
+		result = prime * result + ((currentTarget == null) ? 0 : currentTarget.hashCode());
+		result = prime * result + ((currentPipelineTask == null) ? 0 : currentPipelineTask.hashCode());
+		result = prime * result + ((logText == null) ? 0 : logText.hashCode());
 		return result;
 	}
 
@@ -410,6 +465,12 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		}
 		else if (!patchTag.equals(other.patchTag))
 			return false;
+		if (lastPipelineTask == null) {
+			if (other.lastPipelineTask != null)
+				return false;
+		}
+		else if (!lastPipelineTask.equals(other.lastPipelineTask))
+			return false;
 		if (prodBranch == null) {
 			if (other.prodBranch != null)
 				return false;
@@ -452,6 +513,26 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		}
 		else if (!targetToState.equals(other.targetToState))
 			return false;
+		if(currentTarget == null) {
+			if(other.currentTarget != null)
+				return false;
+		}
+		else if(!currentTarget.equals(other.currentTarget))
+			return false;
+		if(currentPipelineTask == null) {
+			if(other.getCurrentPipelineTask() != null)
+				return false;
+		}
+		else if(!currentPipelineTask.equals(other.getCurrentPipelineTask()))
+			return false;
+		if(logText == null) {
+			if(other.getLogText() != null) {
+				return false;
+			}
+		}
+		else if(!logText.equals(other.getLogText())) {
+			return false;
+		}
 		return true;
 	}
 
@@ -463,10 +544,8 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 				+ installationTarget + ", targetToState=" + targetToState + ", baseVersionNumber=" + baseVersionNumber
 				+ ", revisionMnemoPart=" + revisionMnemoPart + ", revision=" + revision + ", lastRevision="
 				+ lastRevision + ", runningNr=" + runningNr + ", dbObjects=" + dbObjects + ", mavenArtifacts="
-				+ mavenArtifacts + ", installOnEmptyModules=" + installOnEmptyModules + "]";
+				+ mavenArtifacts + ", installOnEmptyModules=" + installOnEmptyModules + ", pipelineTask=" + lastPipelineTask
+				+ ", currentTarget=" + currentTarget + ", currentPipelineTask=" + currentPipelineTask + ", logText=" + logText
+				+ "]";
 	}
-
-	
-	
-
 }

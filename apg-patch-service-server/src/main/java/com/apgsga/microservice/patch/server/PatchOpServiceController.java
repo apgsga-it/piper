@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.apgsga.microservice.patch.api.DbModules;
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchOpService;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
@@ -46,6 +47,13 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	public Patch findById(@PathVariable("id") String patchNummer) {
 		return repo.findById(patchNummer);
 	}
+	
+	@RequestMapping(value = "/findPatchLogById/{id}", method = RequestMethod.GET)
+	@ResponseBody
+	@Override
+	public PatchLog findPatchLogById(@PathVariable("id") String patchNummer) {
+		return repo.findPatchLogById(patchNummer);
+	}
 
 	@RequestMapping(value = "/patchExists/{id}", method = RequestMethod.GET)
 	@ResponseBody
@@ -60,6 +68,13 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@Override
 	public Patch save(@RequestBody Patch patch) {
 		return patchService.save(patch);
+	}
+	
+	@RequestMapping(value = "/savePatchLog", method = RequestMethod.POST)
+	@ResponseBody
+	@Override
+	public void savePatchLog(@RequestBody Patch patch) {
+		repo.savePatchLog(patch);
 	}
 
 	@RequestMapping(value = "/savePatch", method = RequestMethod.POST)

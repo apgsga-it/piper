@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.io.FileSystemResourceLoader;
@@ -26,7 +25,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileCopyUtils;
 
+import com.apgsga.microservice.patch.api.DbObject;
+import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
@@ -81,6 +83,7 @@ public class MicroServicePatchClientTest {
 
 		repo.savePatch(testPatch5401);
 		repo.savePatch(testPatch5402);
+		repo.savePatchLog(testPatch5401);
 	}
 
 	@Test
@@ -91,6 +94,22 @@ public class MicroServicePatchClientTest {
 		Patch result = patchClient.findById("SomeUnqiueNumber1");
 		Assert.assertNotNull(result);
 		Assert.assertEquals(patch, result);
+	}
+	
+	@Test
+	public void testSavePatchLog() {
+		Patch p = new PatchBean();
+		p.setPatchNummer("anotherUniqueId");
+		p.setCurrentTarget("chei212");
+		p.setLogText("Build Started");
+		patchClient.save(p);
+		try {
+			patchClient.log(p);
+			fail();
+		}
+		catch(UnsupportedOperationException ex) {
+			Assert.assertEquals(ex.getMessage(), "Logging patch activity not supported");
+		}
 	}
 
 	@Test
@@ -117,6 +136,17 @@ public class MicroServicePatchClientTest {
 			// Ok
 		}
 	}
+	
+	@Test
+	public void testSavePatchLogEmptyWithoutId() {
+		Patch patch = new PatchBean();
+		try {
+			patchClient.log(patch);
+			fail();
+		} catch (Throwable e) {
+			// TODO Detail , Exception Handling
+		}
+	}
 
 	@Test
 	public void testSaveWithArtifacts() {
@@ -141,5 +171,43 @@ public class MicroServicePatchClientTest {
 		Assert.assertEquals(2, patches.size());
 	}
 	
-
+	@Test
+	public void testFindPatchLogById() {
+		PatchLog pl = patchClient.findPatchLogById("5401");
+		Assert.assertNotNull(pl);
+	}
+	
+	@Test
+	public void testFindWithObjectName() { 		
+		Patch p1 = new PatchBean();
+		p1.setPatchNummer("p1");
+		Patch p2 = new PatchBean();
+		p2.setPatchNummer("p2");
+		patchClient.save(p1);
+		patchClient.save(p2);
+		Assert.assertNotNull(patchClient.findById("p1"));
+		Assert.assertNotNull(patchClient.findById("p2"));
+		MavenArtifact ma1 = new MavenArtifactBean("test-ma1", "com.apgsga", "1.0");
+		MavenArtifact ma2 = new MavenArtifactBean("test-ma2", "com.apgsga", "1.0");
+		MavenArtifact ma3 = new MavenArtifactBean("test-ma3", "com.apgsga", "1.0");
+		DbObject db1 = new DbObjectBean("test-db1", "com.apgsga.ch/sql/db/test-db1");
+		db1.setModuleName("test-db1");
+		DbObject db2 = new DbObjectBean("test-db2", "com.apgsga.ch/sql/db/test-db2");
+		db2.setModuleName("test-db2");		
+		p1.addDbObjects(db1);
+		p1.addDbObjects(db2);
+		p1.addMavenArtifacts(ma1);
+		p2.addMavenArtifacts(ma2);
+		p1.addMavenArtifacts(ma3);
+		p2.addMavenArtifacts(ma3);
+		patchClient.save(p1);
+		patchClient.save(p2);
+		Assert.assertTrue(patchClient.findById("p1").getMavenArtifacts().size() == 2);
+		Assert.assertTrue(patchClient.findById("p2").getMavenArtifacts().size() == 2);
+		Assert.assertTrue(patchClient.findWithObjectName("ma1").size() == 1);
+		Assert.assertTrue(patchClient.findWithObjectName("ma2").size() == 1);
+		Assert.assertTrue(patchClient.findWithObjectName("ma3").size() == 2);
+		Assert.assertTrue(patchClient.findWithObjectName("wrongName").size() == 0);
+		Assert.assertTrue(patchClient.findWithObjectName("test-db2").size() == 1);
+	}
 }

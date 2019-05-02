@@ -66,6 +66,18 @@ public class MicroServicePatchServerExceptionTests {
 	}
 	
 	@Test
+	public void testFindPatchLogByNullIdException() {
+		try {
+			patchService.findPatchLogById(null);
+			patchService.findPatchLogById("");
+			fail();
+		} catch(PatchServiceRuntimeException e) {
+			LOGGER.info(e.toString());
+			Assert.assertEquals("FilebasedPatchPersistence.findById.patchlognumber.notnullorempty.assert", e.getMessageKey());
+		}
+	}
+	
+	@Test
 	public void testSavePatchNullException() {
 		try {
 			patchService.save(null);
@@ -73,6 +85,17 @@ public class MicroServicePatchServerExceptionTests {
 		} catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
 			Assert.assertEquals("SimplePatchContainerBean.save.patchobject.notnull.assert", e.getMessageKey());
+		}
+	}
+	
+	@Test
+	public void testSavePatchLogNullException() {
+		try {
+			patchService.log(null);
+			fail();
+		} catch(PatchServiceRuntimeException e) {
+			LOGGER.info(e.toString());
+			Assert.assertEquals("SimplePatchContainerBean.log.patch.null.assert", e.getMessageKey());
 		}
 	}
 	

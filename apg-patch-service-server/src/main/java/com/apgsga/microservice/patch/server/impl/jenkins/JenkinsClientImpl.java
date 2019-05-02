@@ -315,14 +315,14 @@ public class JenkinsClientImpl implements JenkinsClient {
 	}
 
 	@Override
-	public boolean isLastProdPipelineBuildInError(String patchNumber) {
+	public BuildResult getProdPipelineBuildResult(String patchNumber) {
 		JenkinsServer jenkinsServer;
 		try {
 			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
 			PipelineBuild lastBuild = getPipelineBuild(jenkinsServer, patchNumber);
-			return lastBuild.details().getResult().equals(BuildResult.FAILURE);
+			return lastBuild.details().getResult();
 		} catch (Exception e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.isLastProdPipelineBuildInError.error", new Object[]{patchNumber});
+			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.getProdPipelineBuildResult.error", new Object[]{patchNumber});
 		}
 	}
 }

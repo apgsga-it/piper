@@ -68,6 +68,13 @@ public interface PatchService {
 	 */
 	public Patch findById(String patchNummer);
 	
+	/**
+	 * Retrieves a PatchLog by Id
+	 * @param patchNummer
+	 * @return a PatchLog Object
+	 */
+	public PatchLog findPatchLogById(String patchNummer);
+	
 	public List<Patch> findByIds(List<String> patchIds);	
 	/**
 	 * All changes on a patch Object need to be saved.
@@ -75,7 +82,14 @@ public interface PatchService {
 	 * @return MicroservicePatch with Server added data
 	 * @throws PatchContainerException
 	 */
+	
 	public Patch save(Patch patch);
+	
+	/**
+	 * Log all steps done for a patch
+	 * @param patch , Patch where to get the information from
+	 */
+	public void log(Patch patch);
 
 	/**
 	 * A Patch object is removed from the PatchContainer
@@ -83,5 +97,12 @@ public interface PatchService {
 	 * @throws PatchContainerException
 	 */
 	public void remove(Patch patch);
+	
+	/**
+	 * Search for patches which contains given object name
+	 * @param objectName name of searched object
+	 * @return List of patches containing Object with given name
+	 */
+	public List<Patch> findWithObjectName(String objectName);
 
 }

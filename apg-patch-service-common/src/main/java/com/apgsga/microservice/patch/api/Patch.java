@@ -31,9 +31,17 @@ public interface Patch extends ServiceMetaData {
 
 	public static final String INSTALLS_TARGET = "installationTarget";
 	
+	public static final String CURRENT_TARGET = "currentTarget";
+	
 	public static final String INSTALL_ON_EMPTY_MODULES = "installOnEmptyModules";
 	
 	public static final String INSTALL_JADAS_AND_GUI = "installJadasAndGui";
+	
+	public static final String PIPELINE_TASK = "pipeLineTask";
+	
+	public static final String LOG_TEXT = "logText";
+	
+	public static final String CURRENT_PIPELINE_TASK = "currentPipelineTask";
 
 	String getPatchNummer();
 
@@ -115,6 +123,10 @@ public interface Patch extends ServiceMetaData {
 	
 	public void setTargetToState(String targetToState);
 	
+	public String getLastPipelineTask(); 
+	
+	public void setLastPipelineTask(String pipelineTask);
+	
 	public boolean getInstallOnEmptyModules();
 	
 	public void setInstallOnEmptyModules(boolean installOnEmptyModules);
@@ -122,5 +134,17 @@ public interface Patch extends ServiceMetaData {
 	public boolean getInstallJadasAndGui();
 	
 	public void setInstallJadasAndGui();
+	
+	public String getCurrentTarget();
+	
+	public void setCurrentTarget(String currentTarget);
+	
+	public String getLogText();
+	
+	public void setLogText(String logText);
+	
+	public String getCurrentPipelineTask();
+	
+	public void setCurrentPipelineTask(String currentPipelineTask);
 
 }
