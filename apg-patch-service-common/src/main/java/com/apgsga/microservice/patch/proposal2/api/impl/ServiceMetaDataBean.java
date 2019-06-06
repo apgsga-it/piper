@@ -1,7 +1,8 @@
-package com.apgsga.microservice.patch.api.impl;
+package com.apgsga.microservice.patch.proposal2.api.impl;
 
 import com.affichage.persistence.common.client.AbstractTransientEntity;
-import com.apgsga.microservice.patch.api.ServiceMetaData;
+import com.apgsga.microservice.patch.proposal2.api.ServiceMetaData;
+
 
 public class ServiceMetaDataBean extends AbstractTransientEntity  implements ServiceMetaData {
 

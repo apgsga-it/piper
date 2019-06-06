@@ -1,4 +1,4 @@
-package com.apgsga.microservice.patch.api;
+package com.apgsga.microservice.patch.proposal1.api;
 
 import java.util.List;
 

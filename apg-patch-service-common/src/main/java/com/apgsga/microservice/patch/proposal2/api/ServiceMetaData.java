@@ -1,4 +1,4 @@
-package com.apgsga.microservice.patch.api;
+package com.apgsga.microservice.patch.proposal2.api;
 
 import com.affichage.persistence.common.client.EntityRootInterface;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
