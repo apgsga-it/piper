@@ -304,7 +304,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					if (cvsResults.size() != 1 || cvsResults.get(0).equals("1")) {
 						artifactWihInvalidNames.add(ma);
 					}
-				}
+				}	
 			} catch (Exception e) {
 				throw ExceptionFactory.createPatchServiceRuntimeException(
 						"SimplePatchContainerBean.getArtifactNameError.exception",
