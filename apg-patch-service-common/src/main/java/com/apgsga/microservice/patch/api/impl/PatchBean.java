@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 
 public class PatchBean extends AbstractTransientEntity implements Patch {
 
-	private static final String PROD_BRANCH_DEFAULT = "HEAD";
+	private static final String PROD_BRANCH_DEFAULT = "prod";
 	private static final long serialVersionUID = 1L;
 
 	private String patchNummer;
