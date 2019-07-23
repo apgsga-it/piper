@@ -259,23 +259,23 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	private static synchronized PipelineBuild triggerPipelineJobAndWaitUntilBuilding(JenkinsServer server, String jobName,
 			Map<String, String> params, boolean crumbFlag) throws IOException, InterruptedException {
-		LOGGER.info("Getting Job Details for Job \"" + jobName + "\"")
+		LOGGER.info("Getting Job Details for Job \"" + jobName + "\"");
 		PipelineJobWithDetails job = server.getPipelineJob(jobName);
 		QueueReference queueRef = job.build(params, crumbFlag);
-		LOGGER.info("Returning Details for Job \"" + jobName + "\"")
+		LOGGER.info("Returning Details for Job \"" + jobName + "\"");
 		return triggerPipelineJobAndWaitUntilBuilding(server, jobName, queueRef);
 	}
 
 	private static PipelineBuild triggerPipelineJobAndWaitUntilBuilding(JenkinsServer server, String jobName,
 			QueueReference queueRef) throws IOException, InterruptedException {
-		LOGGER.info("Getting Job Details for Job \"" + jobName + "\"")
+		LOGGER.info("Getting Job Details for Job \"" + jobName + "\"");
 		PipelineJobWithDetails job = server.getPipelineJob(jobName);
 		QueueItem queueItem = server.getQueueItem(queueRef);
 		int retryCnt = 0;
 		while (!queueItem.isCancelled() && (job.isInQueue() || queueItem.getExecutable() == null)
 				&& retryCnt < DEFAULT_RETRY_COUNTS) {
 			Thread.sleep(DEFAULT_RETRY_INTERVAL);
-			LOGGER.info("... retry getting Job Details for Job \"" + jobName + "\" (" + retryCnt + "/" + DEFAULT_RETRY_COUNTS + ")")
+			LOGGER.info("... retry getting Job Details for Job \"" + jobName + "\" (" + retryCnt + "/" + DEFAULT_RETRY_COUNTS + ")");
 			job = server.getPipelineJob(jobName);
 			queueItem = server.getQueueItem(queueRef);
 			retryCnt++;
@@ -285,7 +285,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 					"JenkinsPatchClientImpl.triggerPipelineJobAndWaitUntilBuilding.error", new Object[] { jobName });
 		}
 		
-		LOGGER.info("Waiting until Job \"" + jobName + "\" is building")
+		LOGGER.info("Waiting until Job \"" + jobName + "\" is building");
 		Build build = server.getBuild(queueItem);
 		retryCnt = 0;
 		while (retryCnt < DEFAULT_RETRY_COUNTS) {
@@ -299,11 +299,11 @@ public class JenkinsClientImpl implements JenkinsClient {
 					&& (buildResult.equals(BuildResult.ABORTED) || buildResult.equals(BuildResult.SUCCESS)
 							|| buildResult.equals(BuildResult.CANCELLED) || buildResult.equals(BuildResult.UNSTABLE))) {
 				job = server.getPipelineJob(jobName);
-				LOGGER.info("Job \"" + jobName + "\" is now building")
+				LOGGER.info("Job \"" + jobName + "\" is now building");
 				return job.getLastBuild();
 			}
 			Thread.sleep(DEFAULT_RETRY_INTERVAL);
-			LOGGER.info("... continue waiting until Job \"" + jobName + "\" is building")
+			LOGGER.info("... continue waiting until Job \"" + jobName + "\" is building");
 			retryCnt++;
 		}
 		throw ExceptionFactory.createPatchServiceRuntimeException(
