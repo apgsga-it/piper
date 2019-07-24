@@ -293,7 +293,6 @@ public class JenkinsClientImpl implements JenkinsClient {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"JenkinsPatchClientImpl.triggerPipelineJobAndWaitUntilBuilding.error", new Object[] { jobName });
 		}
-		
 		LOGGER.info("Waiting until Job \"" + jobName + "\" is building");
 		Build build = server.getBuild(queueItem);
 		retryCnt = 0;
