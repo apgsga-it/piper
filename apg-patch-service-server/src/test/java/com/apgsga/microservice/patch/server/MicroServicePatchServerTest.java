@@ -25,7 +25,6 @@ import com.apgsga.microservice.patch.api.DbObject;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchLog;
-import com.apgsga.microservice.patch.api.PatchLogDetails;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;

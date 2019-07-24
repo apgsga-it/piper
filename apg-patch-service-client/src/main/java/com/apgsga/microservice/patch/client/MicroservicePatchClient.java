@@ -29,8 +29,6 @@ public class MicroservicePatchClient implements PatchService {
 
 	private static final String SAVE = "/save";
 	
-	private static final String LOG = "/log";
-
 	private static final String LIST_DBMODULES = "/listDbModules";
 
 	private static final String LIST_MAVENARTIFACTS = "/listMavenArtifacts/{id}";

@@ -1,9 +1,6 @@
 package com.apgsga.microservice.patch.api;
 
-import java.util.Date;
 import java.util.List;
-import java.util.function.LongToDoubleFunction;
-
 import com.affichage.persistence.common.client.EntityRootInterface;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
