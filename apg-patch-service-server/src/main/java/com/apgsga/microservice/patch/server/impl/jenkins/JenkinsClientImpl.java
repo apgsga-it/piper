@@ -3,6 +3,7 @@ package com.apgsga.microservice.patch.server.impl.jenkins;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
@@ -247,7 +248,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 		}
 
 	}
-	
+
 	private void onCloneJobLog(JenkinsServer jenkinsServer, String jobName) throws IOException, InterruptedException {
 		PipelineBuild onCloneBuild = getPipelineBuild(jenkinsServer, jobName);		
 		final int MAX_RETRY = 10;
@@ -293,6 +294,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"JenkinsPatchClientImpl.triggerPipelineJobAndWaitUntilBuilding.error", new Object[] { jobName });
 		}
+		
 		LOGGER.info("Waiting until Job \"" + jobName + "\" is building");
 		Build build = server.getBuild(queueItem);
 		retryCnt = 0;

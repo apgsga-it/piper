@@ -1,13 +1,13 @@
 package com.apgsga.microservice.patch.server.impl.targets;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.core.io.Resource;
 
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class InstallTargetsUtil {
@@ -19,15 +19,16 @@ public class InstallTargetsUtil {
 	@SuppressWarnings("unchecked")
 	public static List<String> listInstallTargets(Resource targetConfigFile) {
 
-		Map<String, Object> result;
+		TargetSystemMappings result;
+		ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);;
 		try {
-			result = new ObjectMapper().readValue(targetConfigFile.getInputStream(), HashMap.class);
+			result = objectMapper.readValue(targetConfigFile.getInputStream(), TargetSystemMappings.class);
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("InstallTargetsUtil.listInstallTargets.exception",
 					new Object[] { e.getMessage(), targetConfigFile.getFilename() }, e);
 		}
-		List<String> installationTargets = (List<String>) result.get("otherTargetInstances");
-		return installationTargets;
+		
+		return result.getTargetInstances().stream().map(target -> target.getName()).collect(Collectors.toList());
 	}
 
 }
