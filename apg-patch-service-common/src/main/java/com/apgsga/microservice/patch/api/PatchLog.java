@@ -1,7 +1,6 @@
 package com.apgsga.microservice.patch.api;
 
 import java.util.List;
-
 import com.affichage.persistence.common.client.EntityRootInterface;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 

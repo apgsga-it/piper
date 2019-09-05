@@ -3,6 +3,8 @@ package com.apgsga.microservice.patch.server;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,6 +29,8 @@ import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.api.impl.PatchBean;
+import com.apgsga.microservice.patch.api.impl.PatchLogBean;
+import com.apgsga.microservice.patch.api.impl.PatchLogDetailsBean;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutor;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
