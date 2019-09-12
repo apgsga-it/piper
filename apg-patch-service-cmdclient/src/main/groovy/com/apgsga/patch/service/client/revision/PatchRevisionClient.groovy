@@ -1,5 +1,7 @@
 package com.apgsga.patch.service.client.revision
 
+import java.util.stream.Collectors
+
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
@@ -103,9 +105,7 @@ class PatchRevisionClient {
 		def revisionsList = []
 		def revFileAsJson = new JsonSlurper().parse(revisionFile)
 		if(revFileAsJson."${target}" != null) {
-			revFileAsJson."${target}".revisions.each { revision -> 
-				revisionsList.add(revision)
-			}
+			revisionsList = revFileAsJson."${target}".revisions.stream().collect(Collectors.toList())
 		}
 		println revisionsList.join(",")
 	}
