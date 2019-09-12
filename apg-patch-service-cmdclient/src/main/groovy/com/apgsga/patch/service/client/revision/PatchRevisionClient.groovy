@@ -98,4 +98,15 @@ class PatchRevisionClient {
 			}
 		}
 	}
+	
+	def getRevisions(def target) {
+		def revisionsList = []
+		def revFileAsJson = new JsonSlurper().parse(revisionFile)
+		if(revFileAsJson."${target}" != null) {
+			revFileAsJson."${target}".revisions.each { revision -> 
+				revisionsList.add(revision)
+			}
+		}
+		println revisionsList.join(",")
+	}
 }
