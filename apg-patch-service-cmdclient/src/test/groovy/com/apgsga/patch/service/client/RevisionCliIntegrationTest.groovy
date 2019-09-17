@@ -344,4 +344,35 @@ class RevisionCliIntegrationTest extends Specification {
 		cleanup:
 			revFile.delete()
 	}
+	
+	def "Patch Revision Cli validate get List of Revision for a particular target"() {
+		when:
+			PatchRevisionCli cli = PatchRevisionCli.create()
+			def revFile = new File("src/test/resources/Revisions.json")
+			cli.process(["-ar","chti211,18,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,77,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,88,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chti211,185,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,100,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei211,50,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,5000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,6000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,7000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,8000,9.1.0.ADMIN-UIMIG-"])
+			def oldStream = System.out;
+			def buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			def result = cli.process(["-gr","chpi211"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			result.returnCode == 0
+			buffer.toString().toString().split(",").size() == 4
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-5000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-6000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-7000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-8000")
+		cleanup:
+			revFile.delete()
+	}
 }
