@@ -107,6 +107,35 @@ class PatchRevisionClient {
 		if(revFileAsJson."${target}" != null) {
 			revisionsList = revFileAsJson."${target}".revisions.stream().collect(Collectors.toList())
 		}
-		println revisionsList.join(",")
+		if(revisionsList.isEmpty()) {
+			print ""
+		}
+		else {
+			println revisionsList.join(",")
+		}
+	}
+	
+	def deleteRevisions(def target) {
+		assert !isProd(target) : "Revisions can't be deleted for production target: ${target}"
+		def revFileAsJson = new JsonSlurper().parse(revisionFile)
+		if(revFileAsJson."${target}" != null) {
+			revFileAsJson."${target}".revisions = []
+			revisionFile.write(new JsonBuilder(revFileAsJson).toPrettyString())
+		}
+	}
+	
+	def isProd(def target) {
+		def isProd = false
+		def targetSystemMappingFilePath = "${config.config.dir}/${config.target.system.mapping.file.name}"
+		def targetSystemMappingFile = new File(targetSystemMappingFilePath)
+		assert targetSystemMappingFile.exists() : "${config.config.dir}/${config.target.system.mapping.file.name} does not exist!"
+		def targetSystemMappingAsJson = new JsonSlurper().parse(targetSystemMappingFile)
+		targetSystemMappingAsJson.targetSystems.each{targetSystem ->
+			if(targetSystem.target.equalsIgnoreCase(target)) {
+				isProd = targetSystem.name.equalsIgnoreCase("produktion")
+				return // exit closure
+			}
+		}
+		return isProd
 	}
 }

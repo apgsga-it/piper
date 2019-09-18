@@ -58,6 +58,11 @@ class PatchRevisionCli {
 				def result = getRevisions(options)
 				cmdResults.results['gr'] = result
 			}
+			
+			if(options.dr) {
+				def result = deleteRevisions(options)
+				cmdResults.results['dr'] = result
+			}
 						
 			cmdResults.returnCode = 0
 			return cmdResults
@@ -106,8 +111,13 @@ class PatchRevisionCli {
 		patchRevClient.getRevisions(options.grs[0].toUpperCase())
 	}
 	
+	private def deleteRevisions(def options) {
+		def patchRevClient = new PatchRevisionClient(config)
+		def res = patchRevClient.deleteRevisions(options.drs[0].toUpperCase())
+	}
+	
 	private def validateOpts(def args) {
-		def cli = new CliBuilder (usage: 'apsrevpli.sh -[h|ar|lr|nr|rr]')
+		def cli = new CliBuilder (usage: 'apsrevpli.sh -[h|ar|lr|nr|rr|gr|dr]')
 		cli.formatter.setDescPadding(0)
 		cli.formatter.setLeftPadding(0)
 		cli.formatter.setWidth(100)
@@ -121,6 +131,7 @@ class PatchRevisionCli {
 			// TODO JHE: to be implemented, probably while working on JAVA8MIG-431
 			i longOpt: 'initRevision', args:0 , 'Initialize the Revision Tracking', required: false
 			gr longOpt: 'getRevision', args:1, argName: 'target', 'Get all revisions for the given target', required: false
+			dr longOpt: 'deleteRevision', args:1, argName: 'target', 'Delete all Revisions number for the given target (lastRevision remains)'
 		}
 		
 		def options = cli.parse(args)
@@ -135,7 +146,7 @@ class PatchRevisionCli {
 			return null
 		}
 		
-		if (options.nr || options.lr || options.rr || options.llr || options.gr) {
+		if (options.nr || options.lr || options.rr || options.gr || options.dr) {
 			error = false
 		}
 
