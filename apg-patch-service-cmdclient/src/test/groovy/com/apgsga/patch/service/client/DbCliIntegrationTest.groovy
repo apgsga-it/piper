@@ -20,6 +20,8 @@ import spock.lang.Specification
 
 
 class DbCliIntegrationTest extends Specification {
+	
+	//test commit in a branch linked to a closed pull request ...
 
 	private static final String CLASSPATH_CONFIG_OPS_TEST_PROPERTIES = 'classpath:config/ops-test.properties'
 
