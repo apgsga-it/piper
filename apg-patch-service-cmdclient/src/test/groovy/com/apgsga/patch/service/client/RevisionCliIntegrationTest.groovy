@@ -483,4 +483,63 @@ class RevisionCliIntegrationTest extends Specification {
 			buffer.toString().contains(usageString)
 			buffer.toString().toLowerCase().contains("missing argument")
 	}
+	
+	def "Patch Revision Cli validate delete list of a given revision for a given target"() {
+		when:
+			PatchRevisionCli cli = PatchRevisionCli.create()
+			def revFile = new File("src/test/resources/Revisions.json")
+			cli.process(["-ar","chti211,18,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,77,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,88,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chti211,185,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,100,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,50,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei211,503,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,5000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,6000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,7000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,8000,9.1.0.ADMIN-UIMIG-"])
+			def result = cli.process(["-dr","chei212,100;50"])
+			def oldStream = System.out;
+			def buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			def grResult = cli.process(["-gr","chei212"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			result.returnCode == 0
+			grResult.returnCode == 0
+			buffer.toString().toString().split(",").size() == 2
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-77")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-88")
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			grResult = cli.process(["-gr","chti211"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			grResult.returnCode == 0
+			buffer.toString().toString().split(",").size() == 2
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-18")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-185")
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			grResult = cli.process(["-gr","chpi211"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			grResult.returnCode == 0
+			buffer.toString().toString().split(",").size() == 4
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-5000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-6000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-7000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-8000")
+		cleanup:
+			revFile.delete()
+	}
+	
 }

@@ -115,6 +115,23 @@ class PatchRevisionClient {
 		}
 	}
 	
+	def deleteRevisions(def target, def revisionsToBeDeleted) {
+		assert !isProd(target) : "Revisions can't be deleted for production target: ${target}"
+		def updatedRevisions = []
+		def revFileAsJson = new JsonSlurper().parse(revisionFile)
+		def revisionsToBeDeletedAsList = revisionsToBeDeleted.split(";")
+		if(revFileAsJson."${target}" != null) {
+			revFileAsJson."${target}".revisions.each { revision ->
+				def revisionNumberOnly = revision.substring(revision.lastIndexOf("-")+1,revision.length())
+				if(!(revisionsToBeDeletedAsList.contains(revisionNumberOnly))) {
+					updatedRevisions.add(revision)
+				}
+			}
+			revFileAsJson."${target}".revisions = updatedRevisions
+			revisionFile.write(new JsonBuilder(revFileAsJson).toPrettyString())
+		}
+	}
+	
 	def deleteRevisions(def target) {
 		assert !isProd(target) : "Revisions can't be deleted for production target: ${target}"
 		def revFileAsJson = new JsonSlurper().parse(revisionFile)

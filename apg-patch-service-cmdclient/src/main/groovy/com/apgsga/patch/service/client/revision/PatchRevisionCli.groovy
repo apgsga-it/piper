@@ -113,7 +113,9 @@ class PatchRevisionCli {
 	
 	private def deleteRevisions(def options) {
 		def patchRevClient = new PatchRevisionClient(config)
-		def res = patchRevClient.deleteRevisions(options.drs[0].toUpperCase())
+		def target = options.drs[0].toUpperCase()
+		def revisions = options.drs[1]
+		revisions == null ? patchRevClient.deleteRevisions(target) : patchRevClient.deleteRevisions(target,revisions)
 	}
 	
 	private def validateOpts(def args) {
@@ -131,7 +133,7 @@ class PatchRevisionCli {
 			// TODO JHE: to be implemented, probably while working on JAVA8MIG-431
 			i longOpt: 'initRevision', args:0 , 'Initialize the Revision Tracking', required: false
 			gr longOpt: 'getRevision', args:1, argName: 'target', 'Get all revisions for the given target', required: false
-			dr longOpt: 'deleteRevision', args:1, argName: 'target', 'Delete all Revisions number for the given target (lastRevision remains)'
+			dr longOpt: 'deleteRevision', args:2, valueSeparator: ",", argName: 'target,revisions', 'Delete Revisions number for the given target (lastRevision remains). If a list of revisions is given, then only these will be removed, if they exist. List of revisions should be separated with ";". This second argument is optional', required: false
 		}
 		
 		def options = cli.parse(args)
