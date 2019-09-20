@@ -391,7 +391,7 @@ class RevisionCliIntegrationTest extends Specification {
 			cli.process(["-ar","chpi211,6000,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chpi211,7000,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chpi211,8000,9.1.0.ADMIN-UIMIG-"])
-			def result = cli.process(["-dr","chti211"])
+			def result = cli.process(["-drt","chti211"])
 			def oldStream = System.out;
 			def buffer = new ByteArrayOutputStream()
 			System.setOut(new PrintStream(buffer))
@@ -446,7 +446,7 @@ class RevisionCliIntegrationTest extends Specification {
 			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-8000")
 		when:
 			// Shouldn't be possible to reset the production (for test, production target is chei211)
-			result = cli.process(["-dr","chei211"])
+			result = cli.process(["-drt","chei211"])
 		then:
 			result.returnCode == 1
 		
@@ -475,7 +475,7 @@ class RevisionCliIntegrationTest extends Specification {
 			def oldStream = System.out;
 			def buffer = new ByteArrayOutputStream()
 			System.setOut(new PrintStream(buffer))
-			def result = cli.process(["-dr"])
+			def result = cli.process(["-drt"])
 			System.setOut(oldStream)
 		then:
 			!revFile.exists()
@@ -499,7 +499,7 @@ class RevisionCliIntegrationTest extends Specification {
 			cli.process(["-ar","chpi211,6000,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chpi211,7000,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chpi211,8000,9.1.0.ADMIN-UIMIG-"])
-			def result = cli.process(["-dr","chei212,100;50"])
+			def result = cli.process(["-drt","chei212,100;50"])
 			def oldStream = System.out;
 			def buffer = new ByteArrayOutputStream()
 			System.setOut(new PrintStream(buffer))
