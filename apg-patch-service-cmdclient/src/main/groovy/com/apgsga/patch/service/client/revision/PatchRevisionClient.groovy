@@ -115,7 +115,30 @@ class PatchRevisionClient {
 		}
 	}
 	
-	def deleteRevisions(def target, def revisionsToBeDeleted) {
+	def deleteRevisions(def revisions) {
+		def revisionsAsList = revisions.trim().split(";")
+		def revFileAsJson = new JsonSlurper().parse(revisionFile)
+		def revisionsToBeDeletedForTarget = [:]
+		revFileAsJson.each {targetInfo ->
+			String key = targetInfo.key
+			// Because of the structure of Revivions.json, we need to explicitely exclude "nextRev"
+			if(!isProd(key) && !key.equalsIgnoreCase("nextRev")) {
+				revisionsToBeDeletedForTarget.put(key, [])
+				targetInfo.value.revisions.each { rev ->
+					def revNumber = rev.substring(rev.lastIndexOf('-')+1,rev.length())
+					if(revisionsAsList.contains(revNumber)) {
+						revisionsToBeDeletedForTarget.get(key).add(revNumber)
+					}
+				}
+			}
+		}
+		
+		revisionsToBeDeletedForTarget.keySet().each { target ->
+			deleteRevisionsForTarget(target, revisionsToBeDeletedForTarget.get(target).join(";"))
+		}
+	}
+	
+	def deleteRevisionsForTarget(def target, def revisionsToBeDeleted) {
 		assert !isProd(target) : "Revisions can't be deleted for production target: ${target}"
 		def updatedRevisions = []
 		def revFileAsJson = new JsonSlurper().parse(revisionFile)
@@ -132,7 +155,7 @@ class PatchRevisionClient {
 		}
 	}
 	
-	def deleteRevisions(def target) {
+	def deleteRevisionsForTarget(def target) {
 		assert !isProd(target) : "Revisions can't be deleted for production target: ${target}"
 		def revFileAsJson = new JsonSlurper().parse(revisionFile)
 		if(revFileAsJson."${target}" != null) {
