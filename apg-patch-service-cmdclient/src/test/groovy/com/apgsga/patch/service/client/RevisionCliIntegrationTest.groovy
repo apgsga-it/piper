@@ -12,7 +12,7 @@ import spock.lang.Specification
 
 class RevisionCliIntegrationTest extends Specification {
 	
-	def usageString = "usage: apsrevpli.sh -[h|ar|lr|nr|rr]"
+	def usageString = "usage: apsrevpli.sh -[h|ar|lr|nr|rr|gr|drt|dr]"
 	
 	def setup() {
 		def buildFolder = new File("build")
@@ -375,4 +375,243 @@ class RevisionCliIntegrationTest extends Specification {
 		cleanup:
 			revFile.delete()
 	}
+	
+	def "Patch Revision Cli validate delete Revision List for a particular target"() {
+		when:
+			PatchRevisionCli cli = PatchRevisionCli.create()
+			def revFile = new File("src/test/resources/Revisions.json")
+			cli.process(["-ar","chti211,18,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,77,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,88,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chti211,185,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei211,100,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei211,50,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei211,503,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,5000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,6000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,7000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,8000,9.1.0.ADMIN-UIMIG-"])
+			def result = cli.process(["-drt","chti211"])
+			def oldStream = System.out;
+			def buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			def grResult = cli.process(["-gr","chti211"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			result.returnCode == 0
+			grResult.returnCode == 0
+			buffer.toString().isEmpty()
+		when:
+			//Check CHEI211
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			grResult = cli.process(["-gr","chei211"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			grResult.returnCode == 0
+			buffer.toString().toString().split(",").size() == 3
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-100")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-50")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-503")
+		when:
+			// Check CHEI212
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			grResult = cli.process(["-gr","chei212"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			grResult.returnCode == 0
+			buffer.toString().toString().split(",").size() == 2
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-77")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-88")
+		when:
+			// Check CHPI211
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			grResult = cli.process(["-gr","chpi211"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			grResult.returnCode == 0
+			buffer.toString().toString().split(",").size() == 4
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-5000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-6000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-7000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-8000")
+		when:
+			// Shouldn't be possible to reset the production (for test, production target is chei211)
+			result = cli.process(["-drt","chei211"])
+		then:
+			result.returnCode == 1
+		
+		when:
+			// Ensure nothing has been deleted for PROD target
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			grResult = cli.process(["-gr","chei211"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			grResult.returnCode == 0
+			buffer.toString().toString().split(",").size() == 3
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-100")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-50")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-503")
+		cleanup:
+			revFile.delete()
+	}
+	
+	def "Patch Revision Cli validate delete revision without any parameter"() {
+		when:
+			PatchRevisionCli cli = PatchRevisionCli.create()
+			def revFile = new File("src/test/resources/Revisions.json")
+			def oldStream = System.out;
+			def buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			def result = cli.process(["-drt"])
+			System.setOut(oldStream)
+		then:
+			!revFile.exists()
+			result.returnCode == 0
+			buffer.toString().contains(usageString)
+			buffer.toString().toLowerCase().contains("missing argument")
+	}
+	
+	def "Patch Revision Cli validate delete list of a given revision for a given target"() {
+		when:
+			PatchRevisionCli cli = PatchRevisionCli.create()
+			def revFile = new File("src/test/resources/Revisions.json")
+			cli.process(["-ar","chti211,18,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,77,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,88,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chti211,185,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,100,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,50,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei211,503,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,5000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,6000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,7000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,8000,9.1.0.ADMIN-UIMIG-"])
+			def result = cli.process(["-drt","chei212,100;50"])
+			def oldStream = System.out;
+			def buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			def grResult = cli.process(["-gr","chei212"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			result.returnCode == 0
+			grResult.returnCode == 0
+			buffer.toString().toString().split(",").size() == 2
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-77")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-88")
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			grResult = cli.process(["-gr","chti211"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			grResult.returnCode == 0
+			buffer.toString().toString().split(",").size() == 2
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-18")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-185")
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			grResult = cli.process(["-gr","chpi211"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			grResult.returnCode == 0
+			buffer.toString().toString().split(",").size() == 4
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-5000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-6000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-7000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-8000")
+		cleanup:
+			revFile.delete()
+	}
+	
+	def "Patch Revision Cli validate delete list of a given revision without specifing target"() {
+		when:
+			PatchRevisionCli cli = PatchRevisionCli.create()
+			def revFile = new File("src/test/resources/Revisions.json")
+			cli.process(["-ar","chti211,18,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,77,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,88,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chti211,185,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,100,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei212,50,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei211,503,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei211,504,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei211,505,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chei211,706,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,5000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,6000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,7000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","chpi211,8000,9.1.0.ADMIN-UIMIG-"])
+			def result = cli.process(["-dr","18;77;100;7000;8000;503;706"])
+			def oldStream = System.out;
+			def buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			def grResult = cli.process(["-gr","chei212"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			result.returnCode == 0
+			grResult.returnCode == 0
+			buffer.toString().toString().split(",").size() == 2
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-88")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-50")
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			grResult = cli.process(["-gr","chti211"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			grResult.returnCode == 0
+			buffer.toString().toString().split(",").size() == 1
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-185")
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			grResult = cli.process(["-gr","chpi211"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			grResult.returnCode == 0
+			buffer.toString().toString().split(",").size() == 2
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-5000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-6000")
+		when:
+			oldStream = System.out;
+			buffer = new ByteArrayOutputStream()
+			System.setOut(new PrintStream(buffer))
+			grResult = cli.process(["-gr","chei211"])
+		then:
+			System.setOut(oldStream)
+			revFile.exists()
+			grResult.returnCode == 0
+			buffer.toString().toString().split(",").size() == 4
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-503")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-504")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-505")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-706")
+		cleanup:
+			revFile.delete()
+	}
+	
 }
