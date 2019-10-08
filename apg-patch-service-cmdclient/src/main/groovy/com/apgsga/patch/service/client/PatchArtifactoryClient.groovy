@@ -30,8 +30,13 @@ class PatchArtifactoryClient {
 	}
 	
 	private def removeArtifacts(String regex, boolean dryRun, Iterable<String> repos) {
+		
+		println "regex used to fetch Artifacts: ${regex} / Repositories where it will be searched: ${repos.join(',')}"
 
 		List<RepoPath> searchItems = artifactory.searches().repositories(repos.join(",")).artifactsByName(regex).doSearch();
+		
+		println "Following items have been found: ${searchItems}"
+		
 		searchItems.each{repoPath ->
 			if(dryRun) {
 				println "${repoPath} would have been deleted."
