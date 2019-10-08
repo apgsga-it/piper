@@ -49,10 +49,14 @@ class PatchArtifactoryClient {
 		def revision = revisionClient.getInstalledRevisions(target)
 		def dryRun = config.onclone.delete.artifact.dryrun
 		
+		println "Following revisions have been found for ${target}: ${revision}"
+		
 		if(revision != null) {
 			revision.each {
 				def revisionFormatedForSearch = "${it}".substring("${it}".lastIndexOf("-"),"${it}".length())
+				println "Starting to clean Artifact for revision ${revision} (revisionFormatedForSearch = ${revisionFormatedForSearch})"
 				removeArtifacts("*${revisionFormatedForSearch}.*", dryRun, [RPM_PATCH_REPO,RELEASE_REPO,DB_PATCH_REPO])
+				println "Done cleaning Artifacts for ${revision}."
 			}
 		}			
 		else {
