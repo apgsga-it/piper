@@ -46,6 +46,25 @@ class PatchArtifactoryClient {
 				println "${repoPath} removed!"
 			}
 		};
+		
+		
+		testWithHardcodedValues()
+	}
+	
+	private def testWithHardcodedValues() {
+		println "================ S T A R T -> TEST WITH HARDCODED VALUED ================"
+		
+		def regex = "*-363.*"
+		List<RepoPath> searchItems_1 = artifactory.searches().repositories("yumpatchrepo-test","releases-test","dbpatch-test").artifactsByName(regex).doSearch();
+		println "searchItems_1 : ${searchItems_1}"
+
+		List<RepoPath> searchItems_2 = artifactory.searches().repositories(RELEASE_REPO,DB_PATCH_REPO,RPM_PATCH_REPO).artifactsByName(regex).doSearch();
+		println "searchItems_2 : ${searchItems_2}"
+		
+		List<RepoPath> searchItems_3 = artifactory.searches().repositories([RPM_PATCH_REPO,RELEASE_REPO,DB_PATCH_REPO].join(",")).artifactsByName(regex).doSearch();
+		println "searchItems_3 : ${searchItems_3}"
+				
+		println "================ D O N E -> TEST WITH HARDCODED VALUED ================"
 	}
 	
 	def cleanReleases(def target) {
