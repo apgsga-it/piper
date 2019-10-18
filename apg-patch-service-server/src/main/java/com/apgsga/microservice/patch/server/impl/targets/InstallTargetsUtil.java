@@ -28,7 +28,7 @@ public class InstallTargetsUtil {
 					new Object[] { e.getMessage(), targetConfigFile.getFilename() }, e);
 		}
 		
-		return result.getTargetInstances().stream().map(target -> target.getName()).collect(Collectors.toList());
+		return result.getOnDemandTarget();
 	}
 
 }

@@ -446,7 +446,7 @@ class RevisionCliIntegrationTest extends Specification {
 			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-8000")
 		when:
 			// Shouldn't be possible to reset the production (for test, production target is chei211)
-			result = cli.process(["-drt","chei211"])
+			result = cli.process(["-drt","chpi211"])
 		then:
 			result.returnCode == 1
 		
@@ -455,15 +455,16 @@ class RevisionCliIntegrationTest extends Specification {
 			oldStream = System.out;
 			buffer = new ByteArrayOutputStream()
 			System.setOut(new PrintStream(buffer))
-			grResult = cli.process(["-gr","chei211"])
+			grResult = cli.process(["-gr","chpi211"])
 		then:
 			System.setOut(oldStream)
 			revFile.exists()
 			grResult.returnCode == 0
-			buffer.toString().toString().split(",").size() == 3
-			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-100")
-			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-50")
-			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-503")
+			buffer.toString().toString().split(",").size() == 4
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-5000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-6000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-7000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-8000")
 		cleanup:
 			revFile.delete()
 	}
@@ -593,9 +594,11 @@ class RevisionCliIntegrationTest extends Specification {
 			System.setOut(oldStream)
 			revFile.exists()
 			grResult.returnCode == 0
-			buffer.toString().toString().split(",").size() == 2
+			buffer.toString().toString().split(",").size() == 4
 			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-5000")
 			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-6000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-7000")
+			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-8000")
 		when:
 			oldStream = System.out;
 			buffer = new ByteArrayOutputStream()
@@ -605,11 +608,9 @@ class RevisionCliIntegrationTest extends Specification {
 			System.setOut(oldStream)
 			revFile.exists()
 			grResult.returnCode == 0
-			buffer.toString().toString().split(",").size() == 4
-			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-503")
+			buffer.toString().toString().split(",").size() == 2
 			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-504")
 			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-505")
-			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-706")
 		cleanup:
 			revFile.delete()
 	}

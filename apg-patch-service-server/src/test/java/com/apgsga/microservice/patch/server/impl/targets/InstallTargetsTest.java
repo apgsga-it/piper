@@ -17,10 +17,10 @@ public class InstallTargetsTest {
 		Resource targetConfigFile = rl.getResource("src/test/resources/json/TargetSystemMappings.json"); 
 		List<String> installTargets = InstallTargetsUtil.listInstallTargets(targetConfigFile);
 		Assert.assertTrue(installTargets.size() == 4);
-		Assert.assertTrue(installTargets.remove("dev-bsp"));
+		Assert.assertTrue(installTargets.remove("dev-dro"));
+		Assert.assertTrue(installTargets.remove("dev-stb"));
 		Assert.assertTrue(installTargets.remove("CHEI212"));
-		Assert.assertTrue(installTargets.remove("CHTI214"));
-		Assert.assertTrue(installTargets.remove("CHQI211"));
+		Assert.assertTrue(installTargets.remove("CHTI216"));
 		Assert.assertTrue(installTargets.size() == 0);
 
 	}

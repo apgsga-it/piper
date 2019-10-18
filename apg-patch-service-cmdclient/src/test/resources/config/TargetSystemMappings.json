@@ -1,29 +1,26 @@
 {
-    "targetSystems": [
+    "stageMappings": [ 
         {
             "name": "Entwicklung",
             "target": "CHEI212",
-            "typeInd": "T",
             "stages": [
-                {
-                    "name": "cancel",
-                    "toState": "",
-                    "code": 0,
-                    "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
-                },
                 {
                     "name": "startPipelineAndTag",
                     "toState": "Installationsbereit",
                     "code": 2,
                     "implcls": "com.apgsga.microservice.patch.server.impl.EntwicklungInstallationsbereitAction"
+                },
+                {
+                    "name": "cancel",
+                    "toState": "",
+                    "code": 0,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
                 }
-
             ]
         },
         {
             "name": "Informatiktest",
-            "target": "CHEI212",
-            "typeInd": "T",
+            "target": "CHEI211",
             "stages": [
                 {
                     "name": "BuildFor",
@@ -40,9 +37,26 @@
             ]
         },
         {
+            "name": "Anwendertest",
+            "target": "CHTI211",
+            "stages": [
+                {
+                    "name": "BuildFor",
+                    "toState": "Installationsbereit",
+                    "code": 25,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
+                },
+                {
+                    "name": "InstallFor",
+                    "toState": "",
+                    "code": 30,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
+                }
+            ]
+        },
+        {
             "name": "Produktion",
-            "target": "CHEI211",
-            "typeInd": "P",
+            "target": "CHPI211",
             "stages": [
                 {
                     "name": "BuildFor",
@@ -59,10 +73,224 @@
             ]
         }
     ],
-    "otherTargetInstances": [
-        "CHTI211",
-        "CHTI213",
-        "CHTI214",
-        "CHQI211"
-    ]
+	
+	"onDemandTarget": [
+		"CHEI212",
+		"CHTI216",
+		"dev-dro",
+		"dev-stb"
+	],
+	
+    "targetInstances": [
+       {
+           "name": "CHEI212",
+           "services": [
+                  {
+                     "type": "it21-db",
+                     "name": "CHEI212",
+                     "host": "dev.apgsga.ch"
+                  },
+                  {
+                     "type": "digital-db",
+                     "name": "CHEDIS2",
+                     "host": "CHEDIS2.apgsga.ch"
+                  },
+				  {
+                     "type": "linuxservice",
+                     "name": "digiflex",
+                     "host": "jadas-e.apgsga.ch"
+                  },
+                  {
+                     "type": "linuxservice",
+                     "name": "jadas",
+                     "host": "jadas-e.apgsga.ch"
+                  },
+                  {
+                     "type": "zipFolder",
+                     "name": "it21_chei212_gui",
+                     "host": "service-CHEI212.apgsga.ch"
+                  }
+           ]
+      },
+      {
+           "name": "CHEI211",
+           "services": [
+                  {
+                     "type": "it21-db",
+                     "name": "CHEI211",
+                     "host": "dev.apgsga.ch"
+                  },
+                  {
+                     "type": "digital-db",
+                     "name": "CHEDIS2",
+                     "host": "CHEDIS2.apgsga.ch"
+                  },
+				  {
+                     "type": "linuxservice",
+                     "name": "digiflex",
+                     "host": "jadas-e.apgsga.ch"
+                  },
+                  {
+                     "type": "linuxservice",
+                     "name": "jadas",
+                     "host": "jadas-e.apgsga.ch"
+                  },
+                  {
+                     "type": "zipFolder",
+                     "name": "it21_chei211_gui",
+                     "host": "service-CHEI211.apgsga.ch"
+                  }
+           ]
+      },
+      {
+           "name": "CHTI211",
+           "services": [
+                  {
+                     "type": "it21-db",
+                     "name": "CHTI211",
+                     "host": "test.apgsga.ch"
+                  },
+                  {
+                     "type": "digital-db",
+                     "name": "CHEDIS2",
+                     "host": "CHEDIS2.apgsga.ch"
+                  },
+				  {
+                     "type": "linuxservice",
+                     "name": "digiflex",
+                     "host": "jadas-t.apgsga.ch"
+                  },
+                  {
+                     "type": "linuxservice",
+                     "name": "jadas",
+                     "host": "jadas-t.apgsga.ch"
+                  },
+                  {
+                     "type": "zipFolder",
+                     "name": "it21_chti211_gui",
+                     "host": "service-CHTI211.apgsga.ch"
+                  }
+           ]
+      },
+      {
+           "name": "CHPI211",
+           "services": [
+                  {
+                     "type": "it21-db",
+                     "name": "CHPI211",
+                     "host": "prod.apgsga.ch"
+                  },
+                  {
+                     "type": "digital-db",
+                     "name": "CHEDIS2",
+                     "host": "CHEDIS2.apgsga.ch"
+                  },
+				  {
+                     "type": "linuxservice",
+                     "name": "digiflex",
+                     "host": "jadas-p.apgsga.ch"
+                  },
+                  {
+                     "type": "linuxservice",
+                     "name": "jadas",
+                     "host": "jadas-p.apgsga.ch"
+                  },
+                  {
+                     "type": "zipFolder",
+                     "name": "it21_chpi211_gui",
+                     "host": "service-CHPI211.apgsga.ch"
+                  }
+           ]
+      },
+      {
+           "name": "CHTI216",
+           "services": [
+                  {
+                     "type": "it21-db",
+                     "name": "CHTI216",
+                     "host": "test.apgsga.ch"
+                  },
+                  {
+                     "type": "digital-db",
+                     "name": "CHEDIS2",
+                     "host": "CHEDIS2.apgsga.ch"
+                  },
+				  {
+                     "type": "linuxservice",
+                     "name": "digiflex",
+                     "host": "jadas-t.apgsga.ch"
+                  },
+                  {
+                     "type": "linuxservice",
+                     "name": "jadas",
+                     "host": "jadas-t.apgsga.ch"
+                  },
+                  {
+                     "type": "zipFolder",
+                     "name": "it21_chti216_gui",
+                     "host": "service-CHTI211.apgsga.ch"
+                  }
+           ]
+      },
+      {
+           "name": "dev-dro",
+           "services": [
+                  {
+                     "type": "it21-db",
+                     "name": "LIGHT",
+                     "host": "dev-dro.light.apgsga.ch"
+                  },
+                  {
+                     "type": "digital-db",
+                     "name": "LIGHT",
+                     "host": "dev-dro.digi.light.apgsga.ch"
+                  },
+				  {
+                     "type": "linuxservice",
+                     "name": "digiflex",
+                     "host": "dev-dro.light.apgsga.ch"
+                  },
+                  {
+                     "type": "linuxservice",
+                     "name": "jadas",
+                     "host": "dev-dro.light.apgsga.ch"
+                  },
+                  {
+                     "type": "zipFolder",
+                     "name": "it21_dev-dro_gui",
+                     "host": "dev-dro.light.apgsga.ch"
+                  }
+           ]
+      },
+      {
+           "name": "dev-stb",
+           "services": [
+                  {
+                     "type": "it21-db",
+                     "name": "LIGHT",
+                     "host": "dev-stb.light.apgsga.ch"
+                  },
+                  {
+                     "type": "digital-db",
+                     "name": "LIGHT",
+                     "host": "dev-stb.digi.light.apgsga.ch"
+                  },
+				  {
+                     "type": "linuxservice",
+                     "name": "digiflex",
+                     "host": "dev-stb.light.apgsga.ch"
+                  },
+                  {
+                     "type": "linuxservice",
+                     "name": "jadas",
+                     "host": "dev-stb.light.apgsga.ch"
+                  },
+                  {
+                     "type": "zipFolder",
+                     "name": "it21_dev-dro_gui",
+                     "host": "dev-stb.light.apgsga.ch"
+                  }
+           ]
+      }	  
+   ]
 }

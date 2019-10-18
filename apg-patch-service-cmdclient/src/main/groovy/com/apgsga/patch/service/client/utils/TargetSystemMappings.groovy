@@ -68,7 +68,7 @@ public class TargetSystemMappings {
 		def targetSystemFile = new File(targetSystemMappingsFilePath)
 		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
 		targetSystemMappings = [:]
-		jsonSystemTargets.targetSystems.find( { a ->  a.stages.find( { targetSystemMappings.put("${a.name}${it.toState}".toString(),"${it.code}") })} )
+		jsonSystemTargets.stageMappings.find( { a ->  a.stages.find( { targetSystemMappings.put("${a.name}${it.toState}".toString(),"${it.code}") })} )
 	}
 	
 
