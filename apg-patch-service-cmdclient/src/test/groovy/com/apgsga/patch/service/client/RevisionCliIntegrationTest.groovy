@@ -387,10 +387,10 @@ class RevisionCliIntegrationTest extends Specification {
 			cli.process(["-ar","chei211,100,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chei211,50,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chei211,503,9.1.0.ADMIN-UIMIG-"])
-			cli.process(["-ar","chpi211,5000,9.1.0.ADMIN-UIMIG-"])
-			cli.process(["-ar","chpi211,6000,9.1.0.ADMIN-UIMIG-"])
-			cli.process(["-ar","chpi211,7000,9.1.0.ADMIN-UIMIG-"])
-			cli.process(["-ar","chpi211,8000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","dev-chpi211,5000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","dev-chpi211,6000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","dev-chpi211,7000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","dev-chpi211,8000,9.1.0.ADMIN-UIMIG-"])
 			def result = cli.process(["-drt","chti211"])
 			def oldStream = System.out;
 			def buffer = new ByteArrayOutputStream()
@@ -434,7 +434,7 @@ class RevisionCliIntegrationTest extends Specification {
 			oldStream = System.out;
 			buffer = new ByteArrayOutputStream()
 			System.setOut(new PrintStream(buffer))
-			grResult = cli.process(["-gr","chpi211"])
+			grResult = cli.process(["-gr","dev-chpi211"])
 		then:
 			System.setOut(oldStream)
 			revFile.exists()
@@ -446,7 +446,7 @@ class RevisionCliIntegrationTest extends Specification {
 			buffer.toString().toString().contains("9.1.0.ADMIN-UIMIG-8000")
 		when:
 			// Shouldn't be possible to reset the production (for test, production target is chei211)
-			result = cli.process(["-drt","chpi211"])
+			result = cli.process(["-drt","dev-chpi211"])
 		then:
 			result.returnCode == 1
 		
@@ -455,7 +455,7 @@ class RevisionCliIntegrationTest extends Specification {
 			oldStream = System.out;
 			buffer = new ByteArrayOutputStream()
 			System.setOut(new PrintStream(buffer))
-			grResult = cli.process(["-gr","chpi211"])
+			grResult = cli.process(["-gr","dev-chpi211"])
 		then:
 			System.setOut(oldStream)
 			revFile.exists()
@@ -557,10 +557,10 @@ class RevisionCliIntegrationTest extends Specification {
 			cli.process(["-ar","chei211,504,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chei211,505,9.1.0.ADMIN-UIMIG-"])
 			cli.process(["-ar","chei211,706,9.1.0.ADMIN-UIMIG-"])
-			cli.process(["-ar","chpi211,5000,9.1.0.ADMIN-UIMIG-"])
-			cli.process(["-ar","chpi211,6000,9.1.0.ADMIN-UIMIG-"])
-			cli.process(["-ar","chpi211,7000,9.1.0.ADMIN-UIMIG-"])
-			cli.process(["-ar","chpi211,8000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","dev-chpi211,5000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","dev-chpi211,6000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","dev-chpi211,7000,9.1.0.ADMIN-UIMIG-"])
+			cli.process(["-ar","dev-chpi211,8000,9.1.0.ADMIN-UIMIG-"])
 			def result = cli.process(["-dr","18;77;100;7000;8000;503;706"])
 			def oldStream = System.out;
 			def buffer = new ByteArrayOutputStream()
@@ -589,7 +589,7 @@ class RevisionCliIntegrationTest extends Specification {
 			oldStream = System.out;
 			buffer = new ByteArrayOutputStream()
 			System.setOut(new PrintStream(buffer))
-			grResult = cli.process(["-gr","chpi211"])
+			grResult = cli.process(["-gr","dev-chpi211"])
 		then:
 			System.setOut(oldStream)
 			revFile.exists()

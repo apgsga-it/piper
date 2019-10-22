@@ -56,7 +56,7 @@
         },
         {
             "name": "Produktion",
-            "target": "CHPI211",
+            "target": "DEV-CHPI211",
             "stages": [
                 {
                     "name": "BuildFor",
@@ -173,11 +173,11 @@
            ]
       },
       {
-           "name": "CHPI211",
+           "name": "DEV-CHPI211",
            "services": [
                   {
                      "type": "it21-db",
-                     "name": "CHPI211",
+                     "name": "DEV-CHPI211",
                      "host": "prod.apgsga.ch"
                   },
                   {
@@ -197,8 +197,8 @@
                   },
                   {
                      "type": "zipFolder",
-                     "name": "it21_chpi211_gui",
-                     "host": "service-CHPI211.apgsga.ch"
+                     "name": "it21_DEV-CHPI211_gui",
+                     "host": "service-DEV-CHPI211.apgsga.ch"
                   }
            ]
       },
