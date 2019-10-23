@@ -19,8 +19,8 @@ public class InstallTargetsTest {
 		Assert.assertTrue(installTargets.size() == 4);
 		Assert.assertTrue(installTargets.remove("dev-dro"));
 		Assert.assertTrue(installTargets.remove("dev-stb"));
-		Assert.assertTrue(installTargets.remove("CHEI212"));
-		Assert.assertTrue(installTargets.remove("CHTI216"));
+		Assert.assertTrue(installTargets.remove("DEV-CHEI212"));
+		Assert.assertTrue(installTargets.remove("DEV-CHTI216"));
 		Assert.assertTrue(installTargets.size() == 0);
 
 	}

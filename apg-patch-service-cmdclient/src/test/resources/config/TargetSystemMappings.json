@@ -2,7 +2,7 @@
     "stageMappings": [ 
         {
             "name": "Entwicklung",
-            "target": "CHEI212",
+            "target": "DEV-CHEI212",
             "stages": [
                 {
                     "name": "startPipelineAndTag",
@@ -20,7 +20,7 @@
         },
         {
             "name": "Informatiktest",
-            "target": "CHEI211",
+            "target": "DEV-CHEI211",
             "stages": [
                 {
                     "name": "BuildFor",
@@ -38,7 +38,7 @@
         },
         {
             "name": "Anwendertest",
-            "target": "CHTI211",
+            "target": "DEV-CHTI211",
             "stages": [
                 {
                     "name": "BuildFor",
@@ -56,7 +56,7 @@
         },
         {
             "name": "Produktion",
-            "target": "dev-chpi211",
+            "target": "DEV-CHPI211",
             "stages": [
                 {
                     "name": "BuildFor",
@@ -75,24 +75,24 @@
     ],
 	
 	"onDemandTarget": [
-		"CHEI212",
-		"CHTI216",
+		"DEV-CHEI212",
+		"DEV-CHTI216",
 		"dev-dro",
 		"dev-stb"
 	],
 	
     "targetInstances": [
        {
-           "name": "CHEI212",
+           "name": "DEV-CHEI212",
            "services": [
                   {
-                     "type": "it21-db",
-                     "name": "CHEI212",
+                     "type": "oracle-db",
+                     "name": "it21-db",
                      "host": "dev.apgsga.ch"
                   },
                   {
-                     "type": "digital-db",
-                     "name": "CHEDIS2",
+                     "type": "oracle-db",
+                     "name": "ds-db",
                      "host": "CHEDIS2.apgsga.ch"
                   },
 				  {
@@ -106,23 +106,23 @@
                      "host": "jadas-e.apgsga.ch"
                   },
                   {
-                     "type": "zipFolder",
-                     "name": "it21_chei212_gui",
-                     "host": "service-CHEI212.apgsga.ch"
+                     "type": "linuxbasedwindowsfilesystem",
+                     "name": "it21_ui",
+                     "host": "service-DEV-CHEI212.apgsga.ch"
                   }
            ]
-      },
+      },	  
       {
-           "name": "CHEI211",
+           "name": "DEV-CHEI211",
            "services": [
                   {
-                     "type": "it21-db",
-                     "name": "CHEI211",
+                     "type": "oracle-db",
+                     "name": "it21-db",
                      "host": "dev.apgsga.ch"
                   },
                   {
                      "type": "digital-db",
-                     "name": "CHEDIS2",
+                     "name": "ds-db",
                      "host": "CHEDIS2.apgsga.ch"
                   },
 				  {
@@ -136,23 +136,23 @@
                      "host": "jadas-e.apgsga.ch"
                   },
                   {
-                     "type": "zipFolder",
-                     "name": "it21_chei211_gui",
-                     "host": "service-CHEI211.apgsga.ch"
+                     "type": "linuxbasedwindowsfilesystem",
+                     "name": "it21_ui",
+                     "host": "service-DEV-CHEI211.apgsga.ch"
                   }
            ]
       },
       {
-           "name": "CHTI211",
+           "name": "DEV-CHTI211",
            "services": [
                   {
-                     "type": "it21-db",
-                     "name": "CHTI211",
+                     "type": "oracle-db",
+                     "name": "it21-db",
                      "host": "test.apgsga.ch"
                   },
                   {
                      "type": "digital-db",
-                     "name": "CHEDIS2",
+                     "name": "ds-db",
                      "host": "CHEDIS2.apgsga.ch"
                   },
 				  {
@@ -166,23 +166,23 @@
                      "host": "jadas-t.apgsga.ch"
                   },
                   {
-                     "type": "zipFolder",
-                     "name": "it21_chti211_gui",
-                     "host": "service-CHTI211.apgsga.ch"
+                     "type": "linuxbasedwindowsfilesystem",
+                     "name": "it21_ui",
+                     "host": "service-DEV-CHTI211.apgsga.ch"
                   }
            ]
       },
       {
-           "name": "dev-chpi211",
+           "name": "DEV-CHPI211",
            "services": [
                   {
-                     "type": "it21-db",
-                     "name": "dev-chpi211",
+                     "type": "oracle-db",
+                     "name": "it21-db",
                      "host": "prod.apgsga.ch"
                   },
                   {
                      "type": "digital-db",
-                     "name": "CHEDIS2",
+                     "name": "ds-db",
                      "host": "CHEDIS2.apgsga.ch"
                   },
 				  {
@@ -196,23 +196,23 @@
                      "host": "jadas-p.apgsga.ch"
                   },
                   {
-                     "type": "zipFolder",
-                     "name": "it21_dev-chpi211_gui",
-                     "host": "service-dev-chpi211.apgsga.ch"
+                     "type": "linuxbasedwindowsfilesystem",
+                     "name": "it21_ui",
+                     "host": "service-DEV-CHPI211.apgsga.ch"
                   }
            ]
       },
       {
-           "name": "CHTI216",
+           "name": "DEV-CHTI216",
            "services": [
                   {
-                     "type": "it21-db",
-                     "name": "CHTI216",
+                     "type": "oracle-db",
+                     "name": "it21-db",
                      "host": "test.apgsga.ch"
                   },
                   {
                      "type": "digital-db",
-                     "name": "CHEDIS2",
+                     "name": "ds-db",
                      "host": "CHEDIS2.apgsga.ch"
                   },
 				  {
@@ -226,9 +226,9 @@
                      "host": "jadas-t.apgsga.ch"
                   },
                   {
-                     "type": "zipFolder",
-                     "name": "it21_chti216_gui",
-                     "host": "service-CHTI211.apgsga.ch"
+                     "type": "linuxbasedwindowsfilesystem",
+                     "name": "it21_ui",
+                     "host": "service-DEV-CHTI211.apgsga.ch"
                   }
            ]
       },
@@ -236,13 +236,13 @@
            "name": "dev-dro",
            "services": [
                   {
-                     "type": "it21-db",
-                     "name": "LIGHT",
+                     "type": "oracle-db",
+                     "name": "it21-db",
                      "host": "dev-dro.light.apgsga.ch"
                   },
                   {
                      "type": "digital-db",
-                     "name": "LIGHT",
+                     "name": "ds-db",
                      "host": "dev-dro.digi.light.apgsga.ch"
                   },
 				  {
@@ -256,8 +256,8 @@
                      "host": "dev-dro.light.apgsga.ch"
                   },
                   {
-                     "type": "zipFolder",
-                     "name": "it21_dev-dro_gui",
+                     "type": "linuxbasedwindowsfilesystem",
+                     "name": "it21_ui",
                      "host": "dev-dro.light.apgsga.ch"
                   }
            ]
@@ -266,13 +266,13 @@
            "name": "dev-stb",
            "services": [
                   {
-                     "type": "it21-db",
-                     "name": "LIGHT",
+                     "type": "oracle-db",
+                     "name": "it21-db",
                      "host": "dev-stb.light.apgsga.ch"
                   },
                   {
                      "type": "digital-db",
-                     "name": "LIGHT",
+                     "name": "ds-db",
                      "host": "dev-stb.digi.light.apgsga.ch"
                   },
 				  {
@@ -286,8 +286,8 @@
                      "host": "dev-stb.light.apgsga.ch"
                   },
                   {
-                     "type": "zipFolder",
-                     "name": "it21_dev-dro_gui",
+                     "type": "linuxbasedwindowsfilesystem",
+                     "name": "it21_ui",
                      "host": "dev-stb.light.apgsga.ch"
                   }
            ]
