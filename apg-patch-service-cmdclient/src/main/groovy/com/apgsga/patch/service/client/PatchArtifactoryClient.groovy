@@ -57,6 +57,7 @@ class PatchArtifactoryClient {
 				def revisionFormatedForSearch = "${it}".substring("${it}".lastIndexOf("-"),"${it}".length())
 				println "Starting to clean Artifact for revision ${it} (revisionFormatedForSearch = ${revisionFormatedForSearch})"
 				removeArtifacts("*${revisionFormatedForSearch}.*", dryRun, [RPM_PATCH_REPO,RELEASE_REPO,DB_PATCH_REPO])
+				removeArtifacts("*${revisionFormatedForSearch}-sources.*", dryRun, [RPM_PATCH_REPO,RELEASE_REPO,DB_PATCH_REPO])
 				println "Done cleaning Artifacts for ${revision}."
 			}
 		}			
