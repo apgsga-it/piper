@@ -21,6 +21,8 @@ public interface Patch extends ServiceMetaData {
 
 	public static final String DB_OBJECTS = "dbObjects";
 
+	public static final String DOCKER_OBJECTS = "dockerObjects";
+
 	public static final String MAVEN_ARTEFACTS = "mavenArtifacts";
 
 	public static final String TAG_NR = "tagNr";
@@ -76,6 +78,12 @@ public interface Patch extends ServiceMetaData {
 	void removeDbObjects(DbObject dbObject);
 
 	void addDbObjects(DbObject dbObject);
+
+	void setDockerObjects(List<DbObject> dbObjects);
+
+	void removeDockerObjects(DbObject dbObject);
+
+	void addDockerObjects(DbObject dbObject);
 
 	List<MavenArtifact> getMavenArtifacts();
 
