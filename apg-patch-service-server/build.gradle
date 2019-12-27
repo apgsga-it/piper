@@ -13,7 +13,7 @@ apply plugin: 'org.springframework.boot'
 
 project.gradle.startParameter.excludedTaskNames.add('startScripts')
 
-description = 'Server, which provides  Patch Functionality through a Restful Controller  '
+description = 'Server , which provides  Patch Functionality through a Restful Controller  '
 jar {
 	baseName = 'apg-patch-service-server'
 	//exclude('**/application.properties')
