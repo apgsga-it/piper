@@ -3,12 +3,13 @@ plugins {
    	id 'application'
   	id 'nebula.ospackage' version '4.10.0'
   	id 'ivy-publish'  
-  
+	id 'org.springframework.boot' version '1.5.9.RELEASE'
 }
 apply plugin: 'nebula.ospackage'
 apply plugin: 'groovy'
 apply plugin: 'ivy-publish'
 apply plugin: 'com.jfrog.artifactory'
+apply plugin: 'org.springframework.boot'
 
 project.gradle.startParameter.excludedTaskNames.add('startScripts')
 
