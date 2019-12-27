@@ -14,7 +14,7 @@ def jsonFile = new File(parent.getFile(), "TargetSystemMappingsMock.json")
 def json = new JsonSlurper().parseText(jsonFile.text)
 def parameter = ['someparameter':'ParameterValue','another':'AnotherValue']
 def stateMap = [:]
-json.targetSystems.find( { a ->  a.stages.find( { stateMap.put("${a.name}${it.toState}","${it.implcls}") })} )
+json.stageMappings.find( { a ->  a.stages.find( { stateMap.put("${a.name}${it.toState}","${it.implcls}") })} )
 stateMap.keySet().forEach({
 	def clx = stateMap.get("${it}")
 	def instance = this.class.classLoader.loadClass(clx).newInstance()

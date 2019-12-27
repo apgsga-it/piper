@@ -170,9 +170,9 @@ class PatchRevisionClient {
 		def targetSystemMappingFile = new File(targetSystemMappingFilePath)
 		assert targetSystemMappingFile.exists() : "${config.config.dir}/${config.target.system.mapping.file.name} does not exist!"
 		def targetSystemMappingAsJson = new JsonSlurper().parse(targetSystemMappingFile)
-		targetSystemMappingAsJson.targetSystems.each{targetSystem ->
-			if(targetSystem.target.equalsIgnoreCase(target)) {
-				isProd = targetSystem.name.equalsIgnoreCase("produktion")
+		targetSystemMappingAsJson.stageMappings.each{stageMapping ->
+			if(stageMapping.target.equalsIgnoreCase(target)) {
+				isProd = stageMapping.name.equalsIgnoreCase("produktion")
 				return // exit closure
 			}
 		}

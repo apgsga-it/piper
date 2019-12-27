@@ -15,7 +15,7 @@ Resource parent = rl.getResource("$configDir")
 def jsonFile = new File(parent.getFile(), "${configFileName}")
 def json = new JsonSlurper().parseText(jsonFile.text)
 def stateMap = [:]
-json.targetSystems.find( { a ->  a.stages.find( { stateMap.put("${a.name}${it.toState}",new Expando(targetName:"${a.name}", clsName:"${it.implcls}",stage:"${it.name}",target:"${a.target}"))})} )
+json.stageMappings.find( { a ->  a.stages.find( { stateMap.put("${a.name}${it.toState}",new Expando(targetName:"${a.name}", clsName:"${it.implcls}",stage:"${it.name}",target:"${a.target}"))})} )
 def bean = stateMap.get("${toState}")
 if (bean == null) {
 	throw new RuntimeException("No Valid toState: ${toState}")
