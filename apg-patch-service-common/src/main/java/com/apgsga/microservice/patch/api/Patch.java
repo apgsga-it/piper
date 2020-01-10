@@ -23,6 +23,8 @@ public interface Patch extends ServiceMetaData {
 
 	public static final String MAVEN_ARTEFACTS = "mavenArtifacts";
 
+	public static final String DOCKER_AND_WINDOWS_SERVICES = "dockerAndWindowsServices";
+
 	public static final String TAG_NR = "tagNr";
 
 	public static final String PATCH_TAG = "patchTag";
@@ -36,6 +38,8 @@ public interface Patch extends ServiceMetaData {
 	public static final String INSTALL_ON_EMPTY_MODULES = "installOnEmptyModules";
 	
 	public static final String INSTALL_JADAS_AND_GUI = "installJadasAndGui";
+
+	public static final String INSTALL_DOCKER_AND_WINDOWS_SERVICES = "installDockerAndWindowsServices";
 	
 	public static final String PIPELINE_TASK = "pipeLineTask";
 	
@@ -79,15 +83,23 @@ public interface Patch extends ServiceMetaData {
 
 	List<MavenArtifact> getMavenArtifacts();
 
+	List<String> getDockerAndWindowsServices();
+
 	List<String> getMavenArtifactsAsVcsPath();
 	
 	List<MavenArtifact> getMavenArtifactsToBuild();
 
 	void setMavenArtifacts(List<MavenArtifact> mavenArtifacts);
 
+	void setDockerAndWindowsServices(List<String> dockerAndWindowsServices);
+
 	void removeMavenArtifacts(MavenArtifact mavenArtifact);
 
 	void addMavenArtifacts(MavenArtifact mavenArtifact);
+
+	void removeDockerAndWindowsService(String serviceName);
+
+	void addDockerAndWindowsService(String serviceName);
 
 	public Integer getTagNr();
 
@@ -134,6 +146,10 @@ public interface Patch extends ServiceMetaData {
 	public boolean getInstallJadasAndGui();
 	
 	public void setInstallJadasAndGui();
+
+	public boolean getInstallDockerAndWindowsServices();
+
+	public void setInstallDockerAndWindowsServices();
 	
 	public String getCurrentTarget();
 	
