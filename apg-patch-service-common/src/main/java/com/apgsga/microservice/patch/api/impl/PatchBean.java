@@ -32,8 +32,8 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	private String runningNr; 
 	private List<DbObject> dbObjects = Lists.newArrayList();
 	private List<MavenArtifact> mavenArtifacts = Lists.newArrayList();
-	private List<String> dockerAndWindowsServices = Lists.newArrayList();
-	private boolean installDockerAndWindowsServices = false;
+	private List<String> dockerServices = Lists.newArrayList();
+	private boolean installDockerServices = false;
 	private boolean installOnEmptyModules = false;
 	private String lastPipelineTask ="";
 	private String currentTarget;
@@ -162,8 +162,8 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	}
 
 	@Override
-	public List<String> getDockerAndWindowsServices() {
-		return dockerAndWindowsServices;
+	public List<String> getDockerServices() {
+		return dockerServices;
 	}
 
 	@Override
@@ -185,10 +185,10 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	}
 
 	@Override
-	public void setDockerAndWindowsServices(List<String> dockerAndWindowsServices) {
-		final Object oldValue = Lists.newArrayList(this.dockerAndWindowsServices);
-		this.dockerAndWindowsServices = dockerAndWindowsServices;
-		firePropertyChangeEvent(DOCKER_AND_WINDOWS_SERVICES, oldValue, dockerAndWindowsServices);
+	public void setDockerServices(List<String> dockerServices) {
+		final Object oldValue = Lists.newArrayList(this.dockerServices);
+		this.dockerServices = dockerServices;
+		firePropertyChangeEvent(DOCKER_SERVICES, oldValue, dockerServices);
 	}
 
 	@Override
@@ -206,17 +206,17 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	}
 
 	@Override
-	public void removeDockerAndWindowsService(String serviceName) {
-		final Object oldValue = Lists.newArrayList(this.dockerAndWindowsServices);
-		dockerAndWindowsServices.remove(serviceName);
-		firePropertyChangeAndMarkDirty(DOCKER_AND_WINDOWS_SERVICES, oldValue, dockerAndWindowsServices);
+	public void removeDockerService(String serviceName) {
+		final Object oldValue = Lists.newArrayList(this.dockerServices);
+		dockerServices.remove(serviceName);
+		firePropertyChangeAndMarkDirty(DOCKER_SERVICES, oldValue, dockerServices);
 	}
 
 	@Override
-	public void addDockerAndWindowsService(String serviceName) {
-		final Object oldValue = Lists.newArrayList(this.dockerAndWindowsServices);
-		dockerAndWindowsServices.add(serviceName);
-		firePropertyChangeAndMarkDirty(DOCKER_AND_WINDOWS_SERVICES, oldValue, dockerAndWindowsServices);
+	public void addDockerService(String serviceName) {
+		final Object oldValue = Lists.newArrayList(this.dockerServices);
+		dockerServices.add(serviceName);
+		firePropertyChangeAndMarkDirty(DOCKER_SERVICES, oldValue, dockerServices);
 	}
 
 	@Override
@@ -360,12 +360,12 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	}
 
 	@Override
-	public boolean getInstallDockerAndWindowsServices() {
-		return !dockerAndWindowsServices.isEmpty();
+	public boolean getInstallDockerServices() {
+		return !dockerServices.isEmpty();
 	}
 
 	@Override
-	public void setInstallDockerAndWindowsServices() {
+	public void setInstallDockerServices() {
 		// Intentionally empty
 	}
 
