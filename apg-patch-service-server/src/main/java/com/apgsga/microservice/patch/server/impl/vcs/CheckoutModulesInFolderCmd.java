@@ -10,6 +10,6 @@ public class CheckoutModulesInFolderCmd extends PatchVcsCommand {
 
     @Override
     protected String[] getFristPart() {
-        return new String[] {  "-f", "checkout", "-r", patchTag, additionalOptions , String.join(" ", modules)};
+        return new String[] {  "-f", "checkout", "-r", patchTag, additionalOptions};
     }
 }

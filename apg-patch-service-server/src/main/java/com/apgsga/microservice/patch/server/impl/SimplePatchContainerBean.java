@@ -262,7 +262,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		vcsCmdRunner.preProcess();
 		List<DbObject> dbObjects = Lists.newArrayList();
 		for (String dbModule : dbModules.getDbModules()) {
-			String coFolder = "/tmp/jhe/" + dbModule;
+			String coFolder = System.getProperty("java.io.tmpdir") + "/" + dbModule;
 			String addOptions = "-d " + coFolder;
 
 			if (dbModule.contains(searchString)) {
