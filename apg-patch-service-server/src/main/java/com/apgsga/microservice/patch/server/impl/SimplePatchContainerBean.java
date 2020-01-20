@@ -263,9 +263,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		List<DbObject> dbObjects = Lists.newArrayList();
 		for (String dbModule : dbModules.getDbModules()) {
 			String coFolder = "/tmp/jhe/" + dbModule;
+			String addOptions = "-d " + coFolder;
 
 			if (dbModule.contains(searchString)) {
-				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), Lists.newArrayList(dbModule), coFolder));
+				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(),patch.getProdBranch(), Lists.newArrayList(dbModule), addOptions));
 				try {
 					DbObject dbObject = new DbObjectBean();
 					Files.walk(Paths.get(new File(coFolder).toURI())).map(x -> x.toString()).filter(f -> f.endsWith(".sql")).forEach(f -> {

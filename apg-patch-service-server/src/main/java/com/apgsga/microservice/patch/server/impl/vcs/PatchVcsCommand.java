@@ -54,8 +54,8 @@ public abstract class PatchVcsCommand implements VcsCommand {
 		return new SilentCOCvsModuleCmd(cvsBranch, modules, lastPart);
 	}
 
-	public static VcsCommand createCoCvsModuleToDirectoryCmd(String cvsBranch, List<String> modules, String lastPart) {
-		return new CheckoutModulesInFolderCmd(cvsBranch,modules,lastPart);
+	public static VcsCommand createCoCvsModuleToDirectoryCmd(String patchBranch, String prodBranch, List<String> modules, String additionalOptions) {
+		return new CheckoutModulesInFolderCmd(prodBranch,patchBranch,modules,additionalOptions);
 	}
 
 	protected String patchTag;
@@ -76,6 +76,14 @@ public abstract class PatchVcsCommand implements VcsCommand {
 		this.prodBranch = prodBranch;
 		this.modules = modules;
 	}
+
+//	public PatchVcsCommand(String patchBranch, String prodBranch, List<String> modules, String lastPart) {
+//		super();
+//		this.patchTag = patchBranch;
+//		this.prodBranch = prodBranch;
+//		this.modules = modules;
+//		this.lastPart = lastPart;
+//	}
 	
 	public PatchVcsCommand(String cvsBranch, List<String> modules, String lastPart) {
 		super();

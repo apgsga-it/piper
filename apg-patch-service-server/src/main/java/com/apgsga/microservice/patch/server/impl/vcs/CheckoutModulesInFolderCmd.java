@@ -4,12 +4,12 @@ import java.util.List;
 
 public class CheckoutModulesInFolderCmd extends PatchVcsCommand {
 
-    public CheckoutModulesInFolderCmd(String cvsBranch, List<String> modules, String lastPart) {
-        super(cvsBranch, modules, lastPart);
+    public CheckoutModulesInFolderCmd(String prodBranch, String patchBranch, List<String> modules, String additionalOptions) {
+        super(patchBranch,prodBranch, additionalOptions, modules);
     }
 
     @Override
     protected String[] getFristPart() {
-        return new String[] {  "-f", "checkout", "-r", patchTag, "-d", lastPart , String.join(" ", modules)};
+        return new String[] {  "-f", "checkout", "-r", patchTag, additionalOptions , String.join(" ", modules)};
     }
 }
