@@ -1,6 +1,9 @@
 package com.apgsga.microservice.patch.server.impl;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -240,6 +243,41 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					dbObjects.add(dbObject);
 				});
 
+			}
+		}
+		vcsCmdRunner.postProcess();
+		return dbObjects;
+	}
+
+	@Override
+	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString) {
+		Patch patch = findById(patchNumber);
+		Asserts.notNull(patch, "SimplePatchContainerBean.listAllObjectsChangedForDbModule.patch.exists.assert",
+				new Object[] { patchNumber });
+		DbModules dbModules = repo.getDbModules();
+		if (dbModules == null) {
+			return Lists.newArrayList();
+		}
+		final VcsCommandRunner vcsCmdRunner = vcsCommandRunnerFactory.create();
+		vcsCmdRunner.preProcess();
+		List<DbObject> dbObjects = Lists.newArrayList();
+		for (String dbModule : dbModules.getDbModules()) {
+			String coFolder = "/tmp/jhe/" + dbModule;
+
+			if (dbModule.contains(searchString)) {
+				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), Lists.newArrayList(dbModule), coFolder));
+				try {
+					DbObject dbObject = new DbObjectBean();
+					Files.walk(Paths.get(new File(coFolder).toURI())).map(x -> x.toString()).filter(f -> f.endsWith(".sql")).forEach(f -> {
+						dbObject.setModuleName(dbModule);
+						dbObject.setFileName("name=" + f);
+						dbObject.setFilePath("path=" + f);
+						dbObjects.add(dbObject);
+					});
+				} catch (IOException e) {
+					// TODO JHE: Really what we want to do here ?
+					throw new RuntimeException(e);
+				}
 			}
 		}
 		vcsCmdRunner.postProcess();

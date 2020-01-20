@@ -54,6 +54,10 @@ public abstract class PatchVcsCommand implements VcsCommand {
 		return new SilentCOCvsModuleCmd(cvsBranch, modules, lastPart);
 	}
 
+	public static VcsCommand createCoCvsModuleToDirectoryCmd(String cvsBranch, List<String> modules, String lastPart) {
+		return new CheckoutModulesInFolderCmd(cvsBranch,modules,lastPart);
+	}
+
 	protected String patchTag;
 
 	protected String prodBranch;

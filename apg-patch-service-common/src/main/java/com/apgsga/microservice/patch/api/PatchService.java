@@ -57,8 +57,15 @@ public interface PatchService {
 	 * @param searchString
 	 * @return List of changed DbObjects 
 	 */
-	public List<DbObject> listAllObjectsChangedForDbModule(String patchNummber,String searchString); 
-	
+	public List<DbObject> listAllObjectsChangedForDbModule(String patchNummber,String searchString);
+
+	/**
+	 * List all SQL Resource for module name matching searchString
+	 * @param patchNumber
+	 * @param searchString
+	 * @return List of DbObjects
+	 */
+	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString);
 
 	/**
 	 * Retrieves a Patch by Id. 
