@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -262,17 +263,17 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		vcsCmdRunner.preProcess();
 		List<DbObject> dbObjects = Lists.newArrayList();
 		for (String dbModule : dbModules.getDbModules()) {
-			String coFolder = System.getProperty("java.io.tmpdir") + "/" + dbModule;
+			String coFolder = System.getProperty("java.io.tmpdir") + "/" + dbModule + "_" + new Date().getTime();
 			String addOptions = "-d " + coFolder;
 
 			if (dbModule.contains(searchString)) {
-				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(),patch.getProdBranch(), Lists.newArrayList(dbModule), addOptions));
+				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), patch.getProdBranch(), Lists.newArrayList(dbModule), addOptions));
 				try {
 					Files.walk(Paths.get(new File(coFolder).toURI())).map(x -> x.toString()).filter(f -> f.endsWith(".sql")).forEach(f -> {
 						DbObject dbObject = new DbObjectBean();
 						dbObject.setModuleName(dbModule);
-						dbObject.setFileName(FilenameUtils.getName(f));
-						dbObject.setFilePath(FilenameUtils.getPath(f));
+						dbObject.setFileName(FilenameUtils.getName(f.replaceFirst(System.getProperty("java.io.tmpdir") + "/", "")));
+						dbObject.setFilePath(FilenameUtils.getPath(f.replaceFirst(System.getProperty("java.io.tmpdir") + "/", "")));
 						dbObjects.add(dbObject);
 					});
 				} catch (IOException e) {
@@ -280,6 +281,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					// TODO JHE: Really what we want to do here ?
 					throw new RuntimeException(e);
 				}
+			}
+
+			try {
+				Files.deleteIfExists(Paths.get(new File(coFolder).toURI()));
+			} catch (IOException e) {
+				LOGGER.warn("Error while trying to delete temp directory where DB Module has been checked-out. Error was: " + e.getMessage());
 			}
 		}
 		vcsCmdRunner.postProcess();
