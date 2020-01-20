@@ -268,14 +268,15 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			if (dbModule.contains(searchString)) {
 				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(),patch.getProdBranch(), Lists.newArrayList(dbModule), addOptions));
 				try {
-					DbObject dbObject = new DbObjectBean();
 					Files.walk(Paths.get(new File(coFolder).toURI())).map(x -> x.toString()).filter(f -> f.endsWith(".sql")).forEach(f -> {
+						DbObject dbObject = new DbObjectBean();
 						dbObject.setModuleName(dbModule);
-						dbObject.setFileName("name=" + f);
-						dbObject.setFilePath("path=" + f);
+						dbObject.setFileName(FilenameUtils.getName(f));
+						dbObject.setFilePath(FilenameUtils.getPath(f));
 						dbObjects.add(dbObject);
 					});
 				} catch (IOException e) {
+					LOGGER.error("Error while looping through SQL Files. Error was: " + e.getMessage());
 					// TODO JHE: Really what we want to do here ?
 					throw new RuntimeException(e);
 				}
