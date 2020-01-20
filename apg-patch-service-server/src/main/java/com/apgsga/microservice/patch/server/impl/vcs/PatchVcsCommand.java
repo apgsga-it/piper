@@ -76,14 +76,6 @@ public abstract class PatchVcsCommand implements VcsCommand {
 		this.prodBranch = prodBranch;
 		this.modules = modules;
 	}
-
-//	public PatchVcsCommand(String patchBranch, String prodBranch, List<String> modules, String lastPart) {
-//		super();
-//		this.patchTag = patchBranch;
-//		this.prodBranch = prodBranch;
-//		this.modules = modules;
-//		this.lastPart = lastPart;
-//	}
 	
 	public PatchVcsCommand(String cvsBranch, List<String> modules, String lastPart) {
 		super();
