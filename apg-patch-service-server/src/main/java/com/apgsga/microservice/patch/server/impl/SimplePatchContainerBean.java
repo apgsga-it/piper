@@ -265,17 +265,18 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		List<DbObject> dbObjects = Lists.newArrayList();
 		for (String dbModule : dbModules.getDbModules()) {
 			String suffixForCoFolder = "_" + new Date().getTime();
-			String coFolder = System.getProperty("java.io.tmpdir") + "/" + dbModule + suffixForCoFolder;
-			String addOptions = "-d " + coFolder;
+			String tmpDir = System.getProperty("java.io.tmpdir");
+			String coFolder = tmpDir + "/" + dbModule + suffixForCoFolder;
+			String additionalOptions = "-d " + coFolder;
 
 			if (dbModule.contains(searchString)) {
-				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), patch.getProdBranch(), Lists.newArrayList(dbModule), addOptions));
+				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), patch.getProdBranch(), Lists.newArrayList(dbModule), additionalOptions));
 				try {
 					Files.walk(Paths.get(new File(coFolder).toURI())).map(x -> x.toString()).filter(f -> f.endsWith(".sql")).forEach(f -> {
 						DbObject dbObject = new DbObjectBean();
 						dbObject.setModuleName(dbModule);
-						dbObject.setFileName(FilenameUtils.getName(f.replaceFirst(suffixForCoFolder,"").replaceFirst(System.getProperty("java.io.tmpdir") + "/", "")));
-						dbObject.setFilePath(FilenameUtils.getPath(f.replaceFirst(suffixForCoFolder,"").replaceFirst(System.getProperty("java.io.tmpdir") + "/", "")));
+						dbObject.setFileName(FilenameUtils.getName(f.replaceFirst(suffixForCoFolder,"").replaceFirst(tmpDir + "/", "")));
+						dbObject.setFilePath(FilenameUtils.getPath(f.replaceFirst(suffixForCoFolder,"").replaceFirst(tmpDir + "/", "")));
 						dbObjects.add(dbObject);
 					});
 				} catch (IOException e) {
