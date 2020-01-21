@@ -1,9 +1,15 @@
 package com.apgsga.microservice.patch.server.impl;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -244,6 +250,56 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		}
 		vcsCmdRunner.postProcess();
 		return dbObjects;
+	}
+
+	@Override
+	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString) {
+		Patch patch = findById(patchNumber);
+		Asserts.notNull(patch, "SimplePatchContainerBean.listAllObjectsChangedForDbModule.patch.exists.assert",
+				new Object[] { patchNumber });
+		DbModules dbModules = repo.getDbModules();
+		if (dbModules == null) {
+			return Lists.newArrayList();
+		}
+		final VcsCommandRunner vcsCmdRunner = vcsCommandRunnerFactory.create();
+		vcsCmdRunner.preProcess();
+		List<DbObject> dbObjects = Lists.newArrayList();
+		for (String dbModule : dbModules.getDbModules()) {
+			String suffixForCoFolder = "_" + new Date().getTime();
+			String tmpDir = System.getProperty("java.io.tmpdir");
+			String coFolder = tmpDir + "/" + dbModule + suffixForCoFolder;
+			String additionalOptions = "-d " + coFolder;
+
+			if (dbModule.contains(searchString)) {
+				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), patch.getProdBranch(), Lists.newArrayList(dbModule), additionalOptions));
+				try {
+					Files.walk(Paths.get(new File(coFolder).toURI())).map(x -> x.toString()).filter(f -> matchAllDbFilterSuffix(f)).forEach(f -> {
+						DbObject dbObject = new DbObjectBean();
+						dbObject.setModuleName(dbModule);
+						dbObject.setFileName(FilenameUtils.getName(f.replaceFirst(suffixForCoFolder,"").replaceFirst(tmpDir + "/", "")));
+						dbObject.setFilePath(FilenameUtils.getPath(f.replaceFirst(suffixForCoFolder,"").replaceFirst(tmpDir + "/", "")));
+						dbObjects.add(dbObject);
+					});
+				} catch (IOException e) {
+					LOGGER.error("Error while looping through SQL Files. Error was: " + e.getMessage());
+					// TODO JHE: Really what we want to do here ?
+					throw new RuntimeException(e);
+				}
+			}
+
+			try {
+				FileUtils.deleteDirectory(new File(coFolder));
+			} catch (IOException e) {
+				LOGGER.warn("Error while trying to delete temp directory where DB Module has been checked-out. Error was: " + e.getMessage());
+			}
+		}
+		vcsCmdRunner.postProcess();
+		return dbObjects;
+	}
+
+	private boolean matchAllDbFilterSuffix(String s) {
+		String[] suffix = {".sql",".doc",".docm",".docx",".dot",".dotm",".dotx",".dpdmp",".dtd",".gif",".jpeg",".jpg",".pdf",".png",".rtf",".txt",".wsdl",".xlt",".xml",".xsl",".xslt"};
+		return Arrays.stream(suffix).anyMatch(entry -> s.endsWith(entry));
 	}
 
 	@Override
