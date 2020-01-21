@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -272,7 +273,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			if (dbModule.contains(searchString)) {
 				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), patch.getProdBranch(), Lists.newArrayList(dbModule), additionalOptions));
 				try {
-					Files.walk(Paths.get(new File(coFolder).toURI())).map(x -> x.toString()).filter(f -> f.endsWith(".sql")).forEach(f -> {
+					Files.walk(Paths.get(new File(coFolder).toURI())).map(x -> x.toString()).filter(f -> matchAllDbFilterSuffix(f)).forEach(f -> {
 						DbObject dbObject = new DbObjectBean();
 						dbObject.setModuleName(dbModule);
 						dbObject.setFileName(FilenameUtils.getName(f.replaceFirst(suffixForCoFolder,"").replaceFirst(tmpDir + "/", "")));
@@ -294,6 +295,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		}
 		vcsCmdRunner.postProcess();
 		return dbObjects;
+	}
+
+	private boolean matchAllDbFilterSuffix(String s) {
+		String[] suffix = {".sql",".doc",".docm",".docx",".dot",".dotm",".dotx",".dpdmp",".dtd",".gif",".jpeg",".jpg",".pdf",".png",".rtf",".txt",".wsdl",".xlt",".xml",".xsl",".xslt"};
+		return Arrays.stream(suffix).anyMatch(entry -> s.endsWith(entry));
 	}
 
 	@Override
