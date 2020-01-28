@@ -92,6 +92,13 @@ public class MicroServicePatchController implements PatchService {
 		return patchService.listAllSqlObjectsForDbModule(patchNumber,searchString);
 	}
 
+	@RequestMapping(value = "/listAllDbObjects/{id}/{search}/{username}", method = RequestMethod.GET)
+	@ResponseBody
+	@Override
+	public List<DbObject> listAllSqlObjectsForDbModule(@PathVariable("id") String patchNumber, @PathVariable("search") String searchString, @PathVariable("username") String username) {
+		return patchService.listAllSqlObjectsForDbModule(patchNumber,searchString,username);
+	}
+
 	@RequestMapping(value = "/listMavenArtifacts/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	public List<MavenArtifact> listMavenArtifacts(@PathVariable("id") String patchId) {

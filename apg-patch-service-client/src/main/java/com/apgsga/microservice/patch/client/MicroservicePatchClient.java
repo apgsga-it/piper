@@ -143,6 +143,16 @@ public class MicroservicePatchClient implements PatchService {
 	}
 
 	@Override
+	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString, String username) {
+		Map<String, String> params = Maps.newHashMap();
+		params.put("id", patchNumber);
+		params.put("search", searchString);
+		params.put("username", username);
+		DbObject[] result = restTemplate.getForObject(getRestBaseUri() + LIST_ALL_DBOBJECTS, DbObject[].class, params);
+		return Lists.newArrayList(result);
+	}
+
+	@Override
 	public List<MavenArtifact> listMavenArtifacts(Patch patch) {
 		Map<String, Object> params = Maps.newHashMap();
 		params.put("id", patch.getPatchNummer());

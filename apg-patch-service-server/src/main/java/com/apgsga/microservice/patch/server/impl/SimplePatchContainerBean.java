@@ -253,7 +253,18 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
+	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString, String username) {
+		String suffixForCoFolder = username + "_" + new Date().getTime();
+		return doListAllSqlObjectsForDbModule(patchNumber, searchString, suffixForCoFolder);
+	}
+
+	@Override
 	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString) {
+		String suffixForCoFolder = "_" + new Date().getTime();
+		return doListAllSqlObjectsForDbModule(patchNumber, searchString, suffixForCoFolder);
+	}
+
+	private List<DbObject> doListAllSqlObjectsForDbModule(String patchNumber, String searchString, String suffixForCoFolder) {
 		Patch patch = findById(patchNumber);
 		Asserts.notNull(patch, "SimplePatchContainerBean.listAllObjectsChangedForDbModule.patch.exists.assert",
 				new Object[] { patchNumber });
@@ -265,9 +276,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		vcsCmdRunner.preProcess();
 		List<DbObject> dbObjects = Lists.newArrayList();
 		for (String dbModule : dbModules.getDbModules()) {
-			String suffixForCoFolder = "_" + new Date().getTime();
+			String tempSubFolderName= "apgapg_patch_ui_temp_";
 			String tmpDir = System.getProperty("java.io.tmpdir");
-			String coFolder = tmpDir + "/" + dbModule + suffixForCoFolder;
+			String coFolder = tmpDir + "/" + tempSubFolderName + suffixForCoFolder + "/" + dbModule;
 			String additionalOptions = "-d " + coFolder;
 
 			if (dbModule.contains(searchString)) {
