@@ -15,12 +15,12 @@ if [ "$1" = "1" ]; then
 fi
 
 sudoFile="/etc/sudoers.d/apg-patch-service-server"
-if [-d "$sudoFile"]; then
-  echo "$sudoFile already exists"
-else
-  echo "Creating $sudoFile"
-  echo "Defaults:apg-patch-service-server !requiretty" >> $sudoFile
-  echo "apg-patch-service-server ALL= (root) NOPASSWD: /bin/rm -Rf /tmp/apg_patch_ui_temp*" >> $sudoFile
+if [ -e "$sudoFile" ]; then
+  echo "$sudoFile already exists. It will be deleted and newly created."
+  rm $sudoFile
 fi
+echo "Creating $sudoFile"
+echo "Defaults:apg-patch-service-server !requiretty" >> $sudoFile
+echo "apg-patch-service-server ALL= (root) NOPASSWD: /bin/rm -Rf /tmp/apg_patch_ui_temp*" >> $sudoFile
 
 exit 0
