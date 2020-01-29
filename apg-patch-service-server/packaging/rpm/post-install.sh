@@ -16,13 +16,5 @@ if [ "$1" = "2" ]; then
 	echo "Starting apg-patch-service-server"
 	systemctl start apg-patch-service-server
 fi
-sudoFile="/etc/sudoers.d/apg-patch-service-server"
-if [-d "$sudoFile"]; then
-  echo "$sudoFile already exists"
-else
-  echo "Creating $sudoFile"
-  echo "Defaults:apg-patch-service-server !requiretty" >> sudoFile
-  echo "apg-patch-service-server ALL= (root) NOPASSWD: /bin/rm -Rf /tmp/apg_patch_ui_temp*" >> sudoFile
-fi
 
 exit 0

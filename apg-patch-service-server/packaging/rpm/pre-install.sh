@@ -14,4 +14,13 @@ if [ "$1" = "1" ]; then
 	/usr/sbin/useradd -r -m -c "apg-patch-service-server user" apg-patch-service-server -g apg-patch-service-server 2> /dev/null || :
 fi
 
+sudoFile="/etc/sudoers.d/apg-patch-service-server"
+if [-d "$sudoFile"]; then
+  echo "$sudoFile already exists"
+else
+  echo "Creating $sudoFile"
+  echo "Defaults:apg-patch-service-server !requiretty" >> $sudoFile
+  echo "apg-patch-service-server ALL= (root) NOPASSWD: /bin/rm -Rf /tmp/apg_patch_ui_temp*" >> $sudoFile
+fi
+
 exit 0
