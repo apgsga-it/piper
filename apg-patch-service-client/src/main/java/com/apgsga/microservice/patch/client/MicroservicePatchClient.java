@@ -136,7 +136,7 @@ public class MicroservicePatchClient implements PatchService {
 	}
 
 	@Override
-	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString) {
+	public List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString) {
 		Map<String, String> params = Maps.newHashMap();
 		params.put("id", patchNumber);
 		params.put("search", searchString);
@@ -145,7 +145,7 @@ public class MicroservicePatchClient implements PatchService {
 	}
 
 	@Override
-	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString, String username) {
+	public List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString, String username) {
 		Map<String, String> params = Maps.newHashMap();
 		params.put("id", patchNumber);
 		params.put("search", searchString);

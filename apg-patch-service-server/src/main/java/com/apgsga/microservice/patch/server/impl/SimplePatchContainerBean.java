@@ -254,14 +254,14 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString, String username) {
+	public List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString, String username) {
 		String suffixForCoFolder = username + "_" + new Date().getTime();
 		LOGGER.info("Searching all DB Objects for user " + username);
 		return doListAllSqlObjectsForDbModule(patchNumber, searchString, suffixForCoFolder);
 	}
 
 	@Override
-	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString) {
+	public List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString) {
 		String suffixForCoFolder = String.valueOf(new Date().getTime());
 		LOGGER.info("Searching all DB Objects without any specific user");
 		return doListAllSqlObjectsForDbModule(patchNumber, searchString, suffixForCoFolder);

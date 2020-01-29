@@ -65,7 +65,7 @@ public interface PatchService {
 	 * @param searchString
 	 * @return List of DbObjects
 	 */
-	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString);
+	public List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString);
 
 	/**
 	 * List all SQL Resource for module name matching searchString. Temporary checkout will be done in a folder specific for the given username
@@ -73,7 +73,7 @@ public interface PatchService {
 	 * @param searchString
 	 * @return List of DbObjects
 	 */
-	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString, String username);
+	public List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString, String username);
 
 	/**
 	 * Retrieves a Patch by Id. 
