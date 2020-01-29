@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -302,9 +303,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			}
 
 			try {
-				FileUtils.forceDelete(new File(coFolder));
+				// JHE: We need to respect the "sudo" privileges, therefore, a Fileutils.deleteFolder won't work ...
+				Process p = Runtime.getRuntime().exec("sudo /bin/rm -Rf " + coFolder);
+				if(!p.waitFor(20, TimeUnit.SECONDS)) {
+					LOGGER.warn("Deleting the temporary checkout folder (" + coFolder + ") took too long, it can be that the folder has not been deleted.");
+				}
 				LOGGER.info(coFolder + " has been correctly deleted");
-			} catch (IOException e) {
+			} catch (Exception e) {
 				LOGGER.warn("Error while trying to delete temp directory where DB Module has been checked-out. Error was: " + e.getMessage());
 			}
 		}
