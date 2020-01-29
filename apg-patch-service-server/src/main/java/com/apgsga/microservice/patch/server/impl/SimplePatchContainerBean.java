@@ -302,7 +302,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			}
 
 			try {
-				FileUtils.deleteDirectory(new File(coFolder));
+				FileUtils.forceDelete(new File(coFolder));
 				LOGGER.info(coFolder + " has been correctly deleted");
 			} catch (IOException e) {
 				LOGGER.warn("Error while trying to delete temp directory where DB Module has been checked-out. Error was: " + e.getMessage());
