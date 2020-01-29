@@ -255,12 +255,14 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString, String username) {
 		String suffixForCoFolder = username + "_" + new Date().getTime();
+		LOGGER.info("Searching all DB Objects for user " + username);
 		return doListAllSqlObjectsForDbModule(patchNumber, searchString, suffixForCoFolder);
 	}
 
 	@Override
 	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString) {
-		String suffixForCoFolder = "_" + new Date().getTime();
+		String suffixForCoFolder = String.valueOf(new Date().getTime());
+		LOGGER.info("Searching all DB Objects without any specific user");
 		return doListAllSqlObjectsForDbModule(patchNumber, searchString, suffixForCoFolder);
 	}
 
@@ -276,12 +278,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		vcsCmdRunner.preProcess();
 		List<DbObject> dbObjects = Lists.newArrayList();
 		for (String dbModule : dbModules.getDbModules()) {
-			String tempSubFolderName= "apgapg_patch_ui_temp_";
+			String tempSubFolderName= "apg_patch_ui_temp_";
 			String tmpDir = System.getProperty("java.io.tmpdir");
-			String coFolder = tmpDir + "/" + tempSubFolderName + suffixForCoFolder + "/" + dbModule;
+			String coFolder = tmpDir + "/" + tempSubFolderName + suffixForCoFolder;
 			String additionalOptions = "-d " + coFolder;
 
 			if (dbModule.contains(searchString)) {
+				LOGGER.info("Temporary checkout folder for listing all DB Objects will be: " + coFolder);
 				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), patch.getProdBranch(), Lists.newArrayList(dbModule), additionalOptions));
 				try {
 					Files.walk(Paths.get(new File(coFolder).toURI())).map(x -> x.toString()).filter(f -> matchAllDbFilterSuffix(f)).forEach(f -> {
@@ -300,6 +303,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 			try {
 				FileUtils.deleteDirectory(new File(coFolder));
+				LOGGER.info(coFolder + " has been correctly deleted");
 			} catch (IOException e) {
 				LOGGER.warn("Error while trying to delete temp directory where DB Module has been checked-out. Error was: " + e.getMessage());
 			}
