@@ -92,7 +92,7 @@ public class MicroServicePatchController implements PatchService {
 		return patchService.listAllSqlObjectsForDbModule(patchNumber,searchString);
 	}
 
-	@RequestMapping(value = "/listAllDbObjects/{id}/{search}/{username}", method = RequestMethod.GET)
+	@RequestMapping(value = "/listAllDbObjectsForUser/{id}/{search}/{username}", method = RequestMethod.GET)
 	@ResponseBody
 	@Override
 	public List<DbObject> listAllSqlObjectsForDbModule(@PathVariable("id") String patchNumber, @PathVariable("search") String searchString, @PathVariable("username") String username) {
