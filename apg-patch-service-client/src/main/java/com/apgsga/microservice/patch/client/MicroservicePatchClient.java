@@ -41,6 +41,8 @@ public class MicroservicePatchClient implements PatchService {
 
 	private static final String LIST_ALL_DBOBJECTS = "/listAllDbObjects/{id}/{search}";
 
+	private static final String LIST_ALL_DBOBJECTS_FOR_USER = "/listAllDbObjectsForUser/{id}/{search}/{username}";
+
 	private static final String LIST_INSTALLTARGETS = "/listInstallationTargets/{requestingTarget}";
 
 	private static final String REMOVE = "/remove";
@@ -148,7 +150,7 @@ public class MicroservicePatchClient implements PatchService {
 		params.put("id", patchNumber);
 		params.put("search", searchString);
 		params.put("username", username);
-		DbObject[] result = restTemplate.getForObject(getRestBaseUri() + LIST_ALL_DBOBJECTS, DbObject[].class, params);
+		DbObject[] result = restTemplate.getForObject(getRestBaseUri() + LIST_ALL_DBOBJECTS_FOR_USER, DbObject[].class, params);
 		return Lists.newArrayList(result);
 	}
 
