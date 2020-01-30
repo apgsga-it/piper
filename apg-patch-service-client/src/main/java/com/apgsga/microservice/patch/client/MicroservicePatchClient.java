@@ -41,6 +41,8 @@ public class MicroservicePatchClient implements PatchService {
 
 	private static final String LIST_ALL_DBOBJECTS = "/listAllDbObjects/{id}/{search}";
 
+	private static final String LIST_ALL_DBOBJECTS_FOR_USER = "/listAllDbObjectsForUser/{id}/{search}/{username}";
+
 	private static final String LIST_INSTALLTARGETS = "/listInstallationTargets/{requestingTarget}";
 
 	private static final String REMOVE = "/remove";
@@ -134,11 +136,21 @@ public class MicroservicePatchClient implements PatchService {
 	}
 
 	@Override
-	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString) {
+	public List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString) {
 		Map<String, String> params = Maps.newHashMap();
 		params.put("id", patchNumber);
 		params.put("search", searchString);
 		DbObject[] result = restTemplate.getForObject(getRestBaseUri() + LIST_ALL_DBOBJECTS, DbObject[].class, params);
+		return Lists.newArrayList(result);
+	}
+
+	@Override
+	public List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString, String username) {
+		Map<String, String> params = Maps.newHashMap();
+		params.put("id", patchNumber);
+		params.put("search", searchString);
+		params.put("username", username);
+		DbObject[] result = restTemplate.getForObject(getRestBaseUri() + LIST_ALL_DBOBJECTS_FOR_USER, DbObject[].class, params);
 		return Lists.newArrayList(result);
 	}
 

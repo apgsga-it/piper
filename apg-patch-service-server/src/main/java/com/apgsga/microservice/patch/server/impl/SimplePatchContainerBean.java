@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -253,7 +254,20 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public List<DbObject> listAllSqlObjectsForDbModule(String patchNumber, String searchString) {
+	public List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString, String username) {
+		String suffixForCoFolder = username + "_" + new Date().getTime();
+		LOGGER.info("Searching all DB Objects for user " + username);
+		return doListAllSqlObjectsForDbModule(patchNumber, searchString, suffixForCoFolder);
+	}
+
+	@Override
+	public List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString) {
+		String suffixForCoFolder = String.valueOf(new Date().getTime());
+		LOGGER.info("Searching all DB Objects without any specific user");
+		return doListAllSqlObjectsForDbModule(patchNumber, searchString, suffixForCoFolder);
+	}
+
+	private List<DbObject> doListAllSqlObjectsForDbModule(String patchNumber, String searchString, String suffixForCoFolder) {
 		Patch patch = findById(patchNumber);
 		Asserts.notNull(patch, "SimplePatchContainerBean.listAllObjectsChangedForDbModule.patch.exists.assert",
 				new Object[] { patchNumber });
@@ -265,19 +279,19 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		vcsCmdRunner.preProcess();
 		List<DbObject> dbObjects = Lists.newArrayList();
 		for (String dbModule : dbModules.getDbModules()) {
-			String suffixForCoFolder = "_" + new Date().getTime();
-			String tmpDir = System.getProperty("java.io.tmpdir");
-			String coFolder = tmpDir + "/" + dbModule + suffixForCoFolder;
-			String additionalOptions = "-d " + coFolder;
-
 			if (dbModule.contains(searchString)) {
+				String tempSubFolderName= "apg_patch_ui_temp_";
+				String tmpDir = System.getProperty("java.io.tmpdir");
+				String coFolder = tmpDir + "/" + tempSubFolderName + suffixForCoFolder;
+				String additionalOptions = "-d " + coFolder;
+				LOGGER.info("Temporary checkout folder for listing all DB Objects will be: " + coFolder);
 				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), patch.getProdBranch(), Lists.newArrayList(dbModule), additionalOptions));
 				try {
 					Files.walk(Paths.get(new File(coFolder).toURI())).map(x -> x.toString()).filter(f -> matchAllDbFilterSuffix(f)).forEach(f -> {
 						DbObject dbObject = new DbObjectBean();
 						dbObject.setModuleName(dbModule);
-						dbObject.setFileName(FilenameUtils.getName(f.replaceFirst(suffixForCoFolder,"").replaceFirst(tmpDir + "/", "")));
-						dbObject.setFilePath(FilenameUtils.getPath(f.replaceFirst(suffixForCoFolder,"").replaceFirst(tmpDir + "/", "")));
+						dbObject.setFileName(FilenameUtils.getName(f.replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "")));
+						dbObject.setFilePath(dbModule + "/" + FilenameUtils.getPath(f.replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "").replaceFirst(tempSubFolderName, "")));
 						dbObjects.add(dbObject);
 					});
 				} catch (IOException e) {
@@ -285,12 +299,17 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					// TODO JHE: Really what we want to do here ?
 					throw new RuntimeException(e);
 				}
-			}
 
-			try {
-				FileUtils.deleteDirectory(new File(coFolder));
-			} catch (IOException e) {
-				LOGGER.warn("Error while trying to delete temp directory where DB Module has been checked-out. Error was: " + e.getMessage());
+				try {
+					// JHE: We need to respect the "sudo" privileges, therefore, a Fileutils.deleteFolder won't work ...
+					Process p = Runtime.getRuntime().exec("sudo /bin/rm -Rf " + coFolder);
+					if (!p.waitFor(20, TimeUnit.SECONDS)) {
+						LOGGER.warn("Deleting the temporary checkout folder (" + coFolder + ") took too long, it can be that the folder has not been deleted.");
+					}
+					LOGGER.info(coFolder + " has been correctly deleted");
+				} catch (Exception e) {
+					LOGGER.warn("Error while trying to delete temp directory where DB Module has been checked-out. Error was: " + e.getMessage());
+				}
 			}
 		}
 		vcsCmdRunner.postProcess();
