@@ -287,13 +287,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				LOGGER.info("Temporary checkout folder for listing all DB Objects will be: " + coFolder);
 				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), patch.getProdBranch(), Lists.newArrayList(dbModule), additionalOptions));
 
-				System.out.println("Result of createCoCvsModuleToDirectoryCmd");
-				System.out.println("=========================================");
+				LOGGER.info("Result of createCoCvsModuleToDirectoryCmd");
+				LOGGER.info("=========================================");
 				result.forEach(r -> {
-					System.out.println(r);
+					LOGGER.info(r);
 				});
-				System.out.println("=========================================");
-				System.out.println("DONE - Result of createCoCvsModuleToDirectoryCmd");
+				LOGGER.info("=========================================");
+				LOGGER.info("DONE - Result of createCoCvsModuleToDirectoryCmd");
 				try {
 					Files.walk(Paths.get(new File(coFolder).toURI())).map(x -> x.toString()).filter(f -> matchAllDbFilterSuffix(f)).forEach(f -> {
 						DbObject dbObject = new DbObjectBean();
