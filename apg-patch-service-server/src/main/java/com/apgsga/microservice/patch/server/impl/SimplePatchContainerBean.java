@@ -286,36 +286,17 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				String additionalOptions = "-d " + coFolder;
 				LOGGER.info("Temporary checkout folder for listing all DB Objects will be: " + coFolder);
 				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), patch.getProdBranch(), Lists.newArrayList(dbModule), additionalOptions));
-
-				LOGGER.info("Result of createCoCvsModuleToDirectoryCmd");
-				LOGGER.info("=========================================");
 				result.forEach(r -> {
-					LOGGER.info(r);
-					LOGGER.info("moduleName : " + dbModule);
 					int startIndex = r.indexOf("U ")+"U ".length();
 					String pathToResourceName = r.substring(startIndex, r.length()).trim().replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "");
-					LOGGER.info("pathToResourceName : " + pathToResourceName);
-					LOGGER.info("suffixForCoFolder : " + suffixForCoFolder);
-					LOGGER.info("tmpDir : " + tmpDir);
-					LOGGER.info("tempSubFolderName : " + tempSubFolderName);
-					LOGGER.info("FileName   : " + FilenameUtils.getName(pathToResourceName));
-					LOGGER.info("FilePath   : " + dbModule + "/" + FilenameUtils.getPath(pathToResourceName));
-				});
-				LOGGER.info("=========================================");
-				LOGGER.info("DONE - Result of createCoCvsModuleToDirectoryCmd");
-				try {
-					Files.walk(Paths.get(new File(coFolder).toURI())).map(x -> x.toString()).filter(f -> matchAllDbFilterSuffix(f)).forEach(f -> {
+					if(matchAllDbFilterSuffix(pathToResourceName)) {
 						DbObject dbObject = new DbObjectBean();
 						dbObject.setModuleName(dbModule);
-						dbObject.setFileName(FilenameUtils.getName(f.replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "")));
-						dbObject.setFilePath(dbModule + "/" + FilenameUtils.getPath(f.replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "").replaceFirst(tempSubFolderName, "")));
+						dbObject.setFileName(FilenameUtils.getName(pathToResourceName));
+						dbObject.setFilePath(dbModule + "/" + FilenameUtils.getPath(pathToResourceName));
 						dbObjects.add(dbObject);
-					});
-				} catch (IOException e) {
-					LOGGER.error("Error while looping through SQL Files. Error was: " + e.getMessage());
-					// TODO JHE: Really what we want to do here ?
-					throw new RuntimeException(e);
-				}
+					}
+				});
 
 				try {
 					// JHE: We need to respect the "sudo" privileges, therefore, a Fileutils.deleteFolder won't work ...
