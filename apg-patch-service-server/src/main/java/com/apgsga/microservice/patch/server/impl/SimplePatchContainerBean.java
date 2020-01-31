@@ -293,8 +293,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					LOGGER.info(r);
 					LOGGER.info("moduleName : " + dbModule);
 					int startIndex = r.indexOf("SimplePatchContainerBean  : U")+"SimplePatchContainerBean  : U".length();
-					LOGGER.info("FileName   : " + FilenameUtils.getName(r.substring(startIndex,r.length()).trim().replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "")));
-					LOGGER.info("FilePath   : " + dbModule + "/" + FilenameUtils.getPath(r.substring(startIndex,r.length()).trim().replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "").replaceFirst(tempSubFolderName, "")));
+					String pathToResourceName = r.substring(startIndex, r.length()).trim();
+					LOGGER.info("FileName   : " + FilenameUtils.getName(pathToResourceName.replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "")));
+					LOGGER.info("pathToResourceName : " + pathToResourceName);
+					LOGGER.info("suffixForCoFolder : " + suffixForCoFolder);
+					LOGGER.info("tmpDir : " + tmpDir);
+					LOGGER.info("tempSubFolderName : " + tempSubFolderName);
+					LOGGER.info("FilePath   : " + dbModule + "/" + FilenameUtils.getPath(pathToResourceName.replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "").replaceFirst(tempSubFolderName, "")));
 				});
 				LOGGER.info("=========================================");
 				LOGGER.info("DONE - Result of createCoCvsModuleToDirectoryCmd");
