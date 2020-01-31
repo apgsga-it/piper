@@ -300,6 +300,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					}
 				});
 
+
+				LOGGER.info("Following folder will tentatively be deleted via SSH : " + coFolder);
 				List<String> rmResult = vcsCmdRunner.run(PatchVcsCommand.createRmTmpCheckoutFolder(coFolder));
 
 				LOGGER.info("Result of createRmTmpCheckoutFolder");
