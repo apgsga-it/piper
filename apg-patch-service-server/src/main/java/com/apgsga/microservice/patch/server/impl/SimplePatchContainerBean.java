@@ -292,7 +292,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				result.forEach(r -> {
 					LOGGER.info(r);
 					LOGGER.info("moduleName : " + dbModule);
-					int startIndex = r.indexOf("SimplePatchContainerBean  : U")+"SimplePatchContainerBean  : U".length();
+					int startIndex = r.indexOf("U ")+"U ".length();
 					String pathToResourceName = r.substring(startIndex, r.length()).trim().replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "");
 					LOGGER.info("pathToResourceName : " + pathToResourceName);
 					LOGGER.info("suffixForCoFolder : " + suffixForCoFolder);
