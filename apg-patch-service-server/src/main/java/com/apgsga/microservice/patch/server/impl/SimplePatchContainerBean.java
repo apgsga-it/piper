@@ -287,6 +287,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				LOGGER.info("Temporary checkout folder for listing all DB Objects will be: " + coFolder);
 				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), patch.getProdBranch(), Lists.newArrayList(dbModule), additionalOptions));
 				result.forEach(r -> {
+					// JHE : In production, cvs is on a separated server, therefore we can't checkout, and parse the local result ...
+					//		 We rely on the output given back from the CVS command, might not be the most robust solution :( ... but so far ok for a function which is not crucial.
 					int startIndex = r.indexOf("U ")+"U ".length();
 					String pathToResourceName = r.substring(startIndex, r.length()).trim().replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "");
 					if(matchAllDbFilterSuffix(pathToResourceName)) {
