@@ -295,7 +295,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 						DbObject dbObject = new DbObjectBean();
 						dbObject.setModuleName(dbModule);
 						dbObject.setFileName(FilenameUtils.getName(pathToResourceName));
-						dbObject.setFilePath(dbModule + "/" + FilenameUtils.getPath(pathToResourceName));
+						dbObject.setFilePath(dbModule + "/" + FilenameUtils.getPath(pathToResourceName.replaceFirst(tempSubFolderName,"")));
 						dbObjects.add(dbObject);
 					}
 				});
