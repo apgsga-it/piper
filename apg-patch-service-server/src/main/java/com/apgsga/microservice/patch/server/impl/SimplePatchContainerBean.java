@@ -300,16 +300,26 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					}
 				});
 
-				try {
-					// JHE: We need to respect the "sudo" privileges, therefore, a Fileutils.deleteFolder won't work ...
-					Process p = Runtime.getRuntime().exec("sudo /bin/rm -Rf " + coFolder);
-					if (!p.waitFor(20, TimeUnit.SECONDS)) {
-						LOGGER.warn("Deleting the temporary checkout folder (" + coFolder + ") took too long, it can be that the folder has not been deleted.");
-					}
-					LOGGER.info(coFolder + " has been correctly deleted");
-				} catch (Exception e) {
-					LOGGER.warn("Error while trying to delete temp directory where DB Module has been checked-out. Error was: " + e.getMessage());
-				}
+				List<String> rmResult = vcsCmdRunner.run(PatchVcsCommand.createRmTmpCheckoutFolder(coFolder));
+
+				LOGGER.info("Result of createRmTmpCheckoutFolder");
+				LOGGER.info("===================================");
+				rmResult.forEach(r -> {
+					System.out.println(r);
+				});
+				LOGGER.info("===================================");
+				LOGGER.info("DONE - Result of createRmTmpCheckoutFolder");
+
+//				try {
+//					// JHE: We need to respect the "sudo" privileges, therefore, a Fileutils.deleteFolder won't work ...
+//					Process p = Runtime.getRuntime().exec("sudo /bin/rm -Rf " + coFolder);
+//					if (!p.waitFor(20, TimeUnit.SECONDS)) {
+//						LOGGER.warn("Deleting the temporary checkout folder (" + coFolder + ") took too long, it can be that the folder has not been deleted.");
+//					}
+//					LOGGER.info(coFolder + " has been correctly deleted");
+//				} catch (Exception e) {
+//					LOGGER.warn("Error while trying to delete temp directory where DB Module has been checked-out. Error was: " + e.getMessage());
+//				}
 			}
 		}
 		vcsCmdRunner.postProcess();

@@ -10,6 +10,7 @@ public class CheckoutModulesInFolderCmd extends PatchVcsCommand {
 
     @Override
     protected String[] getFristPart() {
+        // TODO JHE: Test if a export instead of checkout would work, might have better performance
         return new String[] {  "-f", "checkout", "-r", patchTag, additionalOptions};
     }
 }

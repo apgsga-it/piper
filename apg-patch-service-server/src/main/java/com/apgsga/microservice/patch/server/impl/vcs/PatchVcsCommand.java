@@ -58,6 +58,11 @@ public abstract class PatchVcsCommand implements VcsCommand {
 		return new CheckoutModulesInFolderCmd(prodBranch,patchBranch,modules,additionalOptions);
 	}
 
+	public static VcsCommand createRmTmpCheckoutFolder(String coFolder) {
+		return new RmTmpCheckoutFolder(coFolder);
+	}
+
+
 	protected String patchTag;
 
 	protected String prodBranch;
