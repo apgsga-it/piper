@@ -55,8 +55,13 @@ public abstract class PatchVcsCommand implements VcsCommand {
 	}
 
 	public static VcsCommand createCoCvsModuleToDirectoryCmd(String patchBranch, String prodBranch, List<String> modules, String additionalOptions) {
-		return new CheckoutModulesInFolderCmd(prodBranch,patchBranch,modules,additionalOptions);
+		return new ExportModulesInFolderCmd(prodBranch,patchBranch,modules,additionalOptions);
 	}
+
+	public static VcsCommand createRmTmpCheckoutFolder(String coFolder) {
+		return new RmTmpCheckoutFolder(coFolder);
+	}
+
 
 	protected String patchTag;
 

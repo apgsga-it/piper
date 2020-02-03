@@ -286,39 +286,23 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				String additionalOptions = "-d " + coFolder;
 				LOGGER.info("Temporary checkout folder for listing all DB Objects will be: " + coFolder);
 				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), patch.getProdBranch(), Lists.newArrayList(dbModule), additionalOptions));
-				try {
-					Files.walk(Paths.get(new File(coFolder).toURI())).map(x -> x.toString()).filter(f -> matchAllDbFilterSuffix(f)).forEach(f -> {
-						DbObject dbObject = new DbObjectBean();
-						dbObject.setModuleName(dbModule);
-						dbObject.setFileName(FilenameUtils.getName(f.replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "")));
-						dbObject.setFilePath(dbModule + "/" + FilenameUtils.getPath(f.replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "").replaceFirst(tempSubFolderName, "")));
-						dbObjects.add(dbObject);
-					});
-				} catch (IOException e) {
-					LOGGER.error("Error while looping through SQL Files. Error was: " + e.getMessage());
-					// TODO JHE: Really what we want to do here ?
-					throw new RuntimeException(e);
-				}
+				result.forEach(r -> {
+					// JHE : In production, cvs is on a separated server, therefore we can't checkout, and parse the local result ...
+					//		 We rely on the output given back from the CVS command, might not be the most robust solution :( ... but so far ok for a function which is not crucial.
+					int startIndex = r.indexOf("U ")+"U ".length();
+					String pathToResourceName = r.substring(startIndex, r.length()).trim().replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "");
+					DbObject dbObject = new DbObjectBean();
+					dbObject.setModuleName(dbModule);
+					dbObject.setFileName(FilenameUtils.getName(pathToResourceName));
+					dbObject.setFilePath(dbModule + "/" + FilenameUtils.getPath(pathToResourceName.replaceFirst(tempSubFolderName,"")));
+					dbObjects.add(dbObject);
+				});
 
-				try {
-					// JHE: We need to respect the "sudo" privileges, therefore, a Fileutils.deleteFolder won't work ...
-					Process p = Runtime.getRuntime().exec("sudo /bin/rm -Rf " + coFolder);
-					if (!p.waitFor(20, TimeUnit.SECONDS)) {
-						LOGGER.warn("Deleting the temporary checkout folder (" + coFolder + ") took too long, it can be that the folder has not been deleted.");
-					}
-					LOGGER.info(coFolder + " has been correctly deleted");
-				} catch (Exception e) {
-					LOGGER.warn("Error while trying to delete temp directory where DB Module has been checked-out. Error was: " + e.getMessage());
-				}
+				List<String> rmResult = vcsCmdRunner.run(PatchVcsCommand.createRmTmpCheckoutFolder(coFolder));
 			}
 		}
 		vcsCmdRunner.postProcess();
 		return dbObjects;
-	}
-
-	private boolean matchAllDbFilterSuffix(String s) {
-		String[] suffix = {".sql",".doc",".docm",".docx",".dot",".dotm",".dotx",".dpdmp",".dtd",".gif",".jpeg",".jpg",".pdf",".png",".rtf",".txt",".wsdl",".xlt",".xml",".xsl",".xslt"};
-		return Arrays.stream(suffix).anyMatch(entry -> s.endsWith(entry));
 	}
 
 	@Override
