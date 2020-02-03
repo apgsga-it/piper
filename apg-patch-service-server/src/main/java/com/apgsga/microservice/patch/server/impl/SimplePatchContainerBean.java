@@ -291,13 +291,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					//		 We rely on the output given back from the CVS command, might not be the most robust solution :( ... but so far ok for a function which is not crucial.
 					int startIndex = r.indexOf("U ")+"U ".length();
 					String pathToResourceName = r.substring(startIndex, r.length()).trim().replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "");
-					if(matchAllDbFilterSuffix(pathToResourceName)) {
-						DbObject dbObject = new DbObjectBean();
-						dbObject.setModuleName(dbModule);
-						dbObject.setFileName(FilenameUtils.getName(pathToResourceName));
-						dbObject.setFilePath(dbModule + "/" + FilenameUtils.getPath(pathToResourceName.replaceFirst(tempSubFolderName,"")));
-						dbObjects.add(dbObject);
-					}
+					DbObject dbObject = new DbObjectBean();
+					dbObject.setModuleName(dbModule);
+					dbObject.setFileName(FilenameUtils.getName(pathToResourceName));
+					dbObject.setFilePath(dbModule + "/" + FilenameUtils.getPath(pathToResourceName.replaceFirst(tempSubFolderName,"")));
+					dbObjects.add(dbObject);
 				});
 
 				List<String> rmResult = vcsCmdRunner.run(PatchVcsCommand.createRmTmpCheckoutFolder(coFolder));
@@ -305,11 +303,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		}
 		vcsCmdRunner.postProcess();
 		return dbObjects;
-	}
-
-	private boolean matchAllDbFilterSuffix(String s) {
-		String[] suffix = {".sql",".doc",".docm",".docx",".dot",".dotm",".dotx",".dpdmp",".dtd",".gif",".jpeg",".jpg",".pdf",".png",".rtf",".txt",".wsdl",".xlt",".xml",".xsl",".xslt"};
-		return Arrays.stream(suffix).anyMatch(entry -> s.endsWith(entry));
 	}
 
 	@Override
