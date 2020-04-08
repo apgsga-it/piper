@@ -1,16 +1,10 @@
 package com.apgsga.microservice.patch.server.impl;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,7 +32,6 @@ import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.PatchService;
 import com.apgsga.microservice.patch.api.SearchCondition;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
-import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsClient;
@@ -104,7 +97,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public List<MavenArtifact> listMavenArtifacts(Patch patch, SearchCondition filter) {
 		ServiceMetaData data = repo.findServiceByName(patch.getServiceName());
-		List<MavenArtifact> mavenArtFromStarterList = null;
+		List<MavenArtifact> mavenArtFromStarterList;
 		try {
 			mavenArtFromStarterList = am.getAllDependencies(
 					data.getBaseVersionNumber() + "." + data.getRevisionMnemoPart() + "-SNAPSHOT", filter);
@@ -240,7 +233,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 						.filter(s -> s.startsWith("Index: "))
 						.map(s -> s.substring(7)).collect(Collectors.toList());
 				files.stream().forEach(file -> {
-					DbObject dbObject = new DbObjectBean();
+					DbObject dbObject = new DbObject();
 					dbObject.setModuleName(dbModule);
 					dbObject.setFileName(FilenameUtils.getName(file));
 					dbObject.setFilePath(FilenameUtils.getPath(file));
@@ -291,7 +284,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					//		 We rely on the output given back from the CVS command, might not be the most robust solution :( ... but so far ok for a function which is not crucial.
 					int startIndex = r.indexOf("U ")+"U ".length();
 					String pathToResourceName = r.substring(startIndex, r.length()).trim().replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "");
-					DbObject dbObject = new DbObjectBean();
+					DbObject dbObject = new DbObject();
 					dbObject.setModuleName(dbModule);
 					dbObject.setFileName(FilenameUtils.getName(pathToResourceName));
 					dbObject.setFilePath(dbModule + "/" + FilenameUtils.getPath(pathToResourceName.replaceFirst(tempSubFolderName,"")));
@@ -419,7 +412,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		List<String> patchFiles = repo.listFiles("Patch");
 		// Filter out "PatchLog" files, and extract Id from patch name
 		List<String> patchFilesReduced = patchFiles.stream().filter(pat -> !pat.contains("PatchLog")).map(pat -> pat.substring(pat.indexOf("Patch")+"Patch".length(),pat.indexOf(".json"))).collect(Collectors.toList());
-		return patchFilesReduced.stream().filter(p -> containsObject(p,objectName)).map(p -> findById(p)).collect(Collectors.toList());
+		return patchFilesReduced.stream().filter(p -> containsObject(p,objectName)).map(this::findById).collect(Collectors.toList());
 	}
 	
 	private boolean containsObject(String patchNumber, String objectName) {

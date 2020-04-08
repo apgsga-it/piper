@@ -16,7 +16,7 @@
 	],
 	"mavenArtifacts": [
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "dao-domainwerte",
 			"groupId": "com.affichage",
 			"name": "com.affichage.it21.domainwerte",
@@ -24,7 +24,7 @@
 			"dependencyLevel": 61
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "adgis-api-dao",
 			"groupId": "com.affichage.it21.adgis",
 			"name": "com.affichage.it21.adgis.api.dao",
@@ -32,7 +32,7 @@
 			"dependencyLevel": 43
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "adgis-api-ui",
 			"groupId": "com.affichage.it21.adgis",
 			"name": "com.affichage.it21.adgis.api.ui",
@@ -40,7 +40,7 @@
 			"dependencyLevel": 42
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "adgis-common-dao",
 			"groupId": "com.affichage.it21.adgis",
 			"name": "com.affichage.it21.adgis.common.dao",
@@ -48,7 +48,7 @@
 			"dependencyLevel": 41
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "common-rep-dao",
 			"groupId": "com.apgsga.common.rep",
 			"name": "com.apgsga.common.rep.dao",
@@ -56,7 +56,7 @@
 			"dependencyLevel": 38
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "common-rep-ui",
 			"groupId": "com.apgsga.common.rep",
 			"name": "com.apgsga.common.rep.ui",
@@ -64,7 +64,7 @@
 			"dependencyLevel": 37
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "geo-lib",
 			"groupId": "com.affichage.geo.lib",
 			"name": "com.affichage.geo.lib",
@@ -72,7 +72,7 @@
 			"dependencyLevel": 31
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "it21-ui",
 			"groupId": "com.affichage.it21",
 			"name": "com.affichage.it21.ui",
@@ -80,7 +80,7 @@
 			"dependencyLevel": 29
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "gp-dao",
 			"groupId": "com.affichage.it21.gp",
 			"name": "com.affichage.it21.gp.dao",
@@ -88,7 +88,7 @@
 			"dependencyLevel": 25
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "pe-dao",
 			"groupId": "com.affichage.it21.pe",
 			"name": "com.affichage.it21.pe.dao",
@@ -96,7 +96,7 @@
 			"dependencyLevel": 13
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "gp-ui",
 			"groupId": "com.affichage.it21.gp",
 			"name": "com.affichage.it21.gp.ui",
@@ -104,7 +104,7 @@
 			"dependencyLevel": 12
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "zentraldispo-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.dao",
@@ -112,7 +112,7 @@
 			"dependencyLevel": 12
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "flaechen-dao",
 			"groupId": "com.affichage.it21.fm",
 			"name": "com.affichage.it21.fm.flaechen.dao",
@@ -120,7 +120,7 @@
 			"dependencyLevel": 9
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "ds-dao",
 			"groupId": "com.affichage.ibds.ds",
 			"name": "com.affichage.ibds.ds.dao",
@@ -128,7 +128,7 @@
 			"dependencyLevel": 8
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "lo-dao",
 			"groupId": "com.affichage.it21.lo",
 			"name": "com.affichage.it21.lo.dao",
@@ -136,7 +136,7 @@
 			"dependencyLevel": 7
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "lo-spezial-dao",
 			"groupId": "com.affichage.it21.lo",
 			"name": "com.affichage.it21.lo.spezial.dao",
@@ -144,7 +144,7 @@
 			"dependencyLevel": 7
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "lo-ui",
 			"groupId": "com.affichage.it21.lo",
 			"name": "com.affichage.it21.lo.ui",
@@ -152,7 +152,7 @@
 			"dependencyLevel": 7
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "fm-proc",
 			"groupId": "com.affichage.it21.fm",
 			"name": "com.affichage.it21.fm.proc",
@@ -160,7 +160,7 @@
 			"dependencyLevel": 6
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "lo-module",
 			"groupId": "com.affichage.it21.lo",
 			"name": "com.affichage.it21.lo.module.ui",
@@ -168,7 +168,7 @@
 			"dependencyLevel": 6
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "iz-dao",
 			"groupId": "com.affichage.it21.iz",
 			"name": "com.affichage.it21.iz.dao",
@@ -176,7 +176,7 @@
 			"dependencyLevel": 5
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "bd-dao",
 			"groupId": "com.affichage.it21.bd",
 			"name": "com.affichage.it21.bd.dao",
@@ -184,7 +184,7 @@
 			"dependencyLevel": 4
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "aenv-dao",
 			"groupId": "com.affichage.it21.aenv",
 			"name": "com.affichage.it21.aenv.dao",
@@ -192,7 +192,7 @@
 			"dependencyLevel": 3
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "alog-dao",
 			"groupId": "com.affichage.it21.alog",
 			"name": "com.affichage.it21.alog.dao",
@@ -200,7 +200,7 @@
 			"dependencyLevel": 3
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "apmgmt-dao",
 			"groupId": "com.affichage.it21.apmgmt",
 			"name": "com.affichage.it21.apmgmt.dao",
@@ -208,7 +208,7 @@
 			"dependencyLevel": 3
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "arep-dao",
 			"groupId": "com.affichage.it21.arep",
 			"name": "com.affichage.it21.arep.dao",
@@ -216,7 +216,7 @@
 			"dependencyLevel": 3
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "cm-dao",
 			"groupId": "com.affichage.it21.cm",
 			"name": "com.affichage.it21.cm.dao",
@@ -224,7 +224,7 @@
 			"dependencyLevel": 3
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "dbj-dao",
 			"groupId": "com.affichage.it21.dbj",
 			"name": "com.affichage.it21.dbj.dao",
@@ -232,7 +232,7 @@
 			"dependencyLevel": 3
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "fotomanager",
 			"groupId": "com.affichage.it21.fotomanager",
 			"name": "com.affichage.it21.fotomanager.impl",
@@ -240,7 +240,7 @@
 			"dependencyLevel": 3
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "ibus-dao",
 			"groupId": "com.affichage.it21.ibus",
 			"name": "com.affichage.it21.ibus.dao",
@@ -248,7 +248,7 @@
 			"dependencyLevel": 3
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "ppix-dao",
 			"groupId": "com.affichage.it21.ppix",
 			"name": "com.affichage.it21.ppix.dao",
@@ -256,7 +256,7 @@
 			"dependencyLevel": 3
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "qq-dao",
 			"groupId": "com.affichage.it21.qq",
 			"name": "com.affichage.it21.qq.dao",
@@ -264,7 +264,7 @@
 			"dependencyLevel": 3
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "vk-utils",
 			"groupId": "com.affichage.it21",
 			"name": "com.affichage.it21.vk.utils",
@@ -272,7 +272,7 @@
 			"dependencyLevel": 3
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "xscube-dao",
 			"groupId": "com.affichage.it21.xscube",
 			"name": "com.affichage.it21.xscube.dao",
@@ -280,7 +280,7 @@
 			"dependencyLevel": 3
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "aenv-ui",
 			"groupId": "com.affichage.it21.aenv",
 			"name": "com.affichage.it21.aenv.ui",
@@ -288,7 +288,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "alog-ui",
 			"groupId": "com.affichage.it21.alog",
 			"name": "com.affichage.it21.alog.ui",
@@ -296,7 +296,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "apmgmt-ui",
 			"groupId": "com.affichage.it21.apmgmt",
 			"name": "com.affichage.it21.apmgmt.ui",
@@ -304,7 +304,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "arep-ui",
 			"groupId": "com.affichage.it21.arep",
 			"name": "com.affichage.it21.arep.ui",
@@ -312,7 +312,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "bd-ui",
 			"groupId": "com.affichage.it21.bd",
 			"name": "com.affichage.it21.bd.ui",
@@ -320,7 +320,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "cm-ui",
 			"groupId": "com.affichage.it21.cm",
 			"name": "com.affichage.it21.cm.ui",
@@ -328,7 +328,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "dbj-ui",
 			"groupId": "com.affichage.it21.dbj",
 			"name": "com.affichage.it21.dbj.ui",
@@ -336,7 +336,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "flaechen-ui",
 			"groupId": "com.affichage.it21.fm",
 			"name": "com.affichage.it21.fm.flaechen.ui",
@@ -344,7 +344,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "ibus-ui",
 			"groupId": "com.affichage.it21.ibus",
 			"name": "com.affichage.it21.ibus.ui",
@@ -352,7 +352,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "iz-ui",
 			"groupId": "com.affichage.it21.iz",
 			"name": "com.affichage.it21.iz.ui",
@@ -360,7 +360,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "pm-dao",
 			"groupId": "com.affichage.it21.pm",
 			"name": "com.affichage.it21.pm.dao",
@@ -368,7 +368,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "ppix-ui",
 			"groupId": "com.affichage.it21.ppix",
 			"name": "com.affichage.it21.ppix.ui",
@@ -376,7 +376,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "qq-ui",
 			"groupId": "com.affichage.it21.qq",
 			"name": "com.affichage.it21.qq.ui",
@@ -384,7 +384,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "it21-deckblatt",
 			"groupId": "com.apgsga.it21.reports",
 			"name": "com.affichage.it21.vk.deckblatt.rep",
@@ -392,7 +392,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "faktura-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.faktura.dao",
@@ -400,7 +400,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "vk-ui",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.ui",
@@ -408,7 +408,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "xscube-ui",
 			"groupId": "com.affichage.it21.xscube",
 			"name": "com.affichage.it21.xscube.ui",
@@ -416,7 +416,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "zo-dao",
 			"groupId": "com.affichage.it21.zo",
 			"name": "com.affichage.it21.zo.dao",
@@ -424,7 +424,7 @@
 			"dependencyLevel": 2
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "adgis-component",
 			"groupId": "com.affichage.adgis.component",
 			"name": "com.affichage.adgis.component",
@@ -432,7 +432,7 @@
 			"dependencyLevel": 1
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "fm-ui",
 			"groupId": "com.affichage.it21.fm",
 			"name": "com.affichage.it21.fm.ui",
@@ -440,7 +440,7 @@
 			"dependencyLevel": 1
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "abwicklung-ui",
 			"groupId": "com.affichage.it21.lo",
 			"name": "com.affichage.it21.lo.abwicklung.ui",
@@ -448,7 +448,7 @@
 			"dependencyLevel": 1
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "aushang-ui",
 			"groupId": "com.affichage.it21.lo",
 			"name": "com.affichage.it21.lo.aushang.ui",
@@ -456,7 +456,7 @@
 			"dependencyLevel": 1
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "lager-ui",
 			"groupId": "com.affichage.it21.lo",
 			"name": "com.affichage.it21.lo.lager.ui",
@@ -464,7 +464,7 @@
 			"dependencyLevel": 1
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "planung-ui",
 			"groupId": "com.affichage.it21.lo",
 			"name": "com.affichage.it21.lo.planung.ui",
@@ -472,7 +472,7 @@
 			"dependencyLevel": 1
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "lo-spezial-ui",
 			"groupId": "com.affichage.it21.lo",
 			"name": "com.affichage.it21.lo.spezial.ui",
@@ -480,7 +480,7 @@
 			"dependencyLevel": 1
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "pm-ui",
 			"groupId": "com.affichage.it21.pm",
 			"name": "com.affichage.it21.pm.ui",
@@ -488,7 +488,7 @@
 			"dependencyLevel": 1
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "system-ui",
 			"groupId": "com.affichage.it21.system",
 			"name": "com.affichage.it21.system.ui",
@@ -496,7 +496,7 @@
 			"dependencyLevel": 1
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "faktura-ui",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.faktura.ui",
@@ -504,7 +504,7 @@
 			"dependencyLevel": 1
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "zentraldispo-ui",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.ui",
@@ -512,7 +512,7 @@
 			"dependencyLevel": 1
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "zo-ui",
 			"groupId": "com.affichage.it21.zo",
 			"name": "com.affichage.it21.zo.ui",
@@ -520,7 +520,7 @@
 			"dependencyLevel": 1
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "it21-ui-runtime",
 			"groupId": "com.affichage.it21.ui",
 			"name": "com.affichage.it21.ui.runtime",
@@ -528,7 +528,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "vs-dao",
 			"groupId": "com.affichage.it21.vs",
 			"name": "com.affichage.it21.vs.dao",

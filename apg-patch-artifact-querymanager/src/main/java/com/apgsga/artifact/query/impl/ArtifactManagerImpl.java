@@ -39,7 +39,6 @@ import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.SearchCondition;
-import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -162,7 +161,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	 */
 	@Override
 	public Properties getVersionsProperties(String version)
-			throws DependencyResolutionException, IOException, XmlPullParserException, ArtifactResolutionException {
+			throws ArtifactResolutionException {
 		return getVersionsProperties(loadBomModel(bomGroupId, bomArtefactId, version));
 	}
 
@@ -170,13 +169,12 @@ public class ArtifactManagerImpl implements ArtifactManager {
 			throws ArtifactResolutionException {
 		org.eclipse.aether.artifact.Artifact bom = load(bomGroupId, bomArtefactId, version);
 		Asserts.notNull(bom, "ArtifactManagerImpl.loadBom.assert", new Object[] { bomGroupId, bomArtefactId, version });
-		Model model = null;
 		FileReader fileReader = null;
 		try {
 			MavenXpp3Reader mavenreader = new MavenXpp3Reader();
 			File bomFile = bom.getFile();
 			fileReader = new FileReader(bomFile);
-			model = mavenreader.read(fileReader);
+			Model model = mavenreader.read(fileReader);
 			return model;
 		} catch (IOException | XmlPullParserException e) {
 			LOGGER.error("Error Loading Bom Model", e);
@@ -229,7 +227,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
 	@Override
 	public List<MavenArtifact> getAllDependencies(String serviceVersion, SearchCondition searchFilter)
-			throws IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException {
+			throws ArtifactResolutionException {
 		return getArtifactsWithVersionFromBom(serviceVersion, searchFilter);
 	}
 
@@ -255,7 +253,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 				try {
 					MavenArtifact[] template = mapper.readValue(resource.getInputStream(), MavenArtifact[].class);
 					List<MavenArtifact> templateList = Arrays.asList(template);
-					return artifacts.stream().filter(artifact -> templateList.contains(artifact)).collect(Collectors.toList());
+					return artifacts.stream().filter(templateList::contains).collect(Collectors.toList());
 				} catch (IOException e) {
 					throw ExceptionFactory.createPatchServiceRuntimeException(
 							"ArtifactManagerImpl.getArtifactsWithVersionFromBom.exception",
@@ -274,7 +272,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	 */
 	@Override
 	public List<MavenArtifact> getArtifactsWithNameFromBom(String bomVersion)
-			throws IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException {
+			throws Exception {
 		return getArtifactsWithVersionFromBom(bomVersion, SearchCondition.APPLICATION);
 	}
 
@@ -287,7 +285,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	 */
 	@Override
 	public Map<String, String> getArtifactsWithNameAsMap(String version)
-			throws DependencyResolutionException, IOException, XmlPullParserException, ArtifactResolutionException {
+			throws Exception {
 		List<MavenArtifact> artifacts = getArtifactsWithNameFromBom(version);
 		Map<String, String> artMap = Maps.newHashMap();
 		for (MavenArtifact art : artifacts) {
@@ -299,11 +297,11 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	private static List<MavenArtifact> getArtifacts(Model model) {
 		DependencyManagement dependencyManagement = model.getDependencyManagement();
 		List<Dependency> dmDeps = dependencyManagement.getDependencies();
-		return dmDeps.stream().map(p -> create(p)).collect(Collectors.toList());
+		return dmDeps.stream().map(ArtifactManagerImpl::create).collect(Collectors.toList());
 	}
 
 	public static MavenArtifact create(Dependency dependency) {
-		final MavenArtifactBean art = new MavenArtifactBean();
+		final MavenArtifact art = new MavenArtifact();
 		art.setArtifactId(dependency.getArtifactId());
 		art.setGroupId(dependency.getGroupId());
 		art.setVersion(dependency.getVersion());
@@ -319,7 +317,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
 	private static Properties toProperties(List<MavenArtifact> artifacts) {
 		Properties properties = new Properties();
-		artifacts.stream()
+		artifacts
 				.forEach(art -> properties.put(art.getGroupId() + ":" + art.getArtifactId(), art.getVersion()));
 		return properties;
 	}
@@ -358,7 +356,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	 */
 	@Override
 	public String getArtifactName(String groupId, String artifactId, String version)
-			throws DependencyResolutionException, ArtifactResolutionException, IOException, XmlPullParserException {
+			throws Exception {
 		Model model = loadBomModel(groupId, artifactId, version);
 		return model.getName();
 	}

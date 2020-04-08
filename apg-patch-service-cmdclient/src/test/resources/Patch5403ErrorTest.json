@@ -16,19 +16,19 @@
 			"fileName": "apgops_lib.apg_db_outage_planned.syn.sql",
 			"filePath": "testdbmodule/database/sql/",
 			"moduleName": "testdbmodule",
-			"className": "com.apgsga.microservice.patch.api.impl.DbObjectBean"
+			"className": "com.apgsga.microservice.patch.api.DbObject"
 		},
 		{
 			"fileName": "sys.apg_install_utility.pks.cleanup.sql",
 			"filePath": "testdbmodule/database/sql/",
 			"moduleName": "testdbmodule",
-			"className": "com.apgsga.microservice.patch.api.impl.DbObjectBean"
+			"className": "com.apgsga.microservice.patch.api.DbObject"
 		},
 		{
 			"fileName": "test.sys.apg_install_utility.pks.cleanup.sql",
 			"filePath": "testdbAnotherdbModule/database/sql/",
 			"moduleName": "testdbAnotherdbModule",
-			"className": "com.apgsga.microservice.patch.api.impl.DbObjectBean"
+			"className": "com.apgsga.microservice.patch.api.DbObject"
 		}
 	],
 	"mavenArtifacts": [
@@ -37,7 +37,7 @@
 			"groupId": "com.affichage.it21.vk",
 			"name": null,
 			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean"
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact"
 		}
 	],
 	"className": "com.apgsga.microservice.patch.api.Patch"

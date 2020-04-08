@@ -19,8 +19,6 @@ import com.apgsga.microservice.patch.api.PatchLogDetails;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
-import com.apgsga.microservice.patch.api.impl.PatchLogBean;
-import com.apgsga.microservice.patch.api.impl.PatchLogDetailsBean;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -89,8 +87,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	private <T> T findFile(File f, Class<T> clazz) throws JsonParseException, JsonMappingException, IOException {
+	private <T> T findFile(File f, Class<T> clazz) throws IOException {
 			if (!f.exists()) {
 				return null;
 			}
@@ -117,8 +114,9 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	public List<String> findAllPatchIds() {
 		try {
 			File[] files = storagePath.getFile().listFiles(file -> file.getName().startsWith(PATCH));
-			return Lists.newArrayList(files).stream().map(f -> FilenameUtils.getBaseName(f.getName()).substring(5))
+			final List<String> collect = Lists.newArrayList(files).stream().map(f -> FilenameUtils.getBaseName(f.getName()).substring(5))
 					.collect(Collectors.toList());
+			return collect;
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"FilebasedPatchPersistence.findAllPatchIds.exception", new Object[] { e.getMessage() }, e);
@@ -147,7 +145,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	}
 	
 	private PatchLogDetails createPatchLogDetail(Patch patch) {
-		PatchLogDetails pld = new PatchLogDetailsBean();
+		PatchLogDetails pld = new PatchLogDetails();
 		pld.setLogText(patch.getLogText());
 		pld.setPatchPipelineTask(patch.getCurrentPipelineTask());
 		pld.setTarget(patch.getCurrentTarget());
@@ -156,7 +154,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	}
 
 	private PatchLog createPatchLog(Patch patch) {
-		PatchLogBean pl = new PatchLogBean();
+		PatchLog pl = new PatchLog();
 		pl.setPatchNumber(patch.getPatchNummer());
 		return pl;
 	}
@@ -227,7 +225,8 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	public List<String> listAllFiles() {
 		try {
 			File[] listFiles = storagePath.getFile().listFiles();
-			return Lists.newArrayList(listFiles).stream().map(f -> f.getName()).collect(Collectors.toList());
+			final List<String> collect = Lists.newArrayList(listFiles).stream().map(File::getName).collect(Collectors.toList());
+			return collect;
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"FilebasedPatchPersistence.listAllFiles.exception", new Object[] { e.getMessage() }, e);
@@ -239,7 +238,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		try {
 			File[] listFiles = storagePath.getFile().listFiles();
 			return Lists.newArrayList(listFiles).stream().filter(f -> f.getName().startsWith(prefix))
-					.map(f -> f.getName()).collect(Collectors.toList());
+					.map(File::getName).collect(Collectors.toList());
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.listFiles.exception",
 					new Object[] { e.getMessage(), prefix }, e);

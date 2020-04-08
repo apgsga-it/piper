@@ -27,10 +27,7 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.api.ServicesMetaData;
-import com.apgsga.microservice.patch.api.impl.DbObjectBean;
-import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
-import com.apgsga.microservice.patch.api.impl.ServiceMetaDataBean;
-import com.apgsga.microservice.patch.api.impl.ServicesMetaDataBean;
+import com.apgsga.microservice.patch.api.MavenArtifact;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource(properties = { "dblocation=db", "dbworkdir=work" })
@@ -92,7 +89,7 @@ public class FilebasedPersistenceTest {
 		assertNotNull(result);
 		result.setBaseVersionNumber("XXXX");
 		List<DbObject> dbOList = Lists.newArrayList();
-		dbOList.add(new DbObjectBean("FileName1", "FilePath1"));
+		dbOList.add(new DbObject("FileName1", "FilePath1"));
 		result.setDbObjects(dbOList);
 		repo.savePatch(result);
 		Patch upDatedresult = repo.findById("5402");
@@ -119,32 +116,32 @@ public class FilebasedPersistenceTest {
 		repo.saveDbModules(intialLoad);
 		DbModules dbModules = repo.getDbModules();
 		List<String> dbModulesRead = dbModules.getDbModules();
-		assertTrue(dbModulesRead.size() == 2);
-		dbModulesRead.forEach(m -> {
+		assertEquals(2, dbModulesRead.size());
+		for (String m : dbModulesRead) {
 			assertTrue(m.equals("testdbmodule") || m.equals("testdbAnotherdbModule"));
-		});
+		}
 	}
 
 	@Test
 	public void testServicesMetaData() {
 		List<ServiceMetaData> serviceList = Lists.newArrayList();
-		MavenArtifactBean it21UiStarter = new MavenArtifactBean();
+		MavenArtifact it21UiStarter = new MavenArtifact();
 		it21UiStarter.setArtifactId("it21ui-app-starter");
 		it21UiStarter.setGroupId("com.apgsga.it21.ui.mdt");
 		it21UiStarter.setName("it21ui-app-starter");
 
-		MavenArtifactBean jadasStarter = new MavenArtifactBean();
+		MavenArtifact jadasStarter = new MavenArtifact();
 		jadasStarter.setArtifactId("jadas-app-starter");
 		jadasStarter.setGroupId("com.apgsga.it21.ui.mdt");
 		jadasStarter.setName("jadas-app-starter");
 
-		final ServiceMetaData it21Ui = new ServiceMetaDataBean("It21Ui", "it21_release_9_1_0_admin_uimig", "9.1.0",
+		final ServiceMetaData it21Ui = new ServiceMetaData("It21Ui", "it21_release_9_1_0_admin_uimig", "9.1.0",
 				"ADMIN-UIMIG");
 		serviceList.add(it21Ui);
-		final ServiceMetaData someOtherService = new ServiceMetaDataBean("SomeOtherService",
+		final ServiceMetaData someOtherService = new ServiceMetaData("SomeOtherService",
 				"it21_release_9_1_0_some_tag", "9.1.0", "SOME-TAG");
 		serviceList.add(someOtherService);
-		final ServicesMetaData data = new ServicesMetaDataBean();
+		final ServicesMetaData data = new ServicesMetaData();
 		data.setServicesMetaData(serviceList);
 		repo.saveServicesMetaData(data);
 		ServicesMetaData serviceData = repo.getServicesMetaData();

@@ -1,15 +1,15 @@
 {
-	"className": "com.apgsga.microservice.patch.api.impl.ServicesMetaDataBean",
+	"className": "com.apgsga.microservice.patch.api.ServicesMetaData",
 	"servicesMetaData": [
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.ServiceMetaDataBean",
+			"className": "com.apgsga.microservice.patch.api.ServiceMetaData",
 			"serviceName": "It21Ui",
 			"microServiceBranch": "it21_release_9_1_0_admin_uimig",
 			"baseVersionNumber": "9.1.0",
 			"revisionMnemoPart": "ADMIN-UIMIG"
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.ServiceMetaDataBean",
+			"className": "com.apgsga.microservice.patch.api.ServiceMetaData",
 			"serviceName": "SomeOtherService",
 			"microServiceBranch": "it21_release_9_1_0_some_tag",
 			"baseVersionNumber": "9.1.0",

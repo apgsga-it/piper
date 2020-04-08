@@ -1,5 +1,6 @@
 package com.apgsga.microservice.patch.server;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -24,8 +25,6 @@ import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.api.impl.DbObjectBean;
-import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutor;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
@@ -51,7 +50,7 @@ public class MicroServicePatchServerTest {
 	private PatchActionExecutorFactory patchActionFactory;
 
 	@Before
-	public void setUp() throws IOException {
+	public void setUp()  {
 		repo.clean();
 	}
 
@@ -61,8 +60,8 @@ public class MicroServicePatchServerTest {
 		patch.setPatchNummer("SomeUnqiueNumber1");
 		patchService.save(patch);
 		Patch result = patchService.findById("SomeUnqiueNumber1");
-		Assert.assertNotNull(result);
-		Assert.assertEquals(patch, result);
+		assertNotNull(result);
+		assertEquals(patch, result);
 	}
 	
 	@Test
@@ -74,7 +73,7 @@ public class MicroServicePatchServerTest {
 			fail();
 		} catch(PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("SimplePatchContainerBean.log.patchisnull", e.getMessageKey());
+			assertEquals("SimplePatchContainerBean.log.patchisnull", e.getMessageKey());
 		}
 	}
 	
@@ -89,8 +88,8 @@ public class MicroServicePatchServerTest {
 		patchService.save(p);
 		patchService.log(p);
 		PatchLog result = patchService.findPatchLogById(patchNumber);
-		Assert.assertNotNull(result);
-		Assert.assertTrue(result.getLogDetails().size() == 1);
+		assertNotNull(result);
+		assertTrue(result.getLogDetails().size() == 1);
 	}
 	
 	@Test
@@ -104,8 +103,8 @@ public class MicroServicePatchServerTest {
 		patchService.save(p);
 		patchService.log(p);
 		PatchLog result = patchService.findPatchLogById(patchNumber);
-		Assert.assertNotNull(result);
-		Assert.assertTrue(result.getLogDetails().size() == 1);
+		assertNotNull(result);
+		assertTrue(result.getLogDetails().size() == 1);
 		p.setCurrentPipelineTask("Build");
 		p.setLogText("done");
 		patchService.save(p);
@@ -115,7 +114,7 @@ public class MicroServicePatchServerTest {
 		patchService.save(p);
 		patchService.log(p);
 		result = patchService.findPatchLogById(patchNumber);
-		Assert.assertTrue(result.getLogDetails().size() == 3);
+		assertTrue(result.getLogDetails().size() == 3);
 	}
 
 	@Test
@@ -124,11 +123,11 @@ public class MicroServicePatchServerTest {
 		patch.setPatchNummer("SomeUnqiueNumber2");
 		patchService.save(patch);
 		Patch result = patchService.findById("SomeUnqiueNumber2");
-		Assert.assertNotNull(result);
-		Assert.assertEquals(patch, result);
+		assertNotNull(result);
+		assertEquals(patch, result);
 		patchService.remove(result);
 		result = patchService.findById("SomeUnqiueNumber2");
-		Assert.assertNull(result);
+		assertNull(result);
 	}
 
 	@Test
@@ -138,14 +137,14 @@ public class MicroServicePatchServerTest {
 		patch.setServiceName("It21ui");
 		patch.setMicroServiceBranch("SomeBaseBranch");
 		patch.setDbPatchBranch("SomePatchBranch");
-		patch.addDbObjects(new DbObjectBean("FileName1", "FilePath1"));
-		patch.addDbObjects(new DbObjectBean("FileName2", "FilePath2"));
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId1", "GroupId1", "Version1"));
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId2", "GroupId2", "Version2"));
+		patch.addDbObjects(new DbObject("FileName1", "FilePath1"));
+		patch.addDbObjects(new DbObject("FileName2", "FilePath2"));
+		patch.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
+		patch.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
 		patchService.save(patch);
 		Patch result = patchService.findById("SomeUnqiueNumber3");
-		Assert.assertNotNull(result);
-		Assert.assertEquals(patch, result);
+		assertNotNull(result);
+		assertEquals(patch, result);
 	}
 
 	@Test
@@ -154,8 +153,8 @@ public class MicroServicePatchServerTest {
 		patch.setPatchNummer("SomeUnqiueNumber3");
 		patch.setServiceName("It21ui");
 		patch.setMicroServiceBranch("SomeBaseBranch");
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId1", "GroupId1", "Version1"));
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId2", "GroupId2", "Version2"));
+		patch.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
+		patch.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
 		patchService.save(patch);
 		PatchActionExecutor patchActionExecutor = patchActionFactory.create(patchService);
 		patchActionExecutor.execute("SomeUnqiueNumber3", "EntwicklungInstallationsbereit");
@@ -167,8 +166,8 @@ public class MicroServicePatchServerTest {
 		patch.setPatchNummer("SomeUnqiueNumber3");
 		patch.setServiceName("It21ui");
 		patch.setMicroServiceBranch("SomeBaseBranch");
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId1", "GroupId1", "Version1"));
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId2", "GroupId2", "Version2"));
+		patch.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
+		patch.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
 		patchService.save(patch);
 		PatchActionExecutor patchActionExecutor = patchActionFactory.create(patchService);
 		patchActionExecutor.execute("SomeUnqiueNumber3", "InformatiktestInstallationsbereit");
@@ -180,8 +179,8 @@ public class MicroServicePatchServerTest {
 		patch.setPatchNummer("SomeUnqiueNumber3");
 		patch.setServiceName("It21ui");
 		patch.setMicroServiceBranch("SomeBaseBranch");
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId1", "GroupId1", "Version1"));
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId2", "GroupId2", "Version2"));
+		patch.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
+		patch.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
 		patchService.save(patch);
 		PatchActionExecutor patchActionExecutor = patchActionFactory.create(patchService);
 		patchActionExecutor.execute("SomeUnqiueNumber3", "Entwicklung");
@@ -195,14 +194,14 @@ public class MicroServicePatchServerTest {
 		p2.setPatchNummer("p2");
 		patchService.save(p1);
 		patchService.save(p2);
-		Assert.assertNotNull(patchService.findById("p1"));
-		Assert.assertNotNull(patchService.findById("p2"));
-		MavenArtifact ma1 = new MavenArtifactBean("test-ma1", "com.apgsga", "1.0");
-		MavenArtifact ma2 = new MavenArtifactBean("test-ma2", "com.apgsga", "1.0");
-		MavenArtifact ma3 = new MavenArtifactBean("test-ma3", "com.apgsga", "1.0");
-		DbObject db1 = new DbObjectBean("test-db1", "com.apgsga.ch/sql/db/test-db1");
+		assertNotNull(patchService.findById("p1"));
+		assertNotNull(patchService.findById("p2"));
+		MavenArtifact ma1 = new MavenArtifact("test-ma1", "com.apgsga", "1.0");
+		MavenArtifact ma2 = new MavenArtifact("test-ma2", "com.apgsga", "1.0");
+		MavenArtifact ma3 = new MavenArtifact("test-ma3", "com.apgsga", "1.0");
+		DbObject db1 = new DbObject("test-db1", "com.apgsga.ch/sql/db/test-db1");
 		db1.setModuleName("test-db1");
-		DbObject db2 = new DbObjectBean("test-db2", "com.apgsga.ch/sql/db/test-db2");
+		DbObject db2 = new DbObject("test-db2", "com.apgsga.ch/sql/db/test-db2");
 		db2.setModuleName("test-db2");		
 		p1.addDbObjects(db1);
 		p1.addDbObjects(db2);
@@ -212,13 +211,13 @@ public class MicroServicePatchServerTest {
 		p2.addMavenArtifacts(ma3);
 		patchService.save(p1);
 		patchService.save(p2);
-		Assert.assertTrue(patchService.findById("p1").getMavenArtifacts().size() == 2);
-		Assert.assertTrue(patchService.findById("p2").getMavenArtifacts().size() == 2);
-		Assert.assertTrue(patchService.findWithObjectName("ma1").size() == 1);
-		Assert.assertTrue(patchService.findWithObjectName("ma2").size() == 1);
-		Assert.assertTrue(patchService.findWithObjectName("ma3").size() == 2);
-		Assert.assertTrue(patchService.findWithObjectName("wrongName").size() == 0);
-		Assert.assertTrue(patchService.findWithObjectName("test-db2").size() == 1);
+		assertTrue(patchService.findById("p1").getMavenArtifacts().size() == 2);
+		assertTrue(patchService.findById("p2").getMavenArtifacts().size() == 2);
+		assertTrue(patchService.findWithObjectName("ma1").size() == 1);
+		assertTrue(patchService.findWithObjectName("ma2").size() == 1);
+		assertTrue(patchService.findWithObjectName("ma3").size() == 2);
+		assertTrue(patchService.findWithObjectName("wrongName").size() == 0);
+		assertTrue(patchService.findWithObjectName("test-db2").size() == 1);
 	}
 
 }

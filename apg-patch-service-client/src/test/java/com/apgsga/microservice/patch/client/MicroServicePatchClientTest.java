@@ -1,5 +1,6 @@
 package com.apgsga.microservice.patch.client;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -30,8 +31,6 @@ import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.api.impl.DbObjectBean;
-import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.apgsga.microservice.patch.server.impl.persistence.FilebasedPatchPersistence;
@@ -77,7 +76,7 @@ public class MicroServicePatchClientTest {
 			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/ServicesMetaData.json"),
 					new File(persistSt, "ServicesMetaData.json"));
 		} catch (IOException e) {
-			Assert.fail("Unable to copy ServicesMetaData.json test file into testDb folder : " + e.getMessage());
+			fail("Unable to copy ServicesMetaData.json test file into testDb folder : " + e.getMessage());
 		}
 
 		repo.savePatch(testPatch5401);
@@ -91,8 +90,8 @@ public class MicroServicePatchClientTest {
 		patch.setPatchNummer("SomeUnqiueNumber1");
 		patchClient.save(patch);
 		Patch result = patchClient.findById("SomeUnqiueNumber1");
-		Assert.assertNotNull(result);
-		Assert.assertEquals(patch, result);
+		assertNotNull(result);
+		assertEquals(patch, result);
 	}
 	
 	@Test
@@ -107,7 +106,7 @@ public class MicroServicePatchClientTest {
 			fail();
 		}
 		catch(UnsupportedOperationException ex) {
-			Assert.assertEquals(ex.getMessage(), "Logging patch activity not supported");
+			assertEquals(ex.getMessage(), "Logging patch activity not supported");
 		}
 	}
 
@@ -117,11 +116,11 @@ public class MicroServicePatchClientTest {
 		patch.setPatchNummer("SomeUnqiueNumber2");
 		patchClient.save(patch);
 		Patch result = patchClient.findById("SomeUnqiueNumber2");
-		Assert.assertNotNull(result);
-		Assert.assertEquals(patch, result);
+		assertNotNull(result);
+		assertEquals(patch, result);
 		patchClient.remove(result);
 		result = patchClient.findById("SomeUnqiueNumber2");
-		Assert.assertNull(result);
+		assertNull(result);
 	}
 
 	@Test
@@ -154,26 +153,26 @@ public class MicroServicePatchClientTest {
 		patch.setServiceName("It21ui");
 		patch.setMicroServiceBranch("SomeBaseBranch");
 		patch.setDbPatchBranch("SomePatchBranch");
-		patch.addDbObjects(new DbObjectBean("FileName1", "FilePath1"));
-		patch.addDbObjects(new DbObjectBean("FileName2", "FilePath2"));
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId1", "GroupId1", "SomeVersion1"));
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId2", "GroupId2", "SomeVersion2"));
+		patch.addDbObjects(new DbObject("FileName1", "FilePath1"));
+		patch.addDbObjects(new DbObject("FileName2", "FilePath2"));
+		patch.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "SomeVersion1"));
+		patch.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "SomeVersion2"));
 		patchClient.save(patch);
 		Patch result = patchClient.findById("SomeUnqiueNumber3");
-		Assert.assertNotNull(result);
-		Assert.assertEquals(patch, result);
+		assertNotNull(result);
+		assertEquals(patch, result);
 	}
 	
 	@Test
 	public void testFindByIds() {
 		List<Patch> patches = patchClient.findByIds(Lists.newArrayList("5401","5402"));
-		Assert.assertEquals(2, patches.size());
+		assertEquals(2, patches.size());
 	}
 	
 	@Test
 	public void testFindPatchLogById() {
 		PatchLog pl = patchClient.findPatchLogById("5401");
-		Assert.assertNotNull(pl);
+		assertNotNull(pl);
 	}
 	
 	@Test
@@ -184,14 +183,14 @@ public class MicroServicePatchClientTest {
 		p2.setPatchNummer("p2");
 		patchClient.save(p1);
 		patchClient.save(p2);
-		Assert.assertNotNull(patchClient.findById("p1"));
-		Assert.assertNotNull(patchClient.findById("p2"));
-		MavenArtifact ma1 = new MavenArtifactBean("test-ma1", "com.apgsga", "1.0");
-		MavenArtifact ma2 = new MavenArtifactBean("test-ma2", "com.apgsga", "1.0");
-		MavenArtifact ma3 = new MavenArtifactBean("test-ma3", "com.apgsga", "1.0");
-		DbObject db1 = new DbObjectBean("test-db1", "com.apgsga.ch/sql/db/test-db1");
+		assertNotNull(patchClient.findById("p1"));
+		assertNotNull(patchClient.findById("p2"));
+		MavenArtifact ma1 = new MavenArtifact("test-ma1", "com.apgsga", "1.0");
+		MavenArtifact ma2 = new MavenArtifact("test-ma2", "com.apgsga", "1.0");
+		MavenArtifact ma3 = new MavenArtifact("test-ma3", "com.apgsga", "1.0");
+		DbObject db1 = new DbObject("test-db1", "com.apgsga.ch/sql/db/test-db1");
 		db1.setModuleName("test-db1");
-		DbObject db2 = new DbObjectBean("test-db2", "com.apgsga.ch/sql/db/test-db2");
+		DbObject db2 = new DbObject("test-db2", "com.apgsga.ch/sql/db/test-db2");
 		db2.setModuleName("test-db2");		
 		p1.addDbObjects(db1);
 		p1.addDbObjects(db2);
@@ -201,12 +200,12 @@ public class MicroServicePatchClientTest {
 		p2.addMavenArtifacts(ma3);
 		patchClient.save(p1);
 		patchClient.save(p2);
-		Assert.assertTrue(patchClient.findById("p1").getMavenArtifacts().size() == 2);
-		Assert.assertTrue(patchClient.findById("p2").getMavenArtifacts().size() == 2);
-		Assert.assertTrue(patchClient.findWithObjectName("ma1").size() == 1);
-		Assert.assertTrue(patchClient.findWithObjectName("ma2").size() == 1);
-		Assert.assertTrue(patchClient.findWithObjectName("ma3").size() == 2);
-		Assert.assertTrue(patchClient.findWithObjectName("wrongName").size() == 0);
-		Assert.assertTrue(patchClient.findWithObjectName("test-db2").size() == 1);
+		assertTrue(patchClient.findById("p1").getMavenArtifacts().size() == 2);
+		assertTrue(patchClient.findById("p2").getMavenArtifacts().size() == 2);
+		assertTrue(patchClient.findWithObjectName("ma1").size() == 1);
+		assertTrue(patchClient.findWithObjectName("ma2").size() == 1);
+		assertTrue(patchClient.findWithObjectName("ma3").size() == 2);
+		assertTrue(patchClient.findWithObjectName("wrongName").size() == 0);
+		assertTrue(patchClient.findWithObjectName("test-db2").size() == 1);
 	}
 }

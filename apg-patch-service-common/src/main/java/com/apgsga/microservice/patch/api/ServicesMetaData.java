@@ -2,15 +2,51 @@ package com.apgsga.microservice.patch.api;
 
 import java.util.List;
 
-import com.affichage.persistence.common.client.EntityRootInterface;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.affichage.persistence.common.client.AbstractTransientEntity;
 
-@EntityRootInterface
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "className")
-public interface ServicesMetaData {
+public class ServicesMetaData extends AbstractTransientEntity {
 	
-	public List<ServiceMetaData> getServicesMetaData();
-	public void setServicesMetaData(List<ServiceMetaData> data); 
+	private static final long serialVersionUID = 1L;
+	private List<ServiceMetaData> servicesMetaData;
+
+	public List<ServiceMetaData> getServicesMetaData() {
+		return servicesMetaData;
+	}
+
+	public void setServicesMetaData(List<ServiceMetaData> data) {
+		this.servicesMetaData = data;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((servicesMetaData == null) ? 0 : servicesMetaData.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ServicesMetaData other = (ServicesMetaData) obj;
+		if (servicesMetaData == null) {
+			if (other.servicesMetaData != null)
+				return false;
+		} else if (!servicesMetaData.equals(other.servicesMetaData))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "ServicesMetaData [servicesMetaData=" + servicesMetaData + "]";
+	}
+	
+	
 
 }

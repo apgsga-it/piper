@@ -14,7 +14,7 @@
 	"lastRevisionNumber": "SNAPSHOT",
 	"dbObjects": [
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.DbObjectBean",
+			"className": "com.apgsga.microservice.patch.api.DbObject",
 			"fileName": "FileName1",
 			"filePath": "FilePath1",
 			"moduleName": null
@@ -22,14 +22,14 @@
 	],
 	"mavenArtifacts": [
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "zentraldispo-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.dao",
 			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "zentraldispo-ui",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.ui",

@@ -4,7 +4,7 @@
 		"groupId": "org.geotools",
 		"name": null,
 		"version": "",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 		"dependencyLevel": 0
 	},
 	{
@@ -12,7 +12,7 @@
 		"groupId": "com.apgsga.it21.ibus",
 		"name": null,
 		"version": "",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 		"dependencyLevel": 0
 	},
 	{
@@ -20,7 +20,7 @@
 		"groupId": "com.apgsga",
 		"name": null,
 		"version": "",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 		"dependencyLevel": 0
 	},
 	{
@@ -28,7 +28,7 @@
 		"groupId": "com.apgsga.it21",
 		"name": null,
 		"version": "",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 		"dependencyLevel": 0
 	},
 	{
@@ -36,7 +36,7 @@
 		"groupId": "com.apgsga.it21",
 		"name": null,
 		"version": "",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 		"dependencyLevel": 0
 	},
 	{
@@ -44,7 +44,7 @@
 		"groupId": "com.apgsga",
 		"name": null,
 		"version": "",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 		"dependencyLevel": 0
 	},
 	{
@@ -52,7 +52,7 @@
 		"groupId": "com.apgsga.common.rep",
 		"name": null,
 		"version": "",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 		"dependencyLevel": 0
 	},
 	{
@@ -60,7 +60,7 @@
 		"groupId": "com.apgsga.common.rep",
 		"name": null,
 		"version": "",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 		"dependencyLevel": 0
 	},
 	{
@@ -68,7 +68,7 @@
 		"groupId": "com.affichage.ui.utils",
 		"name": null,
 		"version": "",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 		"dependencyLevel": 0
 	},
 	{
@@ -76,7 +76,7 @@
 		"groupId": "com.affichage.it21.adgis",
 		"name": null,
 		"version": "",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 		"dependencyLevel": 0
 	},
 	{
@@ -84,7 +84,7 @@
 		"groupId": "com.affichage.it21.adgis",
 		"name": null,
 		"version": "",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 		"dependencyLevel": 0
 	},
 	{
@@ -92,7 +92,7 @@
 		"groupId": "com.affichage.it21.adgis",
 		"name": null,
 		"version": "",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 		"dependencyLevel": 0
 	},
 	{
@@ -100,7 +100,7 @@
 		"groupId": "com.affichage.geo.lib",
 		"name": null,
 		"version": "",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 		"dependencyLevel": 0
 	},
 	{
@@ -108,7 +108,7 @@
 		"groupId": "com.affichage.common",
 		"name": null,
 		"version": "",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 		"dependencyLevel": 0
 	},
 	{
@@ -116,7 +116,7 @@
 		"groupId": "com.affichage.adgis.component",
 		"name": null,
 		"version": "",
-		"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 		"dependencyLevel": 0
 	}
 ]
