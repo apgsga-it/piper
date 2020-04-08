@@ -1,5 +1,7 @@
 package com.apgsga.patch.service.client.revision
 
+import java.util.stream.Collectors
+
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
@@ -97,5 +99,83 @@ class PatchRevisionClient {
 				revisionFile.write(new JsonBuilder(revFileAsJson).toPrettyString())
 			}
 		}
+	}
+	
+	def getRevisions(def target) {
+		def revisionsList = []
+		def revFileAsJson = new JsonSlurper().parse(revisionFile)
+		if(revFileAsJson."${target}" != null) {
+			revisionsList = revFileAsJson."${target}".revisions.stream().collect(Collectors.toList())
+		}
+		if(revisionsList.isEmpty()) {
+			print ""
+		}
+		else {
+			println revisionsList.join(",")
+		}
+	}
+	
+	def deleteRevisions(def revisions) {
+		def revisionsAsList = revisions.trim().split(";")
+		def revFileAsJson = new JsonSlurper().parse(revisionFile)
+		def revisionsToBeDeletedForTarget = [:]
+		revFileAsJson.each {targetInfo ->
+			String key = targetInfo.key
+			// Because of the structure of Revivions.json, we need to explicitely exclude "nextRev"
+			if(!isProd(key) && !key.equalsIgnoreCase("nextRev")) {
+				revisionsToBeDeletedForTarget.put(key, [])
+				targetInfo.value.revisions.each { rev ->
+					def revNumber = rev.substring(rev.lastIndexOf('-')+1,rev.length())
+					if(revisionsAsList.contains(revNumber)) {
+						revisionsToBeDeletedForTarget.get(key).add(revNumber)
+					}
+				}
+			}
+		}
+		
+		revisionsToBeDeletedForTarget.keySet().each { target ->
+			deleteRevisionsForTarget(target, revisionsToBeDeletedForTarget.get(target).join(";"))
+		}
+	}
+	
+	def deleteRevisionsForTarget(def target, def revisionsToBeDeleted) {
+		assert !isProd(target) : "Revisions can't be deleted for production target: ${target}"
+		def updatedRevisions = []
+		def revFileAsJson = new JsonSlurper().parse(revisionFile)
+		def revisionsToBeDeletedAsList = revisionsToBeDeleted.split(";")
+		if(revFileAsJson."${target}" != null) {
+			revFileAsJson."${target}".revisions.each { revision ->
+				def revisionNumberOnly = revision.substring(revision.lastIndexOf("-")+1,revision.length())
+				if(!(revisionsToBeDeletedAsList.contains(revisionNumberOnly))) {
+					updatedRevisions.add(revision)
+				}
+			}
+			revFileAsJson."${target}".revisions = updatedRevisions
+			revisionFile.write(new JsonBuilder(revFileAsJson).toPrettyString())
+		}
+	}
+	
+	def deleteRevisionsForTarget(def target) {
+		assert !isProd(target) : "Revisions can't be deleted for production target: ${target}"
+		def revFileAsJson = new JsonSlurper().parse(revisionFile)
+		if(revFileAsJson."${target}" != null) {
+			revFileAsJson."${target}".revisions = []
+			revisionFile.write(new JsonBuilder(revFileAsJson).toPrettyString())
+		}
+	}
+	
+	def isProd(def target) {
+		def isProd = false
+		def targetSystemMappingFilePath = "${config.config.dir}/${config.target.system.mapping.file.name}"
+		def targetSystemMappingFile = new File(targetSystemMappingFilePath)
+		assert targetSystemMappingFile.exists() : "${config.config.dir}/${config.target.system.mapping.file.name} does not exist!"
+		def targetSystemMappingAsJson = new JsonSlurper().parse(targetSystemMappingFile)
+		targetSystemMappingAsJson.stageMappings.each{stageMapping ->
+			if(stageMapping.target.equalsIgnoreCase(target)) {
+				isProd = stageMapping.name.equalsIgnoreCase("produktion")
+				return // exit closure
+			}
+		}
+		return isProd
 	}
 }

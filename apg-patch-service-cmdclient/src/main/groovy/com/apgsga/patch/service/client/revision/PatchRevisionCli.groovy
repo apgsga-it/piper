@@ -53,6 +53,21 @@ class PatchRevisionCli {
 				def result = resetRevisions(options)
 				cmdResults.results['rr'] = result
 			}
+			
+			if(options.gr) {
+				def result = getRevisions(options)
+				cmdResults.results['gr'] = result
+			}
+			
+			if(options.drt) {
+				def result = deleteRevisionsForTarget(options)
+				cmdResults.results['drt'] = result
+			}
+			
+			if(options.dr) {
+				def result = deleteRevisions(options)
+				cmdResults.results['dr'] = result
+			}
 						
 			cmdResults.returnCode = 0
 			return cmdResults
@@ -96,8 +111,25 @@ class PatchRevisionCli {
 		patchRevClient.resetRevisions(options.rrs[0].toUpperCase(), options.rrs[1].toUpperCase())
 	}
 	
+	private def getRevisions(def options) {
+		def patchRevClient = new PatchRevisionClient(config)
+		patchRevClient.getRevisions(options.grs[0].toUpperCase())
+	}
+	
+	private def deleteRevisionsForTarget(def options) {
+		def patchRevClient = new PatchRevisionClient(config)
+		def target = options.drts[0].toUpperCase()
+		def revisions = options.drts[1]
+		revisions == null ? patchRevClient.deleteRevisionsForTarget(target) : patchRevClient.deleteRevisionsForTarget(target,revisions)
+	}
+	
+	private def deleteRevisions(def options) {
+		def patchRevClient = new PatchRevisionClient(config)
+		patchRevClient.deleteRevisions(options.drs[0])
+	}
+	
 	private def validateOpts(def args) {
-		def cli = new CliBuilder (usage: 'apsrevpli.sh -[h|ar|lr|nr|rr]')
+		def cli = new CliBuilder (usage: 'apsrevpli.sh -[h|ar|lr|nr|rr|gr|drt|dr]')
 		cli.formatter.setDescPadding(0)
 		cli.formatter.setLeftPadding(0)
 		cli.formatter.setWidth(100)
@@ -110,6 +142,9 @@ class PatchRevisionCli {
 			rr longOpt: 'resetRevision', args:2, valueSeparator: ",", argName: 'source,target', 'Reset the revision list and last revision for the given target', required: false
 			// TODO JHE: to be implemented, probably while working on JAVA8MIG-431
 			i longOpt: 'initRevision', args:0 , 'Initialize the Revision Tracking', required: false
+			gr longOpt: 'getRevisions', args:1, argName: 'target', 'Get all revisions for the given target', required: false
+			drt longOpt: 'deleteRevisionsForTarget', args:2, valueSeparator: ",", argName: 'target,revisions', 'Delete Revisions number for the given target (lastRevision remains). If a list of revisions is given, then only these will be removed, if they exist. List of revisions should be separated with ";". This second argument is optional', required: false
+			dr longOpt: 'deleteRevisions', args:1, argName: 'revisions', 'Delete Revisions number passed as parameter. List of release needs to be separated with ";". Eg.: 123;345;765. Production released number will be ignored', required: false
 		}
 		
 		def options = cli.parse(args)
@@ -124,7 +159,7 @@ class PatchRevisionCli {
 			return null
 		}
 		
-		if (options.nr || options.lr || options.rr || options.llr) {
+		if (options.nr || options.lr || options.rr || options.gr || options.drt || options.dr) {
 			error = false
 		}
 

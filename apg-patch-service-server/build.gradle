@@ -1,18 +1,19 @@
 plugins {
   	id 'groovy'
    	id 'application'
- 	id 'org.springframework.boot' version '1.5.9.RELEASE'
   	id 'nebula.ospackage' version '4.10.0'
   	id 'ivy-publish'  
-  
+	id 'org.springframework.boot' version '1.5.9.RELEASE'
 }
 apply plugin: 'nebula.ospackage'
-apply plugin: 'org.springframework.boot'
 apply plugin: 'groovy'
 apply plugin: 'ivy-publish'
 apply plugin: 'com.jfrog.artifactory'
+apply plugin: 'org.springframework.boot'
 
-description = 'Server, which provides  Patch Functionality through a Restful Controller  '
+project.gradle.startParameter.excludedTaskNames.add('startScripts')
+
+description = 'Server , which provides  Patch Functionality through a Restful Controller  '
 jar {
 	baseName = 'apg-patch-service-server'
 	//exclude('**/application.properties')
@@ -61,7 +62,6 @@ sourceSets {
 
 def pkgVersion = version
 def repoTarget= version.endsWith("SNAPSHOT") ? "${mavenSnapshotsRepoName}" : "${mavenReleasesRepoName}"
-
 def homeDir = "/opt/${project.name}"
 
 
@@ -177,7 +177,7 @@ publishing {
 
 artifactoryPublish {}.dependsOn(buildRpm)
 artifactory {
-    contextUrl = "${mavenRepoBaseUrl}/"  
+	contextUrl = "${mavenRepoBaseUrl}/"
     publish {
 
         repository {

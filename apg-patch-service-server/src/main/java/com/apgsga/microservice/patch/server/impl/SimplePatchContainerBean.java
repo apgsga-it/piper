@@ -1,9 +1,16 @@
 package com.apgsga.microservice.patch.server.impl;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -240,6 +247,58 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					dbObjects.add(dbObject);
 				});
 
+			}
+		}
+		vcsCmdRunner.postProcess();
+		return dbObjects;
+	}
+
+	@Override
+	public List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString, String username) {
+		String suffixForCoFolder = username + "_" + new Date().getTime();
+		LOGGER.info("Searching all DB Objects for user " + username);
+		return doListAllSqlObjectsForDbModule(patchNumber, searchString, suffixForCoFolder);
+	}
+
+	@Override
+	public List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString) {
+		String suffixForCoFolder = String.valueOf(new Date().getTime());
+		LOGGER.info("Searching all DB Objects without any specific user");
+		return doListAllSqlObjectsForDbModule(patchNumber, searchString, suffixForCoFolder);
+	}
+
+	private List<DbObject> doListAllSqlObjectsForDbModule(String patchNumber, String searchString, String suffixForCoFolder) {
+		Patch patch = findById(patchNumber);
+		Asserts.notNull(patch, "SimplePatchContainerBean.listAllObjectsChangedForDbModule.patch.exists.assert",
+				new Object[] { patchNumber });
+		DbModules dbModules = repo.getDbModules();
+		if (dbModules == null) {
+			return Lists.newArrayList();
+		}
+		final VcsCommandRunner vcsCmdRunner = vcsCommandRunnerFactory.create();
+		vcsCmdRunner.preProcess();
+		List<DbObject> dbObjects = Lists.newArrayList();
+		for (String dbModule : dbModules.getDbModules()) {
+			if (dbModule.contains(searchString)) {
+				String tempSubFolderName= "apg_patch_ui_temp_";
+				String tmpDir = System.getProperty("java.io.tmpdir");
+				String coFolder = tmpDir + "/" + tempSubFolderName + suffixForCoFolder;
+				String additionalOptions = "-d " + coFolder;
+				LOGGER.info("Temporary checkout folder for listing all DB Objects will be: " + coFolder);
+				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), patch.getProdBranch(), Lists.newArrayList(dbModule), additionalOptions));
+				result.forEach(r -> {
+					// JHE : In production, cvs is on a separated server, therefore we can't checkout, and parse the local result ...
+					//		 We rely on the output given back from the CVS command, might not be the most robust solution :( ... but so far ok for a function which is not crucial.
+					int startIndex = r.indexOf("U ")+"U ".length();
+					String pathToResourceName = r.substring(startIndex, r.length()).trim().replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "");
+					DbObject dbObject = new DbObjectBean();
+					dbObject.setModuleName(dbModule);
+					dbObject.setFileName(FilenameUtils.getName(pathToResourceName));
+					dbObject.setFilePath(dbModule + "/" + FilenameUtils.getPath(pathToResourceName.replaceFirst(tempSubFolderName,"")));
+					dbObjects.add(dbObject);
+				});
+
+				List<String> rmResult = vcsCmdRunner.run(PatchVcsCommand.createRmTmpCheckoutFolder(coFolder));
 			}
 		}
 		vcsCmdRunner.postProcess();

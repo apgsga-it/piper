@@ -20,7 +20,7 @@ import spock.lang.Specification
 
 
 class DbCliIntegrationTest extends Specification {
-
+	
 	private static final String CLASSPATH_CONFIG_OPS_TEST_PROPERTIES = 'classpath:config/ops-test.properties'
 
 	private static final String CLASSPATH_CONFIG_APP_TEST_PROPERTIES = 'classpath:config/app-test.properties'

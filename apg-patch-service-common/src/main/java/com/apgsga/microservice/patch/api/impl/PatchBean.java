@@ -32,6 +32,8 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	private String runningNr; 
 	private List<DbObject> dbObjects = Lists.newArrayList();
 	private List<MavenArtifact> mavenArtifacts = Lists.newArrayList();
+	private List<String> dockerServices = Lists.newArrayList();
+	private boolean installDockerServices = false;
 	private boolean installOnEmptyModules = false;
 	private String lastPipelineTask ="";
 	private String currentTarget;
@@ -160,6 +162,11 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	}
 
 	@Override
+	public List<String> getDockerServices() {
+		return dockerServices;
+	}
+
+	@Override
 	public List<String> getMavenArtifactsAsVcsPath() {
 		return getMavenArtifactsToBuild().stream().map(mavenArt -> mavenArt.getName()).collect(Collectors.toList());
 	}
@@ -178,6 +185,13 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	}
 
 	@Override
+	public void setDockerServices(List<String> dockerServices) {
+		final Object oldValue = Lists.newArrayList(this.dockerServices);
+		this.dockerServices = dockerServices;
+		firePropertyChangeEvent(DOCKER_SERVICES, oldValue, dockerServices);
+	}
+
+	@Override
 	public void removeMavenArtifacts(MavenArtifact mavenArtifact) {
 		final Object oldValue = Lists.newArrayList(this.mavenArtifacts);
 		mavenArtifacts.remove(mavenArtifact);
@@ -189,6 +203,20 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 		final Object oldValue = Lists.newArrayList(this.mavenArtifacts);
 		mavenArtifacts.add(mavenArtifact);
 		firePropertyChangeAndMarkDirty(MAVEN_ARTEFACTS, oldValue, mavenArtifacts);
+	}
+
+	@Override
+	public void removeDockerService(String serviceName) {
+		final Object oldValue = Lists.newArrayList(this.dockerServices);
+		dockerServices.remove(serviceName);
+		firePropertyChangeAndMarkDirty(DOCKER_SERVICES, oldValue, dockerServices);
+	}
+
+	@Override
+	public void addDockerService(String serviceName) {
+		final Object oldValue = Lists.newArrayList(this.dockerServices);
+		dockerServices.add(serviceName);
+		firePropertyChangeAndMarkDirty(DOCKER_SERVICES, oldValue, dockerServices);
 	}
 
 	@Override
@@ -330,8 +358,17 @@ public class PatchBean extends AbstractTransientEntity implements Patch {
 	public void setInstallJadasAndGui() {
 		// Intentionally empty
 	}
-	
-	
+
+	@Override
+	public boolean getInstallDockerServices() {
+		return !dockerServices.isEmpty();
+	}
+
+	@Override
+	public void setInstallDockerServices() {
+		// Intentionally empty
+	}
+
 
 	@Override
 	public String getRunningNr() {

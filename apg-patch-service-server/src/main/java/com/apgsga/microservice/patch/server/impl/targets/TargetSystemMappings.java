@@ -4,12 +4,12 @@ import java.util.List;
 
 public class TargetSystemMappings {
 	
-	private List<TargetInstances> targetInstances;
+	private List<String> onDemandTarget;
 	
-	public List<TargetInstances> getTargetInstances() {
-		return targetInstances;
+	public List<String> getOnDemandTarget() {
+		return onDemandTarget;
 	}
-	public void setTargetInstances(List<TargetInstances> targetInstances) {
-		this.targetInstances = targetInstances;
+	public void setOnDemandTarget(List<String> onDemandTarget) {
+		this.onDemandTarget = onDemandTarget;
 	}
 }

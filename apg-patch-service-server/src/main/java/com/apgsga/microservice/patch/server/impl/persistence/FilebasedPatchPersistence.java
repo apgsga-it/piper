@@ -267,7 +267,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		return result.get(0);
 	}
 
-	private <T> void writeToFile(T object, String filename) {
+	private synchronized <T> void writeToFile(T object, String filename) {
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonRequestString;
 		try {
