@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="320.0" y="169.0">com.apgsga.microservice.patch.api.Patch</node>
+    <node x="-49.722371967654965" y="461.9676549865229">com.apgsga.microservice.patch.api.ServicesMetaData</node>
+    <node x="296.0" y="0.0">com.apgsga.microservice.patch.api.ServiceMetaData</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.apgsga.microservice.patch.api.ServicesMetaData" target="com.apgsga.microservice.patch.api.ServiceMetaData">
+      <point x="0.0" y="-26.5" />
+      <point x="150.0" y="144.0" />
+      <point x="329.83333333333337" y="144.0" />
+      <point x="-67.66666666666666" y="59.5" />
+    </edge>
+    <edge source="com.apgsga.microservice.patch.api.Patch" target="com.apgsga.microservice.patch.api.ServiceMetaData">
+      <point x="-77.5" y="-334.5" />
+      <point x="2.8421709430404007E-14" y="59.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.8648018648018648" x="315.0" y="429.0" />
+  <SelectedNodes>
+    <node>com.apgsga.microservice.patch.api.ServicesMetaData</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

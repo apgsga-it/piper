@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.io.FileSystemResourceLoader;
@@ -33,10 +32,7 @@ import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
-import com.apgsga.microservice.patch.api.impl.PatchBean;
-import com.apgsga.microservice.patch.api.impl.PatchLogBean;
 import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
-import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.apgsga.microservice.patch.server.impl.persistence.FilebasedPatchPersistence;
 import com.google.common.collect.Lists;
@@ -91,7 +87,7 @@ public class MicroServicePatchClientTest {
 
 	@Test
 	public void testSaveEmptyWithId() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber1");
 		patchClient.save(patch);
 		Patch result = patchClient.findById("SomeUnqiueNumber1");
@@ -101,7 +97,7 @@ public class MicroServicePatchClientTest {
 	
 	@Test
 	public void testSavePatchLog() {
-		Patch p = new PatchBean();
+		Patch p = new Patch();
 		p.setPatchNummer("anotherUniqueId");
 		p.setCurrentTarget("chei212");
 		p.setLogText("Build Started");
@@ -117,7 +113,7 @@ public class MicroServicePatchClientTest {
 
 	@Test
 	public void testSaveEmptyWithIdAndRemove() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber2");
 		patchClient.save(patch);
 		Patch result = patchClient.findById("SomeUnqiueNumber2");
@@ -130,7 +126,7 @@ public class MicroServicePatchClientTest {
 
 	@Test
 	public void testSaveEmptyWithOutId() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		try {
 			patchClient.save(patch);
 			fail();
@@ -142,7 +138,7 @@ public class MicroServicePatchClientTest {
 	
 	@Test
 	public void testSavePatchLogEmptyWithoutId() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		try {
 			patchClient.log(patch);
 			fail();
@@ -153,7 +149,7 @@ public class MicroServicePatchClientTest {
 
 	@Test
 	public void testSaveWithArtifacts() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
 		patch.setServiceName("It21ui");
 		patch.setMicroServiceBranch("SomeBaseBranch");
@@ -182,9 +178,9 @@ public class MicroServicePatchClientTest {
 	
 	@Test
 	public void testFindWithObjectName() { 		
-		Patch p1 = new PatchBean();
+		Patch p1 = new Patch();
 		p1.setPatchNummer("p1");
-		Patch p2 = new PatchBean();
+		Patch p2 = new Patch();
 		p2.setPatchNummer("p2");
 		patchClient.save(p1);
 		patchClient.save(p2);
