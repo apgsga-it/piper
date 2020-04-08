@@ -1,5 +1,5 @@
 {
-	"className": "com.apgsga.microservice.patch.api.impl.PatchBean",
+	"className": "com.apgsga.microservice.patch.api.Patch",
 	"patchNummer": "9060",
 	"serviceName": "It21Ui",
 	"microServiceBranch": "it21_release_9_1_0_admin_uimig",

@@ -20,25 +20,25 @@ subprojects {
 	sourceCompatibility = 1.8
 	targetCompatibility = 1.8
 	tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
-	
+
 	eclipse {
     	// TODO
 	}
 	repositories {
 		//mavenLocal()
-		maven { 
+		maven {
 		  credentials {
             	username mavenRepoUser
             	password mavenRepoPwd
         	}
-			url "${mavenRepoBaseUrl}/${mavenRepoName}" 
+			url "${mavenRepoBaseUrl}/${mavenRepoName}"
 		}
 	}
 
-	dependencyManagement { 
-		imports {  
-			mavenBom 'com.affichage.common.maven:dm-bom:9.1.0.ADMIN-UIMIG-SNAPSHOT' 
-		} 
+	dependencyManagement {
+		imports {
+			mavenBom 'com.affichage.common.maven:dm-bom:9.1.0.ADMIN-UIMIG-SNAPSHOT'
+		}
 		dependencies {
         	dependency 'com.google.guava:guava:18.0'
         	dependency 'org.codehaus.groovy:groovy-all:2.4.13'
@@ -56,7 +56,7 @@ subprojects {
            	dependency group: 'org.jasypt', name: 'jasypt', version: '1.9.0'
            	dependency group: 'org.springframework.data', name: 'spring-data-commons', version: '1.12.11.RELEASE'
            	dependency group: 'com.offbytwo.jenkins', name: 'jenkins-client', version: '0.3.9-SNAPSHOT'
-           	dependency group: 'de.codecentric', name: 'spring-boot-admin-starter-client', version: '1.3.2' 
+           	dependency group: 'de.codecentric', name: 'spring-boot-admin-starter-client', version: '1.3.2'
           	dependency group: 'org.codehaus.plexus', name: 'plexus-utils', version: '3.0.10'
 			dependency group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
 			dependency group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.11'
@@ -74,19 +74,19 @@ subprojects {
 
 	configurations {
 		compile.exclude group: 'org.skyscreamer', module: 'jsonassert'
-	}	
+	}
 
-		
+
 
 	task sourcesJar ( type: Jar) {
 		classifier 'sources'
 		from sourceSets.main.allJava
 	}
-	
+
 	publishing {
 		publications {
-			mavenJava(MavenPublication) { 
-				from components.java 
+			mavenJava(MavenPublication) {
+				from components.java
 				artifact sourcesJar
 			}
 		}
@@ -94,7 +94,7 @@ subprojects {
 		repositories {
 			maven {
 				name ='deployRepo'
-				url  "${mavenRepoBaseUrl}/${repoTarget}/"				
+				url  "${mavenRepoBaseUrl}/${repoTarget}/"
 				credentials {
 					username = mavenRepoUser
 					password = mavenRepoPwd
@@ -102,6 +102,6 @@ subprojects {
 			}
 		}
 	}
-	
+
 
 }

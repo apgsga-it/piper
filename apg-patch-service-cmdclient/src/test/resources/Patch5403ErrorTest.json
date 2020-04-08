@@ -40,5 +40,5 @@
 			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean"
 		}
 	],
-	"className": "com.apgsga.microservice.patch.api.impl.PatchBean"
+	"className": "com.apgsga.microservice.patch.api.Patch"
 }

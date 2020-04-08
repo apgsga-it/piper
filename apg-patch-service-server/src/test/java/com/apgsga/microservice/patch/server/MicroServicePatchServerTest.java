@@ -3,8 +3,6 @@ package com.apgsga.microservice.patch.server;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,9 +26,6 @@ import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.impl.DbObjectBean;
 import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
-import com.apgsga.microservice.patch.api.impl.PatchBean;
-import com.apgsga.microservice.patch.api.impl.PatchLogBean;
-import com.apgsga.microservice.patch.api.impl.PatchLogDetailsBean;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutor;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
@@ -62,7 +57,7 @@ public class MicroServicePatchServerTest {
 
 	@Test
 	public void testSaveEmptyWithId() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber1");
 		patchService.save(patch);
 		Patch result = patchService.findById("SomeUnqiueNumber1");
@@ -73,7 +68,7 @@ public class MicroServicePatchServerTest {
 	@Test
 	public void testSavePatchLogWithoutCorrespondingPatch() {
 		try {
-			Patch patch = new PatchBean();
+			Patch patch = new Patch();
 			patch.setPatchNummer("SomeUnqiueNumber1");
 			patchService.log(patch);
 			fail();
@@ -86,7 +81,7 @@ public class MicroServicePatchServerTest {
 	@Test
 	public void testSavePatchLogWithOneDetail() {
 		String patchNumber = "someUniqueNum1";
-		Patch p = new PatchBean();
+		Patch p = new Patch();
 		p.setPatchNummer(patchNumber);
 		p.setCurrentTarget("chei211");
 		p.setLogText("started");
@@ -101,7 +96,7 @@ public class MicroServicePatchServerTest {
 	@Test
 	public void testSavePatchLogWithSeveralDetail() {
 		String patchNumber = "notEmpty1";
-		Patch p = new PatchBean();
+		Patch p = new Patch();
 		p.setPatchNummer(patchNumber);
 		p.setCurrentTarget("chei211");
 		p.setCurrentPipelineTask("Build");
@@ -125,7 +120,7 @@ public class MicroServicePatchServerTest {
 
 	@Test
 	public void testSaveEmptyWithIdAndRemove() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber2");
 		patchService.save(patch);
 		Patch result = patchService.findById("SomeUnqiueNumber2");
@@ -138,7 +133,7 @@ public class MicroServicePatchServerTest {
 
 	@Test
 	public void testSaveWithArtifacts() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
 		patch.setServiceName("It21ui");
 		patch.setMicroServiceBranch("SomeBaseBranch");
@@ -155,7 +150,7 @@ public class MicroServicePatchServerTest {
 
 	@Test
 	public void testPatchActionEntwicklungInstallationsbereit() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
 		patch.setServiceName("It21ui");
 		patch.setMicroServiceBranch("SomeBaseBranch");
@@ -168,7 +163,7 @@ public class MicroServicePatchServerTest {
 
 	@Test
 	public void testPatchPipelineInputAction() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
 		patch.setServiceName("It21ui");
 		patch.setMicroServiceBranch("SomeBaseBranch");
@@ -181,7 +176,7 @@ public class MicroServicePatchServerTest {
 
 	@Test
 	public void testPatchCancelAction() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
 		patch.setServiceName("It21ui");
 		patch.setMicroServiceBranch("SomeBaseBranch");
@@ -194,9 +189,9 @@ public class MicroServicePatchServerTest {
 	
 	@Test
 	public void testFindWithObjectName() {
-		Patch p1 = new PatchBean();
+		Patch p1 = new Patch();
 		p1.setPatchNummer("p1");
-		Patch p2 = new PatchBean();
+		Patch p2 = new Patch();
 		p2.setPatchNummer("p2");
 		patchService.save(p1);
 		patchService.save(p2);
