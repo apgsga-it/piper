@@ -4,7 +4,6 @@ package com.apgsga.microservice.patch.api;
 import com.affichage.persistence.common.client.AbstractTransientEntity;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,  property = "className")
 public class ServiceMetaData extends AbstractTransientEntity {
 
 	private static final long serialVersionUID = 1L;

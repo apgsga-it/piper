@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @EntityRootInterface
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
 public class Patch extends AbstractTransientEntity {
 
     private static final String PROD_BRANCH_DEFAULT = "prod";

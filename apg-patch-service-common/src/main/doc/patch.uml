@@ -3,40 +3,42 @@
   <ID>JAVA</ID>
   <OriginalElement />
   <nodes>
-    <node x="180.0" y="0.0">com.apgsga.microservice.patch.api.MavenArtifact</node>
-    <node x="73.99999999999994" y="213.0">com.apgsga.microservice.patch.api.Patch</node>
-    <node x="0.0" y="22.0">com.apgsga.microservice.patch.api.DbObject</node>
-    <node x="428.68333333333334" y="521.0">com.apgsga.microservice.patch.api.ServicesMetaData</node>
-    <node x="408.68333333333334" y="22.0">com.apgsga.microservice.patch.api.ServiceMetaData</node>
+    <node x="544.0" y="0.0">com.apgsga.microservice.patch.api.MavenArtifact</node>
+    <node x="331.8333333333333" y="213.0">com.apgsga.microservice.patch.api.Patch</node>
+    <node x="364.0" y="22.0">com.apgsga.microservice.patch.api.DbObject</node>
+    <node x="0.0" y="521.0">com.apgsga.microservice.patch.api.ServicesMetaData</node>
+    <node x="117.75" y="22.0">com.apgsga.microservice.patch.api.ServiceMetaData</node>
   </nodes>
   <notes />
   <edges>
     <edge source="com.apgsga.microservice.patch.api.Patch" target="com.apgsga.microservice.patch.api.DbObject">
-      <point x="-61.99999999999994" y="-334.5" />
-      <point x="167.0" y="188.0" />
-      <point x="120.0" y="188.0" />
-      <point x="40.0" y="59.5" />
-    </edge>
-    <edge source="com.apgsga.microservice.patch.api.Patch" target="com.apgsga.microservice.patch.api.MavenArtifact">
-      <point x="5.6843418860808015E-14" y="-334.5" />
-      <point x="-49.0" y="81.5" />
+      <point x="-62.0" y="-334.5" />
+      <point x="424.8333333333333" y="188.0" />
+      <point x="404.0" y="188.0" />
+      <point x="-40.0" y="59.5" />
     </edge>
     <edge source="com.apgsga.microservice.patch.api.ServicesMetaData" target="com.apgsga.microservice.patch.api.ServiceMetaData">
-      <point x="-75.0" y="-26.5" />
-      <point x="503.68333333333334" y="188.0" />
-      <point x="510.18333333333334" y="188.0" />
+      <point x="75.0" y="-26.5" />
+      <point x="225.0" y="188.0" />
+      <point x="219.25" y="188.0" />
       <point x="0.0" y="59.5" />
     </edge>
+    <edge source="com.apgsga.microservice.patch.api.Patch" target="com.apgsga.microservice.patch.api.MavenArtifact">
+      <point x="62.0" y="-334.5" />
+      <point x="548.8333333333333" y="188.0" />
+      <point x="593.0" y="188.0" />
+      <point x="-49.0" y="81.5" />
+    </edge>
     <edge source="com.apgsga.microservice.patch.api.Patch" target="com.apgsga.microservice.patch.api.ServiceMetaData">
-      <point x="124.00000000000006" y="-334.5" />
-      <point x="353.0" y="188.0" />
-      <point x="442.51666666666665" y="188.0" />
-      <point x="-67.66666666666669" y="59.5" />
+      <point x="-124.0" y="-334.5" />
+      <point x="362.8333333333333" y="188.0" />
+      <point x="286.91666666666674" y="188.0" />
+      <point x="67.66666666666674" y="59.5" />
     </edge>
   </edges>
-  <settings layout="Hierarchic Group" zoom="0.8648018648018648" x="315.0" y="335.1981132075472" />
+  <settings layout="Hierarchic Group" zoom="1.0" x="399.5" y="416.5" />
   <SelectedNodes>
-    <node>com.apgsga.microservice.patch.api.DbObject</node>
+    <node>com.apgsga.microservice.patch.api.Patch</node>
   </SelectedNodes>
   <Categories>
     <Category>Properties</Category>

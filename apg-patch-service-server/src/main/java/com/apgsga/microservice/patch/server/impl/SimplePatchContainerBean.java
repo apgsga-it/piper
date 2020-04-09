@@ -179,11 +179,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			}
 
 			art.setName(artifactName);
-		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
+		} catch (Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"SimplePatchContainerBean.addModuleName.exception",
-					new Object[] { e.getMessage(), art.toString(), cvsBranch }, e);
-
+					new Object[]{e.getMessage(), art.toString(), cvsBranch}, e);
 		}
 		return art;
 	}

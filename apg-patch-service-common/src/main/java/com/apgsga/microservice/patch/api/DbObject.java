@@ -6,7 +6,6 @@ import org.apache.commons.io.FilenameUtils;
 import com.affichage.persistence.common.client.AbstractTransientEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
 public class DbObject extends AbstractTransientEntity  {
 
 	public static final String MODULE_NAME = "moduleName";
