@@ -2,9 +2,12 @@ package com.apgsga.microservice.patch.api;
 
 import com.affichage.persistence.common.client.AbstractTransientEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 public class MavenArtifact extends AbstractTransientEntity  {
+
+	public static MavenArtifact create() {
+		return new MavenArtifact();
+	}
 
 	private static final long serialVersionUID = 1L;
 	public static final String ARTIFACT_ID = "artifactId";
@@ -44,6 +47,11 @@ public class MavenArtifact extends AbstractTransientEntity  {
 		firePropertyChangeAndMarkDirty(ARTIFACT_ID, oldValue, artifactId);
 	}
 
+	public MavenArtifact artifactId(String artifactId) {
+		setArtifactId(artifactId);
+		return this;
+	}
+
 	public String getGroupId() {
 		return groupId;
 	}
@@ -52,6 +60,10 @@ public class MavenArtifact extends AbstractTransientEntity  {
 		final Object oldValue = this.groupId;
 		this.groupId = groupId;
 		firePropertyChangeAndMarkDirty(ARTIFACT_ID, oldValue, groupId);
+	}
+	public MavenArtifact groupId(String groupId) {
+		setGroupId(groupId);
+		return this;
 	}
 
 	public String getName() {
@@ -64,6 +76,11 @@ public class MavenArtifact extends AbstractTransientEntity  {
 		firePropertyChangeAndMarkDirty(NAME, oldValue, name);
 	}
 
+	public MavenArtifact name(String name) {
+		setName(name);
+		return this;
+	}
+
 	public String getVersion() {
 		return version;
 	}
@@ -73,8 +90,11 @@ public class MavenArtifact extends AbstractTransientEntity  {
 		this.version = version;
 		firePropertyChangeAndMarkDirty(VERSION, oldValue, version);
 	}
-	
 
+	public MavenArtifact version(String version) {
+		setVersion(version);
+		return this;
+	}
 	public Integer getDependencyLevel() {
 		return dependencyLevel;
 	}
@@ -116,11 +136,8 @@ public class MavenArtifact extends AbstractTransientEntity  {
 		} else if (!artifactId.equals(other.artifactId))
 			return false;
 		if (groupId == null) {
-			if (other.groupId != null)
-				return false;
-		} else if (!groupId.equals(other.groupId))
-			return false;
-		return true;
+			return other.groupId == null;
+		} else return groupId.equals(other.groupId);
 	}
 
 	@Override

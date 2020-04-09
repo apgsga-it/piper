@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.apgsga.microservice.patch.api.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,16 +23,6 @@ import org.springframework.stereotype.Component;
 
 import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
-import com.apgsga.microservice.patch.api.DbModules;
-import com.apgsga.microservice.patch.api.DbObject;
-import com.apgsga.microservice.patch.api.MavenArtifact;
-import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchLog;
-import com.apgsga.microservice.patch.api.PatchOpService;
-import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.api.PatchService;
-import com.apgsga.microservice.patch.api.SearchCondition;
-import com.apgsga.microservice.patch.api.ServiceMetaData;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.apgsga.microservice.patch.server.impl.jenkins.JenkinsClient;
@@ -95,8 +86,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public List<MavenArtifact> listMavenArtifacts(Patch patch, SearchCondition filter) {
-		ServiceMetaData data = repo.findServiceByName(patch.getServiceName());
+	public List<MavenArtifact> listMavenArtifacts(String serviceName, SearchCondition filter) {
+		ServiceMetaData data = repo.findServiceByName(serviceName);
 		List<MavenArtifact> mavenArtFromStarterList;
 		try {
 			mavenArtFromStarterList = am.getAllDependencies(
@@ -104,15 +95,15 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"SimplePatchContainerBean.listMavenArtifacts.exception",
-					new Object[] { e.getMessage(), patch.toString() }, e);
+					new Object[] { e.getMessage(), serviceName.toString() }, e);
 		}
 
 		return mavenArtFromStarterList;
 	}
 
 	@Override
-	public List<MavenArtifact> listMavenArtifacts(Patch patch) {
-		return listMavenArtifacts(patch, SearchCondition.APPLICATION);
+	public List<MavenArtifact> listMavenArtifacts(String serviceName) {
+		return listMavenArtifacts(serviceName, SearchCondition.APPLICATION);
 	}
 
 	@Override
@@ -164,8 +155,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			createBranchForDbModules(patch);
 			jenkinsClient.createPatchPipelines(patch);
 		}
-		patch.getMavenArtifactsToBuild().stream().filter(art -> Strings.isNullOrEmpty(art.getName()))
-				.forEach(art -> addModuleName(art, patch.getMicroServiceBranch()));
+		// TODO (MULTISERVICE_CM , 9.4) : Needs to be verified
+		for (Service service : patch.getServices()) {
+			service.getMavenArtifactsToBuild().stream().filter(art -> Strings.isNullOrEmpty(art.getName()))
+					.forEach(art -> addModuleName(art, service.getMicroServiceBranch()));
+		}
+
 	}
 
 	private MavenArtifact addModuleName(MavenArtifact art, String cvsBranch) {

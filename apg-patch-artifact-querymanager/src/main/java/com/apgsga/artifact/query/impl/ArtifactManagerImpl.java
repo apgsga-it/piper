@@ -152,18 +152,6 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.apgsga.artifact.query.impl.ArtifactManagerI#getVersionsProperties(
-	 * java.lang.String)
-	 */
-	@Override
-	public Properties getVersionsProperties(String version)
-			throws ArtifactResolutionException {
-		return getVersionsProperties(loadBomModel(bomGroupId, bomArtefactId, version));
-	}
 
 	private Model loadBomModel(String bomGroupId, String bomArtefactId, String version)
 			throws ArtifactResolutionException {
@@ -221,7 +209,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	 */
 	@Override
 	public List<MavenArtifact> getAllDependencies(String serviceVersion)
-			throws DependencyResolutionException, ArtifactResolutionException, IOException, XmlPullParserException {
+			throws ArtifactResolutionException {
 		return getAllDependencies(serviceVersion, SearchCondition.APPLICATION);
 	}
 
@@ -264,35 +252,6 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.apgsga.artifact.query.impl.ArtifactManagerI#
-	 * getArtifactsWithNameFromBom(java.lang.String)
-	 */
-	@Override
-	public List<MavenArtifact> getArtifactsWithNameFromBom(String bomVersion)
-			throws Exception {
-		return getArtifactsWithVersionFromBom(bomVersion, SearchCondition.APPLICATION);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.apgsga.artifact.query.impl.ArtifactManagerI#getArtifactsWithNameAsMap
-	 * (java.lang.String)
-	 */
-	@Override
-	public Map<String, String> getArtifactsWithNameAsMap(String version)
-			throws Exception {
-		List<MavenArtifact> artifacts = getArtifactsWithNameFromBom(version);
-		Map<String, String> artMap = Maps.newHashMap();
-		for (MavenArtifact art : artifacts) {
-			artMap.put(art.getName(), art.getGroupId() + ":" + art.getArtifactId());
-		}
-		return artMap;
-	}
 
 	private static List<MavenArtifact> getArtifacts(Model model) {
 		DependencyManagement dependencyManagement = model.getDependencyManagement();
@@ -306,20 +265,6 @@ public class ArtifactManagerImpl implements ArtifactManager {
 		art.setGroupId(dependency.getGroupId());
 		art.setVersion(dependency.getVersion());
 		return art;
-	}
-
-	public static Properties getVersionsProperties(Model model) {
-		final List<MavenArtifact> artifacts = getArtifacts(model);
-		Properties properties = model.getProperties();
-		normalizeVersions(artifacts, properties);
-		return toProperties(artifacts);
-	}
-
-	private static Properties toProperties(List<MavenArtifact> artifacts) {
-		Properties properties = new Properties();
-		artifacts
-				.forEach(art -> properties.put(art.getGroupId() + ":" + art.getArtifactId(), art.getVersion()));
-		return properties;
 	}
 
 	private static void normalizeVersions(List<MavenArtifact> artifacts, Properties properties) {

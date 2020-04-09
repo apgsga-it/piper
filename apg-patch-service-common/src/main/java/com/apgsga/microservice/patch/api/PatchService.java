@@ -18,46 +18,46 @@ public interface PatchService {
 	 * Start the Jenkins Install Pipeline for a Patch. 
 	 * @param patch the Patch, which contains the Target to Install
 	 */
-	public void startInstallPipeline(Patch patch); 
+    void startInstallPipeline(Patch patch);
 	
 	
 	/**
 	 * @return the Configuration Data of the known Target Services
 	 */
-	public List<ServiceMetaData> listServiceData(); 
+    List<ServiceMetaData> listServiceData();
 	
 	
 	/**
 	 * @param masterTarget the System Target the Patch System is requested from
 	 * @return List for Installation Targets for the Requesting TargetSystem
 	 */
-	public List<String> listInstallationTargetsFor(String masterTarget);
+    List<String> listInstallationTargetsFor(String masterTarget);
 	
 	/**
 	 * List all known DbModules
 	 * 
 	 * @return List of of Db Modules
 	 */
-	public List<String> listDbModules(); 
+    List<String> listDbModules();
 	
 	/**
-	 * @param patch Patch, for which Artifacts are listed
+	 * @param serviceName Patch, for which Artifacts are listed
 	 * @param filter Filter, which should be applied for search
 	 * @return list of Maven Arifacts relevant for Patch
 	 */
-	// TODO (che, 30.10) this really should'nt be dependent of the Patch
-	public List<MavenArtifact> listMavenArtifacts(Patch patch, SearchCondition filter); 
+    List<MavenArtifact> listMavenArtifacts(String serviceName, SearchCondition filter);
 	/**
 	 * List all Maven Artifacts 
 	 * @return list of Maven Arifacts
+	 * @param serviceName
 	 */
-	public List<MavenArtifact> listMavenArtifacts(Patch patch);
+    List<MavenArtifact> listMavenArtifacts(String serviceName);
 	/**
 	 * List all changed 
 	 * @param searchString
 	 * @return List of changed DbObjects 
 	 */
-	public List<DbObject> listAllObjectsChangedForDbModule(String patchNummber,String searchString);
+    List<DbObject> listAllObjectsChangedForDbModule(String patchNummber, String searchString);
 
 	/**
 	 * List all SQL Resource for module name matching searchString
@@ -65,7 +65,7 @@ public interface PatchService {
 	 * @param searchString
 	 * @return List of DbObjects
 	 */
-	public List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString);
+    List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString);
 
 	/**
 	 * List all SQL Resource for module name matching searchString. Temporary checkout will be done in a folder specific for the given username
@@ -73,7 +73,7 @@ public interface PatchService {
 	 * @param searchString
 	 * @return List of DbObjects
 	 */
-	public List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString, String username);
+    List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString, String username);
 
 	/**
 	 * Retrieves a Patch by Id. 
@@ -81,43 +81,43 @@ public interface PatchService {
 	 * @return a Patch Object
 	 * @throws PatchContainerException
 	 */
-	public Patch findById(String patchNummer);
+    Patch findById(String patchNummer);
 	
 	/**
 	 * Retrieves a PatchLog by Id
 	 * @param patchNummer
 	 * @return a PatchLog Object
 	 */
-	public PatchLog findPatchLogById(String patchNummer);
+    PatchLog findPatchLogById(String patchNummer);
 	
-	public List<Patch> findByIds(List<String> patchIds);	
+	List<Patch> findByIds(List<String> patchIds);
 	/**
 	 * All changes on a patch Object need to be saved.
 	 * @param patch a Patch Object
 	 * @return MicroservicePatch with Server added data
 	 * @throws PatchContainerException
 	 */
-	
-	public Patch save(Patch patch);
+
+    Patch save(Patch patch);
 	
 	/**
 	 * Log all steps done for a patch
 	 * @param patch , Patch where to get the information from
 	 */
-	public void log(Patch patch);
+    void log(Patch patch);
 
 	/**
 	 * A Patch object is removed from the PatchContainer
 	 * @param patch a Patch object
 	 * @throws PatchContainerException
 	 */
-	public void remove(Patch patch);
+    void remove(Patch patch);
 	
 	/**
 	 * Search for patches which contains given object name
 	 * @param objectName name of searched object
 	 * @return List of patches containing Object with given name
 	 */
-	public List<Patch> findWithObjectName(String objectName);
+    List<Patch> findWithObjectName(String objectName);
 
 }

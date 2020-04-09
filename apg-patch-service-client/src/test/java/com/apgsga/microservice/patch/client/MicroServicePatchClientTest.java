@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import com.apgsga.microservice.patch.api.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,11 +27,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileCopyUtils;
 
-import com.apgsga.microservice.patch.api.DbObject;
-import com.apgsga.microservice.patch.api.MavenArtifact;
-import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchLog;
-import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.apgsga.microservice.patch.server.impl.persistence.FilebasedPatchPersistence;
@@ -150,13 +146,13 @@ public class MicroServicePatchClientTest {
 	public void testSaveWithArtifacts() {
 		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
-		patch.setServiceName("It21ui");
-		patch.setMicroServiceBranch("SomeBaseBranch");
+		Service service = Service.create().serviceName("It21ui").microServiceBranch("SomeBaseBranch");
+		patch.addServices(service);
 		patch.setDbPatchBranch("SomePatchBranch");
 		patch.addDbObjects(new DbObject("FileName1", "FilePath1"));
 		patch.addDbObjects(new DbObject("FileName2", "FilePath2"));
-		patch.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "SomeVersion1"));
-		patch.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "SomeVersion2"));
+		service.addMavenArtifacts(MavenArtifact.create().artifactId("ArtifactId1").groupId( "GroupId1").version("SomeVersion1"));
+		service.addMavenArtifacts(MavenArtifact.create().artifactId("ArtifactId2").groupId( "GroupId2").version("SomeVersion2"));
 		patchClient.save(patch);
 		Patch result = patchClient.findById("SomeUnqiueNumber3");
 		assertNotNull(result);
@@ -183,6 +179,8 @@ public class MicroServicePatchClientTest {
 		p2.setPatchNummer("p2");
 		patchClient.save(p1);
 		patchClient.save(p2);
+		Service service1 = Service.create().serviceName("It21ui1").microServiceBranch("SomeBaseBranch1");
+		Service service2 = Service.create().serviceName("It21ui2").microServiceBranch("SomeBaseBranch2");
 		assertNotNull(patchClient.findById("p1"));
 		assertNotNull(patchClient.findById("p2"));
 		MavenArtifact ma1 = new MavenArtifact("test-ma1", "com.apgsga", "1.0");
@@ -194,10 +192,12 @@ public class MicroServicePatchClientTest {
 		db2.setModuleName("test-db2");		
 		p1.addDbObjects(db1);
 		p1.addDbObjects(db2);
-		p1.addMavenArtifacts(ma1);
-		p2.addMavenArtifacts(ma2);
-		p1.addMavenArtifacts(ma3);
-		p2.addMavenArtifacts(ma3);
+		service1.addMavenArtifacts(ma1);
+		service2.addMavenArtifacts(ma2);
+		service1.addMavenArtifacts(ma3);
+		service2.addMavenArtifacts(ma3);
+		p1.addServices(service1);
+		p2.addServices(service2);
 		patchClient.save(p1);
 		patchClient.save(p2);
 		assertTrue(patchClient.findById("p1").getMavenArtifacts().size() == 2);

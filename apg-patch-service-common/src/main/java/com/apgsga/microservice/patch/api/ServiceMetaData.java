@@ -2,7 +2,6 @@ package com.apgsga.microservice.patch.api;
 
 
 import com.affichage.persistence.common.client.AbstractTransientEntity;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 public class ServiceMetaData extends AbstractTransientEntity {
 
@@ -83,11 +82,8 @@ public class ServiceMetaData extends AbstractTransientEntity {
 		} else if (!revisionMnemoPart.equals(other.revisionMnemoPart))
 			return false;
 		if (serviceName == null) {
-			if (other.serviceName != null)
-				return false;
-		} else if (!serviceName.equals(other.serviceName))
-			return false;
-		return true;
+			return other.serviceName == null;
+		} else return serviceName.equals(other.serviceName);
 	}
 	@Override
 	public String toString() {

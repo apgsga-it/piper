@@ -1,44 +1,48 @@
 {
-	"className": "com.apgsga.microservice.patch.api.Patch",
-	"patchNummer": "5401",
-	"serviceName": "It21Ui",
-	"microServiceBranch": "it21_release_9_1_0_admin_uimig",
-	"dbPatchBranch": "Patch_0900C1_5401",
-	"prodBranch": "HEAD",
-	"patchTag": "Patch_0900C1_5401_1",
-	"tagNr": 1,
-	"installationTarget": "CHEI212",
-	"baseVersionNumber": null,
-	"revisionMnemoPart": null,
-	"revisionNumber": null,
-	"lastRevisionNumber": null,
-	"dbObjects": [
-		{
-			"fileName": "apgops_lib.apg_db_outage_planned.syn.sql",
-			"filePath": "testdbmodule/database/sql/",
-			"moduleName": "testdbmodule",
-			"className": "com.apgsga.microservice.patch.api.DbObject"
-		},
-		{
-			"fileName": "sys.apg_install_utility.pks.cleanup.sql",
-			"filePath": "testdbmodule/database/sql/",
-			"moduleName": "testdbmodule",
-			"className": "com.apgsga.microservice.patch.api.DbObject"
-		},
-		{
-			"fileName": "test.sys.apg_install_utility.pks.cleanup.sql",
-			"filePath": "testdbAnotherdbModule/database/sql/",
-			"moduleName": "testdbAnotherdbModule",
-			"className": "com.apgsga.microservice.patch.api.DbObject"
-		}
-	],
-	"mavenArtifacts": [
-		{
-			"artifactId": "zentraldispo-dao",
-			"groupId": "com.affichage.it21.vk",
-			"name": null,
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact"
-		}
-	]
+  "className": "com.apgsga.microservice.patch.api.Patch",
+  "patchNummer": "5401",
+  "dbPatchBranch": "Patch_0900C1_5401",
+  "prodBranch": "HEAD",
+  "patchTag": "Patch_0900C1_5401_1",
+  "tagNr": 1,
+  "installationTarget": "CHEI212",
+  "dbObjects": [
+    {
+      "fileName": "apgops_lib.apg_db_outage_planned.syn.sql",
+      "filePath": "testdbmodule/database/sql/",
+      "moduleName": "testdbmodule",
+      "className": "com.apgsga.microservice.patch.api.DbObject"
+    },
+    {
+      "fileName": "sys.apg_install_utility.pks.cleanup.sql",
+      "filePath": "testdbmodule/database/sql/",
+      "moduleName": "testdbmodule",
+      "className": "com.apgsga.microservice.patch.api.DbObject"
+    },
+    {
+      "fileName": "test.sys.apg_install_utility.pks.cleanup.sql",
+      "filePath": "testdbAnotherdbModule/database/sql/",
+      "moduleName": "testdbAnotherdbModule",
+      "className": "com.apgsga.microservice.patch.api.DbObject"
+    }
+  ],
+  "services": [
+    {
+      "serviceName": "It21Ui",
+      "microServiceBranch": "it21_release_9_1_0_admin_uimig",
+      "baseVersionNumber": null,
+      "revisionMnemoPart": null,
+      "revisionNumber": null,
+      "lastRevisionNumber": null,
+      "mavenArtifacts": [
+        {
+          "artifactId": "zentraldispo-dao",
+          "groupId": "com.affichage.it21.vk",
+          "name": null,
+          "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
+          "className": "com.apgsga.microservice.patch.api.MavenArtifact"
+        }
+      ]
+    }
+  ]
 }

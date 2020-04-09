@@ -74,9 +74,7 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
         ExecutorService executorService = Executors.newFixedThreadPool(artifacts.size());
         List<Callable<MavenArtWithDependencies>> callables = Lists.newArrayList();
         for (MavenArtifact art : artifacts) {
-        		Callable<MavenArtWithDependencies> callable = () ->  {
-         		return resolveDependencies(art,Collections.unmodifiableList(artifacts));
-        		};
+        		Callable<MavenArtWithDependencies> callable = () -> resolveDependencies(art,Collections.unmodifiableList(artifacts));
         		callables.add(callable);
 		}
         try {

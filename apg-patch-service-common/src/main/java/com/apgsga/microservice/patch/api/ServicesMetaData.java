@@ -1,8 +1,8 @@
 package com.apgsga.microservice.patch.api;
 
-import java.util.List;
-
 import com.affichage.persistence.common.client.AbstractTransientEntity;
+
+import java.util.List;
 
 public class ServicesMetaData extends AbstractTransientEntity {
 	
@@ -35,11 +35,8 @@ public class ServicesMetaData extends AbstractTransientEntity {
 			return false;
 		ServicesMetaData other = (ServicesMetaData) obj;
 		if (servicesMetaData == null) {
-			if (other.servicesMetaData != null)
-				return false;
-		} else if (!servicesMetaData.equals(other.servicesMetaData))
-			return false;
-		return true;
+			return other.servicesMetaData == null;
+		} else return servicesMetaData.equals(other.servicesMetaData);
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 package com.apgsga.microservice.patch.api;
 
-import java.util.Date;
-
 import com.affichage.persistence.common.client.AbstractTransientEntity;
+
+import java.util.Date;
 
 public class PatchLogDetails extends AbstractTransientEntity {
 
@@ -102,13 +102,8 @@ public class PatchLogDetails extends AbstractTransientEntity {
 			return false;
 		}
 		if(logText == null) {
-			if(other.getLogText() != null) {
-				return false;
-			}
+			return other.getLogText() == null;
 		}
-		else if(!logText.equals(other.getLogText())) {
-			return false;
-		}
-		return true;
+		else return logText.equals(other.getLogText());
 	}
 }

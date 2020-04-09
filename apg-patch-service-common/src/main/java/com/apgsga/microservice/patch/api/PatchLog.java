@@ -1,9 +1,9 @@
 package com.apgsga.microservice.patch.api;
 
-import java.util.List;
-
 import com.affichage.persistence.common.client.AbstractTransientEntity;
 import com.google.common.collect.Lists;
+
+import java.util.List;
 
 public class PatchLog extends AbstractTransientEntity  {
 
@@ -67,9 +67,7 @@ public class PatchLog extends AbstractTransientEntity  {
 		}
 		
 		if(logDetails.isEmpty()) {
-			if(!other.getLogDetails().isEmpty()) {
-				return false;
-			}
+			return other.getLogDetails().isEmpty();
 		}
 		else {
 			for(PatchLogDetails ld : logDetails) {

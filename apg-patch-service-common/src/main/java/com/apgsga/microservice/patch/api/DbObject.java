@@ -1,10 +1,8 @@
 package com.apgsga.microservice.patch.api;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import org.apache.commons.io.FilenameUtils;
-
 import com.affichage.persistence.common.client.AbstractTransientEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.io.FilenameUtils;
 
 public class DbObject extends AbstractTransientEntity  {
 
@@ -106,11 +104,8 @@ public class DbObject extends AbstractTransientEntity  {
 		} else if (!filePath.equals(other.filePath))
 			return false;
 		if (moduleName == null) {
-			if (other.moduleName != null)
-				return false;
-		} else if (!moduleName.equals(other.moduleName))
-			return false;
-		return true;
+			return other.moduleName == null;
+		} else return moduleName.equals(other.moduleName);
 	}
 
 	@Override

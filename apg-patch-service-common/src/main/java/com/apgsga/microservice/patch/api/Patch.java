@@ -2,10 +2,11 @@ package com.apgsga.microservice.patch.api;
 
 import com.affichage.persistence.common.client.AbstractTransientEntity;
 import com.affichage.persistence.common.client.EntityRootInterface;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.collect.Lists;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @EntityRootInterface
@@ -15,19 +16,15 @@ public class Patch extends AbstractTransientEntity {
     private static final long serialVersionUID = 1L;
     public static final String PATCH_NUMMER = "patchNummer";
 
-    public static final String SERVICE_NAME = "serviceName";
-
-    public static final String MICROSERVICE_BRANCH = "microServiceBranch";
-
     public static final String DB_PATCH_BRANCH = "dbPatchBranch";
 
     public static final String PROD_BRANCH = "prodBranch";
 
     public static final String DB_OBJECTS = "dbObjects";
 
-    public static final String MAVEN_ARTEFACTS = "mavenArtifacts";
-
     public static final String DOCKER_SERVICES = "dockerServices";
+
+    public static final String SERVICES = "services";
 
     public static final String TAG_NR = "tagNr";
 
@@ -39,22 +36,12 @@ public class Patch extends AbstractTransientEntity {
 
     public static final String CURRENT_TARGET = "currentTarget";
 
-    public static final String INSTALL_ON_EMPTY_MODULES = "installOnEmptyModules";
-
-    public static final String INSTALL_JADAS_AND_GUI = "installJadasAndGui";
-
-    public static final String INSTALL_DOCKER_SERVICES = "installDockerServices";
-
-    public static final String PIPELINE_TASK = "pipeLineTask";
-
     public static final String LOG_TEXT = "logText";
 
     public static final String CURRENT_PIPELINE_TASK = "currentPipelineTask";
 
 
     private String patchNummer;
-    private String serviceName = "It21Ui";
-    private String microServiceBranch;
     private String dbPatchBranch;
     private String prodBranch = PROD_BRANCH_DEFAULT;
     private String patchTag = "";
@@ -62,16 +49,11 @@ public class Patch extends AbstractTransientEntity {
     private Integer tagNr = 0;
     private String installationTarget;
     private String targetToState;
-    private String baseVersionNumber;
-    private String revisionMnemoPart;
-    private String revision;
-    private String lastRevision;
     private String runningNr;
     private List<DbObject> dbObjects = Lists.newArrayList();
-    private List<MavenArtifact> mavenArtifacts = Lists.newArrayList();
     private List<String> dockerServices = Lists.newArrayList();
+    private List<Service> services = Lists.newArrayList();
     private boolean installDockerServices = false;
-    private boolean installOnEmptyModules = false;
     private String lastPipelineTask = "";
     private String currentTarget;
     private String currentPipelineTask;
@@ -91,39 +73,6 @@ public class Patch extends AbstractTransientEntity {
         final Object oldValue = this.patchNummer;
         this.patchNummer = patchNummer;
         firePropertyChangeEvent(PATCH_NUMMER, oldValue, patchNummer);
-    }
-
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-
-    public void setServiceVersion(ServiceMetaData serviceVersion) {
-        setServiceName(serviceVersion.getServiceName());
-        setBaseVersionNumber(serviceVersion.getBaseVersionNumber());
-        setRevisionMnemoPart(serviceVersion.getRevisionMnemoPart());
-        setMicroServiceBranch(serviceVersion.getMicroServiceBranch());
-
-    }
-
-
-    public void setServiceName(String serviceName) {
-        final Object oldValue = this.serviceName;
-        this.serviceName = serviceName;
-        firePropertyChangeAndMarkDirty(SERVICE_NAME, oldValue, serviceName);
-    }
-
-
-    public String getMicroServiceBranch() {
-        return microServiceBranch;
-    }
-
-
-    public void setMicroServiceBranch(String microServiceBranch) {
-        final Object oldValue = this.microServiceBranch;
-        this.microServiceBranch = microServiceBranch;
-        firePropertyChangeAndMarkDirty(MICROSERVICE_BRANCH, oldValue, microServiceBranch);
     }
 
 
@@ -192,50 +141,14 @@ public class Patch extends AbstractTransientEntity {
         firePropertyChangeAndMarkDirty(DB_OBJECTS, oldValue, dbObjects);
     }
 
-
-    public List<MavenArtifact> getMavenArtifacts() {
-        return mavenArtifacts;
-    }
-
-
     public List<String> getDockerServices() {
         return dockerServices;
-    }
-
-
-    public List<String> getMavenArtifactsAsVcsPath() {
-        return getMavenArtifactsToBuild().stream().map(MavenArtifact::getName).collect(Collectors.toList());
-    }
-
-
-    public List<MavenArtifact> getMavenArtifactsToBuild() {
-        return mavenArtifacts.stream().filter(m -> m.getVersion().endsWith("SNAPSHOT")).collect(Collectors.toList());
-    }
-
-
-    public void setMavenArtifacts(List<MavenArtifact> mavenArtifacts) {
-        final Object oldValue = Lists.newArrayList(this.dbObjects);
-        this.mavenArtifacts = mavenArtifacts;
-        firePropertyChangeEvent(MAVEN_ARTEFACTS, oldValue, mavenArtifacts);
-
     }
 
     public void setDockerServices(List<String> dockerServices) {
         final Object oldValue = Lists.newArrayList(this.dockerServices);
         this.dockerServices = dockerServices;
         firePropertyChangeEvent(DOCKER_SERVICES, oldValue, dockerServices);
-    }
-
-    public void removeMavenArtifacts(MavenArtifact mavenArtifact) {
-        final Object oldValue = Lists.newArrayList(this.mavenArtifacts);
-        mavenArtifacts.remove(mavenArtifact);
-        firePropertyChangeAndMarkDirty(MAVEN_ARTEFACTS, oldValue, mavenArtifacts);
-    }
-
-    public void addMavenArtifacts(MavenArtifact mavenArtifact) {
-        final Object oldValue = Lists.newArrayList(this.mavenArtifacts);
-        mavenArtifacts.add(mavenArtifact);
-        firePropertyChangeAndMarkDirty(MAVEN_ARTEFACTS, oldValue, mavenArtifacts);
     }
 
     public void removeDockerService(String serviceName) {
@@ -248,6 +161,29 @@ public class Patch extends AbstractTransientEntity {
         final Object oldValue = Lists.newArrayList(this.dockerServices);
         dockerServices.add(serviceName);
         firePropertyChangeAndMarkDirty(DOCKER_SERVICES, oldValue, dockerServices);
+    }
+
+    public List<Service> getServices() {
+        return services;
+    }
+
+    public void setServices(List<Service> services) {
+        final Object oldValue = Lists.newArrayList(this.services);
+        this.services = services;
+        firePropertyChangeEvent(SERVICES, oldValue, services);
+        this.services = services;
+    }
+
+    public void removeServices(Service service) {
+        final Object oldValue = Lists.newArrayList(this.services);
+        services.remove(service);
+        firePropertyChangeAndMarkDirty(SERVICES, oldValue, services);
+    }
+
+    public void addServices(Service service) {
+        final Object oldValue = Lists.newArrayList(this.services);
+        services.add(service);
+        firePropertyChangeAndMarkDirty(SERVICES, oldValue, services);
     }
 
     public void incrementTagNr() {
@@ -315,54 +251,20 @@ public class Patch extends AbstractTransientEntity {
         firePropertyChange(CURRENT_PIPELINE_TASK, oldValue, currentPipelineTask);
     }
 
-    public String getBaseVersionNumber() {
-        return baseVersionNumber;
+    public Service getService(String serviceName) {
+        for (Service service : services) {
+            if (service.getServiceName().equals(serviceName)) {
+                return service;
+            }
+        }
+        return null;
     }
 
-    public void setBaseVersionNumber(String baseVersionNumber) {
-        this.baseVersionNumber = baseVersionNumber;
-    }
-
-    public String getRevisionMnemoPart() {
-        return revisionMnemoPart;
-    }
-
-    public void setRevisionMnemoPart(String revisionMnemoPart) {
-        this.revisionMnemoPart = revisionMnemoPart;
-    }
-
-    public String getRevision() {
-        return revision;
-    }
-
-    public void setRevision(String revisionNumber) {
-        this.revision = revisionNumber;
-    }
-
-    public String getLastRevision() {
-        return lastRevision;
-    }
-
-    public void setLastRevision(String lastRevisionNumber) {
-        this.lastRevision = lastRevisionNumber;
-    }
-
-    public boolean getInstallOnEmptyModules() {
-        return installOnEmptyModules;
-    }
-
-    public void setInstallOnEmptyModules(boolean installOnEmptymodules) {
-        final Object oldValue = this.installOnEmptyModules;
-        this.installOnEmptyModules = installOnEmptymodules;
-        firePropertyChangeEvent(INSTALL_ON_EMPTY_MODULES, oldValue, installOnEmptyModules);
-    }
-
-    public boolean getInstallJadasAndGui() {
-        return !getMavenArtifacts().isEmpty() || installOnEmptyModules;
-    }
-
-    public void setInstallJadasAndGui() {
-        // Intentionally empty
+   // TODO (MULTISERVICE_CM , 9.4) : This is here for backward compatability and must go away
+    public List<MavenArtifact> getMavenArtifacts() {
+        List<MavenArtifact> all = Lists.newArrayList();
+        for (Service service : services) all.addAll(service.getMavenArtifacts());
+        return all;
     }
 
     public boolean getInstallDockerServices() {
@@ -401,160 +303,38 @@ public class Patch extends AbstractTransientEntity {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((baseVersionNumber == null) ? 0 : baseVersionNumber.hashCode());
-        result = prime * result + ((dbObjects == null) ? 0 : dbObjects.hashCode());
-        result = prime * result + ((dbPatchBranch == null) ? 0 : dbPatchBranch.hashCode());
-        result = prime * result + ((developerBranch == null) ? 0 : developerBranch.hashCode());
-        result = prime * result + (installOnEmptyModules ? 1231 : 1237);
-        result = prime * result + ((installationTarget == null) ? 0 : installationTarget.hashCode());
-        result = prime * result + ((lastRevision == null) ? 0 : lastRevision.hashCode());
-        result = prime * result + ((mavenArtifacts == null) ? 0 : mavenArtifacts.hashCode());
-        result = prime * result + ((microServiceBranch == null) ? 0 : microServiceBranch.hashCode());
-        result = prime * result + ((patchNummer == null) ? 0 : patchNummer.hashCode());
-        result = prime * result + ((patchTag == null) ? 0 : patchTag.hashCode());
-        result = prime * result + ((lastPipelineTask == null) ? 0 : lastPipelineTask.hashCode());
-        result = prime * result + ((prodBranch == null) ? 0 : prodBranch.hashCode());
-        result = prime * result + ((revision == null) ? 0 : revision.hashCode());
-        result = prime * result + ((revisionMnemoPart == null) ? 0 : revisionMnemoPart.hashCode());
-        result = prime * result + ((runningNr == null) ? 0 : runningNr.hashCode());
-        result = prime * result + ((serviceName == null) ? 0 : serviceName.hashCode());
-        result = prime * result + ((tagNr == null) ? 0 : tagNr.hashCode());
-        result = prime * result + ((targetToState == null) ? 0 : targetToState.hashCode());
-        result = prime * result + ((currentTarget == null) ? 0 : currentTarget.hashCode());
-        result = prime * result + ((currentPipelineTask == null) ? 0 : currentPipelineTask.hashCode());
-        result = prime * result + ((logText == null) ? 0 : logText.hashCode());
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Patch)) return false;
+        Patch patch = (Patch) o;
+        return patchNummer.equals(patch.patchNummer);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Patch other = (Patch) obj;
-        if (baseVersionNumber == null) {
-            if (other.baseVersionNumber != null)
-                return false;
-        } else if (!baseVersionNumber.equals(other.baseVersionNumber))
-            return false;
-        if (dbObjects == null) {
-            if (other.dbObjects != null)
-                return false;
-        } else if (!dbObjects.equals(other.dbObjects))
-            return false;
-        if (dbPatchBranch == null) {
-            if (other.dbPatchBranch != null)
-                return false;
-        } else if (!dbPatchBranch.equals(other.dbPatchBranch))
-            return false;
-        if (developerBranch == null) {
-            if (other.developerBranch != null)
-                return false;
-        } else if (!developerBranch.equals(other.developerBranch))
-            return false;
-        if (installOnEmptyModules != other.installOnEmptyModules)
-            return false;
-        if (installationTarget == null) {
-            if (other.installationTarget != null)
-                return false;
-        } else if (!installationTarget.equals(other.installationTarget))
-            return false;
-        if (lastRevision == null) {
-            if (other.lastRevision != null)
-                return false;
-        } else if (!lastRevision.equals(other.lastRevision))
-            return false;
-        if (mavenArtifacts == null) {
-            if (other.mavenArtifacts != null)
-                return false;
-        } else if (!mavenArtifacts.equals(other.mavenArtifacts))
-            return false;
-        if (microServiceBranch == null) {
-            if (other.microServiceBranch != null)
-                return false;
-        } else if (!microServiceBranch.equals(other.microServiceBranch))
-            return false;
-        if (patchNummer == null) {
-            if (other.patchNummer != null)
-                return false;
-        } else if (!patchNummer.equals(other.patchNummer))
-            return false;
-        if (patchTag == null) {
-            if (other.patchTag != null)
-                return false;
-        } else if (!patchTag.equals(other.patchTag))
-            return false;
-        if (lastPipelineTask == null) {
-            if (other.lastPipelineTask != null)
-                return false;
-        } else if (!lastPipelineTask.equals(other.lastPipelineTask))
-            return false;
-        if (prodBranch == null) {
-            if (other.prodBranch != null)
-                return false;
-        } else if (!prodBranch.equals(other.prodBranch))
-            return false;
-        if (revision == null) {
-            if (other.revision != null)
-                return false;
-        } else if (!revision.equals(other.revision))
-            return false;
-        if (revisionMnemoPart == null) {
-            if (other.revisionMnemoPart != null)
-                return false;
-        } else if (!revisionMnemoPart.equals(other.revisionMnemoPart))
-            return false;
-        if (runningNr == null) {
-            if (other.runningNr != null)
-                return false;
-        } else if (!runningNr.equals(other.runningNr))
-            return false;
-        if (serviceName == null) {
-            if (other.serviceName != null)
-                return false;
-        } else if (!serviceName.equals(other.serviceName))
-            return false;
-        if (tagNr == null) {
-            if (other.tagNr != null)
-                return false;
-        } else if (!tagNr.equals(other.tagNr))
-            return false;
-        if (targetToState == null) {
-            if (other.targetToState != null)
-                return false;
-        } else if (!targetToState.equals(other.targetToState))
-            return false;
-        if (currentTarget == null) {
-            if (other.currentTarget != null)
-                return false;
-        } else if (!currentTarget.equals(other.currentTarget))
-            return false;
-        if (currentPipelineTask == null) {
-            if (other.getCurrentPipelineTask() != null)
-                return false;
-        } else if (!currentPipelineTask.equals(other.getCurrentPipelineTask()))
-            return false;
-        if (logText == null) {
-            return other.getLogText() == null;
-        } else return logText.equals(other.getLogText());
+    public int hashCode() {
+        return Objects.hash(patchNummer);
     }
 
     @Override
     public String toString() {
-        return "PatchBean [patchNummer=" + patchNummer + ", serviceName=" + serviceName + ", microServiceBranch="
-                + microServiceBranch + ", dbPatchBranch=" + dbPatchBranch + ", prodBranch=" + prodBranch + ", patchTag="
-                + patchTag + ", developerBranch=" + developerBranch + ", tagNr=" + tagNr + ", installationTarget="
-                + installationTarget + ", targetToState=" + targetToState + ", baseVersionNumber=" + baseVersionNumber
-                + ", revisionMnemoPart=" + revisionMnemoPart + ", revision=" + revision + ", lastRevision="
-                + lastRevision + ", runningNr=" + runningNr + ", dbObjects=" + dbObjects + ", mavenArtifacts="
-                + mavenArtifacts + ", installOnEmptyModules=" + installOnEmptyModules + ", pipelineTask=" + lastPipelineTask
-                + ", currentTarget=" + currentTarget + ", currentPipelineTask=" + currentPipelineTask + ", logText=" + logText
-                + "]";
+        return "Patch{" +
+                "patchNummer='" + patchNummer + '\'' +
+                ", dbPatchBranch='" + dbPatchBranch + '\'' +
+                ", prodBranch='" + prodBranch + '\'' +
+                ", patchTag='" + patchTag + '\'' +
+                ", developerBranch='" + developerBranch + '\'' +
+                ", tagNr=" + tagNr +
+                ", installationTarget='" + installationTarget + '\'' +
+                ", targetToState='" + targetToState + '\'' +
+                ", runningNr='" + runningNr + '\'' +
+                ", dbObjects=" + dbObjects +
+                ", dockerServices=" + dockerServices +
+                ", services=" + services +
+                ", installDockerServices=" + installDockerServices +
+                ", lastPipelineTask='" + lastPipelineTask + '\'' +
+                ", currentTarget='" + currentTarget + '\'' +
+                ", currentPipelineTask='" + currentPipelineTask + '\'' +
+                ", logText='" + logText + '\'' +
+                '}';
     }
 }

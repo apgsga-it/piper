@@ -2,6 +2,7 @@ package com.apgsga.microservice.patch.server;
 
 import static org.junit.Assert.fail;
 
+import com.apgsga.microservice.patch.api.Service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
@@ -159,10 +160,10 @@ public class MicroServicePatchServerExceptionTests {
 	public void testPatchInvalidToState() {
 		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
-		patch.setServiceName("It21ui");
-		patch.setMicroServiceBranch("SomeBaseBranch");
-		patch.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
-		patch.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
+		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
+		patch.addServices(service);
 		patchService.save(patch);
 		PatchActionExecutor patchActionExecutor = patchActionFactory.create(patchService); 
 		try {
@@ -178,10 +179,10 @@ public class MicroServicePatchServerExceptionTests {
 	public void testPatchConfigDirDoesnotExist() {
 		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
-		patch.setServiceName("It21ui");
-		patch.setMicroServiceBranch("SomeBaseBranch");
-		patch.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
-		patch.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
+		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
+		patch.addServices(service);
 		patchService.save(patch);
 		GroovyScriptActionExecutor patchActionExecutor = (GroovyScriptActionExecutor) patchActionFactory.create(patchService); 
 		patchActionExecutor.setConfigDir("XXXXXXXX");
@@ -198,10 +199,10 @@ public class MicroServicePatchServerExceptionTests {
 	public void testPatchConfigFileDoesnotExist() {
 		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
-		patch.setServiceName("It21ui");
-		patch.setMicroServiceBranch("SomeBaseBranch");
-		patch.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
-		patch.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
+		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
+		patch.addServices(service);
 		patchService.save(patch);
 		GroovyScriptActionExecutor patchActionExecutor = (GroovyScriptActionExecutor) patchActionFactory.create(patchService); 
 		patchActionExecutor.setConfigFileName("XXXXXX");
@@ -219,10 +220,10 @@ public class MicroServicePatchServerExceptionTests {
 	public void testPatchInvalidGroovyScriptFile() {
 		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
-		patch.setServiceName("It21ui");
-		patch.setMicroServiceBranch("SomeBaseBranch");
-		patch.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
-		patch.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
+		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
+		patch.addServices(service);
 		patchService.save(patch);
 		GroovyScriptActionExecutor patchActionExecutor = (GroovyScriptActionExecutor) patchActionFactory.create(patchService); 
 		patchActionExecutor.setGroovyScriptFile("XXXXX");
