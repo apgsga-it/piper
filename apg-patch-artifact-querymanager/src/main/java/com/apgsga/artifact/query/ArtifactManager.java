@@ -17,30 +17,24 @@ import com.apgsga.microservice.patch.api.SearchCondition;
 public interface ArtifactManager {
 	
 
-	public static  ArtifactManager create(String groupId, String artefactId, String localRep, RepositorySystemFactory systemFactory) {
+	static  ArtifactManager create(String groupId, String artefactId, String localRep, RepositorySystemFactory systemFactory) {
 		return new ArtifactManagerImpl(localRep, groupId, artefactId, systemFactory);
 	}
 
-	public static ArtifactManager create(String localRep, RepositorySystemFactory systemFactory) {
+	static ArtifactManager create(String localRep, RepositorySystemFactory systemFactory) {
 		return new ArtifactManagerImpl(localRep, systemFactory);
 	}
 	
-	public static ArtifactManager createMock(String localRep) {
+	static ArtifactManager createMock(String localRep) {
 		return new MockArtifactManagerImpl();
 	}
 
 
-	Properties getVersionsProperties(String version) throws DependencyResolutionException,IOException, XmlPullParserException, ArtifactResolutionException;
-
 	List<MavenArtifact> getAllDependencies(String serviceVersion) throws IOException, XmlPullParserException, DependencyResolutionException,ArtifactResolutionException;
 
 	List<MavenArtifact> getAllDependencies(String serviceVersion, SearchCondition searchFilter) throws IOException, XmlPullParserException, DependencyResolutionException,ArtifactResolutionException;
-	
-	List<MavenArtifact> getArtifactsWithNameFromBom(String bomVersion) throws IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException;
 
-	Map<String, String> getArtifactsWithNameAsMap(String version) throws DependencyResolutionException, IOException, XmlPullParserException, ArtifactResolutionException;
-
-	String getArtifactName(String groupId, String artifactId, String version) throws DependencyResolutionException, ArtifactResolutionException, IOException, XmlPullParserException;
+	String getArtifactName(String groupId, String artifactId, String version) throws Exception;
 	
 	void cleanLocalMavenRepo();
 	

@@ -1,5 +1,5 @@
 {
-	"className": "com.apgsga.microservice.patch.api.impl.PatchBean",
+	"className": "com.apgsga.microservice.patch.api.Patch",
 	"patchNummer": "5797",
 	"serviceName": "It21Ui",
 	"microServiceBranch": "it21_release_9_1_0_admin_uimig",
@@ -16,7 +16,7 @@
 	],
 	"mavenArtifacts": [
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "zentraldispo-ui",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.ui",
@@ -24,7 +24,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "zentraldispo-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.dao",
@@ -32,7 +32,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "gp-dao",
 			"groupId": "com.affichage.it21.gp",
 			"name": "com.affichage.it21.gp.dao",
@@ -40,7 +40,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "gp-ui",
 			"groupId": "com.affichage.it21.gp",
 			"name": "com.affichage.it21.gp.ui",
@@ -48,7 +48,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "adgis-api-ui",
 			"groupId": "com.affichage.it21.adgis",
 			"name": null,
@@ -56,7 +56,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "adgis-common-dao",
 			"groupId": "com.affichage.it21.adgis",
 			"name": null,
@@ -64,7 +64,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "adgis-api-dao",
 			"groupId": "com.affichage.it21.adgis",
 			"name": null,
@@ -72,7 +72,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "adgis-component",
 			"groupId": "com.affichage.adgis.component",
 			"name": null,
@@ -80,7 +80,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "common-messaging",
 			"groupId": "com.affichage.common",
 			"name": null,
@@ -88,7 +88,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "geo-lib",
 			"groupId": "com.affichage.geo.lib",
 			"name": null,
@@ -96,7 +96,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "jgoodies-utils",
 			"groupId": "com.affichage.ui.utils",
 			"name": null,
@@ -104,7 +104,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "common-rep-dao",
 			"groupId": "com.apgsga.common.rep",
 			"name": null,
@@ -112,7 +112,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "common-rep-ui",
 			"groupId": "com.apgsga.common.rep",
 			"name": null,
@@ -120,7 +120,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "forms2java",
 			"groupId": "com.apgsga",
 			"name": null,
@@ -128,7 +128,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "apg-jasperreport",
 			"groupId": "com.apgsga",
 			"name": null,
@@ -136,7 +136,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "ibus-domainwerte",
 			"groupId": "com.apgsga.it21.ibus",
 			"name": null,
@@ -149,7 +149,7 @@
 	],
 	"mavenArtifactsToBuild": [
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "zentraldispo-ui",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.ui",
@@ -157,7 +157,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "zentraldispo-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.dao",
@@ -165,7 +165,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "gp-dao",
 			"groupId": "com.affichage.it21.gp",
 			"name": "com.affichage.it21.gp.dao",
@@ -173,7 +173,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "gp-ui",
 			"groupId": "com.affichage.it21.gp",
 			"name": "com.affichage.it21.gp.ui",

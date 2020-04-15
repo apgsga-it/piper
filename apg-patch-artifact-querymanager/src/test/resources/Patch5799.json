@@ -1,5 +1,5 @@
 {
-	"className": "com.apgsga.microservice.patch.api.impl.PatchBean",
+	"className": "com.apgsga.microservice.patch.api.Patch",
 	"patchNummer": "5797",
 	"serviceName": "It21Ui",
 	"microServiceBranch": "it21_release_9_1_0_admin_uimig",
@@ -16,7 +16,7 @@
 	],
 	"mavenArtifacts": [
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "newArtifactID",
 			"groupId": "newGroupid",
 			"name": "nameofnewartifact",
@@ -24,7 +24,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "zentraldispo-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.dao",
@@ -37,7 +37,7 @@
 	],
 	"mavenArtifactsToBuild": [
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "newArtifactID",
 			"groupId": "newGroupid",
 			"name": "nameofnewartifact",
@@ -45,7 +45,7 @@
 			"dependencyLevel": 0
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "zentraldispo-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": "com.affichage.it21.vk.zentraldispo.dao",

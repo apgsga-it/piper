@@ -1,5 +1,5 @@
 {
-	"className": "com.apgsga.microservice.patch.api.impl.PatchBean",
+	"className": "com.apgsga.microservice.patch.api.Patch",
 	"patchNummer": "5401",
 	"serviceName": "It21Ui",
 	"microServiceBranch": "it21_release_9_1_0_admin_uimig",
@@ -15,19 +15,19 @@
 	"runningNr": null,
 	"dbObjects": [
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.DbObjectBean",
+			"className": "com.apgsga.microservice.patch.api.DbObject",
 			"fileName": "apgops_lib.apg_db_outage_planned.syn.sql",
 			"filePath": "testdbmodule/database/sql/",
 			"moduleName": "testdbmodule"
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.DbObjectBean",
+			"className": "com.apgsga.microservice.patch.api.DbObject",
 			"fileName": "sys.apg_install_utility.pks.cleanup.sql",
 			"filePath": "testdbmodule/database/sql/",
 			"moduleName": "testdbmodule"
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.DbObjectBean",
+			"className": "com.apgsga.microservice.patch.api.DbObject",
 			"fileName": "test.sys.apg_install_utility.pks.cleanup.sql",
 			"filePath": "testdbAnotherdbModule/database/sql/",
 			"moduleName": "testdbAnotherdbModule"
@@ -35,7 +35,7 @@
 	],
 	"mavenArtifacts": [
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "zentraldispo-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": null,
@@ -55,7 +55,7 @@
 	],
 	"mavenArtifactsToBuild": [
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "zentraldispo-dao",
 			"groupId": "com.affichage.it21.vk",
 			"name": null,

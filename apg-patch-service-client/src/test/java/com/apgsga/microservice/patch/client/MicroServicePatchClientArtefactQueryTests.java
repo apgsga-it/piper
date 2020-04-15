@@ -84,7 +84,7 @@ public class MicroServicePatchClientArtefactQueryTests {
 	public void testFindArtefacts() {
 		Patch result = patchClient.findById("5401");
 		Assert.assertNotNull(result);
-		List<MavenArtifact> mavenArtefacts = patchClient.listMavenArtifacts(result);
+		List<MavenArtifact> mavenArtefacts = patchClient.listMavenArtifacts(result.getService("It21Ui").getServiceName());
 		Assert.assertTrue(mavenArtefacts.size() > 0);
 		Assert.assertTrue(mavenArtefacts.stream().allMatch(new Predicate<MavenArtifact>() {
 
@@ -106,7 +106,7 @@ public class MicroServicePatchClientArtefactQueryTests {
 	public void testFindArtefactsDefault() {
 		Patch result = patchClient.findById("5401");
 		Assert.assertNotNull(result);
-		List<MavenArtifact> mavenArtefacts = patchClient.listMavenArtifacts(result, SearchCondition.APPLICATION);
+		List<MavenArtifact> mavenArtefacts = patchClient.listMavenArtifacts(result.getService("It21Ui").getServiceName(), SearchCondition.APPLICATION);
 		Assert.assertTrue(mavenArtefacts.size() > 0);
 		Assert.assertTrue(mavenArtefacts.stream().allMatch(new Predicate<MavenArtifact>() {
 
@@ -121,7 +121,7 @@ public class MicroServicePatchClientArtefactQueryTests {
 	public void testFindArtefactsAll() {
 		Patch result = patchClient.findById("5401");
 		Assert.assertNotNull(result);
-		List<MavenArtifact> mavenArtefacts = patchClient.listMavenArtifacts(result, SearchCondition.ALL);
+		List<MavenArtifact> mavenArtefacts = patchClient.listMavenArtifacts(result.getService("It21Ui").getServiceName(), SearchCondition.ALL);
 		Assert.assertTrue(mavenArtefacts.size() > 0);
 		Assert.assertTrue(mavenArtefacts.stream().anyMatch(new Predicate<MavenArtifact>() {
 

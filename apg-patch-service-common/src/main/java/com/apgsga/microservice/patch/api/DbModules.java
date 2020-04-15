@@ -1,8 +1,8 @@
 package com.apgsga.microservice.patch.api;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
+
+import java.util.List;
 
 public class DbModules {
 	
@@ -43,11 +43,8 @@ public class DbModules {
 			return false;
 		DbModules other = (DbModules) obj;
 		if (dbModules == null) {
-			if (other.dbModules != null)
-				return false;
-		} else if (!dbModules.equals(other.dbModules))
-			return false;
-		return true;
+			return other.dbModules == null;
+		} else return dbModules.equals(other.dbModules);
 	}
 
 	@Override

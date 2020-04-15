@@ -31,9 +31,9 @@ public class MicroservicePatchClient implements PatchService {
 	
 	private static final String LIST_DBMODULES = "/listDbModules";
 
-	private static final String LIST_MAVENARTIFACTS = "/listMavenArtifacts/{id}";
+	private static final String LIST_MAVENARTIFACTS = "/listMavenArtifacts/{serviceName}";
 
-	private static final String LIST_MAVENARTIFACTS_WITH_FILTER = "/listMavenArtifactsWithFilter/{id}/{searchCondition}";
+	private static final String LIST_MAVENARTIFACTS_WITH_FILTER = "/listMavenArtifactsWithFilter/{serviceName}/{searchCondition}";
 
 	private static final String LIST_SERVICEDATA = "/listServiceData";
 
@@ -155,18 +155,18 @@ public class MicroservicePatchClient implements PatchService {
 	}
 
 	@Override
-	public List<MavenArtifact> listMavenArtifacts(Patch patch) {
+	public List<MavenArtifact> listMavenArtifacts(String serviceName) {
 		Map<String, Object> params = Maps.newHashMap();
-		params.put("id", patch.getPatchNummer());
+		params.put("serviceName", serviceName);
 		MavenArtifact[] result = restTemplate.getForObject(getRestBaseUri() + LIST_MAVENARTIFACTS,
 				MavenArtifact[].class, params);
 		return Lists.newArrayList(result);
 	}
 
 	@Override
-	public List<MavenArtifact> listMavenArtifacts(Patch patch, SearchCondition filter) {
+	public List<MavenArtifact> listMavenArtifacts(String serviceName, SearchCondition filter) {
 		Map<String, Object> params = Maps.newHashMap();
-		params.put("id", patch.getPatchNummer());
+		params.put("serviceName", serviceName);
 		params.put("searchCondition", filter.toValue());
 		MavenArtifact[] result = restTemplate.getForObject(getRestBaseUri() + LIST_MAVENARTIFACTS_WITH_FILTER,
 				MavenArtifact[].class, params);

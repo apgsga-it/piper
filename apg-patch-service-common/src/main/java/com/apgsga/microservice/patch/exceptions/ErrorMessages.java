@@ -1,9 +1,5 @@
 package com.apgsga.microservice.patch.exceptions;
 
-import java.io.IOException;
-import java.util.Locale;
-import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.NoSuchMessageException;
@@ -11,6 +7,10 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+
+import java.io.IOException;
+import java.util.Locale;
+import java.util.Properties;
 
 public class ErrorMessages {
 

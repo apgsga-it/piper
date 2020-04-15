@@ -2,8 +2,7 @@ package com.apgsga.microservice.patch.server;
 
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
-
+import com.apgsga.microservice.patch.api.Service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
@@ -20,17 +19,13 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchLog;
 import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
-import com.apgsga.microservice.patch.api.impl.PatchBean;
-import com.apgsga.microservice.patch.api.impl.PatchLogBean;
+import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.impl.GroovyScriptActionExecutor;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutor;
 import com.apgsga.microservice.patch.server.impl.PatchActionExecutorFactory;
 import com.apgsga.microservice.patch.server.impl.SimplePatchContainerBean;
-import com.jcraft.jsch.Logger;
 
 @RunWith(SpringRunner.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
@@ -52,7 +47,7 @@ public class MicroServicePatchServerExceptionTests {
 	private PatchActionExecutorFactory patchActionFactory;
 
 	@Before
-	public void setUp() throws IOException {
+	public void setUp() {
 		repo.clean();
 	}
 
@@ -104,7 +99,7 @@ public class MicroServicePatchServerExceptionTests {
 	
 	@Test
 	public void testSaveEmptyWithOutId() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		try {
 			patchService.save(patch);
 			fail();
@@ -127,7 +122,7 @@ public class MicroServicePatchServerExceptionTests {
 	
 	@Test
 	public void testRemoveEmptyWithOutId() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		try {
 			patchService.remove(patch);
 			fail();
@@ -139,7 +134,7 @@ public class MicroServicePatchServerExceptionTests {
 	
 	@Test
 	public void testRemoveDoesnotExist() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		patch.setPatchNummer("XXXX");
 		try {
 			patchService.remove(patch);
@@ -163,12 +158,12 @@ public class MicroServicePatchServerExceptionTests {
 	
 	@Test
 	public void testPatchInvalidToState() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
-		patch.setServiceName("It21ui");
-		patch.setMicroServiceBranch("SomeBaseBranch");
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId1", "GroupId1", "Version1"));
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId2", "GroupId2", "Version2"));
+		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
+		patch.addServices(service);
 		patchService.save(patch);
 		PatchActionExecutor patchActionExecutor = patchActionFactory.create(patchService); 
 		try {
@@ -182,12 +177,12 @@ public class MicroServicePatchServerExceptionTests {
 	
 	@Test
 	public void testPatchConfigDirDoesnotExist() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
-		patch.setServiceName("It21ui");
-		patch.setMicroServiceBranch("SomeBaseBranch");
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId1", "GroupId1", "Version1"));
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId2", "GroupId2", "Version2"));
+		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
+		patch.addServices(service);
 		patchService.save(patch);
 		GroovyScriptActionExecutor patchActionExecutor = (GroovyScriptActionExecutor) patchActionFactory.create(patchService); 
 		patchActionExecutor.setConfigDir("XXXXXXXX");
@@ -202,12 +197,12 @@ public class MicroServicePatchServerExceptionTests {
 	
 	@Test
 	public void testPatchConfigFileDoesnotExist() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
-		patch.setServiceName("It21ui");
-		patch.setMicroServiceBranch("SomeBaseBranch");
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId1", "GroupId1", "Version1"));
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId2", "GroupId2", "Version2"));
+		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
+		patch.addServices(service);
 		patchService.save(patch);
 		GroovyScriptActionExecutor patchActionExecutor = (GroovyScriptActionExecutor) patchActionFactory.create(patchService); 
 		patchActionExecutor.setConfigFileName("XXXXXX");
@@ -223,12 +218,12 @@ public class MicroServicePatchServerExceptionTests {
 	
 	@Test
 	public void testPatchInvalidGroovyScriptFile() {
-		Patch patch = new PatchBean();
+		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
-		patch.setServiceName("It21ui");
-		patch.setMicroServiceBranch("SomeBaseBranch");
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId1", "GroupId1", "Version1"));
-		patch.addMavenArtifacts(new MavenArtifactBean("ArtifactId2", "GroupId2", "Version2"));
+		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
+		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
+		patch.addServices(service);
 		patchService.save(patch);
 		GroovyScriptActionExecutor patchActionExecutor = (GroovyScriptActionExecutor) patchActionFactory.create(patchService); 
 		patchActionExecutor.setGroovyScriptFile("XXXXX");

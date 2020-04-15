@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import com.apgsga.microservice.patch.api.*;
 import org.assertj.core.util.Lists;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,17 +21,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileCopyUtils;
-
-import com.apgsga.microservice.patch.api.DbModules;
-import com.apgsga.microservice.patch.api.DbObject;
-import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.api.ServiceMetaData;
-import com.apgsga.microservice.patch.api.ServicesMetaData;
-import com.apgsga.microservice.patch.api.impl.DbObjectBean;
-import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
-import com.apgsga.microservice.patch.api.impl.ServiceMetaDataBean;
-import com.apgsga.microservice.patch.api.impl.ServicesMetaDataBean;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource(properties = { "dblocation=db", "dbworkdir=work" })
@@ -90,14 +80,16 @@ public class FilebasedPersistenceTest {
 	public void testUpdate() {
 		Patch result = repo.findById("5402");
 		assertNotNull(result);
-		result.setBaseVersionNumber("XXXX");
+		Service service = Service.create().serviceName("It21Ui").baseVersionNumber("XXXX");
+		result.addServices(service);
 		List<DbObject> dbOList = Lists.newArrayList();
-		dbOList.add(new DbObjectBean("FileName1", "FilePath1"));
+		dbOList.add(new DbObject("FileName1", "FilePath1"));
 		result.setDbObjects(dbOList);
 		repo.savePatch(result);
 		Patch upDatedresult = repo.findById("5402");
 		assertNotNull(upDatedresult);
-		assertEquals("XXXX", upDatedresult.getBaseVersionNumber());
+		service = upDatedresult.getService("It21Ui");
+		assertEquals("XXXX", service.getBaseVersionNumber());
 		List<DbObject> dbObjects = upDatedresult.getDbObjects();
 		assertEquals(1, dbObjects.size());
 		DbObject dbObject = dbObjects.get(0);
@@ -119,32 +111,32 @@ public class FilebasedPersistenceTest {
 		repo.saveDbModules(intialLoad);
 		DbModules dbModules = repo.getDbModules();
 		List<String> dbModulesRead = dbModules.getDbModules();
-		assertTrue(dbModulesRead.size() == 2);
-		dbModulesRead.forEach(m -> {
+		assertEquals(2, dbModulesRead.size());
+		for (String m : dbModulesRead) {
 			assertTrue(m.equals("testdbmodule") || m.equals("testdbAnotherdbModule"));
-		});
+		}
 	}
 
 	@Test
 	public void testServicesMetaData() {
 		List<ServiceMetaData> serviceList = Lists.newArrayList();
-		MavenArtifactBean it21UiStarter = new MavenArtifactBean();
+		MavenArtifact it21UiStarter = new MavenArtifact();
 		it21UiStarter.setArtifactId("it21ui-app-starter");
 		it21UiStarter.setGroupId("com.apgsga.it21.ui.mdt");
 		it21UiStarter.setName("it21ui-app-starter");
 
-		MavenArtifactBean jadasStarter = new MavenArtifactBean();
+		MavenArtifact jadasStarter = new MavenArtifact();
 		jadasStarter.setArtifactId("jadas-app-starter");
 		jadasStarter.setGroupId("com.apgsga.it21.ui.mdt");
 		jadasStarter.setName("jadas-app-starter");
 
-		final ServiceMetaData it21Ui = new ServiceMetaDataBean("It21Ui", "it21_release_9_1_0_admin_uimig", "9.1.0",
+		final ServiceMetaData it21Ui = new ServiceMetaData("It21Ui", "it21_release_9_1_0_admin_uimig", "9.1.0",
 				"ADMIN-UIMIG");
 		serviceList.add(it21Ui);
-		final ServiceMetaData someOtherService = new ServiceMetaDataBean("SomeOtherService",
+		final ServiceMetaData someOtherService = new ServiceMetaData("SomeOtherService",
 				"it21_release_9_1_0_some_tag", "9.1.0", "SOME-TAG");
 		serviceList.add(someOtherService);
-		final ServicesMetaData data = new ServicesMetaDataBean();
+		final ServicesMetaData data = new ServicesMetaData();
 		data.setServicesMetaData(serviceList);
 		repo.saveServicesMetaData(data);
 		ServicesMetaData serviceData = repo.getServicesMetaData();

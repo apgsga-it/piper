@@ -19,7 +19,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.impl.MavenArtifactBean;
 import com.apgsga.test.config.TestConfig;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -62,7 +61,7 @@ public class ArtifactsDependencyResolverImplTests {
 	@Test
 	public void testSingleArtifact() {
 		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory);
-		MavenArtifactBean mavenArtifactBean = new MavenArtifactBean("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactBean = new MavenArtifact("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
 		List<MavenArtWithDependencies> result = depResolver.resolveDependenciesInternal(Lists.newArrayList(mavenArtifactBean));
 		assert(result.size() == 1);
 		MavenArtWithDependencies mavenArt = result.get(0);
@@ -73,8 +72,8 @@ public class ArtifactsDependencyResolverImplTests {
 	@Test
 	public void testTwoArtifacts() {
 		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory);
-		MavenArtifactBean mavenArtifactGpUi = new MavenArtifactBean("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
-		MavenArtifactBean mavenArtifactGpDao = new MavenArtifactBean("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactGpUi = new MavenArtifact("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactGpDao = new MavenArtifact("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
 		List<MavenArtWithDependencies> result = depResolver.resolveDependenciesInternal(Lists.newArrayList(mavenArtifactGpUi,mavenArtifactGpDao));
 		assert(result.size() == 2);
 		MavenArtWithDependencies mavenArtGpUi = result.get(0);
@@ -91,9 +90,9 @@ public class ArtifactsDependencyResolverImplTests {
 	@Test
 	public void testMoreArtifactsNestedDependencies() {
 		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory);
-		MavenArtifactBean mavenArtifactGpUi = new MavenArtifactBean("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
-		MavenArtifactBean mavenArtifactGpDao = new MavenArtifactBean("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
-		MavenArtifactBean mavenArtifactFakturaDao = new MavenArtifactBean("faktura-dao","com.affichage.it21.vk","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactGpUi = new MavenArtifact("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactGpDao = new MavenArtifact("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactFakturaDao = new MavenArtifact("faktura-dao","com.affichage.it21.vk","9.1.0.ADMIN-UIMIG-SNAPSHOT");
 		ArrayList<MavenArtifact> artefacts = Lists.newArrayList(mavenArtifactGpUi,mavenArtifactGpDao,mavenArtifactFakturaDao);
 		List<MavenArtWithDependencies> result = depResolver.resolveDependenciesInternal(artefacts);
 		assert(result.size() == 3);
@@ -115,8 +114,8 @@ public class ArtifactsDependencyResolverImplTests {
 	@Test
 	public void testTwoArtifactsWithDependencyLevel() {
 		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory);
-		MavenArtifactBean mavenArtifactGpUi = new MavenArtifactBean("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
-		MavenArtifactBean mavenArtifactGpDao = new MavenArtifactBean("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactGpUi = new MavenArtifact("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactGpDao = new MavenArtifact("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
 		ArrayList<MavenArtifact> artefacts = Lists.newArrayList(mavenArtifactGpUi,mavenArtifactGpDao);
 		depResolver.resolveDependencies(artefacts);
 		artefacts.sort(Comparator.comparing(MavenArtifact::getDependencyLevel).reversed());
@@ -128,9 +127,9 @@ public class ArtifactsDependencyResolverImplTests {
 	@Test
 	public void testMoreArtifactsNestedDependenciesWithDependencyLevel() {
 		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory);
-		MavenArtifactBean mavenArtifactGpUi = new MavenArtifactBean("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
-		MavenArtifactBean mavenArtifactGpDao = new MavenArtifactBean("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
-		MavenArtifactBean mavenArtifactFakturaDao = new MavenArtifactBean("faktura-dao","com.affichage.it21.vk","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactGpUi = new MavenArtifact("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactGpDao = new MavenArtifact("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactFakturaDao = new MavenArtifact("faktura-dao","com.affichage.it21.vk","9.1.0.ADMIN-UIMIG-SNAPSHOT");
 		ArrayList<MavenArtifact> artefacts = Lists.newArrayList(mavenArtifactGpUi,mavenArtifactGpDao,mavenArtifactFakturaDao);
 		depResolver.resolveDependencies(artefacts);
 		artefacts.sort(Comparator.comparing(MavenArtifact::getDependencyLevel).reversed());
@@ -144,7 +143,7 @@ public class ArtifactsDependencyResolverImplTests {
 	
 	
 	@Test
-	public void testMegaPatchWithDependencyLevels() throws JsonParseException, JsonMappingException, IOException {
+	public void testMegaPatchWithDependencyLevels() throws IOException {
 		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory);
 		File patchFile = new File("src/test/resources/Patch5731.json");
 		ObjectMapper mapper = new ObjectMapper();

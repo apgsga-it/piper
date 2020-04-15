@@ -1,12 +1,11 @@
 package com.apgsga.microservice.patch.api;
 
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.Map;
 
 public enum SearchCondition {
 
@@ -14,7 +13,7 @@ public enum SearchCondition {
 
 	private final String enumName;
 
-	private SearchCondition(String enumName) {
+	SearchCondition(String enumName) {
 		this.enumName = enumName;
 		Holder.ENUMMAP.put(enumName, this);
 	}

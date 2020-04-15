@@ -11,29 +11,29 @@ public interface PatchPersistence {
 
 	Boolean patchExists(String patchNummber);
 
-	public List<String> findAllPatchIds();
+	List<String> findAllPatchIds();
 
-	public void savePatch(Patch patch);
+	void savePatch(Patch patch);
 	
-	public void savePatchLog(Patch patch);
+	void savePatchLog(Patch patch);
 
-	public void removePatch(Patch patch);
+	void removePatch(Patch patch);
 
-	public void saveDbModules(DbModules dbModules);
+	void saveDbModules(DbModules dbModules);
 
-	public DbModules getDbModules();
+	DbModules getDbModules();
 
-	public void saveServicesMetaData(ServicesMetaData serviceData);
+	void saveServicesMetaData(ServicesMetaData serviceData);
 
-	public ServicesMetaData getServicesMetaData();
+	ServicesMetaData getServicesMetaData();
 
-	public ServiceMetaData findServiceByName(String serviceName);
+	ServiceMetaData findServiceByName(String serviceName);
 	
-	public List<String> listAllFiles();
+	List<String> listAllFiles();
 	
-	public List<String> listFiles(String prefix); 
+	List<String> listFiles(String prefix);
 
-	public void clean();
+	void clean();
 
-	public void init() throws IOException;
+	void init() throws IOException;
 }

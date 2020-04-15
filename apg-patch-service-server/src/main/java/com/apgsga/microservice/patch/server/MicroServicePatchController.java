@@ -99,32 +99,25 @@ public class MicroServicePatchController implements PatchService {
 		return patchService.listAllObjectsForDbModule(patchNumber,searchString,username);
 	}
 
-	@RequestMapping(value = "/listMavenArtifacts/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/listMavenArtifacts/{serviceName}", method = RequestMethod.GET)
 	@ResponseBody
-	public List<MavenArtifact> listMavenArtifacts(@PathVariable("id") String patchId) {
-		Patch patch = patchService.findById(patchId); 
-		return listMavenArtifacts(patch);
+	public List<MavenArtifact> listMavenArtifacts(@PathVariable("serviceName") String serviceName) {
+		return patchService.listMavenArtifacts(serviceName);
 	}
 
-	@RequestMapping(value = "/listMavenArtifactsWithFilter/{id}/{searchCondition}", method = RequestMethod.GET)
+	@RequestMapping(value = "/listMavenArtifactsWithFilter/{serviceName}/{searchCondition}", method = RequestMethod.GET)
 	@ResponseBody
-	public List<MavenArtifact> listMavenArtifacts(@PathVariable("id") String patchId,
+	public List<MavenArtifact> listMavenArtifacts(@PathVariable("serviceName") String serviceName,
 			@PathVariable("searchCondition") String searchCondition) {
-		Patch patch = patchService.findById(patchId); 
-		return listMavenArtifacts(patch, SearchCondition.forValue(searchCondition));
+		return patchService.listMavenArtifacts(serviceName, SearchCondition.forValue(searchCondition));
 	}
 
 	@Override
-	public List<MavenArtifact> listMavenArtifacts(Patch patch, SearchCondition filter) {
-		return patchService.listMavenArtifacts(patch, filter);
+	public List<MavenArtifact> listMavenArtifacts(String serviceName, SearchCondition filter) {
+		return patchService.listMavenArtifacts(serviceName, filter);
 
 	}
 
-	@Override
-	public List<MavenArtifact> listMavenArtifacts(Patch patch) {
-		return patchService.listMavenArtifacts(patch);
-
-	}
 
 	@RequestMapping(value = "/listServiceData", method = RequestMethod.GET)
 	@ResponseBody

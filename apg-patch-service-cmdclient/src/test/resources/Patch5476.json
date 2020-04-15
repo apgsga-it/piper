@@ -1,5 +1,5 @@
 {
-	"className": "com.apgsga.microservice.patch.api.impl.PatchBean",
+	"className": "com.apgsga.microservice.patch.api.Patch",
 	"patchNummer": "5476",
 	"serviceName": "It21Ui",
 	"microServiceBranch": "it21_release_9_1_0_admin_uimig",
@@ -16,7 +16,7 @@
 	],
 	"mavenArtifacts": [
 		{
-			"className": "com.apgsga.microservice.patch.api.impl.MavenArtifactBean",
+			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
 			"artifactId": "datetime-utils",
 			"groupId": "com.affichage.datetime",
 			"name": "com.affichage.datetime.utils",

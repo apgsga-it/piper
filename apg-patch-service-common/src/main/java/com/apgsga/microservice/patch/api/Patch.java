@@ -1,166 +1,340 @@
 package com.apgsga.microservice.patch.api;
 
-import java.util.List;
-
+import com.affichage.persistence.common.client.AbstractTransientEntity;
 import com.affichage.persistence.common.client.EntityRootInterface;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.google.common.collect.Lists;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @EntityRootInterface
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "className")
-public interface Patch extends ServiceMetaData {
+public class Patch extends AbstractTransientEntity {
 
-	public static final String PATCH_NUMMER = "patchNummer";
+    private static final String PROD_BRANCH_DEFAULT = "prod";
+    private static final long serialVersionUID = 1L;
+    public static final String PATCH_NUMMER = "patchNummer";
 
-	public static final String SERVICE_NAME = "serviceName";
+    public static final String DB_PATCH_BRANCH = "dbPatchBranch";
 
-	public static final String MICROSERVICE_BRANCH = "microServiceBranch";
+    public static final String PROD_BRANCH = "prodBranch";
 
-	public static final String DB_PATCH_BRANCH = "dbPatchBranch";
+    public static final String DB_OBJECTS = "dbObjects";
 
-	public static final String PROD_BRANCH = "prodBranch";
+    public static final String DOCKER_SERVICES = "dockerServices";
 
-	public static final String DB_OBJECTS = "dbObjects";
+    public static final String SERVICES = "services";
 
-	public static final String MAVEN_ARTEFACTS = "mavenArtifacts";
+    public static final String TAG_NR = "tagNr";
 
-	public static final String DOCKER_SERVICES = "dockerServices";
+    public static final String PATCH_TAG = "patchTag";
 
-	public static final String TAG_NR = "tagNr";
+    public static final String DEVELOPER_BRANCH = "developerBranch";
 
-	public static final String PATCH_TAG = "patchTag";
-	
-	public static final String DEVELOPER_BRANCH = "developerBranch";
+    public static final String INSTALLS_TARGET = "installationTarget";
 
-	public static final String INSTALLS_TARGET = "installationTarget";
-	
-	public static final String CURRENT_TARGET = "currentTarget";
-	
-	public static final String INSTALL_ON_EMPTY_MODULES = "installOnEmptyModules";
-	
-	public static final String INSTALL_JADAS_AND_GUI = "installJadasAndGui";
+    public static final String CURRENT_TARGET = "currentTarget";
 
-	public static final String INSTALL_DOCKER_SERVICES = "installDockerServices";
-	
-	public static final String PIPELINE_TASK = "pipeLineTask";
-	
-	public static final String LOG_TEXT = "logText";
-	
-	public static final String CURRENT_PIPELINE_TASK = "currentPipelineTask";
+    public static final String LOG_TEXT = "logText";
 
-	String getPatchNummer();
+    public static final String CURRENT_PIPELINE_TASK = "currentPipelineTask";
 
-	void setPatchNummer(String patchNummer);
 
-	String getMicroServiceBranch();
+    private String patchNummer;
+    private String dbPatchBranch;
+    private String prodBranch = PROD_BRANCH_DEFAULT;
+    private String patchTag = "";
+    private String developerBranch = "";
+    private Integer tagNr = 0;
+    private String installationTarget;
+    private String targetToState;
+    private String runningNr;
+    private List<DbObject> dbObjects = Lists.newArrayList();
+    private List<String> dockerServices = Lists.newArrayList();
+    private List<Service> services = Lists.newArrayList();
+    private boolean installDockerServices = false;
+    private String lastPipelineTask = "";
+    private String currentTarget;
+    private String currentPipelineTask;
+    private String logText;
 
-	void setMicroServiceBranch(String microServiceBranch);
+    public Patch() {
+        super();
+    }
 
-	String getDbPatchBranch();
 
-	void setDbPatchBranch(String dbPatchBranch);
+    public String getPatchNummer() {
+        return patchNummer;
+    }
 
-	String getProdBranch();
 
-	void setProdBranch(String prodBranch);
+    public void setPatchNummer(String patchNummer) {
+        final Object oldValue = this.patchNummer;
+        this.patchNummer = patchNummer;
+        firePropertyChangeEvent(PATCH_NUMMER, oldValue, patchNummer);
+    }
 
-	void setServiceVersion(ServiceMetaData serviceVersion);
 
-	String getServiceName();
+    public String getDbPatchBranch() {
+        return dbPatchBranch;
+    }
 
-	public String getBaseVersionNumber();
 
-	public String getRevisionMnemoPart();
+    public void setDbPatchBranch(String dbPatchBranch) {
+        final Object oldValue = this.dbPatchBranch;
+        this.dbPatchBranch = dbPatchBranch;
+        firePropertyChangeAndMarkDirty(DB_PATCH_BRANCH, oldValue, dbPatchBranch);
+    }
 
-	List<DbObject> getDbObjects();
 
-	List<String> getDbObjectsAsVcsPath();
+    public String getProdBranch() {
+        return prodBranch;
+    }
 
-	void setDbObjects(List<DbObject> dbObjects);
+    public void setProdBranch(String prodBranch) {
+        final Object oldValue = this.prodBranch;
+        this.prodBranch = prodBranch;
+        firePropertyChangeAndMarkDirty(PROD_BRANCH, oldValue, prodBranch);
+    }
 
-	void removeDbObjects(DbObject dbObject);
 
-	void addDbObjects(DbObject dbObject);
+    public String getDeveloperBranch() {
+        return developerBranch;
+    }
 
-	List<MavenArtifact> getMavenArtifacts();
 
-	List<String> getDockerServices();
+    public void setDeveloperBranch(String developerBranch) {
+        final Object oldValue = this.developerBranch;
+        this.developerBranch = developerBranch;
+        firePropertyChangeAndMarkDirty(DEVELOPER_BRANCH, oldValue, developerBranch);
+    }
 
-	List<String> getMavenArtifactsAsVcsPath();
-	
-	List<MavenArtifact> getMavenArtifactsToBuild();
 
-	void setMavenArtifacts(List<MavenArtifact> mavenArtifacts);
+    public List<DbObject> getDbObjects() {
+        return dbObjects;
+    }
 
-	void setDockerServices(List<String> dockerServices);
 
-	void removeMavenArtifacts(MavenArtifact mavenArtifact);
+    public List<String> getDbObjectsAsVcsPath() {
+        return dbObjects.stream().map(DbObject::asFullPath).collect(Collectors.toList());
+    }
 
-	void addMavenArtifacts(MavenArtifact mavenArtifact);
 
-	void removeDockerService(String serviceName);
+    public void setDbObjects(List<DbObject> dbObjects) {
+        final Object oldValue = Lists.newArrayList(this.dbObjects);
+        this.dbObjects = dbObjects;
+        firePropertyChangeEvent(DB_OBJECTS, oldValue, dbObjects);
+    }
 
-	void addDockerService(String serviceName);
 
-	public Integer getTagNr();
+    public void removeDbObjects(DbObject dbObject) {
+        final Object oldValue = Lists.newArrayList(this.dbObjects);
+        dbObjects.remove(dbObject);
+        firePropertyChangeAndMarkDirty(DB_OBJECTS, oldValue, dbObjects);
+    }
 
-	void setTagNr(Integer tagNr);
 
-	public void incrementTagNr();
+    public void addDbObjects(DbObject dbObject) {
+        final Object oldValue = Lists.newArrayList(this.dbObjects);
+        dbObjects.add(dbObject);
+        firePropertyChangeAndMarkDirty(DB_OBJECTS, oldValue, dbObjects);
+    }
 
-	public String getPatchTag();
+    public List<String> getDockerServices() {
+        return dockerServices;
+    }
 
-	void setPatchTag(String patchTag);
-	
-	public String getDeveloperBranch();
+    public void setDockerServices(List<String> dockerServices) {
+        final Object oldValue = Lists.newArrayList(this.dockerServices);
+        this.dockerServices = dockerServices;
+        firePropertyChangeEvent(DOCKER_SERVICES, oldValue, dockerServices);
+    }
 
-	void setDeveloperBranch(String developerBranch);
+    public void removeDockerService(String serviceName) {
+        final Object oldValue = Lists.newArrayList(this.dockerServices);
+        dockerServices.remove(serviceName);
+        firePropertyChangeAndMarkDirty(DOCKER_SERVICES, oldValue, dockerServices);
+    }
 
-	public String getInstallationTarget();
+    public void addDockerService(String serviceName) {
+        final Object oldValue = Lists.newArrayList(this.dockerServices);
+        dockerServices.add(serviceName);
+        firePropertyChangeAndMarkDirty(DOCKER_SERVICES, oldValue, dockerServices);
+    }
 
-	public void setInstallationTarget(String target);
+    public List<Service> getServices() {
+        return services;
+    }
 
-	public String getRevision();
+    public void setServices(List<Service> services) {
+        final Object oldValue = Lists.newArrayList(this.services);
+        this.services = services;
+        firePropertyChangeEvent(SERVICES, oldValue, services);
+        this.services = services;
+    }
 
-	public void setRevision(String revisionNumber);
+    public void removeServices(Service service) {
+        final Object oldValue = Lists.newArrayList(this.services);
+        services.remove(service);
+        firePropertyChangeAndMarkDirty(SERVICES, oldValue, services);
+    }
 
-	public String getLastRevision();
+    public void addServices(Service service) {
+        final Object oldValue = Lists.newArrayList(this.services);
+        services.add(service);
+        firePropertyChangeAndMarkDirty(SERVICES, oldValue, services);
+    }
 
-	public void setLastRevision(String lastRevisionNumber);
-	
-	public String getRunningNr();
+    public void incrementTagNr() {
+        Integer tagNr = getTagNr();
+        setTagNr(++tagNr);
+    }
 
-	public void setRunningNr(String runningNr);
-	
-	public String getTargetToState(); 
-	
-	public void setTargetToState(String targetToState);
-	
-	public String getLastPipelineTask(); 
-	
-	public void setLastPipelineTask(String pipelineTask);
-	
-	public boolean getInstallOnEmptyModules();
-	
-	public void setInstallOnEmptyModules(boolean installOnEmptyModules);
-	
-	public boolean getInstallJadasAndGui();
-	
-	public void setInstallJadasAndGui();
+    public Integer getTagNr() {
+        return tagNr;
+    }
 
-	public boolean getInstallDockerServices();
+    public void setTagNr(Integer tagNr) {
+        final Object oldValue = this.tagNr;
+        this.tagNr = tagNr;
+        firePropertyChangeEvent(TAG_NR, oldValue, tagNr);
+    }
 
-	public void setInstallDockerServices();
-	
-	public String getCurrentTarget();
-	
-	public void setCurrentTarget(String currentTarget);
-	
-	public String getLogText();
-	
-	public void setLogText(String logText);
-	
-	public String getCurrentPipelineTask();
-	
-	public void setCurrentPipelineTask(String currentPipelineTask);
+    public String getPatchTag() {
+        return patchTag;
+    }
 
+    public void setPatchTag(String patchTag) {
+        final Object oldValue = this.patchTag;
+        this.patchTag = patchTag;
+        firePropertyChangeEvent(PATCH_TAG, oldValue, patchTag);
+    }
+
+    public String getInstallationTarget() {
+        return installationTarget;
+    }
+
+    public void setInstallationTarget(String installationTarget) {
+        final Object oldValue = this.installationTarget;
+        this.installationTarget = installationTarget;
+        firePropertyChangeEvent(INSTALLS_TARGET, oldValue, installationTarget);
+    }
+
+    public String getCurrentTarget() {
+        return currentTarget;
+    }
+
+    public void setCurrentTarget(String currentTarget) {
+        final Object oldValue = this.currentTarget;
+        this.currentTarget = currentTarget;
+        firePropertyChangeEvent(CURRENT_TARGET, oldValue, currentTarget);
+    }
+
+    public String getLogText() {
+        return logText;
+    }
+
+    public void setLogText(String logText) {
+        final Object oldValue = this.logText;
+        this.logText = logText;
+        firePropertyChange(LOG_TEXT, oldValue, logText);
+    }
+
+    public String getCurrentPipelineTask() {
+        return currentPipelineTask;
+    }
+
+    public void setCurrentPipelineTask(String currentPipelineTask) {
+        final Object oldValue = this.currentPipelineTask;
+        this.currentPipelineTask = currentPipelineTask;
+        firePropertyChange(CURRENT_PIPELINE_TASK, oldValue, currentPipelineTask);
+    }
+
+    public Service getService(String serviceName) {
+        for (Service service : services) {
+            if (service.getServiceName().equals(serviceName)) {
+                return service;
+            }
+        }
+        return null;
+    }
+
+   // TODO (MULTISERVICE_CM , 9.4) : This is here for backward compatability and must go away
+    public List<MavenArtifact> getMavenArtifacts() {
+        List<MavenArtifact> all = Lists.newArrayList();
+        for (Service service : services) all.addAll(service.getMavenArtifacts());
+        return all;
+    }
+
+    public boolean getInstallDockerServices() {
+        return !dockerServices.isEmpty();
+    }
+
+    public void setInstallDockerServices() {
+        // Intentionally empty
+    }
+
+
+    public String getRunningNr() {
+        return this.runningNr;
+    }
+
+    public void setRunningNr(String runningNr) {
+        this.runningNr = runningNr;
+    }
+
+
+    public String getTargetToState() {
+        return targetToState;
+    }
+
+    public void setTargetToState(String targetToState) {
+        this.targetToState = targetToState;
+    }
+
+
+    public String getLastPipelineTask() {
+        return lastPipelineTask;
+    }
+
+    public void setLastPipelineTask(String pipelineTask) {
+        this.lastPipelineTask = pipelineTask;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Patch)) return false;
+        Patch patch = (Patch) o;
+        return patchNummer.equals(patch.patchNummer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(patchNummer);
+    }
+
+    @Override
+    public String toString() {
+        return "Patch{" +
+                "patchNummer='" + patchNummer + '\'' +
+                ", dbPatchBranch='" + dbPatchBranch + '\'' +
+                ", prodBranch='" + prodBranch + '\'' +
+                ", patchTag='" + patchTag + '\'' +
+                ", developerBranch='" + developerBranch + '\'' +
+                ", tagNr=" + tagNr +
+                ", installationTarget='" + installationTarget + '\'' +
+                ", targetToState='" + targetToState + '\'' +
+                ", runningNr='" + runningNr + '\'' +
+                ", dbObjects=" + dbObjects +
+                ", dockerServices=" + dockerServices +
+                ", services=" + services +
+                ", installDockerServices=" + installDockerServices +
+                ", lastPipelineTask='" + lastPipelineTask + '\'' +
+                ", currentTarget='" + currentTarget + '\'' +
+                ", currentPipelineTask='" + currentPipelineTask + '\'' +
+                ", logText='" + logText + '\'' +
+                '}';
+    }
 }

@@ -1,5 +1,6 @@
 package com.apgsga.microservice.patch.server.impl;
 
+import com.apgsga.microservice.patch.api.Service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -43,12 +44,18 @@ public class TaskEntwicklungInstallationsbereit implements Runnable {
 			jschSession.run(PatchVcsCommand.createTagPatchModulesCmd(patch.getPatchTag(), patch.getDbPatchBranch(),
 					patch.getDbObjectsAsVcsPath()));
 		}
-		if (!patch.getMavenArtifactsAsVcsPath().isEmpty()) {
-			jschSession.run(PatchVcsCommand.createTagPatchModulesCmd(patch.getPatchTag(), patch.getMicroServiceBranch(),
-					patch.getMavenArtifactsAsVcsPath()));
+		// TODO (MULTISERVICE_CM , 9.4) : Needs to be verified
+		for (Service service : patch.getServices() ) {
+			if (!service.getMavenArtifactsAsVcsPath().isEmpty()) {
+				jschSession.run(PatchVcsCommand.createTagPatchModulesCmd(patch.getPatchTag(), service.getMicroServiceBranch(),
+						service.getMavenArtifactsAsVcsPath()));
+			}
 		}
 		jschSession.postProcess();
-		dependencyResolver.resolveDependencies(patch.getMavenArtifacts());
+		for (Service service : patch.getServices() ) {
+			dependencyResolver.resolveDependencies(service.getMavenArtifacts());
+		}
+
 		repo.savePatch(patch);
 		LOGGER.info("Running EntwicklungInstallationsbereitAction startProdPatchPipeline");
 		jenkinsPatchClient.startProdPatchPipeline(patch);
