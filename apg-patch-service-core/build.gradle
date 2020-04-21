@@ -1,0 +1,44 @@
+plugins {
+  	id 'groovy'
+}
+apply plugin: 'groovy'
+
+
+description = 'Service , which provides the Core functionality '
+jar {
+	baseName = 'apg-patch-service-core'
+	//exclude('**/application.properties')
+}
+
+dependencies {
+	compile project(':apg-patch-service-api')
+	compile project(':apg-patch-artifact-querymanager')
+	compile group: 'com.offbytwo.jenkins', name: 'jenkins-client'
+	compile group: 'de.codecentric', name: 'spring-boot-admin-starter-client'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
+	compile group: 'com.jcraft', name: 'jsch'
+	compile group: 'org.jasypt', name: 'jasypt'
+	compile group: 'commons-io', name: 'commons-io'
+	compile group: 'ch.qos.logback', name: 'logback-classic'
+	compile group: 'commons-lang', name: 'commons-lang'
+	compile group: 'org.slf4j', name: 'slf4j-api'
+	compile group: 'com.google.guava', name: 'guava'
+	compile group: 'commons-transaction', name: 'commons-transaction'
+	compile group: 'javax.transaction', name: 'jta'
+	testCompile group: 'org.springframework', name: 'spring-test'
+	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'	
+	testCompile group: 'org.codehaus.groovy' , name: 'groovy-all'
+}
+
+sourceSets {
+  test {
+    resources {
+      srcDir 'src/test/java'
+      include '**/*.properties' 
+    }
+  }
+}
+
+

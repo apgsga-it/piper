@@ -1,12 +1,14 @@
 rootProject.name = 'apg-patch-service'
 include ':apg-patch-service-client'
-include ':apg-patch-service-common'
+include ':apg-patch-service-api'
 include ':apg-patch-service-server'
+include ':apg-patch-service-core'
 include ':apg-patch-service-cmdclient'
 include ':apg-patch-artifact-querymanager'
 
 project(':apg-patch-service-client').projectDir = "$rootDir/apg-patch-service-client" as File
-project(':apg-patch-service-common').projectDir = "$rootDir/apg-patch-service-common" as File
+project(':apg-patch-service-api').projectDir = "$rootDir/apg-patch-service-api" as File
 project(':apg-patch-service-server').projectDir = "$rootDir/apg-patch-service-server" as File
+project(':apg-patch-service-core').projectDir = "$rootDir/apg-patch-service-core" as File
 project(':apg-patch-service-cmdclient').projectDir = "$rootDir/apg-patch-service-cmdclient" as File
 project(':apg-patch-artifact-querymanager').projectDir = "$rootDir/apg-patch-artifact-querymanager" as File

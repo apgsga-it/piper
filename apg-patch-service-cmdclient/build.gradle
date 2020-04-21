@@ -40,7 +40,7 @@ shadowJar {
 
 dependencies {
 	// Application dependencies
-	compile project(':apg-patch-service-common')
+	compile project(':apg-patch-service-api')
 	compile group: 'org.codehaus.groovy' , name: 'groovy-all'
 	compile group: 'org.codehaus.groovy' , name: 'groovy-backports-compat23'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'

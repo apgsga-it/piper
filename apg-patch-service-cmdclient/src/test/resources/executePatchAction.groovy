@@ -1,14 +1,8 @@
 
 import groovy.json.JsonSlurper
-
-import java.lang.reflect.Constructor
-
-import org.springframework.beans.BeanUtils 
 import org.springframework.core.io.FileSystemResourceLoader
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
-
-import com.apgsga.microservice.patch.server.impl.SimplePatchContainerBean
 
 ResourceLoader rl = new FileSystemResourceLoader();
 Resource parent = rl.getResource("$configDir")

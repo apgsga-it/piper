@@ -3,7 +3,7 @@ jar {
 	baseName = 'apg-patch-service-client'
 }
 dependencies {
-	compile project(':apg-patch-service-common')
+	compile project(':apg-patch-service-api')
 	compile group: 'org.springframework', name: 'spring-web'
 	compile group: 'commons-lang', name: 'commons-lang'
 	testCompile project(':apg-patch-service-server')
