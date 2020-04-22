@@ -28,7 +28,7 @@ import org.springframework.util.FileCopyUtils;
 
 import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
-import com.apgsga.microservice.patch.server.impl.persistence.FilebasedPatchPersistence;
+import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
 import com.google.common.collect.Lists;
 
 @RunWith(SpringRunner.class)
