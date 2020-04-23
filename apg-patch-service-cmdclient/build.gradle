@@ -148,14 +148,10 @@ task buildLessPkg  (type: Zip) {
 	}
 }
 
-
-
-
-
 publishing {
 	publications {
 	    zipPkg(MavenPublication) {
-			artifact buildLessPkg.outputs.getFiles().getSingleFile()
+			artifact "${buildDir}/distributions/${projectDir.getName()}-${version}.zip"
 		}
 		yumRpm(IvyPublication) {
 			artifact buildRpm.outputs.getFiles().getSingleFile()
