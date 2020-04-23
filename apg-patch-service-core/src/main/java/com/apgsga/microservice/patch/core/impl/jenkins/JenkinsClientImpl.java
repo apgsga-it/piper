@@ -25,6 +25,7 @@ import com.offbytwo.jenkins.model.PipelineJobWithDetails;
 import com.offbytwo.jenkins.model.QueueItem;
 import com.offbytwo.jenkins.model.QueueReference;
 import com.offbytwo.jenkins.model.WorkflowRun;
+import org.springframework.stereotype.Component;
 
 public class JenkinsClientImpl implements JenkinsClient {
 

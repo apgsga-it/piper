@@ -1,23 +1,16 @@
 package com.apgsga.patch.service.client
 
-import static com.apgsga.patch.service.client.DbCliIntegrationTest.dbAvailable
-import static com.apgsga.patch.service.client.DbCliIntegrationTest.patchExists
-
-import org.springframework.core.io.FileSystemResourceLoader
-import org.springframework.core.io.ResourceLoader
-import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.annotation.DirtiesContext.ClassMode
-import org.springframework.test.context.TestPropertySource
-
 import com.apgsga.patch.service.client.db.PatchDbCli
-import com.apgsga.patch.service.client.utils.AppContext
-
 import groovy.json.JsonSlurper
 import groovy.sql.Sql
+import org.springframework.core.io.FileSystemResourceLoader
+import org.springframework.core.io.ResourceLoader
 import spock.lang.Ignore
 import spock.lang.Requires
 import spock.lang.Specification
 
+import static com.apgsga.patch.service.client.DbCliIntegrationTest.dbAvailable
+import static com.apgsga.patch.service.client.DbCliIntegrationTest.patchExists
 
 class DbCliIntegrationTest extends Specification {
 	
@@ -45,7 +38,7 @@ class DbCliIntegrationTest extends Specification {
 	}
 	
 
-	
+	// TODO (che, jhe ) : This stay still here?
 	@Requires({dbAvailable()})
 	def "Patch DB Cli returns patch ids to be re-installed after a clone"() {
 		when:

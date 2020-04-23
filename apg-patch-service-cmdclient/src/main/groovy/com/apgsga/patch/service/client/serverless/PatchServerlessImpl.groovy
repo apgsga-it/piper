@@ -2,140 +2,168 @@ package com.apgsga.patch.service.client.serverless
 
 import com.apgsga.microservice.patch.api.*
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.common.collect.Lists
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.client.ClientHttpResponse
+import org.springframework.stereotype.Component
 import org.springframework.web.client.ResponseErrorHandler
-import org.springframework.web.client.RestTemplate
 
+@Component
 class PatchServerlessImpl implements PatchOpService, PatchPersistence {
 
-	public PatchServerlessImpl(def config) {
+	@Autowired
+	@Qualifier("ServerBean")
+	private PatchService patchService
+
+	@Autowired
+	@Qualifier("ServerBean")
+	private PatchOpService patchOpService
+
+	@Autowired
+	@Qualifier("patchPersistence")
+	private PatchPersistence repo
+
+	PatchServerlessImpl() {
 	}
 
 	@Override
-	public void restartProdPipeline(String patchNumber) {
+	void restartProdPipeline(String patchNumber) {
+		patchOpService.restartProdPipeline(patchNumber)
 	}
 
 	@Override
-	public void executeStateTransitionAction(String patchNumber, String toStatus) {
+	void executeStateTransitionAction(String patchNumber, String toStatus) {
+		patchOpService.executeStateTransitionAction(patchNumber,toStatus)
 	}
 	@Override
-	public void cleanLocalMavenRepo() {
+	void cleanLocalMavenRepo() {
+		patchOpService.cleanLocalMavenRepo()
 	}
 
 	@Override
-	public Patch findById(String patchNumber) {
+	Patch findById(String patchNumber) {
+		patchService.findById(patchNumber)
 	}
 	
 	@Override
-	public PatchLog findPatchLogById(String patchNummer) {
+	PatchLog findPatchLogById(String patchNummer) {
+		patchService.findPatchLogById(patchNumber)
 	}
 
 
 	@Override
-	public Boolean patchExists(String patchNumber) {
+	Boolean patchExists(String patchNumber) {
+		repo.patchExists(patchNumber)
 	}
 
 
-	public void savePatch(File patchFile, Class<Patch> clx) {
-		println "File ${patchFile} to be uploaded"
-		ObjectMapper mapper = new ObjectMapper();
+	void savePatch(File patchFile, Class<Patch> clx) {
+		ObjectMapper mapper = new ObjectMapper()
 		def patchData = mapper.readValue(patchFile, clx)
 		savePatch(patchData)
 	}
 
 
-	public void save(File patchFile, Class<Patch> clx) {
+	void save(File patchFile, Class<Patch> clx) {
 		println "File ${patchFile} to be uploaded"
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper()
 		def patchData = mapper.readValue(patchFile, clx)
 		save(patchData)
 	}
 
 	@Override
-	public Patch save(Patch patch) {
+	Patch save(Patch patch) {
+		patchService.save(patch)
 	}
 	
 	@Override
-	public void savePatchLog(Patch patch) {
+	void savePatchLog(Patch patch) {
+		patchService.log(patch)
 	}
 	
 	@Override
-	public void savePatch(Patch patch) {
+	void savePatch(Patch patch) {
+		patchService.save(patch)
 	}
 
 	@Override
-	public List<String> findAllPatchIds() {
-	}
-
-
-	@Override
-	public void removePatch(Patch patch) {
-
-	}
-
-	@Override
-	public void saveDbModules(DbModules dbModules) {
-	}
-
-	@Override
-	public DbModules getDbModules() {
-	}
-
-	@Override
-	public void saveServicesMetaData(ServicesMetaData serviceData) {
-	}
-
-	@Override
-	public List<String> listAllFiles() {
+	List<String> findAllPatchIds() {
+		repo.findAllPatchIds()
 	}
 
 
 	@Override
-	public List<String> listFiles(String prefix) {
+	void removePatch(Patch patch) {
+		repo.removePatch(patch)
+	}
+
+	@Override
+	void saveDbModules(DbModules dbModules) {
+	    repo.saveDbModules(dbModules)
+	}
+
+	@Override
+	DbModules getDbModules() {
+		repo.getDbModules()
+	}
+
+	@Override
+	void saveServicesMetaData(ServicesMetaData serviceData) {
+		repo.saveServicesMetaData(serviceData)
+	}
+
+	@Override
+	List<String> listAllFiles() {
+		repo.listAllFiles()
 	}
 
 
 	@Override
-	public ServicesMetaData getServicesMetaData() {
+	List<String> listFiles(String prefix) {
+	 	repo.listFiles(prefix)
 	}
 
 
 	@Override
-	public ServiceMetaData findServiceByName(String serviceName) {
-		throw new UnsupportedOperationException("Not needed, see getServiceMetaData");
-	}
-
-	@Override
-	public void clean() {
-		throw new UnsupportedOperationException("Cleaning not supported by client");
-	}
-
-	@Override
-	public void init() throws IOException {
-		throw new UnsupportedOperationException("Init not supported by client");
+	ServicesMetaData getServicesMetaData() {
+		repo.getServicesMetaData()
 	}
 
 
 	@Override
-	public void onClone(String source, String target) {
+	ServiceMetaData findServiceByName(String serviceName) {
+		throw new UnsupportedOperationException("Not needed, see getServiceMetaData")
+	}
+
+	@Override
+	void clean() {
+		throw new UnsupportedOperationException("Cleaning not supported by client")
+	}
+
+	@Override
+	void init() throws IOException {
+		throw new UnsupportedOperationException("Init not supported by client")
+	}
+
+
+	@Override
+	void onClone(String source, String target) {
+		patchOpService.onClone(source,target)
 	}
 
 	class PatchServiceErrorHandler implements ResponseErrorHandler {
 
-
-
-		public PatchServiceErrorHandler() {
+		PatchServiceErrorHandler() {
 		}
 
 		@Override
-		public boolean hasError(ClientHttpResponse response) throws IOException {
+		boolean hasError(ClientHttpResponse response) throws IOException {
 
-			return false;
+			return false
 		}
 
 		@Override
-		public void handleError(ClientHttpResponse response) throws IOException {
+		void handleError(ClientHttpResponse response) throws IOException {
 			System.err.println "Recieved Error from Server with Http Code: ${response.getStatusText()}"
 			System.err.println "Error output : " + response.body.getText("UTF-8")
 		}

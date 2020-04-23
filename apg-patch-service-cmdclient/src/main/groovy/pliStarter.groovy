@@ -13,14 +13,13 @@ if(client.equalsIgnoreCase("pli")) {
 	System.exit(PatchCli.create(client).process(args).returnCode)
 }
 
-if(client.equalsIgnoreCase("pliDb")) {
-	System.exit(PatchDbCli.create(client).process(args).returnCode)
+if(client.equalsIgnoreCase("pliLess")) {
+	System.exit(PatchCli.create(client).process(args).returnCode)
 }
 
-if(client.equalsIgnoreCase("pliLess")) {
+if(client.equalsIgnoreCase("pliDb")) {
 	System.exit(PatchDbCli.create().process(args).returnCode)
 }
-
 
 println "pliStarter couldn't find an pli to be started with name ${client}."
 System.exit(1)

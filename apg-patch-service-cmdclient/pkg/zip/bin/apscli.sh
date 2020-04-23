@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-java -Dspring.profiles.active=default -Dlogback.statusListenerClass=ch.qos.logback.core.status.NopStatusListener -DappPropertiesFile=file:/etc/opt/apg-patch-cli/application.properties -jar /opt/apg-patch-cli/bin/apg-patch-cli.jar pliless $@

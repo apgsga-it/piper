@@ -1,16 +1,11 @@
 package com.apgsga.patch.service.client.db
 
-import org.apache.commons.lang.exception.ExceptionUtils
-import org.codehaus.groovy.runtime.StackTraceUtils
-import org.springframework.core.io.ClassPathResource
-import org.springframework.core.io.FileSystemResourceLoader
-
-import com.apgsga.patch.service.client.utils.TargetSystemMappings
 import com.apgsga.patch.service.client.PatchClientServerException
-import com.apgsga.patch.service.client.utils.AppContext
-
-
+import com.apgsga.patch.service.client.config.PliConfig
+import com.apgsga.patch.service.client.utils.TargetSystemMappings
 import groovy.sql.Sql
+import org.apache.commons.lang.exception.ExceptionUtils
+import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 /**
  * This command line Tool  is used to make jdbc calls to the It21 database. 
@@ -30,7 +25,8 @@ class PatchDbCli {
 	}
 
 	def process(def args) {
-		config = AppContext.instance.load()
+		def context =  new AnnotationConfigApplicationContext(PliConfig.class);
+		config = context.getBean(ConfigObject.class);
 		TargetSystemMappings.instance.load(config)
 		def cmdResults = new Expando();
 		cmdResults.returnCode = 1

@@ -1,17 +1,19 @@
 package com.apgsga.patch.service.client
 
+import com.apgsga.patch.service.client.config.PliConfig
 import com.apgsga.patch.service.client.rest.PatchRestServiceClient
+import com.apgsga.patch.service.client.serverless.PatchServerlessImpl
 import org.codehaus.groovy.runtime.StackTraceUtils
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.patch.service.client.utils.TargetSystemMappings
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.apgsga.patch.service.client.utils.AppContext
+import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 class PatchCli {
 
-	public static PatchCli create(client) {
+	static PatchCli create(client) {
 		def patchCli = new PatchCli(client)
 		return patchCli
 	}
@@ -27,7 +29,8 @@ class PatchCli {
 
 
 	def process(def args) {
-		config = AppContext.instance.load()
+		def context =  new AnnotationConfigApplicationContext(PliConfig.class);
+		config = context.getBean(ConfigObject.class);
 		TargetSystemMappings.instance.load(config)
 		def cmdResults = new Expando();
 		cmdResults.returnCode = 1
@@ -38,7 +41,7 @@ class PatchCli {
 			return cmdResults
 		}
 		try {
-			def patchClient = new PatchRestServiceClient(config)
+			def patchClient = client == "pliLess" ? context.getBean(PatchServerlessImpl.class) : new PatchRestServiceClient(config)
 			if (options.l) {
 				def result = uploadPatchFiles(patchClient,options)
 				cmdResults.results['l'] = result
@@ -366,7 +369,8 @@ class PatchCli {
 		def cmdResult = new Expando()
 		List<String> ids =  patchClient.findAllPatchIds()
 		ids.each { id ->
-			retrieveAndWritePatch(id,options.d)
+			println("Downloading ${id}")
+			retrieveAndWritePatch(patchClient,id,options.d)
 		}
 		cmdResult.patchNumbers = ids
 		cmdResult.directory = options.d

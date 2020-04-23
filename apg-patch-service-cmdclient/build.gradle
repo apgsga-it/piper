@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.*
 plugins {
   	id 'groovy'
     id 'application'
@@ -35,7 +36,7 @@ dependencies {
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
 	runtime group: 'commons-cli' , name: 'commons-cli'
 	runtime group: 'oracle', name: 'ojdbc'
-	compile project(':apg-patch-service-server')
+	testCompile project(':apg-patch-service-server')
 	testCompile group: 'org.springframework', name: 'spring-test'
 	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'	
 	testCompile group: 'org.spockframework' ,name: 'spock-spring' 
@@ -44,12 +45,20 @@ dependencies {
 }
 
 shadowJar {
-	baseName = "${finalName}"
+	baseName = "${finalName}-fat"
 	classifier = null
 	version = null
 	exclude 'cmd.sh'
 	exclude '**/downloads/*'
 	exclude '**/uploads/*'
+	mergeServiceFiles()
+	append 'META-INF/spring.handlers'
+	append 'META-INF/spring.schemas'
+	append 'META-INF/spring.tooling'
+	transform(PropertiesFileTransformer) {
+		paths = ['META-INF/spring.factories' ]
+		mergeStrategy = "append"
+	}
 }
 
 task copyLib( type: Copy ) {
@@ -122,28 +131,32 @@ ospackage {
  	directory ("/var/opt/${finalName}", 0775, "root", "jenkins", false)
 }
 
-task copyForZipPkg  (type: Copy) {
-	into "$buildDir/tmp/lesspkg"
-	into("bin") {
-		from "$projectDir/pkg/zip/bin"
-	}
+task buildLessPkg  (type: Zip) {
+	into "apscli"
+	from "$projectDir/pkg/zip/apscli.sh"
 	into("conf") {
 		from "$projectDir/pkg/zip/conf"
 	}
-	into("bin") {
+	into("lib") {
 		from shadowJar.outputs.files
+	}
+	into("db") {
+		from "$projectDir/pkg/zip/db"
+	}
+	into("log") {
+		from "$projectDir/pkg/zip/log"
 	}
 }
 
 
 
 
+
 publishing {
 	publications {
-//	    targz(MavenPublication) {
-//			artifact source: pkgAsGTar, extension: 'tar.gz'
-//			artifactId = "${finalName}"
-//		}
+	    zipPkg(MavenPublication) {
+			artifact buildLessPkg.outputs.getFiles().getSingleFile()
+		}
 		yumRpm(IvyPublication) {
 			artifact buildRpm.outputs.getFiles().getSingleFile()
 		}
@@ -186,8 +199,8 @@ artifactory {
 //assemble { dependsOn copyLib,pkgAsGTar}
 assemble { dependsOn copyLib}
 buildRpm {dependsOn processResources, assemble}
-copyForZipPkg {dependsOn processResources, assemble, buildRpm}
-publishToMavenLocal {dependsOn buildRpm, copyForZipPkg}
-publish {dependsOn buildRpm, copyForZipPkg}
+buildLessPkg {dependsOn processResources, assemble, buildRpm}
+publishToMavenLocal {dependsOn buildRpm, buildLessPkg}
+publish {dependsOn buildRpm, buildLessPkg}
 
 
