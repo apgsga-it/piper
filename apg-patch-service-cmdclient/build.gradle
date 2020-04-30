@@ -140,8 +140,8 @@ task buildLessPkg  (type: Zip) {
 	into("lib") {
 		from shadowJar.outputs.files
 	}
-	into("db") {
-		from "$projectDir/pkg/zip/db"
+	into("data") {
+		from "$projectDir/pkg/zip/data"
 	}
 	into("log") {
 		from "$projectDir/pkg/zip/log"

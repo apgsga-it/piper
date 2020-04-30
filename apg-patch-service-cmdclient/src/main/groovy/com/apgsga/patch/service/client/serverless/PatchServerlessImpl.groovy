@@ -151,21 +151,4 @@ class PatchServerlessImpl implements PatchOpService, PatchPersistence {
 		patchOpService.onClone(source,target)
 	}
 
-	class PatchServiceErrorHandler implements ResponseErrorHandler {
-
-		PatchServiceErrorHandler() {
-		}
-
-		@Override
-		boolean hasError(ClientHttpResponse response) throws IOException {
-
-			return false
-		}
-
-		@Override
-		void handleError(ClientHttpResponse response) throws IOException {
-			System.err.println "Recieved Error from Server with Http Code: ${response.getStatusText()}"
-			System.err.println "Error output : " + response.body.getText("UTF-8")
-		}
-	}
 }
