@@ -95,7 +95,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"SimplePatchContainerBean.listMavenArtifacts.exception",
-					new Object[] { e.getMessage(), serviceName.toString() }, e);
+					new Object[] { e.getMessage(), serviceName}, e);
 		}
 
 		return mavenArtFromStarterList;
@@ -277,7 +277,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					// JHE : In production, cvs is on a separated server, therefore we can't checkout, and parse the local result ...
 					//		 We rely on the output given back from the CVS command, might not be the most robust solution :( ... but so far ok for a function which is not crucial.
 					int startIndex = r.indexOf("U ")+"U ".length();
-					String pathToResourceName = r.substring(startIndex, r.length()).trim().replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "");
+					String pathToResourceName = r.substring(startIndex).trim().replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "");
 					DbObject dbObject = new DbObject();
 					dbObject.setModuleName(dbModule);
 					dbObject.setFileName(FilenameUtils.getName(pathToResourceName));
@@ -311,23 +311,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		patchActionExecutor.execute(patchNumber, toStatus);
 	}
 
-	@Override
-	public void restartProdPipeline(String patchNumber) {
-		Asserts.notNull(patchNumber, "SimplePatchContainerBean.restartProdPipeline.patchnumber.notnull.assert",
-				new Object[] {});
-		Asserts.isTrue((repo.patchExists(patchNumber)),
-				"SimplePatchContainerBean.restartProdPipeline.patch.exists.assert", new Object[] { patchNumber });
-		Asserts.isFalse(jenkinsClient.isProdPatchPipelineRunning(patchNumber), "SimplePatchContainerBean.restartProdPipeline.patch.alreadyRunning", new Object[]{patchNumber});
-		Asserts.isTrue(isLastProdPipelineAbortedOrInError(patchNumber), "SimplePatchContainerBean.restartProdPipeline.patch.lastBuildInErrorOrAborted", new Object[]{patchNumber});
-		Patch patch = repo.findById(patchNumber);
-		jenkinsClient.restartProdPatchPipeline(patch);
-	}
-	
-	private boolean isLastProdPipelineAbortedOrInError(String patchNumber) {
-		BuildResult result = jenkinsClient.getProdPipelineBuildResult(patchNumber);
-		return result.equals(BuildResult.ABORTED) || result.equals(BuildResult.FAILURE);
-	}
-	
 	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
 
 		VcsCommandRunner cmdRunner = getJschSessionFactory().create();

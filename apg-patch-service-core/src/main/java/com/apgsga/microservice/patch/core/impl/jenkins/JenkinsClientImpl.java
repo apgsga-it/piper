@@ -25,7 +25,10 @@ import com.offbytwo.jenkins.model.PipelineJobWithDetails;
 import com.offbytwo.jenkins.model.QueueItem;
 import com.offbytwo.jenkins.model.QueueReference;
 import com.offbytwo.jenkins.model.WorkflowRun;
-import org.springframework.stereotype.Component;
+
+import javax.annotation.Nullable;
+
+import static java.lang.Thread.*;
 
 public class JenkinsClientImpl implements JenkinsClient {
 
@@ -140,8 +143,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	private PipelineBuild getPipelineBuild(JenkinsServer jenkinsServer, String jobName) throws IOException {
 		PipelineJobWithDetails job = jenkinsServer.getPipelineJob(jobName);
-		PipelineBuild lastBuild = job.getLastBuild();
-		return lastBuild;
+		return job.getLastBuild();
 	}
 
 	@Override
@@ -151,24 +153,16 @@ public class JenkinsClientImpl implements JenkinsClient {
 	}
 
 	@Override
-	public void processInputAction(Patch patch, String targetName, String stage) {
-		String action = stage.equals(CANCEL_CONS) ? stage
-				: PATCH_CONS + patch.getPatchNummer() + stage + targetName + OK_CONS;
-		JenkinsServer jenkinsServer = null;
-		try {
-			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
+	public void processInputAction(Patch patch, String targetName, @Nullable String stage) {
+		String action = !stage.equals(CANCEL_CONS) ? PATCH_CONS + patch.getPatchNummer() + stage + targetName + OK_CONS : stage;
+		try (JenkinsServer jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey)) {
 			PipelineBuild lastBuild = getPipelineBuild(jenkinsServer, PATCH_CONS + patch.getPatchNummer());
 			validateLastPipelineBuilder(patch.getPatchNummer(), lastBuild);
 			inputActionForPipeline(patch, action, lastBuild);
-
 		} catch (Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"JenkinsPatchClientImpl.processInputAction.exception",
-					new Object[] { e.getMessage(), patch.toString() }, e);
-		} finally {
-			if (jenkinsServer != null) {
-				jenkinsServer.close();
-			}
+					new Object[]{e.getMessage(), patch.toString()}, e);
 		}
 	}
 
@@ -189,7 +183,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 			LOGGER.warn(PIPELINE_CONS + wfRun.getName() + IS_NOT_BUILDING_CONS);
 			return false;
 		} else if (wfRun.isInProgress()) {
-			Thread.sleep(2000);
+			sleep(2000);
 			return true;
 		} else {
 			boolean actionFound = false;
@@ -257,7 +251,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 		while(attempt < MAX_RETRY && !onCloneBuild.details().isBuilding()) {
 			attempt++;
 			LOGGER.info("\"" + jobName + "\"" + " has not been started yet. Waiting " + WAIT_TIME_IN_SEC_BEFORE_NEXT_TRY + "sec before next check." + (MAX_RETRY-attempt) + " checks remained.");
-			Thread.sleep(WAIT_TIME_IN_SEC_BEFORE_NEXT_TRY*1000);
+			sleep(WAIT_TIME_IN_SEC_BEFORE_NEXT_TRY*1000);
 		}
 		if(attempt == MAX_RETRY) {
 			LOGGER.info("We could not determine if \"" + jobName + "\" has been submitted.");
@@ -284,7 +278,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 		int retryCnt = 0;
 		while (!queueItem.isCancelled() && (job.isInQueue() || queueItem.getExecutable() == null)
 				&& retryCnt < DEFAULT_RETRY_COUNTS) {
-			Thread.sleep(DEFAULT_RETRY_INTERVAL);
+			sleep(DEFAULT_RETRY_INTERVAL);
 			LOGGER.info("... retry getting Job Details for Job \"" + jobName + "\" (" + retryCnt + "/" + DEFAULT_RETRY_COUNTS + ")");
 			job = server.getPipelineJob(jobName);
 			queueItem = server.getQueueItem(queueRef);
@@ -312,7 +306,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 				LOGGER.info("Job \"" + jobName + "\" is now building");
 				return job.getLastBuild();
 			}
-			Thread.sleep(DEFAULT_RETRY_INTERVAL);
+			sleep(DEFAULT_RETRY_INTERVAL);
 			LOGGER.info("... continue waiting until Job \"" + jobName + "\" is building");
 			retryCnt++;
 		}

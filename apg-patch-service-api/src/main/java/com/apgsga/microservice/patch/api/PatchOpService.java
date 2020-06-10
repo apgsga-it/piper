@@ -5,17 +5,11 @@ public interface PatchOpService {
 	/**
 	 * Execute a Action, which leads when successful to the toStatus
 	 * 
-	 * @param patchNumber
-	 * @param toStatus
+	 * @param patchNumber Id for a Patch
+	 * @param toStatus To State in terms of Apg Patchworkflow
 	 */
 	void executeStateTransitionAction(String patchNumber, String toStatus);
-	
-	/**
-	 * Execute a Action, which leads when successful to the toStatus
-	 * 
-	 * @param patchNumber
-	 */
-	void restartProdPipeline(String patchNumber);
+
 
 	/**
 	 * All changes on a patch Object need to be saved.
@@ -29,8 +23,8 @@ public interface PatchOpService {
 	/**
 	 * Clone a specific target
 	 * 
-	 * @param source
-	 * @param target
+	 * @param source  Target from which is cloned
+	 * @param target Target to which is cloned
 	 *             eg.: CHPI211,CHEI212
 	 */
 	void onClone(String source, String target);

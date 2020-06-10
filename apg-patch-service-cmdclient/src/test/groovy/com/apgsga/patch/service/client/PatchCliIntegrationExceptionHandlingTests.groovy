@@ -17,19 +17,17 @@ import spock.lang.Specification
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = [MicroPatchServer.class ])
 @TestPropertySource(locations = ["classpath:config/server-test.properties"])
 @ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
-public class PatchCliIntegrationExceptionHandlingTests extends Specification {
-
-	private static def DEFAULT_CONFIG_OPT = ["-c", "src/test/resources/config"]
+class PatchCliIntegrationExceptionHandlingTests extends Specification {
 
 	@Value('${baseUrl}')
-	private String baseUrl;
+	private String baseUrl
 
 	@Value('${json.db.location}')
-	private String dbLocation;
+	private String dbLocation
 
 	@Autowired
 	@Qualifier("patchPersistence")
-	private PatchPersistence repo;
+	private PatchPersistence repo
 
 	def setup() {
 		def buildFolder = new File("build")
@@ -42,56 +40,7 @@ public class PatchCliIntegrationExceptionHandlingTests extends Specification {
 		System.properties['opsPropertiesFile'] = 'classpath:config/ops-test.properties'
 	}
 
-	def "Patch Cli should print Server Exception and return returnCode > 0 for invalid findById"() {
-		setup:
-		def client = PatchCli.create()
-		client.validate = false
-		when:
-		def result = client.process(["-f", " ,build"])
-		then:
-		result != null
-		result.returnCode >  0
-		result.results.containsKey('error') == true
-		result.results['error'].errorKey == "FilebasedPatchPersistence.findById.patchnumber.notnullorempty.assert"
-	}
-	
-	def "Patch Cli should be ok with returnCode == 0 for nonexisting findById"() {
-		setup:
-		def client = PatchCli.create()
-		when:
-		def result = client.process(["-f", "99999999,build"])
-		then:
-		result != null
-		result.returnCode ==  0
-	}
-	
-	
-	def "Patch Cli should print Server Exception and return returnCode > 0 for remove of notexisting Patch"() {
-		setup:
-		def client = PatchCli.create()
-		client.validate = false
-		when:
-		def result = client.process(["-r", "XXXXX"])
-		then:
-		result != null
-		result.returnCode >  0
-		result.results.containsKey('error') == true
-		result.results['error'].contains("Patch XXXXX to remove not found")
-	}
-	
-	
-	def "Patch Cli should print Server Exception and return returnCode > 0 for Saven of Patch with empty Patch Number"() {
-		setup:
-		def client = PatchCli.create()
-		client.validate = false
-		when:
-		def result = client.process(["-s", "src/test/resources/Patch5403ErrorTest.json"])
-		then:
-		result != null
-		result.returnCode >  0
-		result.results.containsKey('error') == true
-		result.results['error'].errorKey == "FilebasedPatchPersistence.save.patchnumber.notnullorempty.assert"
-	}
+
 	
 	def "Patch Cli should print Server Exception and return returnCode > 0  with Patchnumber empty for State Change Action"() {
 		setup:
