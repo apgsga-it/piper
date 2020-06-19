@@ -31,7 +31,7 @@ import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.SearchCondition;
 import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
-import com.apgsga.microservice.patch.server.impl.persistence.FilebasedPatchPersistence;
+import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
 
 @RunWith(SpringRunner.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)

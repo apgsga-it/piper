@@ -8,13 +8,13 @@
                     "name": "startPipelineAndTag",
                     "toState": "Installationsbereit",
                     "code": 2,
-                    "implcls": "com.apgsga.microservice.patch.server.impl.MockPatchAction"
+                    "implcls": "com.apgsga.microservice.patch.core.impl.MockPatchAction"
                 },
                 {
                     "name": "cancel",
                     "toState": "",
                     "code": 0,
-                    "implcls": "com.apgsga.microservice.patch.server.impl.MockPatchAction"
+                    "implcls": "com.apgsga.microservice.patch.core.impl.MockPatchAction"
                 }
             ]
         },
@@ -26,13 +26,13 @@
                     "name": "BuildFor",
                     "toState": "Installationsbereit",
                     "code": 15,
-                    "implcls": "com.apgsga.microservice.patch.server.impl.MockPatchAction"
+                    "implcls": "com.apgsga.microservice.patch.core.impl.MockPatchAction"
                 },
                 {
                     "name": "InstallFor",
                     "toState": "",
                     "code": 20,
-                    "implcls": "com.apgsga.microservice.patch.server.impl.MockPatchAction"
+                    "implcls": "com.apgsga.microservice.patch.core.impl.MockPatchAction"
                 }
             ]
         },
@@ -44,13 +44,13 @@
                     "name": "BuildFor",
                     "toState": "Installationsbereit",
                     "code": 25,
-                    "implcls": "com.apgsga.microservice.patch.server.impl.MockPatchAction"
+                    "implcls": "com.apgsga.microservice.patch.core.impl.MockPatchAction"
                 },
                 {
                     "name": "InstallFor",
                     "toState": "",
                     "code": 30,
-                    "implcls": "com.apgsga.microservice.patch.server.impl.MockPatchAction"
+                    "implcls": "com.apgsga.microservice.patch.core.impl.MockPatchAction"
                 }
             ]
         },
@@ -62,13 +62,13 @@
                     "name": "BuildFor",
                     "toState": "Installationsbereit",
                     "code": 65,
-                    "implcls": "com.apgsga.microservice.patch.server.impl.MockPatchAction"
+                    "implcls": "com.apgsga.microservice.patch.core.impl.MockPatchAction"
                 },
                 {
                     "name": "InstallFor",
                     "toState": "",
                     "code": 80,
-                    "implcls": "com.apgsga.microservice.patch.server.impl.MockPatchAction"
+                    "implcls": "com.apgsga.microservice.patch.core.impl.MockPatchAction"
                 }
             ]
         }

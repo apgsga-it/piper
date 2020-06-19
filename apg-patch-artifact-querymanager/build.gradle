@@ -8,7 +8,7 @@ println "Maven Local Repo is : ${rootProject.mavenLocalRepo}"
 
 
 dependencies {
-	compile project(':apg-patch-service-common')
+	compile project(':apg-patch-service-api')
 	compile group: 'org.codehaus.plexus', name: 'plexus-utils'
 	compile group: 'org.slf4j', name: 'slf4j-api'
 	compile group: 'ch.qos.logback', name: 'logback-classic'

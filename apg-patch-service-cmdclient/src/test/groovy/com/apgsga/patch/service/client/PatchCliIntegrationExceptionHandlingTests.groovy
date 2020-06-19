@@ -1,20 +1,17 @@
-package com.apgsga.patch.service.client;
+package com.apgsga.patch.service.client
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.apgsga.microservice.patch.api.PatchPersistence
+import com.apgsga.microservice.patch.server.MicroPatchServer
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
+import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.annotation.DirtiesContext.ClassMode
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.TestPropertySource;
-
-import com.apgsga.forms2java.persistence.mybatis.ValidateMyBatisDataAccess
-import com.apgsga.microservice.patch.api.PatchPersistence
-import com.apgsga.microservice.patch.server.MicroPatchServer;
-
-import spock.lang.Specification;
+import org.springframework.test.context.TestPropertySource
+import spock.lang.Specification
 
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = [MicroPatchServer.class ])

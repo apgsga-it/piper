@@ -1,34 +1,36 @@
 package com.apgsga.patch.service.client
 
-
+import com.apgsga.patch.service.client.config.PliConfig
+import com.apgsga.patch.service.client.rest.PatchRestServiceClient
+import com.apgsga.patch.service.client.serverless.PatchServerlessImpl
 import org.codehaus.groovy.runtime.StackTraceUtils
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
-import com.apgsga.microservice.patch.api.PatchLog
-import com.apgsga.microservice.patch.api.PatchLogDetails
 import com.apgsga.microservice.patch.api.ServicesMetaData
-import com.apgsga.patch.service.client.utils.AppContext
 import com.apgsga.patch.service.client.utils.TargetSystemMappings
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.apgsga.patch.service.client.utils.AppContext
+import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 class PatchCli {
 
-	public static PatchCli create() {
-		def patchCli = new PatchCli()
+	static PatchCli create(client) {
+		def patchCli = new PatchCli(client)
 		return patchCli
-	}
-
-	private PatchCli() {
-		super();
 	}
 
 	def validComponents = [ "aps", "nil"]
 	def validate = true
 	def config
+	def client
+
+	private PatchCli(client) {
+	  this.client = client
+	}
+
 
 	def process(def args) {
-		config = AppContext.instance.load()
+		def context =  new AnnotationConfigApplicationContext(PliConfig.class);
+		config = context.getBean(ConfigObject.class);
 		TargetSystemMappings.instance.load(config)
 		def cmdResults = new Expando();
 		cmdResults.returnCode = 1
@@ -39,7 +41,7 @@ class PatchCli {
 			return cmdResults
 		}
 		try {
-			def patchClient = new PatchServiceClient(config)
+			def patchClient = client == "pliLess" ? context.getBean(PatchServerlessImpl.class) : new PatchRestServiceClient(config)
 			if (options.l) {
 				def result = uploadPatchFiles(patchClient,options)
 				cmdResults.results['l'] = result
@@ -108,10 +110,6 @@ class PatchCli {
 				def result = onClone(patchClient,options)
 				cmdResults.results['oc'] = result
 			}
-			if (options.cr) {
-				def result = cleanReleases(options)
-				cmdResults.results['cr'] = result
-			}
 			if (options.cm) {
 				def result = cleanLocalMavenRepo(patchClient)
 				cmdResults.results['cm'] = result
@@ -166,8 +164,6 @@ class PatchCli {
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can only be aps ', required: false
 			oc longOpt: 'onclone', args:2, valueSeparator: ",", argName: 'source,target', 'Call Patch Service onClone REST API', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
-			// TODO (JHE, CHE, 12.9 ) move this to own cli
-			cr longOpt: 'cleanReleases', args:1, argName: 'target', 'Clean release Artifacts for a given target on Artifactory', required: false
 			log longOpt: 'log', args:1, argName: 'patchFile', 'Log a patch steps for a patch', required: false
 		}
 
@@ -373,7 +369,8 @@ class PatchCli {
 		def cmdResult = new Expando()
 		List<String> ids =  patchClient.findAllPatchIds()
 		ids.each { id ->
-			retrieveAndWritePatch(id,options.d)
+			println("Downloading ${id}")
+			retrieveAndWritePatch(patchClient,id,options.d)
 		}
 		cmdResult.patchNumbers = ids
 		cmdResult.directory = options.d
@@ -533,11 +530,6 @@ class PatchCli {
 		patchClient.onClone(source,target)
 	}
 
-	def cleanReleases(def options) {
-		def target = options.crs[0].toUpperCase()
-		def patchArtifactoryClient = new PatchArtifactoryClient(config)
-		patchArtifactoryClient.cleanReleases(target)
-	}
 	
 	def logPatchActivity(def patchClient,def options) {
 		println "Logging patch activity for ${options.logs[0]}"
