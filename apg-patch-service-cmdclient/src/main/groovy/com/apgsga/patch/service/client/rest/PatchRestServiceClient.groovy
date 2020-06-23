@@ -49,6 +49,11 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 	}
 
 	@Override
+	void startAssembleAndDeployPipeline(Map<String, String> params) {
+		restTemplate.postForLocation(getRestBaseUri() + "/startAssembleAndDeployPipeline", params)
+	}
+
+	@Override
 	public Patch findById(String patchNumber) {
 		return restTemplate.getForObject(getRestBaseUri() + "/findById/{id}", Patch.class, [id:patchNumber]);
 	}

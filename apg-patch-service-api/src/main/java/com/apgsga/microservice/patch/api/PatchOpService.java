@@ -1,5 +1,7 @@
 package com.apgsga.microservice.patch.api;
 
+import java.util.Map;
+
 public interface PatchOpService {
 
 	/**
@@ -40,4 +42,10 @@ public interface PatchOpService {
 	 * 
 	 */
 	void cleanLocalMavenRepo();
+
+	/**
+	 * Start the corresponding "assemble and deploy" pipeline
+	 * @param params map with following keys: target and tmpfolder
+	 */
+	void startAssembleAndDeployPipeline(Map<String,String> params);
 }

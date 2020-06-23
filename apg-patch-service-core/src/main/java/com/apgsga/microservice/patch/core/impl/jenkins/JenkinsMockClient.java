@@ -71,4 +71,9 @@ public class JenkinsMockClient implements JenkinsClient {
 		LOGGER.info("getProdPipelineBuildResult for : " + patchNumber);
 		return BuildResult.ABORTED;
 	}
+
+	@Override
+	public void startAssembleAndDeployPipeline(Map<String,String> params) {
+		LOGGER.info("startAssembleAndDeployPipeline for target=" + params.get("target") + " and tmpFolder=" + params.get("tmpfolder"));
+	}
 }

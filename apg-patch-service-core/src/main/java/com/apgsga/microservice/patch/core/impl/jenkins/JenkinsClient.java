@@ -11,7 +11,7 @@ public interface JenkinsClient {
 	public void startInstallPipeline(Patch patch);
 
 	public void startProdPatchPipeline(Patch patch);
-	
+
 	public void restartProdPatchPipeline(Patch patch);
 
 	public void cancelPatchPipeline(Patch patch);
@@ -25,4 +25,6 @@ public interface JenkinsClient {
 	public boolean isProdPatchPipelineRunning(String patchNumber);
 	
 	public BuildResult getProdPipelineBuildResult(String patchNumber);
+
+	public void startAssembleAndDeployPipeline(Map<String,String> params);
 }

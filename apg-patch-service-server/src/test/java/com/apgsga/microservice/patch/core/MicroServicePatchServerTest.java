@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
+import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -23,6 +24,8 @@ import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.core.impl.PatchActionExecutor;
 import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactory;
 import com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean;
+
+import java.util.Map;
 
 @RunWith(SpringRunner.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
@@ -213,6 +216,14 @@ public class MicroServicePatchServerTest {
 		assertEquals(2, patchService.findWithObjectName("ma3").size());
 		assertEquals(0, patchService.findWithObjectName("wrongName").size());
 		assertTrue(patchService.findWithObjectName("test-db2").size() == 1);
+	}
+
+	@Test
+	public void testAssembleAndDeployStartPipeline() {
+		Map<String,String> params = Maps.newHashMap();
+		params.put("target","chei212");
+		params.put("tmpfolder","1234");
+		patchService.startAssembleAndDeployPipeline(params);
 	}
 
 }

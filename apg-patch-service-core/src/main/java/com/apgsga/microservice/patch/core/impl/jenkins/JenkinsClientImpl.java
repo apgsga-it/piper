@@ -343,4 +343,26 @@ public class JenkinsClientImpl implements JenkinsClient {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.getProdPipelineBuildResult.error", new Object[]{patchNumber});
 		}
 	}
+
+	@Override
+	public void startAssembleAndDeployPipeline(Map<String,String> params) {
+		JenkinsServer jenkinsServer;
+		try {
+			String target = params.get("target");
+			String tmpfolder = params.get("tmpfolder");
+			String jobName = "assembleAndDeploy_" + target;
+			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
+			LOGGER.info("Connected to Jenkinsserver with, url: " + jenkinsUrl + " and user: " + jenkinsUser);
+			Map<String, String> jobParm = Maps.newHashMap();
+			jobParm.put(TOKEN_CONS, jobName);
+			jobParm.put("TARGET", target);
+			jobParm.put("TPM_FOLDER", tmpfolder);
+			// JHE: Not sure if we want to wait or not, to be discussed
+			LOGGER.info("Triggering assemble and deploy Pipeline Job for " + target + " and not waiting on response.");
+			triggerPipelineJobWithoutWaitingOnFeedback(jenkinsServer,jobName,jobParm,true);
+		}
+		catch (Exception ex) {
+			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startAssembleAndDeployPipeline.error", new Object[]{params.get("target"),ex.getMessage()});
+		}
+	}
 }
