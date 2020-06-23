@@ -75,6 +75,22 @@ class DbCliIntegrationTest extends Specification {
 		buffer.toString().trim() == "true"
 
 	}
+
+	// JHE: Ignoring this one because not guaranteed that Patches still exist
+	@Ignore
+	@Requires({dbAvailable()})
+	def "Patch DB Cli correctly copies Patch JSON Files"() {
+		String destFolderPath = "src/test/resources/destFolderForPatch"
+		when:
+			new File(destFolderPath).mkdirs()
+			def patchDbCli = PatchDbCli.create()
+			patchDbCli.process(["-cpf","Produktion," + destFolderPath + ",src/test/resources"])
+		then:
+			new File("${destFolderPath}/Patch5401.json").exists()
+		cleanup:
+			new File(destFolderPath).delete()
+
+	}
 	
 
 	// Preconditions for Tests used via Spack @Require
