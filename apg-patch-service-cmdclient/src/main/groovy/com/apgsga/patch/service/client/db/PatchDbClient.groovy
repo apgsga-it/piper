@@ -59,11 +59,11 @@ class PatchDbClient {
 	def copyPatchFile(def status, def destFolder, def pathToPatchFolder) throws Exception {
 		// TODO JHE: query needs to be double-check with UGE
 		// status could for example be : Informatiktestlieferung
-		String sql = "SELECT pat_id FROM cm_patch_list_f WHERE status = '${status}'"
+		String sql = "SELECT id FROM cm_patch_f p INNER JOIN cm_patch_status_f s ON p.status = s.pat_status WHERE s.pat_status_text = '${status}'"
 		def patchNumbers = []
 		try {
 			dbConnection.eachRow(sql) { row ->
-				patchNumbers.add(row.PAT_ID)
+				patchNumbers.add(row.ID)
 			}
 		}catch (Exception ex) {
 			// TODO JHE: could do better here ...
