@@ -2,6 +2,7 @@ package com.apgsga.microservice.patch.server;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
@@ -189,5 +190,12 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@Override
 	public void cleanLocalMavenRepo() {
 		patchService.cleanLocalMavenRepo();
+	}
+
+	@RequestMapping(value = "/startAssembleAndDeployPipeline", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public void startAssembleAndDeployPipeline(String target) {
+		patchService.startAssembleAndDeployPipeline(target);
 	}
 }

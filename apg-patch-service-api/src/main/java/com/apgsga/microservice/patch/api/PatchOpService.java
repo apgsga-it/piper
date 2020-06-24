@@ -1,5 +1,7 @@
 package com.apgsga.microservice.patch.api;
 
+import java.util.Map;
+
 public interface PatchOpService {
 
 	/**
@@ -40,4 +42,10 @@ public interface PatchOpService {
 	 * 
 	 */
 	void cleanLocalMavenRepo();
+
+	/**
+	 * Start the corresponding "assemble and deploy" pipeline
+	 * @param target target for which will assemble and deploy (chei211,chti211,etc...)
+	 */
+	void startAssembleAndDeployPipeline(String target);
 }

@@ -56,6 +56,7 @@ public class PliConfig {
 		properties.put("db.url", env.getProperty("db.url",""));
 		properties.put("db.user", env.getProperty("db.user",""));
 		properties.put("db.passwd", env.getProperty("db.passwd",""));
+		properties.put("json.db.location", env.getProperty("json.db.location",""));
 		Properties config = new Properties();
 		config.putAll(properties);
 		return sl.parse(config);

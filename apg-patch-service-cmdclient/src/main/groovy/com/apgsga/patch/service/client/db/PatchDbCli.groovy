@@ -46,6 +46,11 @@ class PatchDbCli {
 				def patchNumber = options.stas[0]
 				def toState = options.stas[1]
 				cmdResults.dbResult = dbCli.executeStateTransitionAction(patchNumber,toState)
+			} else if (options.cpf) {
+				def status = options.cpfs[0]
+				def destFolder = options.cpfs[1]
+				def pathToPatchFolder = "${config.json.db.location}"
+				cmdResults.result = dbCli.copyPatchFile(status,destFolder,pathToPatchFolder)
 			}
 			cmdResults.returnCode = 0
 			return cmdResults
@@ -77,6 +82,7 @@ class PatchDbCli {
 			h longOpt: 'help', 'Show usage information', required: false
 			lpac longOpt: 'listPatchAfterClone', args:1, argName: 'status', 'Get list of patches to be re-installed after a clone', required: false
 			sta longOpt: 'stateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to the database', required: false
+			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "status,destFolder", 'Copy patch files for a given status into the destfolder', required: false
 		}
 
 		def options = cli.parse(args)
@@ -114,6 +120,13 @@ class PatchDbCli {
 			def validToStates = TargetSystemMappings.instance.get().keySet()
 			if (!validToStates.contains(toState) ) {
 				println "ToState ${toState} not valid: needs to be one of ${validToStates}"
+				error = true
+			}
+		}
+
+		if(options.cpf) {
+			if(options.cpfs.size() != 2) {
+				println "status and destFolder are required when copying patch files"
 				error = true
 			}
 		}

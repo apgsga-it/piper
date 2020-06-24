@@ -379,4 +379,17 @@ public class PatchCliIntegrationTest extends Specification {
 		cleanup:
 			repo.clean()
 	}
+
+	def "Patch Cli start startAssembleAndDeployPipeline" () {
+		setup:
+			def client = PatchCli.create()
+		when:
+			def result = client.process(["-adp", "chei212"])
+		then:
+			result.returnCode == 0
+			result.results != null
+			!result.results.isEmpty()
+		cleanup:
+			repo.clean()
+	}
 }

@@ -41,6 +41,11 @@ class PatchServerlessImpl implements PatchOpService, PatchPersistence {
 	}
 
 	@Override
+	void startAssembleAndDeployPipeline(String target) {
+		patchOpService.startAssembleAndDeployPipeline(target)
+	}
+
+	@Override
 	Patch findById(String patchNumber) {
 		patchService.findById(patchNumber)
 	}

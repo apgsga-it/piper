@@ -3,6 +3,7 @@ package com.apgsga.microservice.patch.core.impl;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.apgsga.microservice.patch.api.*;
@@ -408,7 +409,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		List<String> patchFilesReduced = patchFiles.stream().filter(pat -> !pat.contains("PatchLog")).map(pat -> pat.substring(pat.indexOf("Patch")+"Patch".length(),pat.indexOf(".json"))).collect(Collectors.toList());
 		return patchFilesReduced.stream().filter(p -> containsObject(p,objectName)).map(this::findById).collect(Collectors.toList());
 	}
-	
+
+	@Override
+	public void startAssembleAndDeployPipeline(String target) {
+		jenkinsClient.startAssembleAndDeployPipeline(target);
+	}
+
 	private boolean containsObject(String patchNumber, String objectName) {
 		Patch patch = findById(patchNumber);
 		for(MavenArtifact ma : patch.getMavenArtifacts()) {
