@@ -169,7 +169,7 @@ class PatchCli {
 			oc longOpt: 'onclone', args:2, valueSeparator: ",", argName: 'source,target', 'Call Patch Service onClone REST API', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
 			log longOpt: 'log', args:1, argName: 'patchFile', 'Log a patch steps for a patch', required: false
-			adp longOpt: 'assembleDeployPipeline', args:2, valueSeparator: ",", argName: 'target,tmpFolder', "start an assembleAndDeploy pipeline for the given target", required: false
+			adp longOpt: 'assembleDeployPipeline', args:1, argName: 'target', "start an assembleAndDeploy pipeline for the given target", required: false
 		}
 
 		def options = cli.parse(args)
@@ -330,8 +330,8 @@ class PatchCli {
 			}
 		}
 		if (options.adp) {
-			if(options.adps.size() != 2) {
-				println "target and tmpFolder are required."
+			if(options.adps.size() != 1) {
+				println "target parameter is required."
 				error = true
 			}
 		}
@@ -551,8 +551,7 @@ class PatchCli {
 
 	def assembleAndDeployPipeline(def patchClient, def options) {
 		def target = options.adps[0]
-		def tmpFolder = options.adps[1]
 		println "Starting assembleAndDeploy pipeline for ${target}"
-		patchClient.startAssembleAndDeployPipeline(["target":target,"tmpfolder":tmpFolder])
+		patchClient.startAssembleAndDeployPipeline(target)
 	}
 }

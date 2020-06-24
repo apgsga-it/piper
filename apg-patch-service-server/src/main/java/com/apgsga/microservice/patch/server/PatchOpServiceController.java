@@ -195,8 +195,7 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@RequestMapping(value = "/startAssembleAndDeployPipeline", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	@Override
-	public void startAssembleAndDeployPipeline(@RequestBody Map<String,String> params) {
-		// TODO JHE: check params ...
-		patchService.startAssembleAndDeployPipeline(params);
+	public void startAssembleAndDeployPipeline(String target) {
+		patchService.startAssembleAndDeployPipeline(target);
 	}
 }

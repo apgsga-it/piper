@@ -411,8 +411,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public void startAssembleAndDeployPipeline(Map<String,String> params) {
-		jenkinsClient.startAssembleAndDeployPipeline(params);
+	public void startAssembleAndDeployPipeline(String target) {
+		jenkinsClient.startAssembleAndDeployPipeline(target);
 	}
 
 	private boolean containsObject(String patchNumber, String objectName) {

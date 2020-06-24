@@ -221,9 +221,8 @@ public class MicroServicePatchServerTest {
 	@Test
 	public void testAssembleAndDeployStartPipeline() {
 		Map<String,String> params = Maps.newHashMap();
-		params.put("target","chei212");
-		params.put("tmpfolder","1234");
-		patchService.startAssembleAndDeployPipeline(params);
+		String target = "chei212";
+		patchService.startAssembleAndDeployPipeline(target);
 	}
 
 }

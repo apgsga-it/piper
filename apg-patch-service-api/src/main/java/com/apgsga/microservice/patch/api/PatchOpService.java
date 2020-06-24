@@ -45,7 +45,7 @@ public interface PatchOpService {
 
 	/**
 	 * Start the corresponding "assemble and deploy" pipeline
-	 * @param params map with following keys: target and tmpfolder
+	 * @param target target for which will assemble and deploy (chei211,chti211,etc...)
 	 */
-	void startAssembleAndDeployPipeline(Map<String,String> params);
+	void startAssembleAndDeployPipeline(String target);
 }

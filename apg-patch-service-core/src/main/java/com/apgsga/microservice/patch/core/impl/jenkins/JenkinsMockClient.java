@@ -73,7 +73,7 @@ public class JenkinsMockClient implements JenkinsClient {
 	}
 
 	@Override
-	public void startAssembleAndDeployPipeline(Map<String,String> params) {
-		LOGGER.info("startAssembleAndDeployPipeline for target=" + params.get("target") + " and tmpFolder=" + params.get("tmpfolder"));
+	public void startAssembleAndDeployPipeline(String target) {
+		LOGGER.info("startAssembleAndDeployPipeline for target=" + target);
 	}
 }

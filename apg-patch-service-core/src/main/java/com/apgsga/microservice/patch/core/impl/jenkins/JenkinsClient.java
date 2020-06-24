@@ -26,5 +26,5 @@ public interface JenkinsClient {
 	
 	public BuildResult getProdPipelineBuildResult(String patchNumber);
 
-	public void startAssembleAndDeployPipeline(Map<String,String> params);
+	public void startAssembleAndDeployPipeline(String target);
 }

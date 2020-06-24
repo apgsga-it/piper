@@ -41,8 +41,8 @@ class PatchServerlessImpl implements PatchOpService, PatchPersistence {
 	}
 
 	@Override
-	void startAssembleAndDeployPipeline(Map<String, String> params) {
-		patchOpService.startAssembleAndDeployPipeline(params)
+	void startAssembleAndDeployPipeline(String target) {
+		patchOpService.startAssembleAndDeployPipeline(target)
 	}
 
 	@Override
