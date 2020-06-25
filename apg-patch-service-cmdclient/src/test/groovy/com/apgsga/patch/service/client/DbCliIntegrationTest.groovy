@@ -66,7 +66,7 @@ class DbCliIntegrationTest extends Specification {
 		def savedOut = System.out;
 		def buffer = new ByteArrayOutputStream()
 		System.setOut(new PrintStream(buffer))
-		def result = patchDbCli.process(["-sta", "5799,EntwicklungInstallationsbereit"])
+		def result = patchDbCli.process(["-dbsta", "5799,EntwicklungInstallationsbereit"])
 		System.setOut(savedOut)
 		then:
 		result != null

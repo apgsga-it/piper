@@ -42,9 +42,9 @@ class PatchDbCli {
 				def status = options.lpacs[0]
 				def filePath = "${config.postclone.list.patch.filepath.template}${status}.json"
 				cmdResults.result = dbCli.listPatchAfterClone(status,filePath)
-			} else if (options.sta) {
-				def patchNumber = options.stas[0]
-				def toState = options.stas[1]
+			} else if (options.dbsta) {
+				def patchNumber = options.dbstas[0]
+				def toState = options.dbstas[1]
 				cmdResults.dbResult = dbCli.executeStateTransitionAction(patchNumber,toState)
 			} else if (options.cpf) {
 				def status = options.cpfs[0]
@@ -81,7 +81,7 @@ class PatchDbCli {
 		cli.with {
 			h longOpt: 'help', 'Show usage information', required: false
 			lpac longOpt: 'listPatchAfterClone', args:1, argName: 'status', 'Get list of patches to be re-installed after a clone', required: false
-			sta longOpt: 'stateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to the database', required: false
+			dbsta longOpt: 'dbstateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to the database', required: false
 			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "status,destFolder", 'Copy patch files for a given status into the destfolder', required: false
 		}
 
@@ -106,17 +106,17 @@ class PatchDbCli {
 			}
 		}
 
-		if (options.sta) {
-			if (options.stas.size() != 2 ) {
+		if (options.dbsta) {
+			if (options.dbstas.size() != 2 ) {
 				println "Option sta needs 2 arguments: <patchNumber,toState>>"
 				error = true
 			}
-			def patchNumber = options.stas[0]
+			def patchNumber = options.dbstas[0]
 			if (!patchNumber.isInteger()) {
 				println "Patchnumber ${patchNumber} is not a Integer"
 				error = true
 			}
-			def toState = options.stas[1]
+			def toState = options.dbstas[1]
 			def validToStates = TargetSystemMappings.instance.get().keySet()
 			if (!validToStates.contains(toState) ) {
 				println "ToState ${toState} not valid: needs to be one of ${validToStates}"
