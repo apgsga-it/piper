@@ -91,14 +91,14 @@ ospackage {
 		into 'bin'
 	}
 
-	from('pkg/rpm/bin') {
+	from('src/resources/pkg/bin') {
 		include '*.sh'
 		fileMode 0755
 		into 'bin'
 		//expand project.properties
 	}
 	
-	from('pkg/rpm/profile') {
+	from('src/resources/pkg/profile') {
 		include 'apscli.sh'
 		fileMode 0644
 		user 'root'
@@ -107,7 +107,7 @@ ospackage {
 		//expand project.properties
 	}
 	
-	from("pkg/rpm/conf") {
+	from("src/resources/pkg/conf") {
 		into "/etc/opt/${finalName}"
 		fileType CONFIG | NOREPLACE
 		include 'ops.properties'
@@ -117,7 +117,7 @@ ospackage {
 		fileMode 0740
 	}
 	
-	from("pkg/rpm/conf") {
+	from("src/resources/pkg/conf") {
 		into "/etc/opt/${finalName}"
 		fileType CONFIG
 		include 'application.properties'
@@ -131,28 +131,9 @@ ospackage {
  	directory ("/var/opt/${finalName}", 0775, "root", "jenkins", false)
 }
 
-task buildLessPkg  (type: Zip) {
-	into "apscli"
-	from "$projectDir/pkg/zip/apscli.sh"
-	into("conf") {
-		from "$projectDir/pkg/zip/conf"
-	}
-	into("lib") {
-		from shadowJar.outputs.files
-	}
-	into("data") {
-		from "$projectDir/pkg/zip/data"
-	}
-	into("log") {
-		from "$projectDir/pkg/zip/log"
-	}
-}
 
 publishing {
 	publications {
-	    zipPkg(MavenPublication) {
-			artifact buildLessPkg
-		}
 		yumRpm(IvyPublication) {
 			artifact buildRpm.outputs.getFiles().getSingleFile()
 		}
@@ -195,8 +176,7 @@ artifactory {
 //assemble { dependsOn copyLib,pkgAsGTar}
 assemble { dependsOn copyLib}
 buildRpm {dependsOn processResources, assemble}
-buildLessPkg {dependsOn processResources, assemble, buildRpm}
-publishToMavenLocal {dependsOn buildRpm, buildLessPkg}
-publish {dependsOn buildRpm, buildLessPkg}
+publishToMavenLocal {dependsOn buildRpm}
+publish {dependsOn buildRpm}
 
 

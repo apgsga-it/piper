@@ -1,0 +1,8 @@
+source "https://rubygems.org"
+
+# Specify your gem's dependencies in ApscliWrapper.gemspec
+gemspec
+
+gem "java"
+gem "rake", "~> 12.0"
+gem "minitest", "~> 5.0"

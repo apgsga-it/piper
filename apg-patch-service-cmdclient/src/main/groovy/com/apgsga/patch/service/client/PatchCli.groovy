@@ -56,10 +56,6 @@ class PatchCli {
 				def result = cleanLocalMavenRepo(patchClient)
 				cmdResults.results['cm'] = result
 			}
-			if (options.log) {
-				def result = logPatchActivity(patchClient,options)
-				cmdResults.results['log'] = result
-			}
 			cmdResults.returnCode = 0
 			return cmdResults
 		} catch (PatchClientServerException e) {
@@ -86,13 +82,11 @@ class PatchCli {
 		cli.formatter.setWidth(100)
 		cli.with {
 			h longOpt: 'help', 'Show usage information', required: false
-			s longOpt: 'save', args:1, argName: 'patchFile', 'Uploads a <patchFile> to the server', required: false
 			sa longOpt: 'save', args:1, argName: 'patchFile', 'Saves a <patchFile> to the server, which starts the Patch Pipeline', required: false
 			// TODO (CHE,13.9) Get rid of the component parameter, needs to be coordinated with current Patch System (PatchOMat)
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can only be aps ', required: false
 			oc longOpt: 'onclone', args:2, valueSeparator: ",", argName: 'source,target', 'Call Patch Service onClone REST API', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
-			log longOpt: 'log', args:1, argName: 'patchFile', 'Log a patch steps for a patch', required: false
 		}
 
 		def options = cli.parse(args)
