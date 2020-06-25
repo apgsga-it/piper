@@ -65,34 +65,6 @@ public class PatchCliIntegrationExceptionHandlingTests extends Specification {
 		result.returnCode ==  0
 	}
 	
-	
-	def "Patch Cli should print Server Exception and return returnCode > 0 for remove of notexisting Patch"() {
-		setup:
-		def client = PatchCli.create()
-		client.validate = false
-		when:
-		def result = client.process(["-r", "XXXXX"])
-		then:
-		result != null
-		result.returnCode >  0
-		result.results.containsKey('error') == true
-		result.results['error'].contains("Patch XXXXX to remove not found")
-	}
-	
-	
-	def "Patch Cli should print Server Exception and return returnCode > 0 for Saven of Patch with empty Patch Number"() {
-		setup:
-		def client = PatchCli.create()
-		client.validate = false
-		when:
-		def result = client.process(["-s", "src/test/resources/Patch5403ErrorTest.json"])
-		then:
-		result != null
-		result.returnCode >  0
-		result.results.containsKey('error') == true
-		result.results['error'].errorKey == "FilebasedPatchPersistence.save.patchnumber.notnullorempty.assert"
-	}
-	
 	def "Patch Cli should print Server Exception and return returnCode > 0  with Patchnumber empty for State Change Action"() {
 		setup:
 		def client = PatchCli.create()
