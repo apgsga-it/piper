@@ -2,7 +2,6 @@ package com.apgsga.patch.service.client
 
 import com.apgsga.patch.service.client.config.PliConfig
 import com.apgsga.patch.service.client.rest.PatchRestServiceClient
-import com.apgsga.patch.service.client.serverless.PatchServerlessImpl
 import org.codehaus.groovy.runtime.StackTraceUtils
 import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
@@ -13,20 +12,17 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 class PatchCli {
 
-	static PatchCli create(client) {
-		def patchCli = new PatchCli(client)
+	static PatchCli create() {
+		def patchCli = new PatchCli()
 		return patchCli
 	}
 
 	def validComponents = [ "aps", "nil"]
 	def validate = true
 	def config
-	def client
 
-	private PatchCli(client) {
-	  this.client = client
+	private PatchCli() {
 	}
-
 
 	def process(def args) {
 		def context =  new AnnotationConfigApplicationContext(PliConfig.class);
@@ -41,7 +37,7 @@ class PatchCli {
 			return cmdResults
 		}
 		try {
-			def patchClient = client == "pliLess" ? context.getBean(PatchServerlessImpl.class) : new PatchRestServiceClient(config)
+			def patchClient = new PatchRestServiceClient(config)
 			if (options.l) {
 				def result = uploadPatchFiles(patchClient,options)
 				cmdResults.results['l'] = result

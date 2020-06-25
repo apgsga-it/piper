@@ -7,7 +7,7 @@ plugins {
   	id 'ivy-publish' 
 }
 
-description = 'Cli Programm, in two variants. One which provides  Patch Service API through Restful and the other as a Serverless Command Line Interface   '
+description = 'Cli Programm, providinf Patch Service API through Restful API'
 
 apply plugin: 'groovy'
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -131,23 +131,6 @@ ospackage {
  	directory ("/var/opt/${finalName}", 0775, "root", "jenkins", false)
 }
 
-task buildLessPkg  (type: Zip) {
-	into "apscli"
-	from "$projectDir/pkg/zip/apscli.sh"
-	into("conf") {
-		from "$projectDir/pkg/zip/conf"
-	}
-	into("lib") {
-		from shadowJar.outputs.files
-	}
-	into("data") {
-		from "$projectDir/pkg/zip/data"
-	}
-	into("log") {
-		from "$projectDir/pkg/zip/log"
-	}
-}
-
 publishing {
 	publications {
 	    zipPkg(MavenPublication) {
@@ -195,8 +178,7 @@ artifactory {
 //assemble { dependsOn copyLib,pkgAsGTar}
 assemble { dependsOn copyLib}
 buildRpm {dependsOn processResources, assemble}
-buildLessPkg {dependsOn processResources, assemble, buildRpm}
-publishToMavenLocal {dependsOn buildRpm, buildLessPkg}
-publish {dependsOn buildRpm, buildLessPkg}
+publishToMavenLocal {dependsOn buildRpm}
+publish {dependsOn buildRpm}
 
 
