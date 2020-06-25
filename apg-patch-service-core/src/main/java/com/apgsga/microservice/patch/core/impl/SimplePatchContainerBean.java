@@ -312,23 +312,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		patchActionExecutor.execute(patchNumber, toStatus);
 	}
 
-	@Override
-	public void restartProdPipeline(String patchNumber) {
-		Asserts.notNull(patchNumber, "SimplePatchContainerBean.restartProdPipeline.patchnumber.notnull.assert",
-				new Object[] {});
-		Asserts.isTrue((repo.patchExists(patchNumber)),
-				"SimplePatchContainerBean.restartProdPipeline.patch.exists.assert", new Object[] { patchNumber });
-		Asserts.isFalse(jenkinsClient.isProdPatchPipelineRunning(patchNumber), "SimplePatchContainerBean.restartProdPipeline.patch.alreadyRunning", new Object[]{patchNumber});
-		Asserts.isTrue(isLastProdPipelineAbortedOrInError(patchNumber), "SimplePatchContainerBean.restartProdPipeline.patch.lastBuildInErrorOrAborted", new Object[]{patchNumber});
-		Patch patch = repo.findById(patchNumber);
-		jenkinsClient.restartProdPatchPipeline(patch);
-	}
-	
-	private boolean isLastProdPipelineAbortedOrInError(String patchNumber) {
-		BuildResult result = jenkinsClient.getProdPipelineBuildResult(patchNumber);
-		return result.equals(BuildResult.ABORTED) || result.equals(BuildResult.FAILURE);
-	}
-	
 	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
 
 		VcsCommandRunner cmdRunner = getJschSessionFactory().create();
@@ -367,11 +350,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public void cleanLocalMavenRepo() {
 		am.cleanLocalMavenRepo();
 
-	}
-
-	@Override
-	public void onClone(String source, String target) {
-		jenkinsClient.onClone(source,target);
 	}
 
 	public ArtifactDependencyResolver getDependecyResolver() {

@@ -1,9 +1,6 @@
 package com.apgsga.microservice.patch.server;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
+import com.apgsga.microservice.patch.api.*;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,22 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.apgsga.microservice.patch.api.DbModules;
-import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchLog;
-import com.apgsga.microservice.patch.api.PatchOpService;
-import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.api.ServiceMetaData;
-import com.apgsga.microservice.patch.api.ServicesMetaData;
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @Scope(org.springframework.web.context.WebApplicationContext.SCOPE_SESSION)
@@ -83,15 +68,6 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@Override
 	public void savePatch(@RequestBody Patch patch) {
 		repo.savePatch(patch);
-	}
-
-	@RequestMapping(value = "/restartProdPatchPipeline/{patchNumber}", method = RequestMethod.POST)
-	@ResponseBody
-	@Override
-	public void restartProdPipeline(@PathVariable("patchNumber") String patchNumber) {
-		LOGGER.info("Got restartProdPipeline Request for Patch: " + patchNumber ); 
-		patchService.restartProdPipeline(patchNumber);
-		LOGGER.info("restartProdPipeline Request for Patch: " + patchNumber + " done.");
 	}
 
 	@RequestMapping(value = "/findAllPatchIds", method = RequestMethod.GET)
@@ -176,13 +152,6 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@Override
 	public void init() throws IOException {
 		throw new UnsupportedOperationException();
-	}
-
-	@RequestMapping(value = "/onClone", method = RequestMethod.POST)
-	@ResponseStatus(HttpStatus.OK)
-	@Override
-	public void onClone(@RequestParam("source") String source, @RequestParam("target") String target) {
-		patchService.onClone(source,target);
 	}
 
 	@RequestMapping(value = "/cleanLocalMavenRepo", method = RequestMethod.POST)

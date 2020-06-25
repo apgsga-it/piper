@@ -3,7 +3,6 @@ package com.apgsga.patch.service.client.config;
 import java.util.Map;
 import java.util.Properties;
 
-import com.apgsga.patch.service.client.serverless.PatchServerlessImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
@@ -31,16 +30,6 @@ public class PliConfig {
     static class DbCliConfig
     { }
 
-	@Configuration
-	@Profile("less")
-	@ComponentScan({"com.apgsga.microservice.patch.core","com.apgsga.patch.service.client.serverless"})
-	@PropertySource({ "${appPropertiesFile}" })
-	static class ServerLessConfig
-	{
-	}
-
-
-
 	@Bean
 	public ConfigObject configObject() {
 		ConfigSlurper sl = new ConfigSlurper();
@@ -62,5 +51,4 @@ public class PliConfig {
 		return sl.parse(config);
 		
 	}
-
 }
