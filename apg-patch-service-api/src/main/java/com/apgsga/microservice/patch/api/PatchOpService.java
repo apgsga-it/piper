@@ -48,4 +48,11 @@ public interface PatchOpService {
 	 * @param target target for which will assemble and deploy (chei211,chti211,etc...)
 	 */
 	void startAssembleAndDeployPipeline(String target);
+
+	/**
+	 *
+	 * @param patchNumber
+	 * @param step eg.: "deployedOk", assembleOk", "installOk"
+	 */
+	void notifyPatchPipeline(String patchNumber, String step);
 }

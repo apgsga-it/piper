@@ -170,6 +170,7 @@ class PatchCli {
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
 			log longOpt: 'log', args:1, argName: 'patchFile', 'Log a patch steps for a patch', required: false
 			adp longOpt: 'assembleDeployPipeline', args:1, argName: 'target', "start an assembleAndDeploy pipeline for the given target", required: false
+			npp longOpt: 'notifyPatchPipeline', args:2, valueSeparator: ",", argName: 'patchNumber,step', "notfiy a Patch pipeline that a step has been done", required: false
 		}
 
 		def options = cli.parse(args)
