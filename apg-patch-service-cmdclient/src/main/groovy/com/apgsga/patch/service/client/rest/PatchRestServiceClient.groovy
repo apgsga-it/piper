@@ -1,19 +1,12 @@
 package com.apgsga.patch.service.client.rest
 
+import com.apgsga.microservice.patch.api.*
 import com.apgsga.patch.service.client.PatchCliExceptionHandler
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.common.collect.Lists
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
-
-import com.apgsga.microservice.patch.api.DbModules
-import com.apgsga.microservice.patch.api.Patch
-import com.apgsga.microservice.patch.api.PatchLog
-import com.apgsga.microservice.patch.api.PatchOpService
-import com.apgsga.microservice.patch.api.PatchPersistence
-import com.apgsga.microservice.patch.api.ServiceMetaData
-import com.apgsga.microservice.patch.api.ServicesMetaData
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.common.collect.Lists
 
 class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 
@@ -32,11 +25,6 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 
 	def getRestBaseUri() {
 		"http://" + baseUrl + "/patch/private";
-	}
-
-	@Override
-	public void restartProdPipeline(String patchNumber) {
-		restTemplate.postForLocation(getRestBaseUri() + "/restartProdPatchPipeline/{patchNumber}", null, [patchNumber:patchNumber]);
 	}
 
 	@Override
@@ -164,11 +152,6 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 		throw new UnsupportedOperationException("Init not supported by client");
 	}
 
-
-	@Override
-	public void onClone(String source, String target) {
-		restTemplate.postForLocation(getRestBaseUri() + "/onClone?source=${source}&target=${target}", null)
-	}
 
 	class PatchServiceErrorHandler implements ResponseErrorHandler {
 
