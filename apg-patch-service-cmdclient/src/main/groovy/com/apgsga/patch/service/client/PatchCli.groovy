@@ -1,14 +1,18 @@
 package com.apgsga.patch.service.client
 
+import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.patch.service.client.config.PliConfig
 import com.apgsga.patch.service.client.rest.PatchRestServiceClient
-import org.codehaus.groovy.runtime.StackTraceUtils
-import com.apgsga.microservice.patch.api.DbModules
-import com.apgsga.microservice.patch.api.Patch
-import com.apgsga.microservice.patch.api.ServicesMetaData
 import com.apgsga.patch.service.client.utils.TargetSystemMappings
 import com.fasterxml.jackson.databind.ObjectMapper
+import groovy.json.JsonBuilder
+import groovy.sql.Sql
+import org.codehaus.groovy.runtime.StackTraceUtils
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
+
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 class PatchCli {
 
@@ -20,6 +24,7 @@ class PatchCli {
 	def validComponents = [ "aps", "nil"]
 	def validate = true
 	def config
+	def dbConnection
 
 	private PatchCli() {
 	}
@@ -37,34 +42,42 @@ class PatchCli {
 			return cmdResults
 		}
 		try {
+			dbConnection = Sql.newInstance(config.db.url, config.db.user, config.db.passwd)
 			def patchClient = new PatchRestServiceClient(config)
 			if (options.e) {
 				def result = patchExists(patchClient,options)
 				cmdResults.results['e'] =  result
-			}
-			if (options.fs) {
+			} else if (options.fs) {
 				def result = findById(patchClient,options)
 				cmdResults.results['f'] = result
-			}
-			if (options.sa) {
+			} else if (options.sa) {
 				def result = savePatch(patchClient,options)
 				cmdResults.results['sa']=  result
-			}
-			if (options.sta) {
+			} else if (options.sta) {
 				def result = stateChangeAction(patchClient,options)
 				cmdResults.results['sta'] = result
-			}
-			if (options.cm) {
+			} else if (options.cm) {
 				def result = cleanLocalMavenRepo(patchClient)
 				cmdResults.results['cm'] = result
-			}
-			if (options.log) {
+			} else if (options.log) {
 				def result = logPatchActivity(patchClient,options)
 				cmdResults.results['log'] = result
-			}
-			if (options.adp) {
+			} else if (options.adp) {
 				def result = assembleAndDeployPipeline(patchClient,options)
 				cmdResults.results['adp'] = result
+			} else if(options.lpac) {
+				def status = options.lpacs[0]
+				def filePath = "${config.postclone.list.patch.filepath.template}${status}.json"
+				cmdResults.result = listPatchAfterClone(status,filePath)
+			} else if (options.dbsta) {
+				def patchNumber = options.dbstas[0]
+				def toState = options.dbstas[1]
+				cmdResults.dbResult = executeStateTransitionActionInDb(patchNumber,toState)
+			} else if (options.cpf) {
+				def status = options.cpfs[0]
+				def destFolder = options.cpfs[1]
+				def pathToPatchFolder = "${config.json.db.location}"
+				cmdResults.result = copyPatchFile(status,destFolder,pathToPatchFolder)
 			}
 			cmdResults.returnCode = 0
 			return cmdResults
@@ -100,6 +113,9 @@ class PatchCli {
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
 			log longOpt: 'log', args:1, argName: 'patchFile', 'Log a patch steps for a patch', required: false
 			adp longOpt: 'assembleDeployPipeline', args:1, argName: 'target', "start an assembleAndDeploy pipeline for the given target", required: false
+			lpac longOpt: 'listPatchAfterClone', args:1, argName: 'status', 'Get list of patches to be re-installed after a clone', required: false
+			dbsta longOpt: 'dbstateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to the database', required: false
+			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "status,destFolder", 'Copy patch files for a given status into the destfolder', required: false
 		}
 
 		def options = cli.parse(args)
@@ -190,6 +206,37 @@ class PatchCli {
 				error = true
 			}
 		}
+		if(options.lpac) {
+			if(options.lpacs.size() != 1) {
+				println("Target status is required when fetching list of patch to be re-installed.")
+				error = true
+			}
+		}
+
+		if (options.dbsta) {
+			if (options.dbstas.size() != 2 ) {
+				println "Option sta needs 2 arguments: <patchNumber,toState>>"
+				error = true
+			}
+			def patchNumber = options.dbstas[0]
+			if (!patchNumber.isInteger()) {
+				println "Patchnumber ${patchNumber} is not a Integer"
+				error = true
+			}
+			def toState = options.dbstas[1]
+			def validToStates = TargetSystemMappings.instance.get().keySet()
+			if (!validToStates.contains(toState) ) {
+				println "ToState ${toState} not valid: needs to be one of ${validToStates}"
+				error = true
+			}
+		}
+
+		if(options.cpf) {
+			if(options.cpfs.size() != 2) {
+				println "status and destFolder are required when copying patch files"
+				error = true
+			}
+		}
 		if (error) {
 			cli.usage()
 			return null
@@ -269,5 +316,69 @@ class PatchCli {
 		def target = options.adps[0]
 		println "Starting assembleAndDeploy pipeline for ${target}"
 		patchClient.startAssembleAndDeployPipeline(target)
+	}
+
+	def listPatchAfterClone(def status, def filePath) {
+		def String sql = "SELECT id FROM cm_patch_install_sequence_f WHERE ${status}=1 AND (produktion = 0 OR chronology > trunc(SYSDATE))"
+		def patchNumbers = []
+		try {
+			dbConnection.eachRow(sql) { row ->
+				def rowId = row.ID
+				patchNumbers.add(rowId)
+			}
+
+		}
+		catch(Exception ex) {
+			// TODO JHE(11.04.2019): because the caller will read the stdout in order to determine if all went well ... we can't write the error message. But we need to find a way to log the exception.
+			println false
+			return
+		}
+
+		// TODO (jhe, che, 19.9) have filePath passed as parameter and not preconfigured
+		// Or write it stdout , but without any other println
+		def listPatchFile = new File(filePath)
+
+		if(listPatchFile.exists()) {
+			listPatchFile.delete()
+		}
+
+		listPatchFile.write(new JsonBuilder(patchlist:patchNumbers).toPrettyString())
+		println true
+	}
+
+	def executeStateTransitionActionInDb(def patchNumber, def toStatus) {
+		def statusNum = TargetSystemMappings.instance.findStatus(toStatus) as Long;
+		def id = patchNumber as Long
+		def sql = 'update cm_patch_f set status = :statusNum where id = :id'
+		def result = dbConnection.execute(sql,['statusNum':statusNum,'id':id])
+		println result == false
+		result
+	}
+
+	def copyPatchFile(def status, def destFolder, def pathToPatchFolder) throws Exception {
+		// TODO JHE: query needs to be double-check with UGE
+		// status could for example be : Informatiktestlieferung
+		String sql = "SELECT id FROM cm_patch_f p INNER JOIN cm_patch_status_f s ON p.status = s.pat_status WHERE s.pat_status_text = '${status}'"
+		def patchNumbers = []
+		try {
+			dbConnection.eachRow(sql) { row ->
+				patchNumbers.add(row.ID)
+			}
+		}catch (Exception ex) {
+			// TODO JHE: could do better here ...
+			println ex.getMessage()
+			throw new RuntimeException("Unable to get list of patches to be copied. Exception was ${ex.getMessage()}")
+		}
+		copyPatchFiles(patchNumbers,destFolder,pathToPatchFolder)
+	}
+
+	private def copyPatchFiles(List<String> patchNumbers,String destFolder, String pathToPatchFolder) {
+		patchNumbers.each {p ->
+			// JHE: We assume apsdbcli is running on the same host as jenkins, otherwise we would need a different implementation here
+			// JHE: Do we want to throw an exception if the File doesn't exist?
+			Path src = Paths.get(pathToPatchFolder,"Patch${p}.json")
+			Path dest = Paths.get(destFolder,"Patch${p}.json")
+			Files.copy(src,dest)
+		}
 	}
 }
