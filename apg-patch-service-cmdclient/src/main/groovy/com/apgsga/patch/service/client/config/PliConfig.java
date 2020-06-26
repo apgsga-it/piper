@@ -20,16 +20,10 @@ public class PliConfig {
 	
 	@Configuration
     @Profile("default")
-	@PropertySource({ "${appPropertiesFile}" })
+	@PropertySource({ "${appPropertiesFile}","${opsPropertiesFile}" })
     static class DefaultCliConfig
     { }
 	
-	@Configuration
-    @Profile("dbcli")
-	@PropertySource({ "${appPropertiesFile}", "${opsPropertiesFile}" })
-    static class DbCliConfig
-    { }
-
 	@Bean
 	public ConfigObject configObject() {
 		ConfigSlurper sl = new ConfigSlurper();

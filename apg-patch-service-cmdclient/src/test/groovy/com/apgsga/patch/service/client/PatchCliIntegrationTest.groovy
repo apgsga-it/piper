@@ -1,30 +1,35 @@
-package com.apgsga.patch.service.client;
+package com.apgsga.patch.service.client
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.TestPropertySource;
-
-import com.apgsga.microservice.patch.api.DbModules
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.PatchLog
 import com.apgsga.microservice.patch.api.PatchPersistence
-import com.apgsga.microservice.patch.api.ServicesMetaData
-import com.apgsga.microservice.patch.server.MicroPatchServer;
+import com.apgsga.microservice.patch.server.MicroPatchServer
 import com.fasterxml.jackson.databind.ObjectMapper
-
-import spock.lang.Specification;
+import groovy.json.JsonSlurper
+import groovy.sql.Sql
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
+import org.springframework.core.io.FileSystemResourceLoader
+import org.springframework.core.io.ResourceLoader
+import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.annotation.DirtiesContext.ClassMode
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
+import spock.lang.Requires
+import spock.lang.Specification
 
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = [MicroPatchServer.class])
 @TestPropertySource(locations = ["classpath:config/server-test.properties"])
 @ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
 public class PatchCliIntegrationTest extends Specification {
+
+	private static final String CLASSPATH_CONFIG_OPS_TEST_PROPERTIES = 'classpath:config/ops-test.properties'
+
+	private static final String CLASSPATH_CONFIG_APP_TEST_PROPERTIES = 'classpath:config/app-test.properties'
 	
 	@Value('${json.db.location}')
 	private String dbLocation;
@@ -40,8 +45,9 @@ public class PatchCliIntegrationTest extends Specification {
 			println ("Buildfolder has been created ${created}")
 		}
 		System.properties['spring_profiles_active'] = 'default'
-		System.properties['appPropertiesFile'] = 'classpath:config/app-test.properties'
-		System.properties['opsPropertiesFile'] = 'classpath:config/ops-test.properties'
+		System.properties['appPropertiesFile'] = CLASSPATH_CONFIG_APP_TEST_PROPERTIES
+		System.properties['opsPropertiesFile'] = CLASSPATH_CONFIG_OPS_TEST_PROPERTIES
+		println System.getProperties()
 	}
 
 	def "Patch Cli should print out help without errors"() {
@@ -251,5 +257,108 @@ public class PatchCliIntegrationTest extends Specification {
 			!result.results.isEmpty()
 		cleanup:
 			repo.clean()
+	}
+
+	// TODO (che, jhe ) : This stay still here?
+	@Requires({PatchCliIntegrationTest.dbAvailable()})
+	def "Patch DB Cli returns patch ids to be re-installed after a clone"() {
+		when:
+		def patchcli = PatchCli.create()
+		def outputFile = new File("src/test/resources/patchToBeReinstalledInformatiktest.json")
+		def result = patchcli.process(["-lpac", "Informatiktest"])
+		then:
+		result != null
+		result.returnCode == 0
+		outputFile.exists()
+		def patchList = new JsonSlurper().parseText(outputFile.text)
+		println "content of outputfile : ${patchList}"
+		cleanup:
+		outputFile.delete()
+	}
+
+	// TODO (jhe, 8.4) The user does'nt exist
+	@Requires({PatchCliIntegrationTest.patchExists("5799")})
+	def "Patch DB Cli  update status of Patch"() {
+		when:
+		def db = dbConnection("cm", "cm_pass");
+		def dbResult = db.execute('update cm_patch_t set status = 1 where id = :id',["id":5799])
+		def patchcli = PatchCli.create()
+		def savedOut = System.out;
+		def buffer = new ByteArrayOutputStream()
+		System.setOut(new PrintStream(buffer))
+		def result = patchcli.process(["-dbsta", "5799,EntwicklungInstallationsbereit"])
+		System.setOut(savedOut)
+		then:
+		result != null
+		result.returnCode == 0
+		result.dbResult == false
+		buffer.toString().trim() == "true"
+
+	}
+
+	// JHE: Ignoring this one because not guaranteed that Patches still exist
+	@Requires({PatchCliIntegrationTest.dbAvailable()})
+	def "Patch DB Cli correctly copies Patch JSON Files"() {
+		String destFolderPath = "src/test/resources/destFolderForPatch"
+		when:
+		new File(destFolderPath).mkdirs()
+		def patchcli = PatchCli.create()
+		patchcli.process(["-cpf","Informatiktest,${destFolderPath}"])
+		then:
+		new File("${destFolderPath}/Patch6910.json").exists()
+		new File("${destFolderPath}/Patch7027.json").exists()
+		new File("${destFolderPath}/Patch7031.json").exists()
+		new File("${destFolderPath}/Patch7036.json").exists()
+		new File("${destFolderPath}/Patch7038.json").exists()
+		new File("${destFolderPath}/Patch7039.json").exists()
+		new File("${destFolderPath}/Patch7041.json").exists()
+		cleanup:
+		new File(destFolderPath).deleteDir()
+
+	}
+
+
+	// Preconditions for Tests used via Spack @Require
+	static def dbConnection() {
+		Properties pr = loadProperties()
+		def dbConnection = Sql.newInstance(pr.get("db.url"), pr.get("db.user"), pr.get("db.passwd"))
+		dbConnection
+	}
+
+	static def dbConnection(String user, String passwd) {
+		Properties pr = loadProperties()
+		def dbConnection = Sql.newInstance(pr.get("db.url"), user, passwd)
+		dbConnection
+	}
+
+	static boolean dbAvailable() {
+		try {
+			dbConnection()
+			return true;
+		} catch (Exception e) {
+			return false
+		}
+	}
+	static boolean patchExists(String patchNumber) {
+		try {
+			def id = patchNumber as Long
+			def db = dbConnection()
+			def sql = 'select status from  cm_patch_f where id = :patchNumber';
+			def result = db.firstRow(sql, [patchNumber:id])
+			return result != null;
+		} catch (Exception e) {
+			return false
+		}
+	}
+
+	static Properties loadProperties() {
+		ResourceLoader rl = new FileSystemResourceLoader();
+		def resource = rl.getResource(CLASSPATH_CONFIG_OPS_TEST_PROPERTIES)
+		Properties properties = new Properties()
+		File propertiesFile = resource.getFile()
+		propertiesFile.withInputStream {
+			properties.load(it)
+		}
+		properties
 	}
 }
