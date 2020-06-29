@@ -10,10 +10,6 @@ import groovy.sql.Sql
 import org.codehaus.groovy.runtime.StackTraceUtils
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
-
 class PatchCli {
 
 	static PatchCli create() {
@@ -76,8 +72,7 @@ class PatchCli {
 			} else if (options.cpf) {
 				def status = options.cpfs[0]
 				def destFolder = options.cpfs[1]
-				def pathToPatchFolder = "${config.json.db.location}"
-				cmdResults.result = copyPatchFile(status,destFolder,pathToPatchFolder)
+				cmdResults.result = copyPatchFile(patchClient,status,destFolder)
 			}
 			cmdResults.returnCode = 0
 			return cmdResults
@@ -268,9 +263,13 @@ class PatchCli {
 	}
 
 	def findById(def patchClient,def options) {
-		def cmdResult = new Expando()
 		def patchNumber = options.fs[0]
 		def dirName = options.fs[1]
+		return doFindById(patchClient,patchNumber,dirName)
+	}
+
+	private def doFindById(def patchClient, def patchNumber, def dirName) {
+		def cmdResult = new Expando()
 		def found = retrieveAndWritePatch(patchClient, patchNumber, dirName )
 		cmdResult.patchNumber = patchNumber
 		cmdResult.dirName = dirName
@@ -355,30 +354,18 @@ class PatchCli {
 		result
 	}
 
-	def copyPatchFile(def status, def destFolder, def pathToPatchFolder) throws Exception {
+	def copyPatchFile(PatchRestServiceClient patchClient, def status, def destFolder) throws Exception {
 		// TODO JHE: query needs to be double-check with UGE
 		// status could for example be : Informatiktestlieferung
 		String sql = "SELECT id FROM cm_patch_f p INNER JOIN cm_patch_status_f s ON p.status = s.pat_status WHERE s.pat_status_text = '${status}'"
-		def patchNumbers = []
 		try {
 			dbConnection.eachRow(sql) { row ->
-				patchNumbers.add(row.ID)
+				doFindById(patchClient,String.valueOf(row.ID),"${destFolder}")
 			}
 		}catch (Exception ex) {
 			// TODO JHE: could do better here ...
 			println ex.getMessage()
 			throw new RuntimeException("Unable to get list of patches to be copied. Exception was ${ex.getMessage()}")
-		}
-		copyPatchFiles(patchNumbers,destFolder,pathToPatchFolder)
-	}
-
-	private def copyPatchFiles(List<String> patchNumbers,String destFolder, String pathToPatchFolder) {
-		patchNumbers.each {p ->
-			// JHE: We assume apsdbcli is running on the same host as jenkins, otherwise we would need a different implementation here
-			// JHE: Do we want to throw an exception if the File doesn't exist?
-			Path src = Paths.get(pathToPatchFolder,"Patch${p}.json")
-			Path dest = Paths.get(destFolder,"Patch${p}.json")
-			Files.copy(src,dest)
 		}
 	}
 }
