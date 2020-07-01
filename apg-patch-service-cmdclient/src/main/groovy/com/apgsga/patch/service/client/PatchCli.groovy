@@ -110,7 +110,7 @@ class PatchCli {
 			adp longOpt: 'assembleDeployPipeline', args:1, argName: 'target', "start an assembleAndDeploy pipeline for the given target", required: false
 			lpac longOpt: 'listPatchAfterClone', args:1, argName: 'status', 'Get list of patches to be re-installed after a clone', required: false
 			dbsta longOpt: 'dbstateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to the database', required: false
-			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "status,destFolder", 'Copy patch files for a given status into the destfolder', required: false
+			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "statusCode,destFolder", 'Copy patch files for a given status into the destfolder', required: false
 		}
 
 		def options = cli.parse(args)
@@ -354,10 +354,10 @@ class PatchCli {
 		result
 	}
 
-	def copyPatchFile(PatchRestServiceClient patchClient, def status, def destFolder) throws Exception {
+	def copyPatchFile(PatchRestServiceClient patchClient, def statusCode, def destFolder) throws Exception {
 		// TODO JHE: query needs to be double-check with UGE
 		// status could for example be : Informatiktestlieferung
-		String sql = "SELECT id FROM cm_patch_f p INNER JOIN cm_patch_status_f s ON p.status = s.pat_status WHERE s.pat_status_text = '${status}'"
+		String sql = "SELECT id FROM cm_patch_f p INNER JOIN cm_patch_status_f s ON p.status = s.pat_status WHERE s.pat_status = ${statusCode}"
 		try {
 			dbConnection.eachRow(sql) { row ->
 				doFindById(patchClient,String.valueOf(row.ID),"${destFolder}")
