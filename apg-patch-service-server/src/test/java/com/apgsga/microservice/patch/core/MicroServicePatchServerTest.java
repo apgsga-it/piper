@@ -225,4 +225,11 @@ public class MicroServicePatchServerTest {
 		patchService.startAssembleAndDeployPipeline(target);
 	}
 
+	@Test
+	public void testStartInstallPipeline() {
+		Map<String,String> params = Maps.newHashMap();
+		String target = "chei212";
+		patchService.startInstallPipeline(target);
+	}
+
 }
