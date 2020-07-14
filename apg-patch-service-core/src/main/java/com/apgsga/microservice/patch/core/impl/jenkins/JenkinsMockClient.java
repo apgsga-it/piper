@@ -18,19 +18,11 @@ public class JenkinsMockClient implements JenkinsClient {
 	}
 
 	@Override
-	public void startInstallPipeline(Patch patch) {
-		LOGGER.info("startInstallPipeline for : " + patch.toString());
-
-	}
-
-	@Override
 	public void startProdPatchPipeline(Patch patch) {
 		LOGGER.info("startProdPatchPipeline for : " + patch.toString());
 
 	}
 	
-	
-
 	@Override
 	public void restartProdPatchPipeline(Patch patch) {
 		LOGGER.info("restartProdPatchPipeline for : " + patch.toString() );
@@ -75,5 +67,10 @@ public class JenkinsMockClient implements JenkinsClient {
 	@Override
 	public void startAssembleAndDeployPipeline(String target) {
 		LOGGER.info("startAssembleAndDeployPipeline for target=" + target);
+	}
+
+	@Override
+	public void startInstallPipeline(String target) {
+		LOGGER.info("startInstallPipeline for target=" + target);
 	}
 }

@@ -8,8 +8,6 @@ import com.offbytwo.jenkins.model.BuildResult;
 public interface JenkinsClient {
 	public void createPatchPipelines(Patch patch);
 
-	public void startInstallPipeline(Patch patch);
-
 	public void startProdPatchPipeline(Patch patch);
 
 	public void restartProdPatchPipeline(Patch patch);
@@ -27,4 +25,6 @@ public interface JenkinsClient {
 	public BuildResult getProdPipelineBuildResult(String patchNumber);
 
 	public void startAssembleAndDeployPipeline(String target);
+
+	public void startInstallPipeline(String target);
 }

@@ -70,12 +70,6 @@ public class JenkinsClientImpl implements JenkinsClient {
 	}
 
 	@Override
-	public void startInstallPipeline(Patch patch) {
-		startPipeline(patch, "OnDemand", false);
-
-	}
-
-	@Override
 	public void startProdPatchPipeline(Patch patch) {
 		startPipeline(patch, "", false);
 
@@ -360,6 +354,25 @@ public class JenkinsClientImpl implements JenkinsClient {
 		}
 		catch (Exception ex) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startAssembleAndDeployPipeline.error", new Object[]{target,ex.getMessage()});
+		}
+	}
+
+	@Override
+	public void startInstallPipeline(String target) {
+		JenkinsServer jenkinsServer;
+		try {
+			String jobName = "install_" + target;
+			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
+			LOGGER.info("Connected to Jenkinsserver with, url: " + jenkinsUrl + " and user: " + jenkinsUser);
+			Map<String, String> jobParm = Maps.newHashMap();
+			jobParm.put(TOKEN_CONS, jobName);
+			jobParm.put("TARGET", target);
+			// JHE: Not sure if we want to wait or not, to be discussed
+			LOGGER.info("Triggering Install Pipeline Job for " + target + " and not waiting on response.");
+			triggerPipelineJobWithoutWaitingOnFeedback(jenkinsServer,jobName,jobParm,true);
+		}
+		catch (Exception ex) {
+			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startInstall.error", new Object[]{target,ex.getMessage()});
 		}
 	}
 }
