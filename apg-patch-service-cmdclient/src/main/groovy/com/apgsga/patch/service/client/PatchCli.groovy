@@ -59,8 +59,11 @@ class PatchCli {
 				def result = logPatchActivity(patchClient,options)
 				cmdResults.results['log'] = result
 			} else if (options.adp) {
-				def result = assembleAndDeployPipeline(patchClient,options)
+				def result = assembleAndDeployPipeline(patchClient, options)
 				cmdResults.results['adp'] = result
+			} else if (options.i) {
+				def result = installPipeline(patchClient, options)
+				cmdResults.results['i'] = result
 			} else if(options.lpac) {
 				def status = options.lpacs[0]
 				def filePath = "${config.postclone.list.patch.filepath.template}${status}.json"
@@ -107,10 +110,11 @@ class PatchCli {
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can only be aps ', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
 			log longOpt: 'log', args:1, argName: 'patchFile', 'Log a patch steps for a patch', required: false
-			adp longOpt: 'assembleDeployPipeline', args:1, argName: 'target', "start an assembleAndDeploy pipeline for the given target", required: false
+			adp longOpt: 'assembleDeployPipeline', args:1, argName: 'target', "starts an assembleAndDeploy pipeline for the given target", required: false
 			lpac longOpt: 'listPatchAfterClone', args:1, argName: 'status', 'Get list of patches to be re-installed after a clone', required: false
 			dbsta longOpt: 'dbstateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to the database', required: false
 			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "statusCode,destFolder", 'Copy patch files for a given status into the destfolder', required: false
+			i longOpt: 'install', args:1, argName: 'target', "starts an install pipeline for the given target", required: false
 		}
 
 		def options = cli.parse(args)
@@ -197,6 +201,12 @@ class PatchCli {
 		}
 		if (options.adp) {
 			if(options.adps.size() != 1) {
+				println "target parameter is required."
+				error = true
+			}
+		}
+		if (options.i) {
+			if(options.is.size() != 1) {
 				println "target parameter is required."
 				error = true
 			}
@@ -315,6 +325,12 @@ class PatchCli {
 		def target = options.adps[0]
 		println "Starting assembleAndDeploy pipeline for ${target}"
 		patchClient.startAssembleAndDeployPipeline(target)
+	}
+
+	def installPipeline(def patchClient, def options) {
+		def target = options.is[0]
+		println "Starting install pipeline for ${target}"
+		patchClient.startInstallPipeline(target)
 	}
 
 	def listPatchAfterClone(def status, def filePath) {

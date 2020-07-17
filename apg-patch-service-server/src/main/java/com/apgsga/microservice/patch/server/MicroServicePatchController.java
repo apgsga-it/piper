@@ -70,13 +70,6 @@ public class MicroServicePatchController implements PatchService {
 		return patchService.listDbModules();
 	}
 
-	@RequestMapping(value = "/startInstallationForTarget", method = RequestMethod.POST)
-	@ResponseStatus(HttpStatus.OK)
-	@Override
-	public void startInstallPipeline(@RequestBody Patch patch) {
-		patchService.startInstallPipeline(patch);
-	}
-
 	@RequestMapping(value = "/listDbObjectsChanged/{id}/{search}", method = RequestMethod.GET)
 	@ResponseBody
 	@Override

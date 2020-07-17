@@ -294,19 +294,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public synchronized void startInstallPipeline(Patch patch) {
-		Asserts.notNull(patch, "SimplePatchContainerBean.startInstallPipeline.patchobject.notnull.assert",
-				new Object[] {});
-		Asserts.notNull(patch.getPatchNummer(),
-				"SimplePatchContainerBean.startInstallPipeline.patchnumber.notnull.assert",
-				new Object[] { patch.toString() });
-		Asserts.isTrue((repo.patchExists(patch.getPatchNummer())),
-				"SimplePatchContainerBean.startInstallPipeline.patch.exists.assert", new Object[] { patch.toString() });
-		repo.savePatch(patch);
-		jenkinsClient.startInstallPipeline(patch);
-	}
-
-	@Override
 	public void executeStateTransitionAction(String patchNumber, String toStatus) {
 		PatchActionExecutor patchActionExecutor = patchActionExecutorFactory.create(this);
 		patchActionExecutor.execute(patchNumber, toStatus);
@@ -392,6 +379,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public void startAssembleAndDeployPipeline(String target) {
 		jenkinsClient.startAssembleAndDeployPipeline(target);
 	}
+
+	@Override
+	public void startInstallPipeline(String target) { jenkinsClient.startInstallPipeline(target); }
 
 	private boolean containsObject(String patchNumber, String objectName) {
 		Patch patch = findById(patchNumber);

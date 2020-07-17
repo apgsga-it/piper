@@ -260,6 +260,19 @@ public class PatchCliIntegrationTest extends Specification {
 			repo.clean()
 	}
 
+	def "Patch Cli start startInstallPipeline" () {
+		setup:
+		def client = PatchCli.create()
+		when:
+		def result = client.process(["-i", "chei212"])
+		then:
+		result.returnCode == 0
+		result.results != null
+		!result.results.isEmpty()
+		cleanup:
+		repo.clean()
+	}
+
 	// TODO (che, jhe ) : This stay still here?
 	@Requires({PatchCliIntegrationTest.dbAvailable()})
 	def "Patch DB Cli returns patch ids to be re-installed after a clone"() {
