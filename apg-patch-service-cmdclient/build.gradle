@@ -179,6 +179,3 @@ artifactory {
 assemble { dependsOn copyLib}
 buildRpm {dependsOn processResources, assemble}
 publishToMavenLocal {dependsOn buildRpm}
-publish {dependsOn buildRpm}
-
-
