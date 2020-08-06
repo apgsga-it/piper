@@ -141,7 +141,7 @@ publishing {
 			artifactId "${finalName}-fat"
 		}
 	    zipPkg(MavenPublication) {
-			artifact "${buildDir}/distributions/${projectDir.getName()}-${rpmVersion}.zip"
+			artifact "${buildDir}/distributions/${projectDir.getName()}-${version}.zip"
 		}
 		yumRpm(IvyPublication) {
 			artifact buildRpm.outputs.getFiles().getSingleFile()
