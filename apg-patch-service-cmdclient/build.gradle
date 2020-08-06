@@ -19,6 +19,7 @@ def finalName = 'apg-patch-cli'
 
 // In Case of SNAPSHOT build, we want a parameter as releaseNr
 def releaseNbr = project.rootProject.hasProperty('buildNumber') ? project.property('buildNumber') : "1"
+println "**** RELEASENR " "${releaseNbr}"
 mainClassName = 'pliStarter'
 def repoTarget= version.endsWith("SNAPSHOT") ? "${mavenSnapshotsRepoName}" : "${mavenReleasesRepoName}"
 jar {
@@ -79,7 +80,7 @@ def homeDir = "/opt/${finalName}"
 ospackage {
 	packageName = "${finalName}"
 	version = "${savedVersion}"
-	release = releaseNbr
+	release = "${releaseNbr}"
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -136,6 +137,7 @@ publishing {
 	publications {
 		fatJar(MavenPublication) {
 			artifact "${buildDir}/libs/${finalName}-fat.jar"
+			artifactId "${finalName}-fat"
 		}
 	    zipPkg(MavenPublication) {
 			artifact "${buildDir}/distributions/${projectDir.getName()}-${version}.zip"
