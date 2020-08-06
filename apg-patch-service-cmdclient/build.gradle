@@ -3,7 +3,7 @@ plugins {
   	id 'groovy'
     id 'application'
 	id 'com.github.johnrengelman.shadow' version '5.2.0'
-  	id 'nebula.ospackage' version '4.10.0'
+  	id 'nebula.ospackage' version '8.0.3'
   	id 'ivy-publish' 
 }
 
@@ -31,7 +31,7 @@ jar {
 // In Case of SNAPSHOT build, we want a parameter as releaseNr
 // TODO (jhe, che, 8.8.20) clearify version numbering in case of SNAPSHOT Maven Version
 def pkgVersion = version
-def releaseNbr =  project.rootProject.hasProperty('buildNumber') ? project.rootProject.property('buildNumber') : "1"
+def releaseNbr =  project.rootProject.hasProperty('buildNumber') ? project.rootProject.property('buildNumber') : 1
 
 shadowJar {
 	baseName = "${finalName}-fat"
@@ -83,7 +83,7 @@ def homeDir = "/opt/${finalName}"
 ospackage {
 	packageName = "${finalName}"
 	version = "${pkgVersion}"
-	release = "${releaseNbr}"
+	release = releaseNbr
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -135,7 +135,7 @@ ospackage {
  	// Parameter are as follow: directory(String path, int permissions, String user, String permissionGroup, boolean addParents)
  	directory ("/var/opt/${finalName}", 0775, "root", "jenkins", false)
 }
-
+//
 publishing {
 	publications {
 		fatJar(MavenPublication) {

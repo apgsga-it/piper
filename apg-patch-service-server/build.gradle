@@ -1,7 +1,7 @@
 plugins {
   	id 'groovy'
    	id 'application'
-  	id 'nebula.ospackage' version '4.10.0'
+	id 'nebula.ospackage' version '8.0.3'
   	id 'ivy-publish'  
 	id 'org.springframework.boot' version '1.5.9.RELEASE'
 }
@@ -56,7 +56,7 @@ def homeDir = "/opt/${project.name}"
 ospackage {
 	packageName = "${project.name}"
 	version = "${pkgVersion}"
-	release =  "${releaseNbr}"
+	release =  releaseNbr
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
