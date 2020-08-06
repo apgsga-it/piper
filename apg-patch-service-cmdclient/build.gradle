@@ -137,6 +137,10 @@ ospackage {
 
 publishing {
 	publications {
+		fromJava(MavenPublication) {
+			from components.java
+			version = "${savedVersion}"
+		}
 		fatJar(MavenPublication) {
 			artifact "${buildDir}/libs/${finalName}-fat.jar"
 			artifactId "${finalName}-fat"
