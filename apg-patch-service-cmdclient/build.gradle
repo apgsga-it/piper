@@ -15,6 +15,11 @@ apply plugin: 'nebula.ospackage'
 apply plugin: 'com.jfrog.artifactory'
 apply plugin: 'ivy-publish'
 
+description = 'Cli Programm, which provides  Patch Service API through Command Line Interface  '
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 def finalName = 'apg-patch-cli'
 
 mainClassName = 'pliStarter'
@@ -25,9 +30,17 @@ jar {
 
 // In Case of SNAPSHOT build, we want a parameter as releaseNr
 // TODO (jhe, che, 8.8.20) clearify version numbering in case of SNAPSHOT Maven Version
-def releaseNbr = version.endsWith("SNAPSHOT") &&  project.rootProject.hasProperty('buildNumber') ? project.rootProject.property('buildNumber') : "1"
-def rpmVersion = "${version.replace('-','.')}-${releaseNbr}"
+def pkgVersion = version
+def releaseNbr =  project.rootProject.hasProperty('buildNumber') ? project.rootProject.property('buildNumber') : "1"
 
+shadowJar {
+	baseName = "${finalName}-fat"
+	classifier = null
+	version = null
+	exclude 'cmd.sh'
+	exclude '**/downloads/*'
+	exclude '**/uploads/*'
+}
 
 dependencies {
 	// Application dependencies
@@ -47,29 +60,18 @@ dependencies {
 
 }
 
-shadowJar {
-	baseName = "${finalName}-fat"
-	classifier = null
-	version = null
-	exclude 'cmd.sh'
-	exclude '**/downloads/*'
-	exclude '**/uploads/*'
-	mergeServiceFiles()
-	append 'META-INF/spring.handlers'
-	append 'META-INF/spring.schemas'
-	append 'META-INF/spring.tooling'
-	transform(PropertiesFileTransformer) {
-		paths = ['META-INF/spring.factories' ]
-		mergeStrategy = "append"
-	}
+task pkgAsGTar(type: Tar) {
+    from "$project.buildDir/${finalName}"
+    archiveName = "${finalName}-${version}.tar.gz"
+    compression = Compression.GZIP
 }
 
 task copyLib( type: Copy ) {
-	into "$project.buildDir/${finalName}"
-	from shadowJar
-	fileMode 0755
-	// In lib we only want jars files to go in lib folder (no dll, exe, bat, etc...)
-	include "*.jar"
+    into "$project.buildDir/${finalName}"
+    from shadowJar
+    fileMode 0755
+    // In lib we only want jars files to go in lib folder (no dll, exe, bat, etc...)
+    include "*.jar"
 }
 
 
@@ -80,12 +82,12 @@ def homeDir = "/opt/${finalName}"
 // Netflix Nebula Os Package Configuration, see : https://github.com/nebula-plugins/gradle-ospackage-plugin/wiki
 ospackage {
 	packageName = "${finalName}"
-	version = "${rpmVersion}"
+	version = "${pkgVersion}"
 	release = "${releaseNbr}"
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
-	requires('aps' , "${rpmVersion}",  EQUAL)
+	requires('aps' , "${pkgVersion}",  EQUAL)
 	
 	into "${homeDir}"
 	
@@ -140,8 +142,9 @@ publishing {
 			artifact "${buildDir}/libs/${finalName}-fat.jar"
 			artifactId "${finalName}-fat"
 		}
-	    zipPkg(MavenPublication) {
-			artifact "${buildDir}/distributions/${projectDir.getName()}-${version}.zip"
+		targz(MavenPublication) {
+			artifact source: pkgAsGTar, extension: 'tar.gz'
+			artifactId = "${finalName}"
 		}
 		yumRpm(IvyPublication) {
 			artifact buildRpm.outputs.getFiles().getSingleFile()
@@ -161,6 +164,7 @@ publishing {
 
 artifactoryPublish {}.dependsOn(buildRpm)
 artifactory {
+    contextUrl = "${mavenRepoBaseUrl}"
     publish {
         repository {
             repoKey = "${yumRepoDevName}"   
@@ -180,7 +184,6 @@ artifactory {
     }
 }
 
-//assemble { dependsOn copyLib,pkgAsGTar}
-assemble { dependsOn copyLib}
+assemble { dependsOn copyLib,pkgAsGTar}
 buildRpm {dependsOn processResources, assemble}
 publishToMavenLocal {dependsOn buildRpm}

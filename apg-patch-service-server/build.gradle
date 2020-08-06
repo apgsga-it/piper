@@ -47,15 +47,15 @@ sourceSets {
   }
 }
 
-def releaseNbr = version.endsWith("SNAPSHOT") &&  project.rootProject.hasProperty('buildNumber') ? project.rootProject.property('buildNumber') : "1"
-def rpmVersion = "${version.replace('-','.')}-${releaseNbr}"
+def pkgVersion = version
+def releaseNbr = project.rootProject.hasProperty('buildNumber') ? project.rootProject.property('buildNumber') : "1"
 def homeDir = "/opt/${project.name}"
 
 
 // Netflix Nebula Os Package Configuration, see : https://github.com/nebula-plugins/gradle-ospackage-plugin/wiki
 ospackage {
 	packageName = "${project.name}"
-	version = "${rpmVersion}"
+	version = "${pkgVersion}"
 	release =  "${releaseNbr}"
 	os = LINUX
 	type = BINARY
