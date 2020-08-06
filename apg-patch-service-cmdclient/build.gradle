@@ -137,21 +137,20 @@ ospackage {
 
 publishing {
 	publications {
-		MavenJava(MavenPublication) {
-			from components.java
+		mavenJava(MavenPublication) {
 			version = "${savedVersion}"
 		}
-		FatJar(MavenPublication) {
+		fatJar(MavenPublication) {
 			artifact "${buildDir}/libs/${finalName}-fat.jar"
 			artifactId "${finalName}-fat"
 			version = "${savedVersion}"
 
 		}
-	    ZipPkg(MavenPublication) {
+	    zipPkg(MavenPublication) {
 			artifact "${buildDir}/distributions/${projectDir.getName()}-${rpmVersion}.zip"
 			version = "${rpmVersion}"
 		}
-		YumRpm(IvyPublication) {
+		yumRpm(IvyPublication) {
 			artifact buildRpm.outputs.getFiles().getSingleFile()
 			version = "${rpmVersion}"
 		}
@@ -182,7 +181,7 @@ artifactory {
             }
         }
         defaults {
-            publications ('YumRpm')
+            publications ('yumRpm')
             publishBuildInfo = false  
             publishArtifacts = true   
             publishPom = false   
