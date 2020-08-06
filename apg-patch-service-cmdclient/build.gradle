@@ -148,7 +148,7 @@ publishing {
 		}
 	    zipPkg(MavenPublication) {
 			artifact "${buildDir}/distributions/${projectDir.getName()}-${rpmVersion}.zip"
-			version = "${rpmVersion}"
+			version = "${savedVersion}"
 		}
 		yumRpm(IvyPublication) {
 			artifact buildRpm.outputs.getFiles().getSingleFile()
