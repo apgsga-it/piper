@@ -271,7 +271,7 @@ class PatchCli {
 		return cmdResult
 	}
 
-	def findById(def patchClient,def options) {
+	static def findById(def patchClient, def options) {
 		def patchNumber = options.fs[0]
 		def dirName = options.fs[1]
 		return doFindById(patchClient,patchNumber,dirName)
@@ -326,7 +326,7 @@ class PatchCli {
 		patchClient.startAssembleAndDeployPipeline(target)
 	}
 
-	def installPipeline(def patchClient, def options) {
+	static def installPipeline(def patchClient, def options) {
 		def target = options.is[0]
 		println "Starting install pipeline for ${target}"
 		patchClient.startInstallPipeline(target)
@@ -351,7 +351,7 @@ class PatchCli {
 		}
 
 		// TODO (jhe, che, 19.9) have filePath passed as parameter and not preconfigured
-		// Or write it stdout , but without any other println
+		// TODO Or write it stdout , but without any other println
 		def listPatchFile = new File(filePath)
 
 		if(listPatchFile.exists()) {
@@ -373,7 +373,7 @@ class PatchCli {
 
 	def copyPatchFile(PatchRestServiceClient patchClient, def statusCode, def destFolder) throws Exception {
 		// TODO JHE: query needs to be double-check with UGE
-		// status could for example be : Informatiktestlieferung
+		// TODO status could for example be : Informatiktestlieferung
 		String sql = "SELECT id FROM cm_patch_f p INNER JOIN cm_patch_status_f s ON p.status = s.pat_status WHERE s.pat_status = ${statusCode}"
 		try {
 			dbConnection.eachRow(sql) { row ->
