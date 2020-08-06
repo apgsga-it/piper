@@ -169,15 +169,13 @@ publishing {
 
 artifactoryPublish {}.dependsOn(buildRpm)
 artifactory {
-    contextUrl = "${mavenRepoBaseUrl}"  
     publish {
-		version = "${rpmVersion}"
         repository {
             repoKey = "${yumRepoDevName}"   
             username = mavenRepoUser
             password = mavenRepoPwd
             ivy {
-                 artifactLayout = "${buildRpm.outputs.getFiles().getSingleFile().getName()}"
+                 artifactLayout = "${projectDir.getName()}-${rpmVersion}.rpm"
             }
         }
         defaults {
