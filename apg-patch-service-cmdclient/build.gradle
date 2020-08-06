@@ -18,8 +18,8 @@ apply plugin: 'ivy-publish'
 def finalName = 'apg-patch-cli'
 
 // In Case of SNAPSHOT build, we want a parameter as releaseNr
-def releaseNbr = project.rootProject.hasProperty('buildNumber') ? project.property('buildNumber') : "1"
-println "**** RELEASENR " "${releaseNbr}"
+def releaseNbr =version.endsWith("SNAPSHOT") &&  project.rootProject.hasProperty('buildNumber') ? project.rootProject.property('buildNumber') : "1"
+println "**** RELEASENR ${releaseNbr}"
 mainClassName = 'pliStarter'
 def repoTarget= version.endsWith("SNAPSHOT") ? "${mavenSnapshotsRepoName}" : "${mavenReleasesRepoName}"
 jar {
