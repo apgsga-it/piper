@@ -26,10 +26,9 @@ class PatchCli {
 	}
 
 	def process(def args) {
-		def context =  new AnnotationConfigApplicationContext(PliConfig.class);
-		config = context.getBean(ConfigObject.class);
-		TargetSystemMappings.instance.load(config)
-		def cmdResults = new Expando();
+		def context =  new AnnotationConfigApplicationContext(PliConfig.class)
+		config = context.getBean(ConfigObject.class)
+		def cmdResults = new Expando()
 		cmdResults.returnCode = 1
 		cmdResults.results = [:]
 		def options = validateOpts(args)
@@ -114,7 +113,7 @@ class PatchCli {
 		}
 
 		def options = cli.parse(args)
-		def error = false;
+		def error = false
 
 		if (options == null) {
 			println "Wrong parameters"
@@ -239,14 +238,14 @@ class PatchCli {
 		options
 	}
 
-	def cleanLocalMavenRepo(def patchClient) {
+	static def cleanLocalMavenRepo(def patchClient) {
 		def cmdResult = new Expando()
-		patchClient.cleanLocalMavenRepo();
+		patchClient.cleanLocalMavenRepo()
 		cmdResult
 	}
 
 
-	def stateChangeAction(def patchClient,def options) {
+	static def stateChangeAction(def patchClient, def options) {
 		def cmdResult = new Expando()
 		def patchNumber = options.stas[0]
 		def toState = options.stas[1]
@@ -268,7 +267,7 @@ class PatchCli {
 		return doFindById(patchClient,patchNumber,dirName)
 	}
 
-	private def doFindById(def patchClient, def patchNumber, def dirName) {
+	private static def doFindById(def patchClient, def patchNumber, def dirName) {
 		def cmdResult = new Expando()
 		def found = retrieveAndWritePatch(patchClient, patchNumber, dirName )
 		cmdResult.patchNumber = patchNumber
@@ -277,7 +276,7 @@ class PatchCli {
 		return cmdResult
 	}
 
-	def patchExists(def patchClient,def options) {
+	static def patchExists(def patchClient, def options) {
 		def exists = patchClient.patchExists(options.e)
 		println "Patch ${options.e} exists is: ${exists} "
 		def cmdResult = new Expando()
@@ -285,40 +284,40 @@ class PatchCli {
 		return cmdResult
 	}
 
-	def savePatch(def patchClient,def options) {
+	static def savePatch(def patchClient, def options) {
 		patchClient.save(new File(options.sa), Patch.class)
 		def cmdResult = new Expando()
 		cmdResult.patchFile = options.sa
 		return cmdResult
 	}
-	
-	def retrieveAndWritePatch(def patchClient,def id, def file) {
+
+	static def retrieveAndWritePatch(def patchClient, def id, def file) {
 		println "Writting: ${id} to ${file}"
 		def patchData = patchClient.findById(id)
 		if (patchData == null) {
 			return false
 		}
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper()
 		mapper.writeValue(new File(file,"Patch" + id + ".json"), patchData)
 		println "Writting: ${id} to ${file} done."
 		return true
 	}
 
-	def logPatchActivity(def patchClient,def options) {
+	static def logPatchActivity(def patchClient, def options) {
 		println "Logging patch activity for ${options.logs[0]}"
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper()
 		def patchFile = mapper.readValue(new File("${options.logs[0]}"), Patch.class)
 		patchClient.savePatchLog(patchFile)
 	}
 
-	def assembleAndDeployPipeline(def patchClient, def options) {
+	static def assembleAndDeployPipeline(def patchClient, def options) {
 		def target = options.adps[0]
 		println "Starting assembleAndDeploy pipeline for ${target}"
 		patchClient.startAssembleAndDeployPipeline(target)
 	}
 
 	def listPatchAfterClone(def status, def filePath) {
-		def String sql = "SELECT id FROM cm_patch_install_sequence_f WHERE ${status}=1 AND (produktion = 0 OR chronology > trunc(SYSDATE))"
+		String sql = "SELECT id FROM cm_patch_install_sequence_f WHERE ${status}=1 AND (produktion = 0 OR chronology > trunc(SYSDATE))"
 		def patchNumbers = []
 		try {
 			dbConnection.eachRow(sql) { row ->
@@ -329,6 +328,8 @@ class PatchCli {
 		}
 		catch(Exception ex) {
 			// TODO JHE(11.04.2019): because the caller will read the stdout in order to determine if all went well ... we can't write the error message. But we need to find a way to log the exception.
+			println ex.getMessage()
+			println ex.getStackTrace()
 			println false
 			return
 		}
@@ -346,7 +347,7 @@ class PatchCli {
 	}
 
 	def executeStateTransitionActionInDb(def patchNumber, def toStatus) {
-		def statusNum = TargetSystemMappings.instance.findStatus(toStatus) as Long;
+		def statusNum = TargetSystemMappings.instance.findStatus(toStatus) as Long
 		def id = patchNumber as Long
 		def sql = 'update cm_patch_f set status = :statusNum where id = :id'
 		def result = dbConnection.execute(sql,['statusNum':statusNum,'id':id])

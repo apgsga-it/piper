@@ -3,16 +3,18 @@ package com.apgsga.patch.service.client.utils
 import groovy.json.JsonSlurper
 import groovy.transform.Synchronized
 
-// TODO (che, jhe, 18.10 ): Move Bootstrapping to AppContext
-@Singleton()
-public class TargetSystemMappings {
-	
-	def targetSystemMappings
 
+// TODO (jhe, 6.8.20) : Move this to either Pipeline Code and/or provide a Api
+// TODO the later probably being the best. The implementation code do a clone of git a provide use the same groovy code as the Pipelines
+// TODO For the moment i am replacing the File with a hardcoded map
+@Singleton()
+class TargetSystemMappings {
+	
+	def targetSystemMappings = ["EntwicklungInstallationsbereit":2,"InformatiktestInstallationsbereit":15, "AnwendertestInstallationsbereit":25,"ProduktionInstallationsbereit":65]
 	def get() {
 		return targetSystemMappings
 	}
-	
+
 	def findStatus(toStatus) {
 		def statusNum = targetSystemMappings[toStatus] 
 		if (statusNum == null) {
@@ -21,55 +23,5 @@ public class TargetSystemMappings {
 		}
 		statusNum
 	}
-	
-	def findState(stateCode) {
-		for (String key : targetSystemMappings.keySet()) {
-			def preState = targetSystemMappings[key]
-			if (stateCode.toString() == preState) {
-				return key
-			}
-		}
-		null
-	}
-
-	
-	def findPredecessorStates(state) {
-		def predecessorStates = []
-		for (String key : targetSystemMappings.keySet()) {
-			def preState = targetSystemMappings[key]
-			predecessorStates << key
-			if (state.toString() == preState) {
-				break
-			}
-		}
-		predecessorStates
-	}
-	
-	def relevantStateCode(state,fromToStates) {
-		def codeValues = targetSystemMappings.values()
-		if (codeValues.contains("${state.toString()}")) {
-			return state
-		}
-		for (def row : fromToStates) {
-			def toState = row.TOSTATE
-			def fromState = row.FROMSTATE
-			if (fromState.equals(state)) {
-				return toState
-			}
-		}
-		null
-	}
-	
-	@Synchronized
-	def load(config) {
-		def mappingFileName = config.target.system.mapping.file.name
-		def configDir = config.config.dir
-		def targetSystemMappingsFilePath = "${configDir}/${mappingFileName}"
-		def targetSystemFile = new File(targetSystemMappingsFilePath)
-		def jsonSystemTargets = new JsonSlurper().parseText(targetSystemFile.text)
-		targetSystemMappings = [:]
-		jsonSystemTargets.stageMappings.find( { a ->  a.stages.find( { targetSystemMappings.put("${a.name}${it.toState}".toString(),"${it.code}") })} )
-	}
-	
 
 }

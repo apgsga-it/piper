@@ -17,19 +17,8 @@ import spock.lang.Specification
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = [MicroPatchServer.class ])
 @TestPropertySource(locations = ["classpath:config/server-test.properties"])
 @ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
-public class PatchCliIntegrationExceptionHandlingTests extends Specification {
+class PatchCliIntegrationExceptionHandlingTests extends Specification {
 
-	private static def DEFAULT_CONFIG_OPT = ["-c", "src/test/resources/config"]
-
-	@Value('${baseUrl}')
-	private String baseUrl;
-
-	@Value('${json.db.location}')
-	private String dbLocation;
-
-	@Autowired
-	@Qualifier("patchPersistence")
-	private PatchPersistence repo;
 
 	def setup() {
 		def buildFolder = new File("build")

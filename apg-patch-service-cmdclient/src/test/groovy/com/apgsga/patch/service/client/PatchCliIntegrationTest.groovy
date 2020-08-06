@@ -26,18 +26,18 @@ import spock.lang.Specification
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = [MicroPatchServer.class])
 @TestPropertySource(locations = ["classpath:config/server-test.properties"])
 @ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
-public class PatchCliIntegrationTest extends Specification {
+class PatchCliIntegrationTest extends Specification {
 
 	private static final String CLASSPATH_CONFIG_OPS_TEST_PROPERTIES = 'classpath:config/ops-test.properties'
 
 	private static final String CLASSPATH_CONFIG_APP_TEST_PROPERTIES = 'classpath:config/app-test.properties'
 	
 	@Value('${json.db.location}')
-	private String dbLocation;
+	private String dbLocation
 
 	@Autowired
 	@Qualifier("patchPersistence")
-	private PatchPersistence repo;
+	private PatchPersistence repo
 
 	def setup() {
 		def buildFolder = new File("build")
@@ -97,7 +97,7 @@ public class PatchCliIntegrationTest extends Specification {
 		postCondResult.results['e'].exists == true
 		def dbFile = new File("${dbLocation}/Patch5401.json")
 		def sourceFile = new File("src/test/resources/Patch5401.json")
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper()
 		mapper.readValue(sourceFile,Patch.class).equals(mapper.readValue(dbFile,Patch.class))
 		cleanup:
 		repo.clean()
@@ -125,7 +125,7 @@ public class PatchCliIntegrationTest extends Specification {
 		result.returnCode == 0
 		def dbFile = new File("${dbLocation}/Patch5401.json")
 		def sourceFile = new File("src/test/resources/Patch5401.json")
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper()
 		mapper.readValue(sourceFile,Patch.class).equals(mapper.readValue(dbFile,Patch.class))
 		cleanup:
 		repo.clean()
@@ -176,7 +176,8 @@ public class PatchCliIntegrationTest extends Specification {
 		result.returnCode == 0
 	}
 
-
+    // TODO (jhe, che) : This test needs the TargetSystemMapping File on Server
+	// TODO The whole TargetsystemMapping dealing needs to be cleaned up , see IT-35944
 	def "Patch Cli valid State Change Action for config aps"() {
 		setup:
 		def client = PatchCli.create()
@@ -227,14 +228,14 @@ public class PatchCliIntegrationTest extends Specification {
 			preCondResult.returnCode == 0
 			File patchFile = new File("${dbLocation}/Patch5401.json")
 			patchFile.exists()
-			ObjectMapper patchMapper = new ObjectMapper();
+			ObjectMapper patchMapper = new ObjectMapper()
 			def p = patchMapper.readValue(patchFile,Patch.class)
 			p.setCurrentTarget("chei211")
 			p.setCurrentPipelineTask("Build")
 			p.setLogText("started")
 			patchMapper.writeValue(patchFile, p)
 		when:
-			def result = client.process(["-log", "src/test/resources/Patch5401.json"])
+			client.process(["-log", "src/test/resources/Patch5401.json"])
 		then:
 			preCondResult != null
 			preCondResult.returnCode == 0
@@ -278,13 +279,15 @@ public class PatchCliIntegrationTest extends Specification {
 	}
 
 	// TODO (jhe, 8.4) The user does'nt exist
+	// TODO (jhe, che, 8.8.20) : fix this or remove test, until skip test
 	@Requires({PatchCliIntegrationTest.patchExists("5799")})
+	@Ignore
 	def "Patch DB Cli  update status of Patch"() {
 		when:
-		def db = dbConnection("cm", "cm_pass");
-		def dbResult = db.execute('update cm_patch_t set status = 1 where id = :id',["id":5799])
+		def db = dbConnection("cm", "cm_pass")
+		b.execute('update cm_patch_t set status = 1 where id = :id',["id":5799])
 		def patchcli = PatchCli.create()
-		def savedOut = System.out;
+		def savedOut = System.out
 		def buffer = new ByteArrayOutputStream()
 		System.setOut(new PrintStream(buffer))
 		def result = patchcli.process(["-dbsta", "5799,EntwicklungInstallationsbereit"])
@@ -298,6 +301,7 @@ public class PatchCliIntegrationTest extends Specification {
 	}
 
 	// JHE: Ignoring this one because not guaranteed that Patches still exist
+	// TODO (jhe, che, 8.8.20) Either remove the test or fix
 	@Ignore
 	@Requires({PatchCliIntegrationTest.dbAvailable()})
 	def "Patch DB Cli correctly copies Patch JSON Files"() {
@@ -333,7 +337,7 @@ public class PatchCliIntegrationTest extends Specification {
 	static boolean dbAvailable() {
 		try {
 			dbConnection()
-			return true;
+			return true
 		} catch (Exception e) {
 			return false
 		}
@@ -342,16 +346,16 @@ public class PatchCliIntegrationTest extends Specification {
 		try {
 			def id = patchNumber as Long
 			def db = dbConnection()
-			def sql = 'select status from  cm_patch_f where id = :patchNumber';
+			def sql = 'select status from  cm_patch_f where id = :patchNumber'
 			def result = db.firstRow(sql, [patchNumber:id])
-			return result != null;
+			return result != null
 		} catch (Exception e) {
 			return false
 		}
 	}
 
 	static Properties loadProperties() {
-		ResourceLoader rl = new FileSystemResourceLoader();
+		ResourceLoader rl = new FileSystemResourceLoader()
 		def resource = rl.getResource(CLASSPATH_CONFIG_OPS_TEST_PROPERTIES)
 		Properties properties = new Properties()
 		File propertiesFile = resource.getFile()
