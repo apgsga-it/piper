@@ -8,15 +8,6 @@ import java.util.List;
  */
 public interface PatchService {
 
-	
-	
-	/**
-	 * Start the Jenkins Install Pipeline for a Patch. 
-	 * @param patch the Patch, which contains the Target to Install
-	 */
-    void startInstallPipeline(Patch patch);
-	
-	
 	/**
 	 * @return the Configuration Data of the known Target Services
 	 */

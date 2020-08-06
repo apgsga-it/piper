@@ -122,11 +122,6 @@ public class MicroservicePatchClient implements PatchService {
 	}
 
 	@Override
-	public void startInstallPipeline(Patch patch) {
-		restTemplate.postForLocation(getRestBaseUri() + START_INSTALL_PIPELINE, patch);
-	}
-
-	@Override
 	public List<DbObject> listAllObjectsChangedForDbModule(String patchNumber, String searchString) {
 		Map<String, String> params = Maps.newHashMap();
 		params.put("id", patchNumber);
