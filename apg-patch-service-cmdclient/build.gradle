@@ -79,8 +79,8 @@ def homeDir = "/opt/${finalName}"
 // Netflix Nebula Os Package Configuration, see : https://github.com/nebula-plugins/gradle-ospackage-plugin/wiki
 ospackage {
 	packageName = "${finalName}"
-	version = "${savedVersion}"
-	release = "${releaseNbr}"
+	version = "${savedVersion}-${releaseNbr}"
+	release = 1
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
