@@ -17,16 +17,18 @@ apply plugin: 'ivy-publish'
 
 def finalName = 'apg-patch-cli'
 
-// In Case of SNAPSHOT build, we want a parameter as releaseNr
-def releaseNbr =version.endsWith("SNAPSHOT") &&  project.rootProject.hasProperty('buildNumber') ? project.rootProject.property('buildNumber') : "1"
-println "**** RELEASENR ${releaseNbr}"
 mainClassName = 'pliStarter'
 def repoTarget= version.endsWith("SNAPSHOT") ? "${mavenSnapshotsRepoName}" : "${mavenReleasesRepoName}"
 jar {
 	baseName = "${finalName}"
-} 
+}
 
+// In Case of SNAPSHOT build, we want a parameter as releaseNr
+// TODO (jhe, che, 8.8.20) clearify version numbering in case of SNAPSHOT Maven Version
+def releaseNbr = version.endsWith("SNAPSHOT") &&  project.rootProject.hasProperty('buildNumber') ? project.rootProject.property('buildNumber') : "1"
 def savedVersion = version
+def rpmVersion = "${version.replace('-','.')}-${releaseNbr}"
+
 
 dependencies {
 	// Application dependencies
@@ -79,8 +81,8 @@ def homeDir = "/opt/${finalName}"
 // Netflix Nebula Os Package Configuration, see : https://github.com/nebula-plugins/gradle-ospackage-plugin/wiki
 ospackage {
 	packageName = "${finalName}"
-	version = "${savedVersion}-${releaseNbr}"
-	release = 1
+	version = "${rpmVersion}"
+	release = "${releaseNbr}"
 	os = LINUX
 	type = BINARY
 	arch = NOARCH
@@ -140,10 +142,11 @@ publishing {
 			artifactId "${finalName}-fat"
 		}
 	    zipPkg(MavenPublication) {
-			artifact "${buildDir}/distributions/${projectDir.getName()}-${version}.zip"
+			artifact "${buildDir}/distributions/${projectDir.getName()}-${rpmVersion}.zip"
 		}
 		yumRpm(IvyPublication) {
 			artifact buildRpm.outputs.getFiles().getSingleFile()
+			version = "${rpmVersion}"
 		}
 	}
 	repositories {
