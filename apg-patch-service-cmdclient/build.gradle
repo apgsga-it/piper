@@ -132,6 +132,9 @@ ospackage {
 
 publishing {
 	publications {
+		fatJar(MavenPublication) {
+			artifact "${buildDir}/lib/${finalName}-fat.jar"
+		}
 	    zipPkg(MavenPublication) {
 			artifact "${buildDir}/distributions/${projectDir.getName()}-${version}.zip"
 		}
