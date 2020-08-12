@@ -1,0 +1,13 @@
+plugins {
+    id 'groovy'
+}
+
+description = 'API and implementation providing information from our TargetSystemMapping configuration'
+jar {
+    archivesBaseName = 'apg-patch-system-mapping'
+}
+
+dependencies {
+    compile group: 'org.springframework.boot', name: 'spring-boot'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
