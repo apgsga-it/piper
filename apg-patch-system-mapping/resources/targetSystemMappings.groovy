@@ -1,5 +1,3 @@
-package com.apgsga.system.mapping
-
 import groovy.json.JsonSlurper
 import org.springframework.util.Assert
 
@@ -8,7 +6,7 @@ import java.nio.file.Files
 def static create(def tsmFilePath) {
     File tsmFile = new File(tsmFilePath)
     Assert.isTrue(Files.exists(tsmFile.toPath()),"${tsmFilePath} does not exist!!")
-    def tsmInstance = com.apgsga.system.mapping.TargetSystemMappings.instance
+    def tsmInstance = TargetSystemMappings.instance
     tsmInstance.setTsmFile(tsmFile)
     tsmInstance
 }

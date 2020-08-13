@@ -8,6 +8,9 @@ jar {
 }
 
 dependencies {
-    compile group: 'org.springframework.boot', name: 'spring-boot'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'org.codehaus.groovy' , name: 'groovy-all'
+    compile group: 'org.springframework', name: 'spring-core'
+    testCompile group: 'org.springframework', name: 'spring-test'
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    testCompile group: 'org.spockframework' ,name: 'spock-spring'
 }
