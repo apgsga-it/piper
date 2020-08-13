@@ -7,6 +7,15 @@ jar {
     archivesBaseName = 'apg-patch-system-mapping'
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs "src/main/java"
+            srcDirs "resources"
+        }
+    }
+}
+
 dependencies {
     compile group: 'org.codehaus.groovy' , name: 'groovy-all'
     compile group: 'org.springframework', name: 'spring-core'
