@@ -40,4 +40,9 @@ public interface TargetSystemMapping {
      */
     List<String> validToStates();
 
+    /**
+     *
+     * @return : list of targets on which an onDemand installation can be started
+     */
+    List<String> listInstallTargets();
 }
