@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class InstallTargetsUtil {
 
+	// TODO JHE: Delete this class
+
 	private InstallTargetsUtil() {
 		super();
 	}

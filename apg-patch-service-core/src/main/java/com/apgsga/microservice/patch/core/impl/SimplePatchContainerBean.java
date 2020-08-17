@@ -66,6 +66,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Value("${config.common.location:/etc/opt/apg-patch-common}")
 	private String configCommon;
 
+	//TODO JHE: Probably we'll replace this with the new TargetSystemMapping component
 	@Value("${config.common.targetSystemFile:TargetSystemMappings.json}")
 	private String targetSystemFile;
 
@@ -203,6 +204,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public List<String> listInstallationTargetsFor(String requestingTarget) {
+		//TODO JHE : use new TargetSystemMapping module
 		ResourceLoader rl = new FileSystemResourceLoader();
 		Resource targetConfigFile = rl.getResource(configCommon + "/" + targetSystemFile);
 		return InstallTargetsUtil.listInstallTargets(targetConfigFile);

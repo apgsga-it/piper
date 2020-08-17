@@ -57,6 +57,7 @@ public class MicroServicePatchConfig {
 	@Value("${config.common.location:/etc/opt/apg-patch-common}")
 	private String configCommon;
 
+	//TODO JHE : replace targetSystemMapping here with the new implementation
 	@Value("${config.common.targetSystemFile:TargetSystemMappings.json}")
 	private String targetSystemFile;
 

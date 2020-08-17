@@ -3,6 +3,8 @@ package com.apgsga.microservice.patch.core.impl.targets;
 import java.util.List;
 
 public class TargetSystemMappings {
+
+	// TODO JHE: delete this class
 	
 	private List<String> onDemandTarget;
 	
