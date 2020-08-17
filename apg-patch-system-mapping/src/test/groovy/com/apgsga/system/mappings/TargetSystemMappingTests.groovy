@@ -57,4 +57,62 @@ class TargetSystemMappingTests extends Specification {
             tsm.listInstallTargets().contains("test-CHTI212")
             tsm.listInstallTargets().contains("test-devjhe")
     }
+
+    def "test stateMap API"() {
+        expect:
+            tsm != null
+            def stateMap = tsm.stateMap()
+            stateMap != null
+            stateMap.size() == 8
+            def keys = stateMap.keySet()
+            keys.contains("Entwicklung")
+            keys.contains("Informatiktest")
+            keys.contains("Anwendertest")
+            keys.contains("Produktion")
+            keys.contains("EntwicklungInstallationsbereit")
+            keys.contains("InformatiktestInstallationsbereit")
+            keys.contains("AnwendertestInstallationsbereit")
+            keys.contains("ProduktionInstallationsbereit")
+            // Entwicklung entries
+            stateMap.get("Entwicklung").get("targetName").equals("Entwicklung")
+            stateMap.get("Entwicklung").get("clsName").equals("com.apgsga.microservice.patch.server.impl.PipelineInputAction")
+            stateMap.get("Entwicklung").get("stage").equals("cancel")
+            stateMap.get("Entwicklung").get("target").equals("test-CHEI212")
+            // Informatiktest entries
+            stateMap.get("Informatiktest").get("targetName").equals("Informatiktest")
+            stateMap.get("Informatiktest").get("clsName").equals("com.apgsga.microservice.patch.server.impl.PipelineInputAction")
+            stateMap.get("Informatiktest").get("stage").equals("InstallFor")
+            stateMap.get("Informatiktest").get("target").equals("test-CHEI211")
+            // Anwendertest entries
+            stateMap.get("Anwendertest").get("targetName").equals("Anwendertest")
+            stateMap.get("Anwendertest").get("clsName").equals("com.apgsga.microservice.patch.server.impl.PipelineInputAction")
+            stateMap.get("Anwendertest").get("stage").equals("InstallFor")
+            stateMap.get("Anwendertest").get("target").equals("test-CHTI211")
+            // Produktion entries
+            stateMap.get("Produktion").get("targetName").equals("Produktion")
+            stateMap.get("Produktion").get("clsName").equals("com.apgsga.microservice.patch.server.impl.PipelineInputAction")
+            stateMap.get("Produktion").get("stage").equals("InstallFor")
+            stateMap.get("Produktion").get("target").equals("test-CHPI211")
+            // EntwicklungInstallationsbereit entries
+            stateMap.get("EntwicklungInstallationsbereit").get("targetName").equals("Entwicklung")
+            stateMap.get("EntwicklungInstallationsbereit").get("clsName").equals("com.apgsga.microservice.patch.server.impl.EntwicklungInstallationsbereitAction")
+            stateMap.get("EntwicklungInstallationsbereit").get("stage").equals("startPipelineAndTag")
+            stateMap.get("EntwicklungInstallationsbereit").get("target").equals("test-CHEI212")
+            // InformatiktestInstallationsbereit entries
+            stateMap.get("InformatiktestInstallationsbereit").get("targetName").equals("Informatiktest")
+            stateMap.get("InformatiktestInstallationsbereit").get("clsName").equals("com.apgsga.microservice.patch.server.impl.PipelineInputAction")
+            stateMap.get("InformatiktestInstallationsbereit").get("stage").equals("BuildFor")
+            stateMap.get("InformatiktestInstallationsbereit").get("target").equals("test-CHEI211")
+            // AnwendertestInstallationsbereit entries
+            stateMap.get("AnwendertestInstallationsbereit").get("targetName").equals("Anwendertest")
+            stateMap.get("AnwendertestInstallationsbereit").get("clsName").equals("com.apgsga.microservice.patch.server.impl.PipelineInputAction")
+            stateMap.get("AnwendertestInstallationsbereit").get("stage").equals("BuildFor")
+            stateMap.get("AnwendertestInstallationsbereit").get("target").equals("test-CHTI211")
+            // ProduktionInstallationsbereit entries
+            stateMap.get("ProduktionInstallationsbereit").get("targetName").equals("Produktion")
+            stateMap.get("ProduktionInstallationsbereit").get("clsName").equals("com.apgsga.microservice.patch.server.impl.PipelineInputAction")
+            stateMap.get("ProduktionInstallationsbereit").get("stage").equals("BuildFor")
+            stateMap.get("ProduktionInstallationsbereit").get("target").equals("test-CHPI211")
+
+    }
 }

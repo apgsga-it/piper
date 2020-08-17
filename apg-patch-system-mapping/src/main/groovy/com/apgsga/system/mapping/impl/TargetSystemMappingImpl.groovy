@@ -101,4 +101,9 @@ class TargetSystemMappingImpl implements TargetSystemMapping {
     List<String> listInstallTargets() {
         return tsmObject.listInstallTargets()
     }
+
+    @Override
+    Map<String, Map<String, String>> stateMap() {
+        return tsmObject.stateMap()
+    }
 }

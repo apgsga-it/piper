@@ -1,6 +1,7 @@
 package com.apgsga.system.mapping.api;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TargetSystemMapping {
 
@@ -45,4 +46,10 @@ public interface TargetSystemMapping {
      * @return : list of targets on which an onDemand installation can be started
      */
     List<String> listInstallTargets();
+
+    /**
+     *
+     * @return : Map with information about the stageMappings section
+     */
+    Map<String,Map<String,String>> stateMap();
 }
