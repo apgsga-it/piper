@@ -73,7 +73,7 @@ class TargetSystemMappingImpl implements TargetSystemMapping {
     }
 
     @Override
-    String findStatus(String toStatus) {
+    Integer findStatus(String toStatus) {
         return tsmObject.findStatus(toStatus)
     }
 

@@ -113,6 +113,18 @@ class TargetSystemMappingTests extends Specification {
             stateMap.get("ProduktionInstallationsbereit").get("clsName").equals("com.apgsga.microservice.patch.server.impl.PipelineInputAction")
             stateMap.get("ProduktionInstallationsbereit").get("stage").equals("BuildFor")
             stateMap.get("ProduktionInstallationsbereit").get("target").equals("test-CHPI211")
+    }
 
+    def "test findStatus API"() {
+        expect:
+            tsm != null
+            tsm.findStatus("Entwicklung") == 0
+            tsm.findStatus("EntwicklungInstallationsbereit") == 2
+            tsm.findStatus("Informatiktest") == 20
+            tsm.findStatus("InformatiktestInstallationsbereit") == 15
+            tsm.findStatus("Anwendertest") == 30
+            tsm.findStatus("AnwendertestInstallationsbereit") == 25
+            tsm.findStatus("Produktion") == 80
+            tsm.findStatus("ProduktionInstallationsbereit") == 65
     }
 }

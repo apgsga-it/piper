@@ -10,7 +10,7 @@ public interface TargetSystemMapping {
      * @param toStatus : the current patch status number
      * @return : the next patch status
      */
-    String findStatus(String toStatus);
+    Integer findStatus(String toStatus);
 
     /**
      *
