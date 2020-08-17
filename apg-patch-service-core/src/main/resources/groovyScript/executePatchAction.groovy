@@ -1,20 +1,9 @@
 package groovyScript
 
 import com.apgsga.microservice.patch.exceptions.Asserts
-import groovy.json.JsonSlurper
-import org.springframework.core.io.FileSystemResourceLoader
-import org.springframework.core.io.Resource
-import org.springframework.core.io.ResourceLoader
 
-ResourceLoader rl = new FileSystemResourceLoader();
-Resource parent = rl.getResource("$configDir")
-Asserts.isTrue(parent.exists(),"Groovy.script.executePatchAction.configdir.exists.assert",[configDir,toState,patchNumber].toArray())
-def jsonFile = new File(parent.getFile(), "${configFileName}")
-Asserts.isTrue(jsonFile.exists(),"Groovy.script.executePatchAction.configfile.exists.assert",[configFileName,toState,patchNumber].toArray())
-def json = new JsonSlurper().parseText(jsonFile.text)
-def stateMap = [:]
-json.stageMappings.find( { a ->  a.stages.find( { stateMap.put("${a.name}${it.toState}",new Expando(targetName:"${a.name}", clsName:"${it.implcls}",stage:"${it.name}",target:"${a.target}"))})} )
-def bean = stateMap.get("${toState}")
+def stateMap = targetSystemMapping.stateMap()
+def bean = stateMap.get((String)"${toState}")
 Asserts.notNull(bean,"Groovy.script.executePatchAction.state.exits.assert",[toState,patchNumber].toArray())
 println "Got bean : ${bean}"
 println "Bean class name: ${bean.clsName} and ${patchContainerBean}"

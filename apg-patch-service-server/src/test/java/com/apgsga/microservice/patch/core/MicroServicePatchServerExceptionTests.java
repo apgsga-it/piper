@@ -175,48 +175,7 @@ public class MicroServicePatchServerExceptionTests {
 			Assert.assertEquals("Groovy.script.executePatchAction.state.exits.assert", e.getMessageKey());
 		}
 	}
-	
-	@Test
-	public void testPatchConfigDirDoesnotExist() {
-		Patch patch = new Patch();
-		patch.setPatchNummer("SomeUnqiueNumber3");
-		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
-		patch.addServices(service);
-		patchService.save(patch);
-		GroovyScriptActionExecutor patchActionExecutor = (GroovyScriptActionExecutor) patchActionFactory.create(patchService); 
-		patchActionExecutor.setConfigDir("XXXXXXXX");
-		try {
-			patchActionExecutor.execute("SomeUnqiueNumber3", "xxxxxxx");
-			fail("Expected Runtime Exception");
-		} catch (PatchServiceRuntimeException e) {
-			LOGGER.info(e.toString());
-			Assert.assertEquals("Groovy.script.executePatchAction.configdir.exists.assert", e.getMessageKey());
-		}
-	}
-	
-	@Test
-	public void testPatchConfigFileDoesnotExist() {
-		Patch patch = new Patch();
-		patch.setPatchNummer("SomeUnqiueNumber3");
-		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
-		patch.addServices(service);
-		patchService.save(patch);
-		GroovyScriptActionExecutor patchActionExecutor = (GroovyScriptActionExecutor) patchActionFactory.create(patchService); 
-		patchActionExecutor.setConfigFileName("XXXXXX");
-		try {
-			patchActionExecutor.execute("SomeUnqiueNumber3", "xxxxxxx");
-			fail("Expected Runtime Exception");
-		} catch (PatchServiceRuntimeException e) {
-			LOGGER.info(e.toString());
-			Assert.assertEquals("Groovy.script.executePatchAction.configfile.exists.assert", e.getMessageKey());
-		}
-	}
-	
-	
+
 	@Test
 	public void testPatchInvalidGroovyScriptFile() {
 		Patch patch = new Patch();

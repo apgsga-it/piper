@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.apgsga.microservice.patch.api.*;
+import com.apgsga.system.mapping.api.TargetSystemMapping;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,7 +28,6 @@ import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
-import com.apgsga.microservice.patch.core.impl.targets.InstallTargetsUtil;
 import com.apgsga.microservice.patch.core.impl.vcs.PatchVcsCommand;
 import com.apgsga.microservice.patch.core.impl.vcs.VcsCommand;
 import com.apgsga.microservice.patch.core.impl.vcs.VcsCommandRunner;
@@ -63,12 +63,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Autowired
 	private TaskExecutor threadExecutor;
 
+	@Autowired
+	private TargetSystemMapping targetSystemMapping;
+
 	@Value("${config.common.location:/etc/opt/apg-patch-common}")
 	private String configCommon;
-
-	//TODO JHE: Probably we'll replace this with the new TargetSystemMapping component
-	@Value("${config.common.targetSystemFile:TargetSystemMappings.json}")
-	private String targetSystemFile;
 
 	public SimplePatchContainerBean() {
 		super();
@@ -204,10 +203,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public List<String> listInstallationTargetsFor(String requestingTarget) {
-		//TODO JHE : use new TargetSystemMapping module
-		ResourceLoader rl = new FileSystemResourceLoader();
-		Resource targetConfigFile = rl.getResource(configCommon + "/" + targetSystemFile);
-		return InstallTargetsUtil.listInstallTargets(targetConfigFile);
+		return targetSystemMapping.listInstallTargets();
 	}
 
 	@Override

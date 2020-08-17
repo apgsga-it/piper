@@ -6,7 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @SpringBootApplication
-@ComponentScan(basePackages = { "com.apgsga.microservice.patch.server", "com.apgsga.microservice.patch.core" })
+@ComponentScan(basePackages = { "com.apgsga.microservice.patch.server", "com.apgsga.microservice.patch.core", "com.apgsga.system.mapping" })
 @EnableWebMvc
 public class MicroPatchServer {
 

@@ -1,32 +1,26 @@
 package com.apgsga.microservice.patch.core.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.apache.commons.io.FileUtils;
+import com.apgsga.microservice.patch.exceptions.Asserts;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.apgsga.system.mapping.api.TargetSystemMapping;
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.control.CompilationFailedException;
-import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-
-import com.apgsga.microservice.patch.exceptions.Asserts;
-import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
-
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class GroovyScriptActionExecutor implements PatchActionExecutor {
 
 	protected static final Log LOGGER = LogFactory.getLog(GroovyScriptActionExecutor.class.getName());
 
-	private String configDir;
-	private String configFileName;
+	private TargetSystemMapping tsm;
 	private String groovyScriptFile;
 	private SimplePatchContainerBean patchContainer;
 
@@ -34,21 +28,12 @@ public class GroovyScriptActionExecutor implements PatchActionExecutor {
 		super();
 	}
 
-	public GroovyScriptActionExecutor(String configDir, String configFileName, String groovyScriptFile,
+	public GroovyScriptActionExecutor(TargetSystemMapping tsm, String groovyScriptFile,
 			SimplePatchContainerBean patchContainer) {
 		super();
-		this.configDir = configDir;
-		this.configFileName = configFileName;
+		this.tsm = tsm;
 		this.groovyScriptFile = groovyScriptFile;
 		this.patchContainer = patchContainer;
-	}
-
-	public String getConfigDir() {
-		return configDir;
-	}
-
-	public void setConfigDir(String configDir) {
-		this.configDir = configDir;
 	}
 
 	public String getGroovyScriptFile() {
@@ -57,16 +42,6 @@ public class GroovyScriptActionExecutor implements PatchActionExecutor {
 
 	public void setGroovyScriptFile(String groovyScriptFile) {
 		this.groovyScriptFile = groovyScriptFile;
-	}
-	
-	
-
-	public String getConfigFileName() {
-		return configFileName;
-	}
-
-	public void setConfigFileName(String configFileName) {
-		this.configFileName = configFileName;
 	}
 
 	@Override
@@ -77,9 +52,8 @@ public class GroovyScriptActionExecutor implements PatchActionExecutor {
 				"GroovyScriptActionExecutor.execute.patch.exists.assert", new Object[] { patchNumber, toStatus });
 		final Binding sharedData = new Binding();
 		final GroovyShell shell = new GroovyShell(sharedData);
-		sharedData.setProperty("configDir", configDir);
+		sharedData.setProperty("targetSystemMapping",tsm);
 		sharedData.setProperty("patchNumber", patchNumber);
-		sharedData.setProperty("configFileName", configFileName);
 		sharedData.setProperty("toState", toStatus);
 		sharedData.setProperty("patchContainerBean", patchContainer);
 		ResourcePatternResolver rl = new PathMatchingResourcePatternResolver();
@@ -95,7 +69,7 @@ public class GroovyScriptActionExecutor implements PatchActionExecutor {
 			LOGGER.info("Result: " + (result == null ? " <Empty> " : result.toString()));
 		} catch (CompilationFailedException | IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("GroovyScriptActionExecutor.execute.exception",
-					new Object[] { e.getMessage(), patchNumber, toStatus, configDir, configFileName }, e);
+					new Object[] { e.getMessage(), patchNumber, toStatus}, e);
 		}
 	}
 

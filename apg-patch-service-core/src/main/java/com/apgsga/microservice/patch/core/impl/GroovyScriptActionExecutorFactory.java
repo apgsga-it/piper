@@ -1,24 +1,22 @@
 package com.apgsga.microservice.patch.core.impl;
 
+import com.apgsga.system.mapping.api.TargetSystemMapping;
+
 public class GroovyScriptActionExecutorFactory implements PatchActionExecutorFactory {
 	
-	private String configDir;
-	private String configFileName;
 	private String groovyScriptFile;
+	private TargetSystemMapping tsm;
 	
 
-	public GroovyScriptActionExecutorFactory(String configDir, String configFileName, String groovyScriptFile) {
+	public GroovyScriptActionExecutorFactory(TargetSystemMapping tsm, String groovyScriptFile) {
 		super();
-		this.configDir = configDir;
-		this.configFileName = configFileName;
+		this.tsm = tsm;
 		this.groovyScriptFile = groovyScriptFile;
 	}
 
-
-
 	@Override
 	public PatchActionExecutor create(SimplePatchContainerBean patchContainer) {
-		return new GroovyScriptActionExecutor(configDir, configFileName, groovyScriptFile, patchContainer); 
+		return new GroovyScriptActionExecutor(tsm, groovyScriptFile, patchContainer);
 	}
 
 }

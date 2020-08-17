@@ -2,6 +2,8 @@ package com.apgsga.microservice.patch.core.config;
 
 import java.io.IOException;
 
+import com.apgsga.system.mapping.api.TargetSystemMapping;
+import com.apgsga.system.mapping.impl.TargetSystemMappingImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,10 +58,6 @@ public class MicroServicePatchConfig {
 
 	@Value("${config.common.location:/etc/opt/apg-patch-common}")
 	private String configCommon;
-
-	//TODO JHE : replace targetSystemMapping here with the new implementation
-	@Value("${config.common.targetSystemFile:TargetSystemMappings.json}")
-	private String targetSystemFile;
 
 	@Value("${patch.action.script.location:classpath:groovyScript/executePatchAction.groovy}")
 	private String groovyScriptFile;
@@ -160,10 +158,15 @@ public class MicroServicePatchConfig {
 		return new LoggingMockVcsRunnerFactory();
 	}
 
+	@Bean(name = "targetSystemMapping")
+	public TargetSystemMapping targetSystemMapping() {
+		return new TargetSystemMappingImpl();
+	}
+
 	@Bean(name = "groovyActionFactory")
 	@Profile({ "groovyactions" })
 	public PatchActionExecutorFactory groovyPatchActionFactory() {
-		return new GroovyScriptActionExecutorFactory(configCommon, targetSystemFile, groovyScriptFile);
+		return new GroovyScriptActionExecutorFactory(targetSystemMapping(), groovyScriptFile);
 	}
 
 	@Bean(name = "taskExecutor")
