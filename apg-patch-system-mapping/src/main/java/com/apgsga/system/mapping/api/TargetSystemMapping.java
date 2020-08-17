@@ -1,5 +1,7 @@
 package com.apgsga.system.mapping.api;
 
+import java.util.List;
+
 public interface TargetSystemMapping {
 
     /**
@@ -31,5 +33,11 @@ public interface TargetSystemMapping {
      * @return : if the service will be installed on a Light instance
      */
     boolean isLightInstance(String target);
+
+    /**
+     *
+     * @return : list of valid states into which Piper can set a Patch to
+     */
+    List<String> validToStates();
 
 }

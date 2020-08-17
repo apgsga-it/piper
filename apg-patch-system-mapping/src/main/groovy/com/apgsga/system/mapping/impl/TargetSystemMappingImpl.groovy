@@ -91,4 +91,9 @@ class TargetSystemMappingImpl implements TargetSystemMapping {
     boolean isLightInstance(String target) {
         return tsmObject.isLightInstance(target)
     }
+
+    @Override
+    List<String> validToStates() {
+        return tsmObject.validToStates()
+    }
 }
