@@ -1,0 +1,21 @@
+plugins {
+    id 'groovy'
+    id 'application'
+}
+
+description = 'API and implementation for DB Integration'
+jar {
+    archivesBaseName = 'apg-patch-db-integration'
+}
+
+dependencies {
+    compile project(":apg-patch-system-mapping")
+    compile group: 'org.codehaus.groovy' , name: 'groovy-all'
+    compile group: 'org.springframework', name: 'spring-context'
+    compile group: 'commons-io', name: 'commons-io', version: '2.7'
+    compile group: 'org.springframework', name: 'spring-jdbc'
+    runtime group: 'oracle', name: 'ojdbc'
+    testCompile group: 'org.springframework', name: 'spring-test'
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    testCompile group: 'org.spockframework' ,name: 'spock-spring'
+}

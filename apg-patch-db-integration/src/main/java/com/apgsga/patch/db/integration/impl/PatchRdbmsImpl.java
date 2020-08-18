@@ -1,6 +1,6 @@
-package com.apgsga.microservice.patch.rdbms.impl;
+package com.apgsga.patch.db.integration.impl;
 
-import com.apgsga.microservice.patch.api.PatchRdbms;
+import com.apgsga.patch.db.integration.api.PatchRdbms;
 import com.apgsga.system.mapping.api.TargetSystemMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

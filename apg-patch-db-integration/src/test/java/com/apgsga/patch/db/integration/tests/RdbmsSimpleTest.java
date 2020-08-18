@@ -1,7 +1,6 @@
-package com.apgsga.microservice.patch.rdbms;
+package com.apgsga.patch.db.integration.tests;
 
-
-import com.apgsga.microservice.patch.rdbms.config.RdbmsConfig;
+import com.apgsga.patch.db.integration.config.RdbmsConfig;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +14,7 @@ import org.springframework.util.Assert;
 import java.util.List;
 import java.util.Map;
 
-@TestPropertySource(locations = "application-test.properties")
+@TestPropertySource(locations = "classpath:application-test.properties")
 @ContextConfiguration(classes = RdbmsConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class RdbmsSimpleTest {
@@ -29,7 +28,7 @@ public class RdbmsSimpleTest {
     //							rdbms.oracle.url
     //							rdbms.oracle.user.name
     //							rdbms.oracle.user.pwd
-    @Ignore
+//    @Ignore
     public void simpleOracleDbTest() {
         Assert.notNull(jt,"jt (JdbcTemplate) is null");
         List<Map<String, Object>> rows = jt.queryForList("SELECT * from cm.cm_patch_f where id > 7000");

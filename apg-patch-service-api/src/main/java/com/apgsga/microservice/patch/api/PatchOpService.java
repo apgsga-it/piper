@@ -1,5 +1,7 @@
 package com.apgsga.microservice.patch.api;
 
+import com.apgsga.patch.db.integration.api.PatchRdbms;
+
 public interface PatchOpService extends PatchRdbms {
 
 	/**

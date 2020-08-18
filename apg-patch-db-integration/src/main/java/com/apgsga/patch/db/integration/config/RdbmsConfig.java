@@ -1,4 +1,4 @@
-package com.apgsga.microservice.patch.rdbms.config;
+package com.apgsga.patch.db.integration.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

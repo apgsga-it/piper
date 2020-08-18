@@ -1,4 +1,4 @@
-package com.apgsga.microservice.patch.api;
+package com.apgsga.patch.db.integration.api;
 
 import java.util.List;
 
