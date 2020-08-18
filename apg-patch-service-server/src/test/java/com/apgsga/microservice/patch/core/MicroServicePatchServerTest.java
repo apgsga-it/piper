@@ -8,7 +8,9 @@ import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import com.apgsga.microservice.patch.core.impl.PatchActionExecutor;
 import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactory;
 import com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean;
 
+import java.util.List;
 import java.util.Map;
 
 @RunWith(SpringRunner.class)
@@ -230,6 +233,29 @@ public class MicroServicePatchServerTest {
 		Map<String,String> params = Maps.newHashMap();
 		String target = "chei212";
 		patchService.startInstallPipeline(target);
+	}
+
+	@Test
+	// JHE (17.08.2020) : Ignoring it since it requires DB pre-requisite to work
+	//					  Also the following properties have to be correctly defined into application-test.properties
+	//							rdbms.oracle.url
+	//							rdbms.oracle.user.name
+	//							rdbms.oracle.user.pwd
+	@Ignore
+	public void testExecuteStateTransitionActionInDb() {
+		patchService.executeStateTransitionActionInDb("7018","Entwicklung");
+	}
+
+	@Test
+	// JHE (17.08.2020) : Ignoring it since it requires DB pre-requisite to work
+	//					  Also the following properties have to be correctly defined into application-test.properties
+	//							rdbms.oracle.url
+	//							rdbms.oracle.user.name
+	//							rdbms.oracle.user.pwd
+	@Ignore
+	public void testPatchIdsForStatus() {
+		List<String> patchIds = patchService.patchIdsForStatus("0");
+		Assert.assertEquals(45,patchIds.size());
 	}
 
 }

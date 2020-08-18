@@ -10,7 +10,7 @@ import javax.annotation.PreDestroy
 import java.nio.file.Files
 import java.nio.file.Paths
 
-@Component
+@Component("targetSystemMapping")
 class TargetSystemMappingImpl implements TargetSystemMapping {
 
     @Value('${github.repo.url}')

@@ -141,6 +141,15 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 				ServicesMetaData.class);
 	}
 
+	@Override
+	void executeStateTransitionActionInDb(String patchNumber, String toStatus) {
+		restTemplate.postForLocation(getRestBaseUri() + "/executeStateTransitionActionInDb/{patchNumber}/{toStatus}", null, [patchNumber:patchNumber,toStatus:toStatus])
+	}
+
+	@Override
+	List<String> patchIdsForStatus(String statusCode) {
+		return restTemplate.getForObject(getRestBaseUri() + "/patchIdsForStatus/{status}", String[].class, [status:statusCode]);
+	}
 
 	@Override
 	public ServiceMetaData findServiceByName(String serviceName) {
@@ -156,7 +165,6 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 	public void init() throws IOException {
 		throw new UnsupportedOperationException("Init not supported by client");
 	}
-
 
 	class PatchServiceErrorHandler implements ResponseErrorHandler {
 

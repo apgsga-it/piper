@@ -1,6 +1,6 @@
 package com.apgsga.microservice.patch.api;
 
-public interface PatchOpService {
+public interface PatchOpService extends PatchRdbms {
 
 	/**
 	 * Execute a Action, which leads when successful to the toStatus

@@ -174,4 +174,18 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	public void startInstallPipeline(@RequestBody String target) {
 		patchService.startInstallPipeline(target);
 	}
+
+	@RequestMapping(value = "/executeStateTransitionActionInDb/{patchNumber}/{toStatus}", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public void executeStateTransitionActionInDb(@PathVariable("patchNumber") String patchNumber, @PathVariable("toStatus")String toStatus) {
+		patchService.executeStateTransitionActionInDb(patchNumber,toStatus);
+	}
+
+	@RequestMapping(value = "/patchIdsForStatus/{status}")
+	@ResponseBody
+	@Override
+	public List<String> patchIdsForStatus(@PathVariable("status") String statusCode) {
+		return patchService.patchIdsForStatus(statusCode);
+	}
 }
