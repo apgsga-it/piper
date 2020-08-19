@@ -31,22 +31,22 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@RequestMapping(value = "/findById/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	@Override
-	public Patch findById(@PathVariable("id") String patchNummer) {
-		return repo.findById(patchNummer);
+	public Patch findById(@PathVariable("id") String patchNumber) {
+		return repo.findById(patchNumber);
 	}
 	
 	@RequestMapping(value = "/findPatchLogById/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	@Override
-	public PatchLog findPatchLogById(@PathVariable("id") String patchNummer) {
-		return repo.findPatchLogById(patchNummer);
+	public PatchLog findPatchLogById(@PathVariable("id") String patchNumber) {
+		return repo.findPatchLogById(patchNumber);
 	}
 
 	@RequestMapping(value = "/patchExists/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	@Override
-	public Boolean patchExists(@PathVariable("id") String patchNummber) {
-		return repo.patchExists(patchNummber);
+	public Boolean patchExists(@PathVariable("id") String patchNumber) {
+		return repo.patchExists(patchNumber);
 
 	}
 
@@ -60,8 +60,8 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@RequestMapping(value = "/savePatchLog", method = RequestMethod.POST)
 	@ResponseBody
 	@Override
-	public void savePatchLog(@RequestBody Patch patch) {
-		repo.savePatchLog(patch);
+	public void savePatchLog(@RequestBody String patchNumber) {
+		repo.savePatchLog(patchNumber);
 	}
 
 	@RequestMapping(value = "/savePatch", method = RequestMethod.POST)

@@ -150,7 +150,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		Asserts.notNull(patch, "SimplePatchContainerBean.log.patch.null.assert", new Object[] {});
 		Asserts.notNullOrEmpty(patch.getPatchNummer(), "SimplePatchContainerBean.log.patchnumber.isnullorempty", new Object[] {});
 		Asserts.notNull(repo.findById(patch.getPatchNummer()), "SimplePatchContainerBean.log.patchisnull", new Object[] {patch.getPatchNummer()});
-		repo.savePatchLog(patch);
+		repo.savePatchLog(patch.getPatchNummer());
 	}
 
 	private void preProcessSave(Patch patch) {

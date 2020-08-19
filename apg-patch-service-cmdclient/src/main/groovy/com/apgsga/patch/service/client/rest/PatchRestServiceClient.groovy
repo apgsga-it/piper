@@ -58,8 +58,8 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 	}
 	
 	@Override
-	public PatchLog findPatchLogById(String patchNummer) {
-		return restTemplate.getForObject(getRestBaseUri() + "/findPatchLogById/{id}", PatchLog.class, [id:patchNummer]);
+	public PatchLog findPatchLogById(String patchNumber) {
+		return restTemplate.getForObject(getRestBaseUri() + "/findPatchLogById/{id}", PatchLog.class, [id:patchNumber]);
 	}
 
 
@@ -91,9 +91,9 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 	}
 	
 	@Override
-	public void savePatchLog(Patch patch) {
-		restTemplate.postForLocation(getRestBaseUri() + "/savePatchLog", patch)
-		println "Saved PatchLog for " + patch.toString()		
+	public void savePatchLog(String patchNumber) {
+		restTemplate.postForLocation(getRestBaseUri() + "/savePatchLog", patchNumber)
+		println "Saved PatchLog for " + patchNumber
 	}
 	
 	@Override

@@ -98,7 +98,7 @@ class PatchCli {
 			// TODO (CHE,13.9) Get rid of the component parameter, needs to be coordinated with current Patch System (PatchOMat)
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can only be aps ', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
-			log longOpt: 'log', args:1, argName: 'patchFile', 'Log a patch steps for a patch', required: false
+			log longOpt: 'log', args:1, argName: 'patchNumber', 'Log a patch steps for a patch', required: false
 			adp longOpt: 'assembleDeployPipeline', args:1, argName: 'target', "starts an assembleAndDeploy pipeline for the given target", required: false
 			lpac longOpt: 'listPatchAfterClone', args:1, argName: 'status', 'Get list of patches to be re-installed after a clone', required: false
 			dbsta longOpt: 'dbstateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to the database', required: false
@@ -154,9 +154,8 @@ class PatchCli {
 			}
 		}
 		if (options.log) {
-			def patchFile = new File(options.log)
-			if (!patchFile.exists() | !patchFile.file) {
-				println "Patch File ${options.log} not valid: either not a file or it doesn't exist"
+			if (options.logs.size() != 1) {
+				println "Logging activity requires a Patch number as Parameter"
 				error = true
 			}
 		}
@@ -234,10 +233,9 @@ class PatchCli {
 	}
 
 	static def logPatchActivity(def patchClient, def options) {
-		println "Logging patch activity for ${options.logs[0]}"
-		ObjectMapper mapper = new ObjectMapper()
-		def patchFile = mapper.readValue(new File("${options.logs[0]}"), Patch.class)
-		patchClient.savePatchLog(patchFile)
+		def patchNumber = options.logs[0]
+		println "Logging patch activity for patch number ${patchNumber}"
+		patchClient.savePatchLog(patchNumber)
 	}
 
 	static def assembleAndDeployPipeline(def patchClient, def options) {

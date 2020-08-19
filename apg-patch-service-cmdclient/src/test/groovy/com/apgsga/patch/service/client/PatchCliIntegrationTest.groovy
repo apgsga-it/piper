@@ -188,7 +188,7 @@ class PatchCliIntegrationTest extends Specification {
 			p.setLogText("started")
 			patchMapper.writeValue(patchFile, p)
 		when:
-			client.process(["-log", "src/test/resources/Patch5401.json"])
+			client.process(["-log", "5401"])
 		then:
 			preCondResult != null
 			preCondResult.returnCode == 0
