@@ -14,6 +14,7 @@ class PatchCli {
 		return patchCli
 	}
 
+	// TODO JHE (19.08.2020) : Still need aps and nil ???
 	def validComponents = [ "aps", "nil"]
 	def validate = true
 	def config
