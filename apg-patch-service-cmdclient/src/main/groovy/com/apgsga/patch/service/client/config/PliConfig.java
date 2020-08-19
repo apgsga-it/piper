@@ -20,7 +20,7 @@ public class PliConfig {
 	
 	@Configuration
     @Profile("default")
-	@PropertySource({ "${appPropertiesFile}","${opsPropertiesFile}" })
+	@PropertySource({ "${appPropertiesFile}"})
     static class DefaultCliConfig
     { }
 	
@@ -30,11 +30,7 @@ public class PliConfig {
 		Map<String, Object> properties = Maps.newHashMap();
 		properties.put("host.default", env.getProperty("host.default",""));
 		// TODO (che , jhe ) : probably not necessary anymore, but test case dependency
-		properties.put("config.dir", env.getProperty("config.dir",""));
 		properties.put("postclone.list.patch.filepath.template", env.getProperty("postclone.list.patch.filepath.template",""));
-		properties.put("db.url", env.getProperty("db.url",""));
-		properties.put("db.user", env.getProperty("db.user",""));
-		properties.put("db.passwd", env.getProperty("db.passwd",""));
 		Properties config = new Properties();
 		config.putAll(properties);
 		return sl.parse(config);

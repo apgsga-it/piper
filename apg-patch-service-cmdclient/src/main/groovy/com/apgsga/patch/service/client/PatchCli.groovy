@@ -6,7 +6,6 @@ import com.apgsga.patch.service.client.rest.PatchRestServiceClient
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.collect.Maps
 import groovy.json.JsonBuilder
-import groovy.sql.Sql
 import org.codehaus.groovy.runtime.StackTraceUtils
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
@@ -37,15 +36,8 @@ class PatchCli {
 			return cmdResults
 		}
 		try {
-			dbConnection = Sql.newInstance(config.db.url, config.db.user, config.db.passwd)
 			def patchClient = new PatchRestServiceClient(config)
-			if (options.e) {
-				def result = patchExists(patchClient,options)
-				cmdResults.results['e'] =  result
-			} else if (options.fs) {
-				def result = findById(patchClient,options)
-				cmdResults.results['f'] = result
-			} else if (options.sa) {
+			if (options.sa) {
 				def result = savePatch(patchClient,options)
 				cmdResults.results['sa']=  result
 			} else if (options.sta) {
@@ -102,8 +94,6 @@ class PatchCli {
 		cli.formatter.setWidth(100)
 		cli.with {
 			h longOpt: 'help', 'Show usage information', required: false
-			e longOpt: "exists", args:1, argName: 'patchNumber', 'True resp. false if Patch of the <patchNumber> exists or not', required: false
-			f longOpt: 'findById', args:2, valueSeparator: ",", argName: 'patchNumber,directory','Retrieve a Patch with the <patchNumber> to a <directory>', required: false
 			sa longOpt: 'save', args:1, argName: 'patchFile', 'Saves a <patchFile> to the server, which starts the Patch Pipeline', required: false
 			// TODO (CHE,13.9) Get rid of the component parameter, needs to be coordinated with current Patch System (PatchOMat)
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can only be aps ', required: false
@@ -131,23 +121,7 @@ class PatchCli {
 
 		if (!options | options.h| options.getOptions().size() == 0) {
 			cli.usage()
-			def validToStates = TargetSystemMappings.instance.get().keySet()
-			println "Valid toStates are: ${validToStates}"
-			println "Valid components are: ${validComponents}"
 			return null
-		}
-		if (options.fs) {
-			def patchNumber = options.fs[0]
-			if (!patchNumber.isInteger()) {
-				println "Patchnumber ${patchNumber} is not a Integer"
-				error = true
-			}
-			def dirName = options.fs[1]
-			def directory = new File(dirName)
-			if (!directory.exists() | !directory.directory) {
-				println "Directory ${dirName} not valid: either not a directory or it doesn't exist"
-				error = true
-			}
 		}
 		if (options.sa) {
 			def patchFile = new File(options.sa)
@@ -167,21 +141,9 @@ class PatchCli {
 				println "Patchnumber ${patchNumber} is not a Integer"
 				error = true
 			}
-			def toState = options.stas[1]
-			def validToStates = TargetSystemMappings.instance.get().keySet()
-			if (!validToStates.contains(toState) ) {
-				println "ToState ${toState} not valid: needs to be one of ${validToStates}"
-				error = true
-			}
 			def component = options.stas[2]
 			if (component != null && !validComponents.contains(component.toLowerCase()) ) {
 				println "Component ${component} not valid: needs to be one of ${validComponents}"
-				error = true
-			}
-		}
-		if (options.e) {
-			if (!options.e.isInteger()) {
-				println "Patchnumber ${options.e} is not a Integer"
 				error = true
 			}
 		}
@@ -227,14 +189,6 @@ class PatchCli {
 				println "Patchnumber ${patchNumber} is not a Integer"
 				error = true
 			}
-			def toState = options.dbstas[1]
-			// TODO JHE (18.08.2020) : verify if we can easily have access to the TargetSystemMapping as Spring component.
-			//						 : otherwise, remove this part and make required verifications on server side, when the logic will be moved
-//			def validToStates = TargetSystemMappings.instance.get().keySet()
-//			if (!validToStates.contains(toState) ) {
-//				println "ToState ${toState} not valid: needs to be one of ${validToStates}"
-//				error = true
-//			}
 		}
 
 		if(options.cpf) {
@@ -256,7 +210,6 @@ class PatchCli {
 		cmdResult
 	}
 
-
 	static def stateChangeAction(def patchClient, def options) {
 		def cmdResult = new Expando()
 		def patchNumber = options.stas[0]
@@ -273,46 +226,11 @@ class PatchCli {
 		return cmdResult
 	}
 
-	static def findById(def patchClient, def options) {
-		def patchNumber = options.fs[0]
-		def dirName = options.fs[1]
-		return doFindById(patchClient,patchNumber,dirName)
-	}
-
-	private static def doFindById(def patchClient, def patchNumber, def dirName) {
-		def cmdResult = new Expando()
-		def found = retrieveAndWritePatch(patchClient, patchNumber, dirName )
-		cmdResult.patchNumber = patchNumber
-		cmdResult.dirName = dirName
-		cmdResult.exists = found
-		return cmdResult
-	}
-
-	static def patchExists(def patchClient, def options) {
-		def exists = patchClient.patchExists(options.e)
-		println "Patch ${options.e} exists is: ${exists} "
-		def cmdResult = new Expando()
-		cmdResult.exists = exists
-		return cmdResult
-	}
-
 	static def savePatch(def patchClient, def options) {
 		patchClient.save(new File(options.sa), Patch.class)
 		def cmdResult = new Expando()
 		cmdResult.patchFile = options.sa
 		return cmdResult
-	}
-
-	static def retrieveAndWritePatch(def patchClient, def id, def file) {
-		println "Writting: ${id} to ${file}"
-		def patchData = patchClient.findById(id)
-		if (patchData == null) {
-			return false
-		}
-		ObjectMapper mapper = new ObjectMapper()
-		mapper.writeValue(new File(file,"Patch" + id + ".json"), patchData)
-		println "Writting: ${id} to ${file} done."
-		return true
 	}
 
 	static def logPatchActivity(def patchClient, def options) {

@@ -51,7 +51,7 @@ dependencies {
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
 	runtime group: 'commons-cli' , name: 'commons-cli'
-	runtime group: 'oracle', name: 'ojdbc'
+	testRuntime group: 'oracle', name: 'ojdbc'
 	testCompile project(':apg-patch-service-server')
 	testCompile group: 'org.springframework', name: 'spring-test'
 	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'	

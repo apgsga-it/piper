@@ -67,34 +67,14 @@ class PatchCliIntegrationTest extends Specification {
 		result.results.size() == 0
 	}
 
-	def "Patch Cli queries existance of not existing Patch and returns false"() {
-		setup:
-		def client = PatchCli.create()
-		when:
-		def result = client.process(["-e", "9999"])
-		then:
-		result != null
-		result.returnCode == 0
-		result.results['e'].exists == false
-	}
-
 	def "Patch Cli saves with -sa Patch File to server and queries before and after existence"() {
 		setup:
 		def client = PatchCli.create()
 		when:
-		def preCondResult = client.process(["-e", "5401"])
 		def result = client.process(["-sa", "src/test/resources/Patch5401.json"])
-		def postCondResult = client.process(["-e", "5401"])
-
 		then:
-		preCondResult != null
-		preCondResult.returnCode == 0
-		preCondResult.results['e'].exists == false
 		result != null
 		result.returnCode == 0
-		postCondResult != null
-		postCondResult.returnCode == 0
-		postCondResult.results['e'].exists == true
 		def dbFile = new File("${dbLocation}/Patch5401.json")
 		def sourceFile = new File("src/test/resources/Patch5401.json")
 		ObjectMapper mapper = new ObjectMapper()
@@ -107,20 +87,12 @@ class PatchCliIntegrationTest extends Specification {
 		setup:
 		def client = PatchCli.create()
 		when:
-		def preCondResult1 = client.process(["-e", "5401"])
 		def preCondResult2 = client.process(["-sa", "src/test/resources/Patch5401.json"])
-		def preCondResult3 = client.process(["-e", "5401"])
 		def result = client.process(["-redo", "5401"])
 
 		then:
-		preCondResult1 != null
-		preCondResult1.returnCode == 0
-		preCondResult1.results['e'].exists == false
 		preCondResult2 != null
 		preCondResult2.returnCode == 0
-		preCondResult3 != null
-		preCondResult3.returnCode == 0
-		preCondResult3.results['e'].exists == true
 		result != null
 		result.returnCode == 0
 		def dbFile = new File("${dbLocation}/Patch5401.json")
@@ -131,37 +103,17 @@ class PatchCliIntegrationTest extends Specification {
 		repo.clean()
 	}
 
-	def "Patch Cli return found = false on findById of non existing Patch"() {
-		setup:
-		def client = PatchCli.create()
-		when:
-		def preCondResult = client.process(["-e", "5401"])
-		def result = client.process(["-f", "5401,build"])
-
-		then:
-		preCondResult != null
-		preCondResult.returnCode == 0
-		preCondResult.results['e'].exists == false
-		result != null
-		result.returnCode == 0
-		result.results['f'].exists == false
-	}
-
 	def "Patch Cli removes Patch, which been copied before"() {
 		setup:
 		def client = PatchCli.create()
 		when:
 		def preCondResult = client.process(["-s", "src/test/resources/Patch5401.json"])
 		def result = client.process(["-r", "5401"])
-		def postCondResult = client.process(["-e", "5401"])
 		then:
 		preCondResult != null
 		preCondResult.returnCode == 0
 		result != null
 		result.returnCode == 0
-		postCondResult != null
-		postCondResult.returnCode == 0
-		postCondResult.results['e'].exists == false
 		cleanup:
 		repo.clean()
 	}
@@ -173,7 +125,8 @@ class PatchCliIntegrationTest extends Specification {
 		def result = client.process(["-sta", "9999,XXXXXX,aps"])
 		then:
 		result != null
-		result.returnCode == 0
+		// TODO JHE (19.08.2020): Before my change we were checking if returnCode was 0 ... but actually, if there is an error, we shouldn receive a 1, isn't it ???
+		result.returnCode == 1
 	}
 
     // TODO (jhe, che) : This test needs the TargetSystemMapping File on Server

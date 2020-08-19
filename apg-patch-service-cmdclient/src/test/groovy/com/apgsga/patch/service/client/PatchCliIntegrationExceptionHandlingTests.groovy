@@ -31,19 +31,6 @@ class PatchCliIntegrationExceptionHandlingTests extends Specification {
 		System.properties['opsPropertiesFile'] = 'classpath:config/ops-test.properties'
 	}
 
-	def "Patch Cli should print Server Exception and return returnCode > 0 for invalid findById"() {
-		setup:
-		def client = PatchCli.create()
-		client.validate = false
-		when:
-		def result = client.process(["-f", " ,build"])
-		then:
-		result != null
-		result.returnCode >  0
-		result.results.containsKey('error') == true
-		result.results['error'].errorKey == "FilebasedPatchPersistence.findById.patchnumber.notnullorempty.assert"
-	}
-	
 	def "Patch Cli should be ok with returnCode == 0 for nonexisting findById"() {
 		setup:
 		def client = PatchCli.create()
