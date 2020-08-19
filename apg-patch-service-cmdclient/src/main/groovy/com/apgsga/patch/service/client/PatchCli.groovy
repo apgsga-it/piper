@@ -81,7 +81,7 @@ class PatchCli {
 	}
 
 	def validateOpts(args) {
-		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-[l|d|dd|dm] <directory>]  [-[e|r] <patchnumber>] [-[s|sa|ud|um] <file>] [-f <patchnumber,directory>] [-sta <patchnumber,toState,[aps]]')
+		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-i <target>] [-cpf <statusCode,destFolder>] [-dbsta <patchNumber,toState>] [-adp <target>] [-log <patchNumber>] [-cm] [-sa <patchFile>] [-sta <patchnumber,toState,[aps]]')
 		cli.formatter.setDescPadding(0)
 		cli.formatter.setLeftPadding(0)
 		cli.formatter.setWidth(100)

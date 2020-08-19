@@ -67,15 +67,6 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 		return restTemplate.getForObject(getRestBaseUri() + "/patchExists/{id}", Boolean.class, [id:patchNumber]);
 	}
 
-
-	public void savePatch(File patchFile, Class<Patch> clx) {
-		println "File ${patchFile} to be uploaded"
-		ObjectMapper mapper = new ObjectMapper();
-		def patchData = mapper.readValue(patchFile, clx)
-		savePatch(patchData)
-	}
-
-
 	public void save(File patchFile, Class<Patch> clx) {
 		println "File ${patchFile} to be uploaded"
 		ObjectMapper mapper = new ObjectMapper();
