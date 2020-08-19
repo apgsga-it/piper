@@ -29,8 +29,6 @@ public class PliConfig {
 		ConfigSlurper sl = new ConfigSlurper();
 		Map<String, Object> properties = Maps.newHashMap();
 		properties.put("host.default", env.getProperty("host.default",""));
-		// TODO (che , jhe ) : probably not necessary anymore, but test case dependency
-		properties.put("postclone.list.patch.filepath.template", env.getProperty("postclone.list.patch.filepath.template",""));
 		Properties config = new Properties();
 		config.putAll(properties);
 		return sl.parse(config);

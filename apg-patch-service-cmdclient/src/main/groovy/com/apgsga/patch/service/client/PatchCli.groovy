@@ -3,9 +3,7 @@ package com.apgsga.patch.service.client
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.patch.service.client.config.PliConfig
 import com.apgsga.patch.service.client.rest.PatchRestServiceClient
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.collect.Maps
-import groovy.json.JsonBuilder
 import org.codehaus.groovy.runtime.StackTraceUtils
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
@@ -19,7 +17,6 @@ class PatchCli {
 	def validComponents = [ "aps", "nil"]
 	def validate = true
 	def config
-	def dbConnection
 
 	private PatchCli() {
 	}
@@ -55,10 +52,6 @@ class PatchCli {
 			} else if (options.i) {
 				def result = installPipeline(patchClient, options)
 				cmdResults.results['i'] = result
-			} else if(options.lpac) {
-				def status = options.lpacs[0]
-				def filePath = "${config.postclone.list.patch.filepath.template}${status}.json"
-				cmdResults.result = listPatchAfterClone(status,filePath)
 			} else if (options.dbsta) {
 				def patchNumber = options.dbstas[0]
 				def toState = options.dbstas[1]
@@ -100,7 +93,6 @@ class PatchCli {
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
 			log longOpt: 'log', args:1, argName: 'patchNumber', 'Log a patch steps for a patch', required: false
 			adp longOpt: 'assembleDeployPipeline', args:1, argName: 'target', "starts an assembleAndDeploy pipeline for the given target", required: false
-			lpac longOpt: 'listPatchAfterClone', args:1, argName: 'status', 'Get list of patches to be re-installed after a clone', required: false
 			dbsta longOpt: 'dbstateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to the database', required: false
 			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "statusCode,destFolder", 'Copy patch files for a given status into the destfolder', required: false
 			i longOpt: 'install', args:1, argName: 'target', "starts an install pipeline for the given target", required: false
@@ -171,13 +163,6 @@ class PatchCli {
 				error = true
 			}
 		}
-		if(options.lpac) {
-			if(options.lpacs.size() != 1) {
-				println("Target status is required when fetching list of patch to be re-installed.")
-				error = true
-			}
-		}
-
 		if (options.dbsta) {
 			if (options.dbstas.size() != 2 ) {
 				println "Option sta needs 2 arguments: <patchNumber,toState>>"
@@ -248,36 +233,6 @@ class PatchCli {
 		def target = options.is[0]
 		println "Starting install pipeline for ${target}"
 		patchClient.startInstallPipeline(target)
-	}
-
-	def listPatchAfterClone(def status, def filePath) {
-		String sql = "SELECT id FROM cm_patch_install_sequence_f WHERE ${status}=1 AND (produktion = 0 OR chronology > trunc(SYSDATE))"
-		def patchNumbers = []
-		try {
-			dbConnection.eachRow(sql) { row ->
-				def rowId = row.ID
-				patchNumbers.add(rowId)
-			}
-
-		}
-		catch(Exception ex) {
-			// TODO JHE(11.04.2019): because the caller will read the stdout in order to determine if all went well ... we can't write the error message. But we need to find a way to log the exception.
-			println ex.getMessage()
-			println ex.getStackTrace()
-			println false
-			return
-		}
-
-		// TODO (jhe, che, 19.9) have filePath passed as parameter and not preconfigured
-		// TODO Or write it stdout , but without any other println
-		def listPatchFile = new File(filePath)
-
-		if(listPatchFile.exists()) {
-			listPatchFile.delete()
-		}
-
-		listPatchFile.write(new JsonBuilder(patchlist:patchNumbers).toPrettyString())
-		println true
 	}
 
 	// TODO JHE (18.08.2020): do we still want to return anything now that things will be done server-side?

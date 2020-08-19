@@ -4,7 +4,6 @@ import com.apgsga.microservice.patch.api.*
 import com.apgsga.patch.service.client.PatchCliExceptionHandler
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.collect.Lists
-import com.google.common.collect.Maps
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
