@@ -258,4 +258,26 @@ public class MicroServicePatchServerTest {
 		Assert.assertEquals(45,patchIds.size());
 	}
 
+	@Test
+	// JHE (19.08.2020) : Ignoring it since it requires DB pre-requisite to work
+	//					  Also the following properties have to be correctly defined into application-test.properties
+	//							rdbms.oracle.url
+	//							rdbms.oracle.user.name
+	//							rdbms.oracle.user.pwd
+	@Ignore
+	public void testCopyPatchFile() {
+		Patch p1 = new Patch();
+		p1.setPatchNummer("6201");
+		Patch p2 = new Patch();
+		p2.setPatchNummer("6202");
+		patchService.save(p1);
+		patchService.save(p2);
+		String destFolder = System.getProperty("java.io.tmpdir");
+		Map params = Maps.newHashMap();
+		params.put("status", "Anwendertest");
+		params.put("destFolder", destFolder);
+		patchService.copyPatchFiles(params);
+
+	}
+
 }

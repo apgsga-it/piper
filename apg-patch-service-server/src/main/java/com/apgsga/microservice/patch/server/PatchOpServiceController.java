@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Scope(org.springframework.web.context.WebApplicationContext.SCOPE_SESSION)
@@ -173,6 +174,13 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@Override
 	public void startInstallPipeline(@RequestBody String target) {
 		patchService.startInstallPipeline(target);
+	}
+
+	@RequestMapping(value = "/copyPatchFiles", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public void copyPatchFiles(@RequestBody Map<String,String> params) {
+		patchService.copyPatchFiles(params);
 	}
 
 	@RequestMapping(value = "/executeStateTransitionActionInDb/{patchNumber}/{toStatus}", method = RequestMethod.POST)

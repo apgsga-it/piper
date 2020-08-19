@@ -2,6 +2,8 @@ package com.apgsga.microservice.patch.api;
 
 import com.apgsga.patch.db.integration.api.PatchRdbms;
 
+import java.util.Map;
+
 public interface PatchOpService extends PatchRdbms {
 
 	/**
@@ -38,4 +40,10 @@ public interface PatchOpService extends PatchRdbms {
 	 * @param target target for which will assemble and deploy (chei211,chti211,etc...)
 	 */
 	void startInstallPipeline(String target);
+
+	/**
+	 * Copies JSON Patch files to a destination folder
+	 * @param params : 2 parameters required with following keys: "status" and "destFolder"
+	 */
+	void copyPatchFiles(Map<String,String> params);
 }

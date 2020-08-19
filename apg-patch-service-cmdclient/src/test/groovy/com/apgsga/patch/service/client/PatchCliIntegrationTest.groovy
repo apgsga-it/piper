@@ -291,46 +291,31 @@ class PatchCliIntegrationTest extends Specification {
 		outputFile.delete()
 	}
 
-	// TODO (jhe, 8.4) The user does'nt exist
-	// TODO (jhe, che, 8.8.20) : fix this or remove test, until skip test
-	@Requires({PatchCliIntegrationTest.patchExists("5799")})
+	// JHE (18.08.2020): Ignoring the test as it requires pre-requisite in DB. However, keeping it for future sanity checks
 	@Ignore
 	def "Patch DB Cli  update status of Patch"() {
 		when:
-		def db = dbConnection("cm", "cm_pass")
-		b.execute('update cm_patch_t set status = 1 where id = :id',["id":5799])
-		def patchcli = PatchCli.create()
-		def savedOut = System.out
-		def buffer = new ByteArrayOutputStream()
-		System.setOut(new PrintStream(buffer))
-		def result = patchcli.process(["-dbsta", "5799,EntwicklungInstallationsbereit"])
-		System.setOut(savedOut)
+			def patchcli = PatchCli.create()
+			def result = patchcli.process(["-dbsta", "7018,Entwicklung"])
 		then:
-		result != null
-		result.returnCode == 0
-		result.dbResult == false
-		buffer.toString().trim() == "true"
-
+			println result
 	}
 
-	// JHE: Ignoring this one because not guaranteed that Patches still exist
-	// TODO (jhe, che, 8.8.20) Either remove the test or fix
+	// JHE (19.08.2020) : Ignoring this one because not guaranteed that Patches still exist
 	@Ignore
 	@Requires({PatchCliIntegrationTest.dbAvailable()})
 	def "Patch DB Cli correctly copies Patch JSON Files"() {
 		String destFolderPath = "src/test/resources/destFolderForPatch"
 		when:
-		new File(destFolderPath).mkdirs()
-		def patchcli = PatchCli.create()
-		patchcli.process(["-sa", "src/test/resources/Patch6910.json"])
-		patchcli.process(["-sa", "src/test/resources/Patch6983.json"])
-		patchcli.process(["-sa", "src/test/resources/Patch7035.json"])
-		patchcli.process(["-sa", "src/test/resources/Patch7046.json"])
-		def result = patchcli.process(["-cpf","Informatiktest,${destFolderPath}"])
+			new File(destFolderPath).mkdirs()
+			def patchcli = PatchCli.create()
+			patchcli.process(["-sa", "src/test/resources/Patch6201.json"])
+			patchcli.process(["-sa", "src/test/resources/Patch6202.json"])
+			def result = patchcli.process(["-cpf","Anwendertest,${System.getProperty('java.io.tmpdir')}"])
 		then:
-		println result
+			println result
 		cleanup:
-		new File(destFolderPath).deleteDir()
+			new File(destFolderPath).deleteDir()
 
 	}
 

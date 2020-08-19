@@ -3,8 +3,8 @@ package com.apgsga.patch.service.client
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.patch.service.client.config.PliConfig
 import com.apgsga.patch.service.client.rest.PatchRestServiceClient
-import com.apgsga.patch.service.client.utils.TargetSystemMappings
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.common.collect.Maps
 import groovy.json.JsonBuilder
 import groovy.sql.Sql
 import org.codehaus.groovy.runtime.StackTraceUtils
@@ -70,7 +70,7 @@ class PatchCli {
 			} else if (options.dbsta) {
 				def patchNumber = options.dbstas[0]
 				def toState = options.dbstas[1]
-				cmdResults.dbResult = executeStateTransitionActionInDb(patchNumber,toState)
+				executeStateTransitionActionInDb(patchClient,patchNumber,toState)
 			} else if (options.cpf) {
 				def status = options.cpfs[0]
 				def destFolder = options.cpfs[1]
@@ -228,11 +228,13 @@ class PatchCli {
 				error = true
 			}
 			def toState = options.dbstas[1]
-			def validToStates = TargetSystemMappings.instance.get().keySet()
-			if (!validToStates.contains(toState) ) {
-				println "ToState ${toState} not valid: needs to be one of ${validToStates}"
-				error = true
-			}
+			// TODO JHE (18.08.2020) : verify if we can easily have access to the TargetSystemMapping as Spring component.
+			//						 : otherwise, remove this part and make required verifications on server side, when the logic will be moved
+//			def validToStates = TargetSystemMappings.instance.get().keySet()
+//			if (!validToStates.contains(toState) ) {
+//				println "ToState ${toState} not valid: needs to be one of ${validToStates}"
+//				error = true
+//			}
 		}
 
 		if(options.cpf) {
@@ -362,27 +364,15 @@ class PatchCli {
 		println true
 	}
 
-	def executeStateTransitionActionInDb(def patchNumber, def toStatus) {
-		def statusNum = TargetSystemMappings.instance.findStatus(toStatus) as Long
-		def id = patchNumber as Long
-		def sql = 'update cm_patch_f set status = :statusNum where id = :id'
-		def result = dbConnection.execute(sql,['statusNum':statusNum,'id':id])
-		println result == false
-		result
+	// TODO JHE (18.08.2020): do we still want to return anything now that things will be done server-side?
+	def executeStateTransitionActionInDb(PatchRestServiceClient patchClient, def patchNumber, def toStatus) {
+		patchClient.executeStateTransitionActionInDb(patchNumber,toStatus)
 	}
 
-	def copyPatchFile(PatchRestServiceClient patchClient, def statusCode, def destFolder) throws Exception {
-		// TODO JHE: query needs to be double-check with UGE
-		// TODO status could for example be : Informatiktestlieferung
-		String sql = "SELECT id FROM cm_patch_f p INNER JOIN cm_patch_status_f s ON p.status = s.pat_status WHERE s.pat_status = ${statusCode}"
-		try {
-			dbConnection.eachRow(sql) { row ->
-				doFindById(patchClient,String.valueOf(row.ID),"${destFolder}")
-			}
-		}catch (Exception ex) {
-			// TODO JHE: could do better here ...
-			println ex.getMessage()
-			throw new RuntimeException("Unable to get list of patches to be copied. Exception was ${ex.getMessage()}")
-		}
+	def copyPatchFile(PatchRestServiceClient patchClient, def status, def destFolder) throws Exception {
+		Map params = Maps.newHashMap()
+		params.put("status",status)
+		params.put("destFolder",destFolder)
+		patchClient.copyPatchFiles(params)
 	}
 }

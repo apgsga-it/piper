@@ -10,7 +10,9 @@ import com.apgsga.microservice.patch.core.impl.vcs.VcsCommandRunner;
 import com.apgsga.microservice.patch.core.impl.vcs.VcsCommandRunnerFactory;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.apgsga.patch.db.integration.api.PatchRdbms;
 import com.apgsga.system.mapping.api.TargetSystemMapping;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FilenameUtils;
@@ -25,9 +27,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component("ServerBean")
@@ -369,6 +373,24 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		// Filter out "PatchLog" files, and extract Id from patch name
 		List<String> patchFilesReduced = patchFiles.stream().filter(pat -> !pat.contains("PatchLog")).map(pat -> pat.substring(pat.indexOf("Patch")+"Patch".length(),pat.indexOf(".json"))).collect(Collectors.toList());
 		return patchFilesReduced.stream().filter(p -> containsObject(p,objectName)).map(this::findById).collect(Collectors.toList());
+	}
+
+	@Override
+	public void copyPatchFiles(Map<String,String> params) {
+		int statusCode = targetSystemMapping.findStatus(params.get("status"));
+		List<String> patchIds = patchRdbms.patchIdsForStatus(String.valueOf(statusCode));
+		List<Patch> patchesToCopy = findByIds(patchIds);
+		ObjectMapper mapper = new ObjectMapper();
+		patchesToCopy.forEach(p -> {
+			File destFile = new File(params.get("destFolder") + "/Patch" + p.getPatchNummer() + ".json");
+			try {
+				mapper.writeValue(destFile,p);
+			} catch (IOException e) {
+				throw ExceptionFactory.createPatchServiceRuntimeException(
+						"SimplePatchContainerBean.copyPatchFile.exception",
+						new Object[] { e.getMessage(), destFile }, e);
+			}
+		});
 	}
 
 	@Override
