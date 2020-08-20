@@ -5,8 +5,8 @@ include ':apg-patch-service-server'
 include ':apg-patch-service-core'
 include ':apg-patch-service-cmdclient'
 include ':apg-patch-artifact-querymanager'
-include 'apg-patch-system-mapping'
-include 'apg-patch-db-integration'
+include ':apg-patch-system-mapping'
+include ':apg-patch-db-integration'
 
 project(':apg-patch-service-client').projectDir = "$rootDir/apg-patch-service-client" as File
 project(':apg-patch-service-api').projectDir = "$rootDir/apg-patch-service-api" as File
