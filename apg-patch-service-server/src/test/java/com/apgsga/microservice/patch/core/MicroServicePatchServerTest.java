@@ -243,7 +243,7 @@ public class MicroServicePatchServerTest {
 	//							rdbms.oracle.user.pwd
 	@Ignore
 	public void testExecuteStateTransitionActionInDb() {
-		patchService.executeStateTransitionActionInDb("7018","Entwicklung");
+		patchService.executeStateTransitionActionInDb("7018",0L);
 	}
 
 	@Test

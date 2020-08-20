@@ -183,11 +183,11 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		patchService.copyPatchFiles(params);
 	}
 
-	@RequestMapping(value = "/executeStateTransitionActionInDb/{patchNumber}/{toStatus}", method = RequestMethod.POST)
+	@RequestMapping(value = "/executeStateTransitionActionInDb/{patchNumber}/{statusNum}", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	@Override
-	public void executeStateTransitionActionInDb(@PathVariable("patchNumber") String patchNumber, @PathVariable("toStatus")String toStatus) {
-		patchService.executeStateTransitionActionInDb(patchNumber,toStatus);
+	public void executeStateTransitionActionInDb(@PathVariable("patchNumber") String patchNumber, @PathVariable("statusNum")Long statusNum) {
+		patchService.executeStateTransitionActionInDb(patchNumber,statusNum);
 	}
 
 	@RequestMapping(value = "/patchIdsForStatus/{status}")

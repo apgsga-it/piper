@@ -219,8 +219,9 @@ class PatchCliIntegrationTest extends Specification {
 	def "Patch DB Cli  update status of Patch"() {
 		when:
 			def patchcli = PatchCli.create()
-			def result = patchcli.process(["-dbsta", "7018,Entwicklung"])
+			def result = patchcli.process(["-dbsta", "7018,0"])
 		then:
+			result.returnCode == 0
 			println result
 	}
 

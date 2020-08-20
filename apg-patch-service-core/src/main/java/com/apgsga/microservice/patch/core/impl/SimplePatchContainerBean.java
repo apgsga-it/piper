@@ -418,8 +418,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public void executeStateTransitionActionInDb(String patchNumber, String toStatus) {
-		patchRdbms.executeStateTransitionActionInDb(patchNumber,toStatus);
+	public void executeStateTransitionActionInDb(String patchNumber, Long statusNum) {
+		patchRdbms.executeStateTransitionActionInDb(patchNumber,statusNum);
 	}
 
 	@Override

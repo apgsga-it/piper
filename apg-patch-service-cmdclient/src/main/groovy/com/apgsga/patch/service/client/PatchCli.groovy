@@ -55,8 +55,8 @@ class PatchCli {
 				cmdResults.results['i'] = result
 			} else if (options.dbsta) {
 				def patchNumber = options.dbstas[0]
-				def toState = options.dbstas[1]
-				executeStateTransitionActionInDb(patchClient,patchNumber,toState)
+				def statusNum = Long.valueOf(options.dbstas[1])
+				executeStateTransitionActionInDb(patchClient,patchNumber,statusNum)
 			} else if (options.cpf) {
 				def status = options.cpfs[0]
 				def destFolder = options.cpfs[1]
@@ -237,8 +237,8 @@ class PatchCli {
 	}
 
 	// TODO JHE (18.08.2020): do we still want to return anything now that things will be done server-side?
-	def executeStateTransitionActionInDb(PatchRestServiceClient patchClient, def patchNumber, def toStatus) {
-		patchClient.executeStateTransitionActionInDb(patchNumber,toStatus)
+	def executeStateTransitionActionInDb(PatchRestServiceClient patchClient, def patchNumber, def statusNum) {
+		patchClient.executeStateTransitionActionInDb(patchNumber,statusNum)
 	}
 
 	def copyPatchFile(PatchRestServiceClient patchClient, def status, def destFolder) throws Exception {

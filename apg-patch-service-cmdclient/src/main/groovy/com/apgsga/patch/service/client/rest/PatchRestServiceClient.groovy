@@ -138,8 +138,8 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 	}
 
 	@Override
-	void executeStateTransitionActionInDb(String patchNumber, String toStatus) {
-		restTemplate.postForLocation(getRestBaseUri() + "/executeStateTransitionActionInDb/{patchNumber}/{toStatus}", null, [patchNumber:patchNumber,toStatus:toStatus])
+	void executeStateTransitionActionInDb(String patchNumber, Long statusNum) {
+		restTemplate.postForLocation(getRestBaseUri() + "/executeStateTransitionActionInDb/{patchNumber}/{statusNum}", null, [patchNumber:patchNumber,statusNum:statusNum])
 	}
 
 	@Override

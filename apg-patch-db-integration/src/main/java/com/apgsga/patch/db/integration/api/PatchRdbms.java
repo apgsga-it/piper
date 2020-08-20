@@ -4,13 +4,16 @@ import java.util.List;
 
 public interface PatchRdbms {
 
+    /*
+    remove TargetSystemMapping dependency, and pass the parameter directly as they should be
+     */
+
     /**
      * Update a Patch with the status passed as parameter
      * @param patchNumber
-     * @param toStatus
+     * @param statusNum
      */
-    // TODO JHE (18.08.2020) : De we want to wait and return a boolean as confirmation the request has been successfuly exeucted ??
-    void executeStateTransitionActionInDb(String patchNumber, String toStatus);
+    void executeStateTransitionActionInDb(String patchNumber, Long statusNum);
 
     /**
      *
