@@ -1,9 +1,21 @@
 package com.apgsga.microservice.patch.core.config;
 
-import java.io.IOException;
-
+import com.apgsga.artifact.query.ArtifactDependencyResolver;
+import com.apgsga.artifact.query.ArtifactManager;
+import com.apgsga.artifact.query.RepositorySystemFactory;
+import com.apgsga.microservice.patch.api.PatchPersistence;
+import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactory;
+import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactoryImpl;
+import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
+import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClientImpl;
+import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsMockClient;
+import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
+import com.apgsga.microservice.patch.core.impl.vcs.JschSessionCmdRunnerFactory;
+import com.apgsga.microservice.patch.core.impl.vcs.LoggingMockVcsRunnerFactory;
+import com.apgsga.microservice.patch.core.impl.vcs.ProcessBuilderCmdRunnerFactory;
+import com.apgsga.microservice.patch.core.impl.vcs.VcsCommandRunnerFactory;
 import com.apgsga.system.mapping.api.TargetSystemMapping;
-import com.apgsga.system.mapping.impl.TargetSystemMappingImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,20 +26,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import com.apgsga.artifact.query.ArtifactDependencyResolver;
-import com.apgsga.artifact.query.ArtifactManager;
-import com.apgsga.artifact.query.RepositorySystemFactory;
-import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactoryImpl;
-import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactory;
-import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
-import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClientImpl;
-import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsMockClient;
-import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
-import com.apgsga.microservice.patch.core.impl.vcs.JschSessionCmdRunnerFactory;
-import com.apgsga.microservice.patch.core.impl.vcs.LoggingMockVcsRunnerFactory;
-import com.apgsga.microservice.patch.core.impl.vcs.ProcessBuilderCmdRunnerFactory;
-import com.apgsga.microservice.patch.core.impl.vcs.VcsCommandRunnerFactory;
+import java.io.IOException;
 
 @Configuration
 public class MicroServicePatchConfig {
@@ -79,6 +78,9 @@ public class MicroServicePatchConfig {
 
 	@Value("${mavenrepo.user.decryptpwd.key:}")
 	private String mavenRepoUserDecryptKey;
+
+	@Autowired
+	TargetSystemMapping targetSystemMapping;
 
 	@Bean(name = "patchPersistence")
 	public PatchPersistence patchFilebasePersistence() throws IOException {
@@ -155,15 +157,10 @@ public class MicroServicePatchConfig {
 		return new LoggingMockVcsRunnerFactory();
 	}
 
-	@Bean(name = "targetSystemMapping")
-	public TargetSystemMapping targetSystemMapping() {
-		return new TargetSystemMappingImpl();
-	}
-
 	@Bean(name = "groovyActionFactory")
 	@Profile({ "groovyactions" })
 	public PatchActionExecutorFactory groovyPatchActionFactory() {
-		return new PatchActionExecutorFactoryImpl(targetSystemMapping());
+		return new PatchActionExecutorFactoryImpl(targetSystemMapping);
 	}
 
 	@Bean(name = "taskExecutor")
