@@ -4,10 +4,6 @@ import java.util.List;
 
 public interface PatchRdbms {
 
-    /*
-    remove TargetSystemMapping dependency, and pass the parameter directly as they should be
-     */
-
     /**
      * Update a Patch with the status passed as parameter
      * @param patchNumber
