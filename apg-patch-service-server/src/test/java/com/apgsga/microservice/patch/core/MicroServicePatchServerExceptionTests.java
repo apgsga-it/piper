@@ -23,7 +23,7 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
-import com.apgsga.microservice.patch.core.impl.GroovyScriptActionExecutor;
+import com.apgsga.microservice.patch.core.impl.PatchActionExecutorImpl;
 import com.apgsga.microservice.patch.core.impl.PatchActionExecutor;
 import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactory;
 import com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean;
@@ -172,55 +172,31 @@ public class MicroServicePatchServerExceptionTests {
 			fail("Expected Runtime Exception");
 		} catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("Groovy.script.executePatchAction.state.exits.assert", e.getMessageKey());
+			Assert.assertEquals("PatchActionExecutorImpl.executePatchAction.state.exits.assert", e.getMessageKey());
 		}
 	}
 
 	@Test
-	public void testPatchInvalidGroovyScriptFile() {
-		Patch patch = new Patch();
-		patch.setPatchNummer("SomeUnqiueNumber3");
-		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
-		patch.addServices(service);
-		patchService.save(patch);
-		GroovyScriptActionExecutor patchActionExecutor = (GroovyScriptActionExecutor) patchActionFactory.create(patchService); 
-		patchActionExecutor.setGroovyScriptFile("XXXXX");
-		try {
-			patchActionExecutor.execute("SomeUnqiueNumber3", "xxxxxxx");
-			fail("Expected Runtime Exception");
-		} catch (PatchServiceRuntimeException e) {
-			LOGGER.info(e.toString());
-			Assert.assertEquals("GroovyScriptActionExecutor.execute.exception", e.getMessageKey());
-		}
-	}
-	
-	
-	
-	@Test
 	public void testPatchExeuteToStatePatchNumberNullOrEmpy() {
-		GroovyScriptActionExecutor patchActionExecutor = (GroovyScriptActionExecutor) patchActionFactory.create(patchService); 
-		patchActionExecutor.setGroovyScriptFile("XXXXX");
+		PatchActionExecutorImpl patchActionExecutor = (PatchActionExecutorImpl) patchActionFactory.create(patchService);
 		try {
 			patchActionExecutor.execute("", "xxxxxxx");
 			fail("Expected Runtime Exception");
 		} catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("GroovyScriptActionExecutor.execute.patchnumber.notnullorempty.assert", e.getMessageKey());
+			Assert.assertEquals("PatchActionExecutorImpl.execute.patchnumber.notnullorempty.assert", e.getMessageKey());
 		}
 	}
 	
 	@Test
 	public void testPatchExeuteToStatePatchNumberDoesnotExist() {
-		GroovyScriptActionExecutor patchActionExecutor = (GroovyScriptActionExecutor) patchActionFactory.create(patchService); 
-		patchActionExecutor.setGroovyScriptFile("XXXXX");
+		PatchActionExecutorImpl patchActionExecutor = (PatchActionExecutorImpl) patchActionFactory.create(patchService);
 		try {
 			patchActionExecutor.execute("xxxxxx", "xxxxxxx");
 			fail("Expected Runtime Exception");
 		} catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("GroovyScriptActionExecutor.execute.patch.exists.assert", e.getMessageKey());
+			Assert.assertEquals("PatchActionExecutorImpl.execute.patch.exists.assert", e.getMessageKey());
 		}
 	}
 

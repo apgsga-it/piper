@@ -50,7 +50,7 @@ class PatchCliIntegrationExceptionHandlingTests extends Specification {
 		then:
 		result.returnCode >  0
 		result.results.containsKey('error') == true
-		result.results['error'].errorKey == "GroovyScriptActionExecutor.execute.patchnumber.notnullorempty.assert"
+		result.results['error'].errorKey == "PatchActionExecutorImpl.execute.patchnumber.notnullorempty.assert"
 	}
 	
 
@@ -62,6 +62,6 @@ class PatchCliIntegrationExceptionHandlingTests extends Specification {
 		then:
 		result.returnCode >  0
 		result.results.containsKey('error') == true
-		result.results['error'].errorKey == "GroovyScriptActionExecutor.execute.patch.exists.assert"
+		result.results['error'].errorKey == "PatchActionExecutorImpl.execute.patch.exists.assert"
 	}
 }

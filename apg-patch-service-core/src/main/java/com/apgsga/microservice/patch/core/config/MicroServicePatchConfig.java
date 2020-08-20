@@ -18,7 +18,7 @@ import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.core.impl.GroovyScriptActionExecutorFactory;
+import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactoryImpl;
 import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactory;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClientImpl;
@@ -58,9 +58,6 @@ public class MicroServicePatchConfig {
 
 	@Value("${config.common.location:/etc/opt/apg-patch-common}")
 	private String configCommon;
-
-	@Value("${patch.action.script.location:classpath:groovyScript/executePatchAction.groovy}")
-	private String groovyScriptFile;
 
 	@Value("${taskexecutor.corePoolSize:5}")
 	private Integer corePoolSize;
@@ -166,7 +163,7 @@ public class MicroServicePatchConfig {
 	@Bean(name = "groovyActionFactory")
 	@Profile({ "groovyactions" })
 	public PatchActionExecutorFactory groovyPatchActionFactory() {
-		return new GroovyScriptActionExecutorFactory(targetSystemMapping(), groovyScriptFile);
+		return new PatchActionExecutorFactoryImpl(targetSystemMapping());
 	}
 
 	@Bean(name = "taskExecutor")

@@ -5,7 +5,6 @@ import com.apgsga.microservice.patch.api.PatchLog
 import com.apgsga.microservice.patch.api.PatchPersistence
 import com.apgsga.microservice.patch.server.MicroPatchServer
 import com.fasterxml.jackson.databind.ObjectMapper
-import groovy.json.JsonSlurper
 import groovy.sql.Sql
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -216,7 +215,8 @@ class PatchCliIntegrationTest extends Specification {
 
 	// JHE (18.08.2020): Ignoring the test as it requires pre-requisite in DB. However, keeping it for future sanity checks
 	@Ignore
-	def "Patch DB Cli  update status of Patch"() {
+	@Requires({PatchCliIntegrationTest.dbAvailable()})
+	def "Patch Cli update status of Patch"() {
 		when:
 			def patchcli = PatchCli.create()
 			def result = patchcli.process(["-dbsta", "7018,0"])
@@ -228,7 +228,7 @@ class PatchCliIntegrationTest extends Specification {
 	// JHE (19.08.2020) : Ignoring this one because not guaranteed that Patches still exist
 	@Ignore
 	@Requires({PatchCliIntegrationTest.dbAvailable()})
-	def "Patch DB Cli correctly copies Patch JSON Files"() {
+	def "Patch Cli correctly copies Patch JSON Files"() {
 		String destFolderPath = "src/test/resources/destFolderForPatch"
 		when:
 			new File(destFolderPath).mkdirs()
