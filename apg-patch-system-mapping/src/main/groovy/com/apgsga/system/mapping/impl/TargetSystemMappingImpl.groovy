@@ -33,7 +33,7 @@ class TargetSystemMappingImpl implements TargetSystemMapping {
     @PostConstruct
     private void init() {
         UUID uuid = UUID.randomUUID();
-        cloneDirectoryPath = System.getProperty("java.io.tmpdir") + uuid.toString()
+        cloneDirectoryPath = System.getProperty("java.io.tmpdir") + "/" + uuid.toString()
         loadGroovyScript()
     }
 
