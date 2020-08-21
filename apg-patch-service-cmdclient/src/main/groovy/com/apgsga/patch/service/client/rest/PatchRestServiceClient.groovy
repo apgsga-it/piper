@@ -16,8 +16,8 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 	private RestTemplate restTemplate;
 
 
-	public PatchRestServiceClient(def config) {
-		this.baseUrl = config.host.default;
+	public PatchRestServiceClient(def baseUrl) {
+		this.baseUrl = baseUrl;
 		this.restTemplate = new RestTemplate();
 		restTemplate.setErrorHandler(new PatchCliExceptionHandler())
 	}
@@ -47,13 +47,18 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 	}
 
 	@Override
+	void copyPatchFiles(Map params) {
+		restTemplate.postForLocation(getRestBaseUri() + "/copyPatchFiles", params);
+	}
+
+	@Override
 	public Patch findById(String patchNumber) {
 		return restTemplate.getForObject(getRestBaseUri() + "/findById/{id}", Patch.class, [id:patchNumber]);
 	}
 	
 	@Override
-	public PatchLog findPatchLogById(String patchNummer) {
-		return restTemplate.getForObject(getRestBaseUri() + "/findPatchLogById/{id}", PatchLog.class, [id:patchNummer]);
+	public PatchLog findPatchLogById(String patchNumber) {
+		return restTemplate.getForObject(getRestBaseUri() + "/findPatchLogById/{id}", PatchLog.class, [id:patchNumber]);
 	}
 
 
@@ -61,15 +66,6 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 	public Boolean patchExists(String patchNumber) {
 		return restTemplate.getForObject(getRestBaseUri() + "/patchExists/{id}", Boolean.class, [id:patchNumber]);
 	}
-
-
-	public void savePatch(File patchFile, Class<Patch> clx) {
-		println "File ${patchFile} to be uploaded"
-		ObjectMapper mapper = new ObjectMapper();
-		def patchData = mapper.readValue(patchFile, clx)
-		savePatch(patchData)
-	}
-
 
 	public void save(File patchFile, Class<Patch> clx) {
 		println "File ${patchFile} to be uploaded"
@@ -85,9 +81,9 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 	}
 	
 	@Override
-	public void savePatchLog(Patch patch) {
-		restTemplate.postForLocation(getRestBaseUri() + "/savePatchLog", patch)
-		println "Saved PatchLog for " + patch.toString()		
+	public void savePatchLog(String patchNumber) {
+		restTemplate.postForLocation(getRestBaseUri() + "/savePatchLog", patchNumber)
+		println "Saved PatchLog for " + patchNumber
 	}
 	
 	@Override
@@ -141,6 +137,15 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 				ServicesMetaData.class);
 	}
 
+	@Override
+	void executeStateTransitionActionInDb(String patchNumber, Long statusNum) {
+		restTemplate.postForLocation(getRestBaseUri() + "/executeStateTransitionActionInDb/{patchNumber}/{statusNum}", null, [patchNumber:patchNumber,statusNum:statusNum])
+	}
+
+	@Override
+	List<String> patchIdsForStatus(String statusCode) {
+		return restTemplate.getForObject(getRestBaseUri() + "/patchIdsForStatus/{status}", String[].class, [status:statusCode]);
+	}
 
 	@Override
 	public ServiceMetaData findServiceByName(String serviceName) {
@@ -156,7 +161,6 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 	public void init() throws IOException {
 		throw new UnsupportedOperationException("Init not supported by client");
 	}
-
 
 	class PatchServiceErrorHandler implements ResponseErrorHandler {
 

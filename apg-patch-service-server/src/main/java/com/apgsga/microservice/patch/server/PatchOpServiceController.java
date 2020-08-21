@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Scope(org.springframework.web.context.WebApplicationContext.SCOPE_SESSION)
@@ -30,22 +31,22 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@RequestMapping(value = "/findById/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	@Override
-	public Patch findById(@PathVariable("id") String patchNummer) {
-		return repo.findById(patchNummer);
+	public Patch findById(@PathVariable("id") String patchNumber) {
+		return repo.findById(patchNumber);
 	}
 	
 	@RequestMapping(value = "/findPatchLogById/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	@Override
-	public PatchLog findPatchLogById(@PathVariable("id") String patchNummer) {
-		return repo.findPatchLogById(patchNummer);
+	public PatchLog findPatchLogById(@PathVariable("id") String patchNumber) {
+		return repo.findPatchLogById(patchNumber);
 	}
 
 	@RequestMapping(value = "/patchExists/{id}", method = RequestMethod.GET)
 	@ResponseBody
 	@Override
-	public Boolean patchExists(@PathVariable("id") String patchNummber) {
-		return repo.patchExists(patchNummber);
+	public Boolean patchExists(@PathVariable("id") String patchNumber) {
+		return repo.patchExists(patchNumber);
 
 	}
 
@@ -59,8 +60,8 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@RequestMapping(value = "/savePatchLog", method = RequestMethod.POST)
 	@ResponseBody
 	@Override
-	public void savePatchLog(@RequestBody Patch patch) {
-		repo.savePatchLog(patch);
+	public void savePatchLog(@RequestBody String patchNumber) {
+		repo.savePatchLog(patchNumber);
 	}
 
 	@RequestMapping(value = "/savePatch", method = RequestMethod.POST)
@@ -173,5 +174,26 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@Override
 	public void startInstallPipeline(@RequestBody String target) {
 		patchService.startInstallPipeline(target);
+	}
+
+	@RequestMapping(value = "/copyPatchFiles", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public void copyPatchFiles(@RequestBody Map<String,String> params) {
+		patchService.copyPatchFiles(params);
+	}
+
+	@RequestMapping(value = "/executeStateTransitionActionInDb/{patchNumber}/{statusNum}", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public void executeStateTransitionActionInDb(@PathVariable("patchNumber") String patchNumber, @PathVariable("statusNum")Long statusNum) {
+		patchService.executeStateTransitionActionInDb(patchNumber,statusNum);
+	}
+
+	@RequestMapping(value = "/patchIdsForStatus/{status}")
+	@ResponseBody
+	@Override
+	public List<String> patchIdsForStatus(@PathVariable("status") String statusCode) {
+		return patchService.patchIdsForStatus(statusCode);
 	}
 }

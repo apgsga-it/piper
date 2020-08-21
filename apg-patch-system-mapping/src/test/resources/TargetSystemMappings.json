@@ -1,0 +1,264 @@
+{
+    "onDemandTarget": [
+        "test-CHEI211",
+        "test-CHEI212",
+        "test-CHTI212",
+        "test-devjhe"
+    ],
+    "stageMappings": [
+        {
+            "name": "Entwicklung",
+            "target": "test-CHEI212",
+	        "stages": [
+                {
+                    "name": "startPipelineAndTag",
+                    "toState": "Installationsbereit",
+                    "code": 2,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.EntwicklungInstallationsbereitAction"
+                },
+                {
+                    "name": "cancel",
+                    "toState": "",
+                    "code": 0,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
+                }
+            ]
+        },
+        {
+            "name": "Informatiktest",
+            "target": "test-CHEI211",
+            "stages": [
+                {
+                    "name": "BuildFor",
+                    "toState": "Installationsbereit",
+                    "code": 15,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
+                },
+                {
+                    "name": "InstallFor",
+                    "toState": "",
+                    "code": 20,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
+                }
+            ]
+        },
+        {
+            "name": "Anwendertest",
+            "target": "test-CHTI211",
+            "stages": [
+                {
+                    "name": "BuildFor",
+                    "toState": "Installationsbereit",
+                    "code": 25,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
+                },
+                {
+                    "name": "InstallFor",
+                    "toState": "",
+                    "code": 30,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
+                }
+            ]
+        },
+        {
+            "name": "Produktion",
+            "target": "test-CHPI211",
+            "stages": [
+                {
+                    "name": "BuildFor",
+                    "toState": "Installationsbereit",
+                    "code": 65,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
+                },
+                {
+                    "name": "InstallFor",
+                    "toState": "",
+                    "code": 80,
+                    "implcls": "com.apgsga.microservice.patch.server.impl.PipelineInputAction"
+                }
+            ]
+        }
+    ],
+    "targetInstances": [
+        {
+            "name": "test-CHPI211",
+            "services": [
+                {
+                    "host": "test-chpi211.apgsga.ch",
+                    "name": "it21-db",
+                    "type": "oracle-db"
+                },
+                {
+                    "host": "test-ds.apgsga.ch",
+                    "name": "ds-db",
+                    "type": "oracle-db"
+                },
+                {
+                    "host": "test-digiflex-p.apgsga.ch",
+                    "name": "digiflex",
+                    "type": "linuxservice"
+                },
+                {
+                    "host": "test-jadas-p.apgsga.ch",
+                    "name": "jadas",
+                    "type": "linuxservice"
+                },
+                {
+                    "host": "test-service-chpi211.apgsga.ch",
+                    "name": "it21_ui",
+                    "type": "linuxbasedwindowsfilesystem"
+                }
+            ]
+        },
+        {
+            "name": "test-CHTI211",
+            "services": [
+                {
+                    "host": "test-chti211.apgsga.ch",
+                    "name": "it21-db",
+                    "type": "oracle-db"
+                },
+                {
+                    "host": "test-ds.apgsga.ch",
+                    "name": "ds-db",
+                    "type": "oracle-db"
+                },
+                {
+                    "host": "test-digiflex-t.apgsga.ch",
+                    "name": "digiflex",
+                    "type": "linuxservice"
+                },
+                {
+                    "host": "test-jadas-t.apgsga.ch",
+                    "name": "jadas",
+                    "type": "linuxservice"
+                },
+                {
+                    "host": "test-service-chti211.apgsga.ch",
+                    "name": "it21_ui",
+                    "type": "linuxbasedwindowsfilesystem"
+                }
+            ]
+        },
+        {
+            "name": "test-CHEI211",
+            "services": [
+                {
+                    "host": "test-chei211.apgsga.ch",
+                    "name": "it21-db",
+                    "type": "oracle-db"
+                },
+                {
+                    "host": "test-ds.apgsga.ch",
+                    "name": "ds-db",
+                    "type": "oracle-db"
+                },
+                {
+                    "host": "test-digiflex-e.apgsga.ch",
+                    "name": "digiflex",
+                    "type": "linuxservice"
+                },
+                {
+                    "host": "test-jadas-e.apgsga.ch",
+                    "name": "jadas",
+                    "type": "linuxservice"
+                },
+                {
+                    "host": "test-service-chei211.apgsga.ch",
+                    "name": "it21_ui",
+                    "type": "linuxbasedwindowsfilesystem"
+                }
+            ]
+        },
+        {
+            "name": "test-CHEI212",
+            "services": [
+                {
+                    "host": "test-chei212.apgsga.ch",
+                    "name": "it21-db",
+                    "type": "oracle-db"
+                },
+                {
+                    "host": "test-ds.apgsga.ch",
+                    "name": "ds-db",
+                    "type": "oracle-db"
+                },
+                {
+                    "host": "test-digiflex-e.apgsga.ch",
+                    "name": "digiflex",
+                    "type": "linuxservice"
+                },
+                {
+                    "host": "test-jadas-e.apgsga.ch",
+                    "name": "jadas",
+                    "type": "linuxservice"
+                },
+                {
+                    "host": "test-service-chei212.apgsga.ch",
+                    "name": "it21_ui",
+                    "type": "linuxbasedwindowsfilesystem"
+                }
+            ]
+        },
+        {
+            "name": "test-CHTI212",
+            "services": [
+                {
+                    "host": "test-chti212.apgsga.ch",
+                    "name": "it21-db",
+                    "type": "oracle-db"
+                },
+                {
+                    "host": "test-ds.apgsga.ch",
+                    "name": "ds-db",
+                    "type": "oracle-db"
+                },
+                {
+                    "host": "test-digiflex-t.apgsga.ch",
+                    "name": "digiflex",
+                    "type": "linuxservice"
+                },
+                {
+                    "host": "test-jadas-t.apgsga.ch",
+                    "name": "jadas",
+                    "type": "linuxservice"
+                },
+                {
+                    "host": "test-service-chti212.apgsga.ch",
+                    "name": "it21_ui",
+                    "type": "linuxbasedwindowsfilesystem"
+                }
+            ]
+        },
+        {
+            "name": "test-dev-jhe",
+            "services": [
+                {
+                    "host": "test-dev-jhe.light.apgsga.ch",
+                    "name": "it21-db",
+                    "type": "oracle-db"
+                },
+                {
+                    "host": "test-ds.apgsga.ch",
+                    "name": "ds-db",
+                    "type": "oracle-db"
+                },
+                {
+                    "host": "test-dev-jhe.light.apgsga.ch",
+                    "name": "digiflex",
+                    "type": "linuxservice"
+                },
+                {
+                    "host": "test-dev-jhedocker.light.apgsga.ch",
+                    "name": "jadas",
+                    "type": "linuxservice"
+                },
+                {
+                    "host": "test-dev-jhedocker.light.apgsga.ch",
+                    "name": "it21_ui",
+                    "type": "linuxbasedwindowsfilesystem"
+                }
+            ]
+        }
+    ]
+}

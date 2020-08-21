@@ -1,12 +1,20 @@
 package com.apgsga.microservice.patch.core.impl;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.apgsga.artifact.query.ArtifactDependencyResolver;
+import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.*;
+import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
+import com.apgsga.microservice.patch.core.impl.vcs.PatchVcsCommand;
+import com.apgsga.microservice.patch.core.impl.vcs.VcsCommand;
+import com.apgsga.microservice.patch.core.impl.vcs.VcsCommandRunner;
+import com.apgsga.microservice.patch.core.impl.vcs.VcsCommandRunnerFactory;
+import com.apgsga.microservice.patch.exceptions.Asserts;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.apgsga.patch.db.integration.api.PatchRdbms;
+import com.apgsga.system.mapping.api.TargetSystemMapping;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,25 +24,15 @@ import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
-import com.apgsga.artifact.query.ArtifactDependencyResolver;
-import com.apgsga.artifact.query.ArtifactManager;
-import com.apgsga.microservice.patch.exceptions.Asserts;
-import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
-import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
-import com.apgsga.microservice.patch.core.impl.targets.InstallTargetsUtil;
-import com.apgsga.microservice.patch.core.impl.vcs.PatchVcsCommand;
-import com.apgsga.microservice.patch.core.impl.vcs.VcsCommand;
-import com.apgsga.microservice.patch.core.impl.vcs.VcsCommandRunner;
-import com.apgsga.microservice.patch.core.impl.vcs.VcsCommandRunnerFactory;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.offbytwo.jenkins.model.BuildResult;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component("ServerBean")
 public class SimplePatchContainerBean implements PatchService, PatchOpService {
@@ -63,11 +61,15 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Autowired
 	private TaskExecutor threadExecutor;
 
+	@Autowired
+	private TargetSystemMapping targetSystemMapping;
+
+	@Autowired
+	@Qualifier("patchRdbms")
+	private PatchRdbms patchRdbms;
+
 	@Value("${config.common.location:/etc/opt/apg-patch-common}")
 	private String configCommon;
-
-	@Value("${config.common.targetSystemFile:TargetSystemMappings.json}")
-	private String targetSystemFile;
 
 	public SimplePatchContainerBean() {
 		super();
@@ -148,7 +150,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		Asserts.notNull(patch, "SimplePatchContainerBean.log.patch.null.assert", new Object[] {});
 		Asserts.notNullOrEmpty(patch.getPatchNummer(), "SimplePatchContainerBean.log.patchnumber.isnullorempty", new Object[] {});
 		Asserts.notNull(repo.findById(patch.getPatchNummer()), "SimplePatchContainerBean.log.patchisnull", new Object[] {patch.getPatchNummer()});
-		repo.savePatchLog(patch);
+		repo.savePatchLog(patch.getPatchNummer());
 	}
 
 	private void preProcessSave(Patch patch) {
@@ -203,9 +205,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public List<String> listInstallationTargetsFor(String requestingTarget) {
-		ResourceLoader rl = new FileSystemResourceLoader();
-		Resource targetConfigFile = rl.getResource(configCommon + "/" + targetSystemFile);
-		return InstallTargetsUtil.listInstallTargets(targetConfigFile);
+		return targetSystemMapping.listInstallTargets();
 	}
 
 	@Override
@@ -376,6 +376,24 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
+	public void copyPatchFiles(Map<String,String> params) {
+		int statusCode = targetSystemMapping.findStatus(params.get("status"));
+		List<String> patchIds = patchRdbms.patchIdsForStatus(String.valueOf(statusCode));
+		List<Patch> patchesToCopy = findByIds(patchIds);
+		ObjectMapper mapper = new ObjectMapper();
+		patchesToCopy.forEach(p -> {
+			File destFile = new File(params.get("destFolder") + "/Patch" + p.getPatchNummer() + ".json");
+			try {
+				mapper.writeValue(destFile,p);
+			} catch (IOException e) {
+				throw ExceptionFactory.createPatchServiceRuntimeException(
+						"SimplePatchContainerBean.copyPatchFile.exception",
+						new Object[] { e.getMessage(), destFile }, e);
+			}
+		});
+	}
+
+	@Override
 	public void startAssembleAndDeployPipeline(String target) {
 		jenkinsClient.startAssembleAndDeployPipeline(target);
 	}
@@ -398,4 +416,15 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		}
 		return false;
 	}
+
+	@Override
+	public void executeStateTransitionActionInDb(String patchNumber, Long statusNum) {
+		patchRdbms.executeStateTransitionActionInDb(patchNumber,statusNum);
+	}
+
+	@Override
+	public List<String> patchIdsForStatus(String statusCode) {
+		return patchRdbms.patchIdsForStatus(statusCode);
+	}
+
 }

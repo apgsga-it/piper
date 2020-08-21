@@ -76,7 +76,7 @@ public class MicroServicePatchClientTest {
 
 		repo.savePatch(testPatch5401);
 		repo.savePatch(testPatch5402);
-		repo.savePatchLog(testPatch5401);
+		repo.savePatchLog("5401");
 	}
 
 	@Test

@@ -5,17 +5,17 @@ import java.util.List;
 
 public interface PatchPersistence {
 
-	Patch findById(String patchNummer);
+	Patch findById(String patchNumber);
 	
-	PatchLog findPatchLogById(String patchNummer);
+	PatchLog findPatchLogById(String patchNumber);
 
-	Boolean patchExists(String patchNummber);
+	Boolean patchExists(String patchNumber);
 
 	List<String> findAllPatchIds();
 
 	void savePatch(Patch patch);
 	
-	void savePatchLog(Patch patch);
+	void savePatchLog(String patchNumber);
 
 	void removePatch(Patch patch);
 

@@ -49,6 +49,8 @@ public class MicroservicePatchClient implements PatchService {
 	
 	private static final String FIND_WITH_OBJECT_NAME = "/findWithObjectName";
 
+	private static final String COPY_PATCH_FILE = "/copyPatchFiles";
+
 	protected static Log LOGGER = LogFactory.getLog(MicroservicePatchClient.class.getName());
 
 	private String baseUrl;

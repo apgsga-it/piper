@@ -62,26 +62,26 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	}
 
 	@Override
-	public synchronized Patch findById(String patchNummer) {
-		Asserts.notNullOrEmpty(patchNummer, "FilebasedPatchPersistence.findById.patchnumber.notnullorempty.assert",new Object[] {});
+	public synchronized Patch findById(String patchNumber) {
+		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.findById.patchnumber.notnullorempty.assert",new Object[] {});
 		try {
-			File patchFile = createFile(PATCH + patchNummer + JSON);
+			File patchFile = createFile(PATCH + patchNumber + JSON);
 			return findFile(patchFile, Patch.class);
 		}catch(Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.findById.exception",
-				new Object[] { e.getMessage(), patchNummer }, e);
+				new Object[] { e.getMessage(), patchNumber}, e);
 		}
 	}
 	
 	@Override
-	public synchronized PatchLog findPatchLogById(String patchNummer) {
-		Asserts.notNullOrEmpty(patchNummer, "FilebasedPatchPersistence.findById.patchlognumber.notnullorempty.assert", new Object[] {});
+	public synchronized PatchLog findPatchLogById(String patchNumber) {
+		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.findById.patchlognumber.notnullorempty.assert", new Object[] {});
 		try {
-			File patchFile = createFile(PATCH_LOG + patchNummer + JSON);
+			File patchFile = createFile(PATCH_LOG + patchNumber + JSON);
 			return findFile(patchFile, PatchLog.class);
 		}catch(Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.findById.exception",
-				new Object[] { e.getMessage(), patchNummer }, e);
+				new Object[] { e.getMessage(), patchNumber}, e);
 		}
 	}
 	
@@ -131,18 +131,18 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	}
 	
 	@Override
-	public void savePatchLog(Patch patch) {
-		Asserts.notNull(patch, "FilebasedPatchPersistence.save.patchlog.patch.notnull.assert", new Object[] {});
-		Asserts.notNullOrEmpty(patch.getPatchNummer(), "FilebasedPatchPersistence.save.patchlognumber.notnullorempty.assert", new Object[] {patch.toString()});
-		PatchLog patchLog = findPatchLogById(patch.getPatchNummer());
+	public void savePatchLog(String patchNumber) {
+		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.save.patchlognumber.notnullorempty.assert", new Object[] {patchNumber});
+		PatchLog patchLog = findPatchLogById(patchNumber);
 		if(patchLog == null) {
-			patchLog = createPatchLog(patch);
+			patchLog = createPatchLog(patchNumber);
 		}
-		patchLog.addLog(createPatchLogDetail(patch));
+		patchLog.addLog(createPatchLogDetail(patchNumber));
 		writeToFile(patchLog, PATCH_LOG + patchLog.getPatchNumber() + JSON);
 	}
 	
-	private PatchLogDetails createPatchLogDetail(Patch patch) {
+	private PatchLogDetails createPatchLogDetail(String patchNumber) {
+		Patch patch = findById(patchNumber);
 		PatchLogDetails pld = new PatchLogDetails();
 		pld.setLogText(patch.getLogText());
 		pld.setPatchPipelineTask(patch.getCurrentPipelineTask());
@@ -151,9 +151,9 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		return pld;
 	}
 
-	private PatchLog createPatchLog(Patch patch) {
+	private PatchLog createPatchLog(String patchNumber) {
 		PatchLog pl = new PatchLog();
-		pl.setPatchNumber(patch.getPatchNummer());
+		pl.setPatchNumber(patchNumber);
 		return pl;
 	}
 
