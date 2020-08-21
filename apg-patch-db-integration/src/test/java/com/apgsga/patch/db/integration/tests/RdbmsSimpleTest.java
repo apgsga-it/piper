@@ -28,7 +28,7 @@ public class RdbmsSimpleTest {
     //							rdbms.oracle.url
     //							rdbms.oracle.user.name
     //							rdbms.oracle.user.pwd
-//    @Ignore
+    @Ignore
     public void simpleOracleDbTest() {
         Assert.notNull(jt,"jt (JdbcTemplate) is null");
         List<Map<String, Object>> rows = jt.queryForList("SELECT * from cm.cm_patch_f where id > 7000");
