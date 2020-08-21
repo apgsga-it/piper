@@ -25,8 +25,6 @@ import spock.lang.Specification
 @ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
 class PatchCliIntegrationTest extends Specification {
 
-	private static final String CLASSPATH_CONFIG_APP_TEST_PROPERTIES = 'classpath:config/app-test.properties'
-	
 	@Value('${json.db.location}')
 	private String dbLocation
 
@@ -41,7 +39,7 @@ class PatchCliIntegrationTest extends Specification {
 			println ("Buildfolder has been created ${created}")
 		}
 		System.properties['spring_profiles_active'] = 'default'
-		System.properties['appPropertiesFile'] = CLASSPATH_CONFIG_APP_TEST_PROPERTIES
+		System.properties['piper.host.url'] = 'localhost:9020'
 		println System.getProperties()
 	}
 

@@ -1,11 +1,9 @@
 package com.apgsga.patch.service.client
 
 import com.apgsga.microservice.patch.api.Patch
-import com.apgsga.patch.service.client.config.PliConfig
 import com.apgsga.patch.service.client.rest.PatchRestServiceClient
 import com.google.common.collect.Maps
 import org.codehaus.groovy.runtime.StackTraceUtils
-import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 class PatchCli {
 
@@ -17,14 +15,11 @@ class PatchCli {
 	// TODO JHE (19.08.2020) : Still need aps and nil ???
 	def validComponents = [ "aps", "nil"]
 	def validate = true
-	def config
 
 	private PatchCli() {
 	}
 
 	def process(def args) {
-		def context =  new AnnotationConfigApplicationContext(PliConfig.class)
-		config = context.getBean(ConfigObject.class)
 		def cmdResults = new Expando()
 		cmdResults.returnCode = 1
 		cmdResults.results = [:]
@@ -33,8 +28,14 @@ class PatchCli {
 			cmdResults.returnCode = 0
 			return cmdResults
 		}
+		def piperUrl = fetchPiperUrl(options)
+		if (!piperUrl?.trim()) {
+			cmdResults.returnCode = 0
+			cmdResults.results['error'] = "Piper URL not configured"
+			return cmdResults
+		}
 		try {
-			def patchClient = new PatchRestServiceClient(config)
+			def patchClient = new PatchRestServiceClient(piperUrl)
 			if (options.sa) {
 				def result = savePatch(patchClient,options)
 				cmdResults.results['sa']=  result
@@ -82,12 +83,13 @@ class PatchCli {
 	}
 
 	def validateOpts(args) {
-		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-i <target>] [-cpf <statusCode,destFolder>] [-dbsta <patchNumber,toState>] [-adp <target>] [-log <patchNumber>] [-cm] [-sa <patchFile>] [-sta <patchnumber,toState,[aps]]')
+		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-purl <piperUrl>] [-i <target>] [-cpf <statusCode,destFolder>] [-dbsta <patchNumber,toState>] [-adp <target>] [-log <patchNumber>] [-cm] [-sa <patchFile>] [-sta <patchnumber,toState,[aps]]')
 		cli.formatter.setDescPadding(0)
 		cli.formatter.setLeftPadding(0)
 		cli.formatter.setWidth(100)
 		cli.with {
 			h longOpt: 'help', 'Show usage information', required: false
+			purl longOpt: 'piperUrl', args:1, argName: 'piperUrl', 'Piper URL', required: false
 			sa longOpt: 'save', args:1, argName: 'patchFile', 'Saves a <patchFile> to the server, which starts the Patch Pipeline', required: false
 			// TODO (CHE,13.9) Get rid of the component parameter, needs to be coordinated with current Patch System (PatchOMat)
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can only be aps ', required: false
@@ -246,5 +248,14 @@ class PatchCli {
 		params.put("status",status)
 		params.put("destFolder",destFolder)
 		patchClient.copyPatchFiles(params)
+	}
+
+	private def fetchPiperUrl(def options ) {
+		if(options.purls && options.purls.size() == 1) {
+			return options.purls[0]
+		}
+		else {
+			return System.getProperty("piper.host.url")
+		}
 	}
 }

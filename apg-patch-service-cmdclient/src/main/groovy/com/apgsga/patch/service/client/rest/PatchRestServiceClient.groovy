@@ -16,8 +16,8 @@ class PatchRestServiceClient implements PatchOpService, PatchPersistence {
 	private RestTemplate restTemplate;
 
 
-	public PatchRestServiceClient(def config) {
-		this.baseUrl = config.host.default;
+	public PatchRestServiceClient(def baseUrl) {
+		this.baseUrl = baseUrl;
 		this.restTemplate = new RestTemplate();
 		restTemplate.setErrorHandler(new PatchCliExceptionHandler())
 	}
