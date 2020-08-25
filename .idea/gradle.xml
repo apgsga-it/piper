@@ -14,14 +14,15 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/apg-patch-artifact-querymanager" />
+            <option value="$PROJECT_DIR$/apg-patch-db-integration" />
             <option value="$PROJECT_DIR$/apg-patch-service-api" />
             <option value="$PROJECT_DIR$/apg-patch-service-client" />
             <option value="$PROJECT_DIR$/apg-patch-service-cmdclient" />
             <option value="$PROJECT_DIR$/apg-patch-service-core" />
             <option value="$PROJECT_DIR$/apg-patch-service-server" />
+            <option value="$PROJECT_DIR$/apg-patch-system-mapping" />
           </set>
         </option>
-        <option name="useQualifiedModuleNames" value="true" />
       </GradleProjectSettings>
     </option>
   </component>
