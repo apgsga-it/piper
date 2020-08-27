@@ -20,6 +20,7 @@ public class ProcessBuilderCmdRunner implements VcsCommandRunner {
         ProcessBuilder pb = new ProcessBuilder().command(command.getCommand());
         Process p;
         try {
+            LOGGER.info(pb.command().toString());
             p = pb.start();
             StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream());
             StreamGobbler outputGobbler = new StreamGobbler(p.getInputStream());

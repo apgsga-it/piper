@@ -2,8 +2,9 @@ package com.apgsga.microservice.patch.core.impl.vcs;
 
 public interface VcsCommand {
 
-	public String[] getCommand();
+	String[] getCommand();
 	
-	public void noSystemCheck(boolean noChecnk); 
+	void noSystemCheck(boolean noChecnk);
+
 
 }
