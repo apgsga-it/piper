@@ -4,10 +4,10 @@ import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
-import com.apgsga.microservice.patch.core.ssh.SshCommand;
-import com.apgsga.microservice.patch.core.ssh.SshCommandRunner;
-import com.apgsga.microservice.patch.core.ssh.SshCommandRunnerFactory;
-import com.apgsga.microservice.patch.core.ssh.patch.vcs.PatchSshCommand;
+import com.apgsga.microservice.patch.core.commands.Command;
+import com.apgsga.microservice.patch.core.commands.CommandRunner;
+import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.apgsga.patch.db.integration.api.PatchRdbms;
@@ -53,7 +53,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private ArtifactDependencyResolver dependecyResolver;
 
 	@Autowired
-	private SshCommandRunnerFactory sshCommandRunnerFactory;
+	private CommandRunnerFactory sshCommandRunnerFactory;
 
 	@Autowired
 	private PatchActionExecutorFactory patchActionExecutorFactory;
@@ -195,7 +195,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		if (dbModules == null) {
 			return;
 		}
-		final SshCommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
+		final CommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
 		sshCommandRunner.preProcess();
 		sshCommandRunner.run(PatchSshCommand.createCreatePatchBranchCmd(patch.getDbPatchBranch(), patch.getProdBranch(),
 				dbModules.getDbModules()));
@@ -217,7 +217,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		if (dbModules == null) {
 			return Lists.newArrayList();
 		}
-		final SshCommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
+		final CommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
 		sshCommandRunner.preProcess();
 		List<DbObject> dbObjects = Lists.newArrayList();
 		for (String dbModule : dbModules.getDbModules()) {
@@ -263,7 +263,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		if (dbModules == null) {
 			return Lists.newArrayList();
 		}
-		final SshCommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
+		final CommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
 		sshCommandRunner.preProcess();
 		List<DbObject> dbObjects = Lists.newArrayList();
 		for (String dbModule : dbModules.getDbModules()) {
@@ -301,7 +301,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
 
-		SshCommandRunner cmdRunner = getJschSessionFactory().create();
+		CommandRunner cmdRunner = getJschSessionFactory().create();
 		cmdRunner.preProcess();
 		List<MavenArtifact> artifactWihInvalidNames = Lists.newArrayList();
 
@@ -313,7 +313,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				if (artifactName == null) {
 					artifactWihInvalidNames.add(ma);
 				} else {
-					SshCommand silentCoCmd = PatchSshCommand.createSilentCoCvsModuleCmd(cvsBranch,
+					Command silentCoCmd = PatchSshCommand.createSilentCoCvsModuleCmd(cvsBranch,
 							Lists.newArrayList(artifactName), "&>/dev/null ; echo $?");
 					List<String> cvsResults = cmdRunner.run(silentCoCmd);
 					// JHE: SilentCOCvsModuleCmd returns 0 when all OK, 1
@@ -359,7 +359,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		this.jenkinsClient = jenkinsClient;
 	}
 
-	public SshCommandRunnerFactory getJschSessionFactory() {
+	public CommandRunnerFactory getJschSessionFactory() {
 		return sshCommandRunnerFactory;
 	}
 

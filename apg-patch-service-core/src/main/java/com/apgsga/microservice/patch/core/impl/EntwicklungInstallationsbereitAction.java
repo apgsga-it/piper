@@ -11,15 +11,15 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
-import com.apgsga.microservice.patch.core.ssh.SshCommandRunner;
-import com.apgsga.microservice.patch.core.ssh.SshCommandRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.CommandRunner;
+import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
 
 public class EntwicklungInstallationsbereitAction implements PatchAction {
 	protected static final Log LOGGER = LogFactory.getLog(EntwicklungInstallationsbereitAction.class.getName());
 
 	private final PatchPersistence repo;
 
-	private SshCommandRunnerFactory jschSessionFactory;
+	private CommandRunnerFactory jschSessionFactory;
 
 	private final JenkinsClient jenkinsPatchClient;
 
@@ -44,7 +44,7 @@ public class EntwicklungInstallationsbereitAction implements PatchAction {
 		Asserts.notNull(patch, "EntwicklungInstallationsbereitAction.patch.exists.assert",
 				new Object[] { patchNumber, toAction });
 		createAndSaveTagForPatch(patch);
-		SshCommandRunner jschSession = jschSessionFactory.create();
+		CommandRunner jschSession = jschSessionFactory.create();
 		threadExecutor.execute(TaskEntwicklungInstallationsbereit.create(jschSession, patch, dependencyResolver,
 				jenkinsPatchClient, repo));
 		return "Ok: Created Patch Tag and started Prod Patch Pipeline for: " + patch.getPatchNummer();

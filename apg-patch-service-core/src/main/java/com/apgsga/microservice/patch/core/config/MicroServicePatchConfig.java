@@ -10,10 +10,10 @@ import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClientImpl;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsMockClient;
 import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
-import com.apgsga.microservice.patch.core.ssh.JschSessionCmdRunnerFactory;
-import com.apgsga.microservice.patch.core.ssh.LoggingMockSshRunnerFactory;
-import com.apgsga.microservice.patch.core.ssh.ProcessBuilderCmdRunnerFactory;
-import com.apgsga.microservice.patch.core.ssh.SshCommandRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.JschSessionCmdRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.LoggingMockSshRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
 import com.apgsga.system.mapping.api.TargetSystemMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -137,13 +137,13 @@ public class MicroServicePatchConfig {
 
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile({ "live", "remotecvs" })
-	public SshCommandRunnerFactory jsessionFactory() {
+	public CommandRunnerFactory jsessionFactory() {
 		return new JschSessionCmdRunnerFactory(vcsUser, vcsHost);
 	}
 
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile({ "live", "localcvs" })
-	public SshCommandRunnerFactory vcsLocalFactory() {
+	public CommandRunnerFactory vcsLocalFactory() {
 		return new ProcessBuilderCmdRunnerFactory();
 	}
 
@@ -155,7 +155,7 @@ public class MicroServicePatchConfig {
 
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile("mock")
-	public SshCommandRunnerFactory jsessionFactoryMock() {
+	public CommandRunnerFactory jsessionFactoryMock() {
 		return new LoggingMockSshRunnerFactory();
 	}
 

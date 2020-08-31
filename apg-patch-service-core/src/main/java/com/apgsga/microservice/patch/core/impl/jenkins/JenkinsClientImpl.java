@@ -1,20 +1,20 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.core.ssh.jenkins.JenkinsSshCommand;
+import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.CommandRunner;
+import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
-import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.Resource;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 public class JenkinsClientImpl implements JenkinsClient {
@@ -70,111 +70,39 @@ public class JenkinsClientImpl implements JenkinsClient {
 	}
 
 	private void startPipeline(Patch patch, String jobSuffix, boolean restart) {
-
-		// TODO JHE (24.08.2020): probably we'll be able to use "build" task from jenkins-cli
-		//						: based on restart parameter, eventually using "restart-from-stage", or "restart", or "replay-pipeline"
-
-
-		// TODO JHE: still have to pass the patchFile as Parameter
-
-
 		try {
 			String patchName = PATCH_CONS + patch.getPatchNummer();
 			String jobName = patchName + jobSuffix;
 			File patchFile = new File(dbLocation.getFile(), patchName + JSON_CONS);
+			Map<String,File> fileParams = Maps.newHashMap();
+			fileParams.put("patchJson",patchFile);
+
+			ProcessBuilderCmdRunnerFactory runnerFactory = new ProcessBuilderCmdRunnerFactory();
+			CommandRunner runner = runnerFactory.create();
 
 			if(jobSuffix.equalsIgnoreCase("ondemand")) {
-				//triggerPipelineJobWithoutWaitingOnFeedback(jenkinsServer, jobName, jobParm, true);
-				// TODO JHE: Last parameter should be job Parameter, with File
-				JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName);
+				JenkinsSshCommand onDemandCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName, null, fileParams);
+				runner.run(onDemandCmd);
 				LOGGER.info("ondemand job for patch " + patch.getPatchNummer() + " has been started. No post-submit verification will be done.");
 			}
 			else {
-				// TODO JHE: Last parameter should be job Parameter, with File
-				JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForStartCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName);
+				JenkinsSshCommand buildPipelineCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForStartCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName, null, fileParams);
+				List<String> result = runner.run(buildPipelineCmd);
+				LOGGER.info("Result of Pipeline Job " + jobName + ", : " + result.toString());
 			}
 
 		} catch (Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startPipeline.exception",
 					new Object[] { e.getMessage(), patch.toString() }, e);
 		}
-
-
-		// TODO JHE (24.08.2020): old code to be removed
-		/*
-		try {
-			String patchName = PATCH_CONS + patch.getPatchNummer();
-			String jobName = patchName + jobSuffix;
-			File patchFile = new File(dbLocation.getFile(), patchName + JSON_CONS);
-			JenkinsServer jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
-			LOGGER.info("Connected to Jenkinsserver with, url: " + jenkinsUrl + " and user: " + jenkinsUser);
-			Map<String, String> jobParm = Maps.newHashMap();
-			jobParm.put(TOKEN_CONS, jobName);
-			jobParm.put("PARAMETER", patchFile.getAbsolutePath());
-			jobParm.put("RESTART", restart ? "TRUE" : "FALSE");
-
-			LOGGER.info("Triggering Pipeline Job and waiting until Building " + jobName + " with Paramter: "
-					+ jobParm.toString());
-			if(jobSuffix.equalsIgnoreCase("ondemand")) {
-				triggerPipelineJobWithoutWaitingOnFeedback(jenkinsServer, jobName, jobParm, true);
-				LOGGER.info("ondemand job for patch " + patch.getPatchNummer() + " has been started. No post-submit verification will be done.");
-			}
-			else {
-				PipelineBuild result = triggerPipelineJobAndWaitUntilBuilding(jenkinsServer, jobName, jobParm, true);	
-				LOGGER.info("Getting Result of Pipeline Job " + jobName + ", : " + result.toString());
-				BuildWithDetails details = result.details();
-				if (details.isBuilding()) {
-					LOGGER.info(jobName + " Is Building");
-					LOGGER.info("Buildnumber: " + details.getNumber());
-				} else {
-					throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startPipeline.error",
-							new Object[] { patch.toString(), jobName, details.getConsoleOutputText() });
-				}
-			}
-
-		} catch (Exception e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startPipeline.exception",
-					new Object[] { e.getMessage(), patch.toString() }, e);
-		}
-
-		 */
-	}
-
-	private synchronized void triggerPipelineJobWithoutWaitingOnFeedback(String jobName, Map<String, String> jobParm, boolean crumbFlag) {
-
-		// TODO JHE (24.08.2020): not sure we'll this one anymore, might be easier with jenkins-cli
-
-
-		/*
-		try {
-			PipelineJobWithDetails job = jenkinsServer.getPipelineJob(jobName);
-			job.build(jobParm, crumbFlag);
-		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.triggerPipelineJobWithoutWaitingOnFeedback.exception", new Object[]{e.getMessage(), jobName});
-		}
-		*/
 	}
 
 	@Override
 	public void cancelPatchPipeline(Patch patch) {
-
-		// TODO JHE (24.08.2020): Probably here we'll be able to call the "stop-builds" from jenkins-cli
-
-		/*
+		//TODO JHE (31.08.2020) : could/should we here rather use the "stop-builds" of Jenkinscli? Should work with our JenkinsSshStopBuildCmd class.
 		processInputAction(patch, CANCEL_CONS, null);
 
-		 */
 	}
-
-	// TODO JHE (24.08.2020) : Probably ok to be removed
-	/*
-	private PipelineBuild getPipelineBuild(JenkinsServer jenkinsServer, String jobName) throws IOException {
-		PipelineJobWithDetails job = jenkinsServer.getPipelineJob(jobName);
-		PipelineBuild lastBuild = job.getLastBuild();
-		return lastBuild;
-	}
-	*/
-
 
 	@Override
 	public void processInputAction(Patch patch, Map<String, String> parameter) {
@@ -188,8 +116,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 		// TODO JHE (24.08.2020) : It doesn't seem that jenkins-cli contains a function to provide an input to a Job.
 		//						   Here we might have to implement it without jenkins-cli, using an approach mentioned within https://jira.apgsga.ch/browse/IT-35956
 
-
-		/*
+/*
 		String action = stage.equals(CANCEL_CONS) ? stage
 				: PATCH_CONS + patch.getPatchNummer() + stage + targetName + OK_CONS;
 		JenkinsServer jenkinsServer = null;
@@ -208,7 +135,8 @@ public class JenkinsClientImpl implements JenkinsClient {
 				jenkinsServer.close();
 			}
 		}
-		 */
+
+ */
 	}
 
 	/*
@@ -220,6 +148,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 		}
 	}
+
 	 */
 
 	/*
@@ -257,7 +186,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	 */
 
-	/*
+/*
 	private void validateLastPipelineBuilder(String patchNumber, PipelineBuild lastBuild) throws IOException {
 		if (lastBuild == null || lastBuild.equals(Build.BUILD_HAS_NEVER_RUN)
 				|| lastBuild.equals(Build.BUILD_HAS_BEEN_CANCELLED)) {
@@ -270,7 +199,8 @@ public class JenkinsClientImpl implements JenkinsClient {
 		}
 	}
 
-	 */
+ */
+
 
 	@Override
 	public void onClone(String source, String target) {

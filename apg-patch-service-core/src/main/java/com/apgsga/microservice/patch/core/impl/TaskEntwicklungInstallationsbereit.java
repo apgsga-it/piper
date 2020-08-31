@@ -8,25 +8,25 @@ import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
-import com.apgsga.microservice.patch.core.ssh.patch.vcs.PatchSshCommand;
-import com.apgsga.microservice.patch.core.ssh.SshCommandRunner;
+import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
+import com.apgsga.microservice.patch.core.commands.CommandRunner;
 
 public class TaskEntwicklungInstallationsbereit implements Runnable {
 
 	protected static final Log LOGGER = LogFactory.getLog(TaskEntwicklungInstallationsbereit.class.getName());
 
-	public static Runnable create(SshCommandRunner jschSession, Patch patch, ArtifactDependencyResolver dependencyResolver,
+	public static Runnable create(CommandRunner jschSession, Patch patch, ArtifactDependencyResolver dependencyResolver,
 								  JenkinsClient jenkinsPatchClient, PatchPersistence repo) {
 		return new TaskEntwicklungInstallationsbereit(jschSession, patch, dependencyResolver, jenkinsPatchClient, repo);
 	}
 
-	private final SshCommandRunner jschSession;
+	private final CommandRunner jschSession;
 	private final Patch patch;
 	private final ArtifactDependencyResolver dependencyResolver;
 	private final JenkinsClient jenkinsPatchClient;
 	private final PatchPersistence repo;
 
-	private TaskEntwicklungInstallationsbereit(SshCommandRunner jschSession, Patch patch,
+	private TaskEntwicklungInstallationsbereit(CommandRunner jschSession, Patch patch,
 											   ArtifactDependencyResolver dependencyResolver, JenkinsClient jenkinsPatchClient, PatchPersistence repo) {
 		super();
 		this.jschSession = jschSession;

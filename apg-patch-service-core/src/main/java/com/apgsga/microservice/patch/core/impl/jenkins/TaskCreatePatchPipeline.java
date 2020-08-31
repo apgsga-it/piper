@@ -1,8 +1,8 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.core.ssh.ProcessBuilderCmdRunnerFactory;
-import com.apgsga.microservice.patch.core.ssh.jenkins.JenkinsSshCommand;
+import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
