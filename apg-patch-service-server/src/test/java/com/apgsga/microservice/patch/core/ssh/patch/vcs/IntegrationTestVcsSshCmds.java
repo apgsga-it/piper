@@ -1,5 +1,8 @@
-package com.apgsga.microservice.patch.core.impl.vcs;
+package com.apgsga.microservice.patch.core.ssh.patch.vcs;
 
+import com.apgsga.microservice.patch.core.ssh.JschSessionCmdRunnerFactory;
+import com.apgsga.microservice.patch.core.ssh.SshCommand;
+import com.apgsga.microservice.patch.core.ssh.SshCommandRunner;
 import org.apache.commons.lang.math.RandomUtils;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -12,9 +15,9 @@ public class IntegrationTestVcsSshCmds {
 	@Test
 	public void testCreatePatchBranch() throws Exception {
 		// JHE (25.06.2018): Within JAVA8MIG-386, we removed vcs.password, probably this test would noe fail
-		VcsCommandRunner runner = new JschSessionCmdRunnerFactory("che","192.168.17.129").create();
+		SshCommandRunner runner = new JschSessionCmdRunnerFactory("che","192.168.17.129").create();
 		runner.preProcess();
-		VcsCommand cmd = PatchVcsCommand.createCreatePatchBranchCmd("someBranch" + RandomUtils.nextInt(), "HEAD", "-d /home/che/local/cvs ",
+		SshCommand cmd = PatchSshCommand.createCreatePatchBranchCmd("someBranch" + RandomUtils.nextInt(), "HEAD", "-d /home/che/local/cvs ",
 				Lists.newArrayList("module1", "module2"));
 		cmd.noSystemCheck(true);
 		runner.run(cmd);
@@ -25,9 +28,9 @@ public class IntegrationTestVcsSshCmds {
 	@Test
 	public void testCreatePatchTag() throws Exception {
 		// JHE (25.06.2018): Within JAVA8MIG-386, we removed vcs.password, probably this test would noe fail		
-		VcsCommandRunner runner = new JschSessionCmdRunnerFactory("che","192.168.17.129").create();
+		SshCommandRunner runner = new JschSessionCmdRunnerFactory("che","192.168.17.129").create();
 		runner.preProcess();
-		VcsCommand cmd = PatchVcsCommand.createTagPatchModulesCmd("someTag" + RandomUtils.nextInt(), "HEAD", "-d /home/che/local/cvs ",
+		SshCommand cmd = PatchSshCommand.createTagPatchModulesCmd("someTag" + RandomUtils.nextInt(), "HEAD", "-d /home/che/local/cvs ",
 				Lists.newArrayList("module1", "module2"));
 		cmd.noSystemCheck(true);
 		runner.run(cmd);
@@ -38,9 +41,9 @@ public class IntegrationTestVcsSshCmds {
 	@Test
 	public void testDiff() throws Exception {
 		// JHE (25.06.2018): Within JAVA8MIG-386, we removed vcs.password, probably this test would noe fail		
-		VcsCommandRunner runner = new JschSessionCmdRunnerFactory("che","192.168.17.129").create();
+		SshCommandRunner runner = new JschSessionCmdRunnerFactory("che","192.168.17.129").create();
 		runner.preProcess();
-		VcsCommand cmd = PatchVcsCommand.createDiffPatchModulesCmd("testBranch", "HEAD", "-d /home/che/local/cvs ",
+		SshCommand cmd = PatchSshCommand.createDiffPatchModulesCmd("testBranch", "HEAD", "-d /home/che/local/cvs ",
 				Lists.newArrayList("module1", "module2"));
 		runner.run(cmd);
 		cmd.noSystemCheck(true);

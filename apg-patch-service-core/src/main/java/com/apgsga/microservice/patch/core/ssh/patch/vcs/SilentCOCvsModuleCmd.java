@@ -1,8 +1,8 @@
-package com.apgsga.microservice.patch.core.impl.vcs;
+package com.apgsga.microservice.patch.core.ssh.patch.vcs;
 
 import java.util.List;
 
-public class SilentCOCvsModuleCmd extends PatchVcsCommand {
+public class SilentCOCvsModuleCmd extends PatchSshCommand {
 	
 	public SilentCOCvsModuleCmd(String cvsBranch, List<String> modules, String lastPart) {
 		super(cvsBranch, modules, lastPart);
@@ -11,7 +11,7 @@ public class SilentCOCvsModuleCmd extends PatchVcsCommand {
 	}
 
 	@Override
-	protected String[] getFristPart() {
+	protected String[] getFirstPart() {
 		return new String[] {"co", "-p", "-r", prodBranch};
 	}
 }

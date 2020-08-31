@@ -1,8 +1,8 @@
-package com.apgsga.microservice.patch.core.impl.vcs;
+package com.apgsga.microservice.patch.core.ssh.patch.vcs;
 
 import java.util.List;
 
-public class DiffPatchModulesCmd extends PatchVcsCommand {
+public class DiffPatchModulesCmd extends PatchSshCommand {
 
 	public DiffPatchModulesCmd(String patchBranch, String prodBranch, List<String> modules) {
 		super(patchBranch, prodBranch, modules);
@@ -14,7 +14,7 @@ public class DiffPatchModulesCmd extends PatchVcsCommand {
 
 
 	@Override
-	protected String[] getFristPart() {
+	protected String[] getFirstPart() {
 		return new String[] {  "-f", "rdiff", "-u", "-r", prodBranch, "-r", patchTag };
 	}
 

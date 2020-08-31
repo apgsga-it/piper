@@ -1,6 +1,8 @@
-package com.apgsga.microservice.patch.core.impl.vcs;
+package com.apgsga.microservice.patch.core.ssh.patch.vcs;
 
-public class RmTmpCheckoutFolder implements VcsCommand {
+import com.apgsga.microservice.patch.core.ssh.SshCommand;
+
+public class RmTmpCheckoutFolder implements SshCommand {
 
     private String folderToBeDeleted;
 

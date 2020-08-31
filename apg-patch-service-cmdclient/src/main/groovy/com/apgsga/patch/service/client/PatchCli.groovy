@@ -238,7 +238,6 @@ class PatchCli {
 		patchClient.startInstallPipeline(target)
 	}
 
-	// TODO JHE (18.08.2020): do we still want to return anything now that things will be done server-side?
 	def executeStateTransitionActionInDb(PatchRestServiceClient patchClient, def patchNumber, def statusNum) {
 		patchClient.executeStateTransitionActionInDb(patchNumber,statusNum)
 	}

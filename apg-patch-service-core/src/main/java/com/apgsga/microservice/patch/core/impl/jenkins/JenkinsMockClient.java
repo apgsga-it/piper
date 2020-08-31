@@ -6,7 +6,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.apgsga.microservice.patch.api.Patch;
-import com.offbytwo.jenkins.model.BuildResult;
 
 public class JenkinsMockClient implements JenkinsClient {
 
@@ -59,9 +58,10 @@ public class JenkinsMockClient implements JenkinsClient {
 	}
 
 	@Override
-	public BuildResult getProdPipelineBuildResult(String patchNumber) {
+	public String getProdPipelineBuildResult(String patchNumber) {
 		LOGGER.info("getProdPipelineBuildResult for : " + patchNumber);
-		return BuildResult.ABORTED;
+		// TODO JHE (24.08.2020) : not sure what to return, not sure the interface will really require a String to be returned
+		return "TO BE DETERMINE";
 	}
 
 	@Override

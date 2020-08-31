@@ -1,13 +1,15 @@
-package com.apgsga.microservice.patch.core.impl.vcs;
+package com.apgsga.microservice.patch.core.ssh;
 
 import java.util.List;
 
+import com.apgsga.microservice.patch.core.ssh.SshCommand;
+import com.apgsga.microservice.patch.core.ssh.SshCommandRunner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.google.common.collect.Lists;
 
-public class LoggingMockVcsRunner implements VcsCommandRunner {
+public class LoggingMockSshRunner implements SshCommandRunner {
 	
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 
@@ -23,8 +25,8 @@ public class LoggingMockVcsRunner implements VcsCommandRunner {
 	}
 
 	@Override
-	public List<String> run(VcsCommand vcsCommand) {
-		String command = String.join(" ", vcsCommand.getCommand());
+	public List<String> run(SshCommand sshCommand) {
+		String command = String.join(" ", sshCommand.getCommand());
 		LOGGER.info("Mocking execCommand with: " + command);
 		LOGGER.info("Returning empty List");
 		// TODO 1.5 (CHE , JHE) for one special cvs command, could break other tests

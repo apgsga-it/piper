@@ -1,4 +1,4 @@
-package com.apgsga.microservice.patch.core.impl.vcs;
+package com.apgsga.microservice.patch.core.ssh;
 
 import java.io.InputStream;
 import java.util.List;
@@ -19,7 +19,7 @@ import com.jcraft.jsch.Session;
  *             resp https://www.cleondris.com/opensource/ssh2/ Reason: Error
  *             Handling is not very good
  */
-public class JschCommandRunner implements VcsCommandRunner {
+public class JschCommandRunner implements SshCommandRunner {
 
 	protected static final Log LOGGER = LogFactory.getLog(JschCommandRunner.class.getName());
 
@@ -40,7 +40,7 @@ public class JschCommandRunner implements VcsCommandRunner {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<String> run(VcsCommand vcsCmd) {
+	public List<String> run(SshCommand vcsCmd) {
 		String command = String.join(" ", vcsCmd.getCommand());
 		LOGGER.info("Executing: " + command);
 		List<String> resultLines = Lists.newArrayList();

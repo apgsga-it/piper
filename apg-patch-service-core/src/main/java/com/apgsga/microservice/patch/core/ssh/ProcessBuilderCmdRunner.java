@@ -1,4 +1,4 @@
-package com.apgsga.microservice.patch.core.impl.vcs;
+package com.apgsga.microservice.patch.core.ssh;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,13 +10,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.google.common.collect.Lists;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.web.client.RestTemplate;
 
 
-public class ProcessBuilderCmdRunner implements VcsCommandRunner {
+public class ProcessBuilderCmdRunner implements SshCommandRunner {
 	
 	protected static final Log LOGGER = LogFactory.getLog(ProcessBuilderCmdRunner.class.getName());
 
-	public List<String> run(VcsCommand command) {
+	public List<String> run(SshCommand command) {
 		ProcessBuilder pb = new ProcessBuilder().command(command.getCommand());
 		Process p;
 		try {
@@ -37,12 +39,12 @@ public class ProcessBuilderCmdRunner implements VcsCommandRunner {
 		}
 	}
 
-	private static class StreamGobbler extends Thread {
+	public static class StreamGobbler extends Thread {
 
 		List<String> output = Lists.newArrayList();
 		InputStream is;
 
-		private StreamGobbler(InputStream is) {
+		public StreamGobbler(InputStream is) {
 			this.is = is;
 		}
 
@@ -62,6 +64,17 @@ public class ProcessBuilderCmdRunner implements VcsCommandRunner {
 		}
 		public List<String> getOutput() {
 			return output; 
+		}
+
+		public void log() {
+			StringBuffer buffer = new StringBuffer();
+			output.forEach((line) -> append(buffer,line));
+            LOGGER.info(buffer.toString());
+		}
+
+		public static void append(StringBuffer buffer, String line) {
+			buffer.append(line);
+			buffer.append('\n');
 		}
 	}
 

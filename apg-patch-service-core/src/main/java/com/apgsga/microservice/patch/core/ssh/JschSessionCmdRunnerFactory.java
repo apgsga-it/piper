@@ -1,4 +1,4 @@
-package com.apgsga.microservice.patch.core.impl.vcs;
+package com.apgsga.microservice.patch.core.ssh;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -7,7 +7,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-public class JschSessionCmdRunnerFactory implements VcsCommandRunnerFactory {
+public class JschSessionCmdRunnerFactory implements SshCommandRunnerFactory {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 
@@ -22,7 +22,7 @@ public class JschSessionCmdRunnerFactory implements VcsCommandRunnerFactory {
 	}
 
 	@Override
-	public VcsCommandRunner create() {
+	public SshCommandRunner create() {
 		JSch jsch = new JSch();
 		Session session;
 		try {
@@ -39,7 +39,7 @@ public class JschSessionCmdRunnerFactory implements VcsCommandRunnerFactory {
 		java.util.Properties config = new java.util.Properties();
 		config.put("StrictHostKeyChecking", "no");
 		session.setConfig(config);
-		final VcsCommandRunner jschSession = new JschCommandRunner(session);
+		final SshCommandRunner jschSession = new JschCommandRunner(session);
 		return jschSession;
 	}
 

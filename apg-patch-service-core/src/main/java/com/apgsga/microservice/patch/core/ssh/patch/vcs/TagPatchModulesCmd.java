@@ -1,8 +1,8 @@
-package com.apgsga.microservice.patch.core.impl.vcs;
+package com.apgsga.microservice.patch.core.ssh.patch.vcs;
 
 import java.util.List;
 
-public class TagPatchModulesCmd extends PatchVcsCommand {
+public class TagPatchModulesCmd extends PatchSshCommand {
 
 	public TagPatchModulesCmd(String patchBranch, String prodBranch, List<String> modules) {
 		super(patchBranch, prodBranch, modules);
@@ -14,7 +14,7 @@ public class TagPatchModulesCmd extends PatchVcsCommand {
 	}
 
 	@Override
-	protected String[] getFristPart() {
+	protected String[] getFirstPart() {
 		return new String[] {"rtag",  "-r", prodBranch, patchTag };
 	}
 

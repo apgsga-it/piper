@@ -1,31 +1,21 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.task.TaskExecutor;
-
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.core.ssh.jenkins.JenkinsSshCommand;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.google.common.collect.Maps;
-import com.offbytwo.jenkins.JenkinsServer;
-import com.offbytwo.jenkins.model.Build;
-import com.offbytwo.jenkins.model.BuildResult;
-import com.offbytwo.jenkins.model.BuildWithDetails;
-import com.offbytwo.jenkins.model.PendingInputActions;
-import com.offbytwo.jenkins.model.PipelineBuild;
-import com.offbytwo.jenkins.model.PipelineJobWithDetails;
-import com.offbytwo.jenkins.model.QueueItem;
-import com.offbytwo.jenkins.model.QueueReference;
-import com.offbytwo.jenkins.model.WorkflowRun;
-import org.springframework.stereotype.Component;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.io.Resource;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Map;
 
 public class JenkinsClientImpl implements JenkinsClient {
 
@@ -49,24 +39,22 @@ public class JenkinsClientImpl implements JenkinsClient {
 	private static final int DEFAULT_RETRY_COUNTS = 6;
 	private Resource dbLocation;
 	private String jenkinsUrl;
-	private String jenkinsUser;
-	private String jenkinsUserAuthKey;
+	private String jenkinsSshPort;
+	private String jenkinsSshUser;
 	private TaskExecutor threadExecutor;
 
-	public JenkinsClientImpl(Resource dbLocation, String jenkinsUrl, String jenkinsUser, String jenkinsUserAuthKey,
-			TaskExecutor taskExectuor) {
+	public JenkinsClientImpl(Resource dbLocation, String jenkinsUrl, String jenkinsSshPort, String jenkinsSshUser, TaskExecutor taskExectuor) {
 		super();
 		this.dbLocation = dbLocation;
 		this.jenkinsUrl = jenkinsUrl;
-		this.jenkinsUser = jenkinsUser;
-		this.jenkinsUserAuthKey = jenkinsUserAuthKey;
+		this.jenkinsSshPort = jenkinsSshPort;
+		this.jenkinsSshUser = jenkinsSshUser;
 		this.threadExecutor = taskExectuor;
 	}
 
 	@Override
 	public void createPatchPipelines(Patch patch) {
-		threadExecutor.execute(TaskCreatePatchPipeline.create(jenkinsUrl, jenkinsUser, jenkinsUserAuthKey, patch));
-
+		threadExecutor.execute(TaskCreatePatchPipeline.create(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, patch));
 	}
 
 	@Override
@@ -82,6 +70,38 @@ public class JenkinsClientImpl implements JenkinsClient {
 	}
 
 	private void startPipeline(Patch patch, String jobSuffix, boolean restart) {
+
+		// TODO JHE (24.08.2020): probably we'll be able to use "build" task from jenkins-cli
+		//						: based on restart parameter, eventually using "restart-from-stage", or "restart", or "replay-pipeline"
+
+
+		// TODO JHE: still have to pass the patchFile as Parameter
+
+
+		try {
+			String patchName = PATCH_CONS + patch.getPatchNummer();
+			String jobName = patchName + jobSuffix;
+			File patchFile = new File(dbLocation.getFile(), patchName + JSON_CONS);
+
+			if(jobSuffix.equalsIgnoreCase("ondemand")) {
+				//triggerPipelineJobWithoutWaitingOnFeedback(jenkinsServer, jobName, jobParm, true);
+				// TODO JHE: Last parameter should be job Parameter, with File
+				JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName);
+				LOGGER.info("ondemand job for patch " + patch.getPatchNummer() + " has been started. No post-submit verification will be done.");
+			}
+			else {
+				// TODO JHE: Last parameter should be job Parameter, with File
+				JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForStartCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName);
+			}
+
+		} catch (Exception e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startPipeline.exception",
+					new Object[] { e.getMessage(), patch.toString() }, e);
+		}
+
+
+		// TODO JHE (24.08.2020): old code to be removed
+		/*
 		try {
 			String patchName = PATCH_CONS + patch.getPatchNummer();
 			String jobName = patchName + jobSuffix;
@@ -116,27 +136,45 @@ public class JenkinsClientImpl implements JenkinsClient {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startPipeline.exception",
 					new Object[] { e.getMessage(), patch.toString() }, e);
 		}
+
+		 */
 	}
 
-	private synchronized void triggerPipelineJobWithoutWaitingOnFeedback(JenkinsServer jenkinsServer, String jobName, Map<String, String> jobParm, boolean crumbFlag) {
+	private synchronized void triggerPipelineJobWithoutWaitingOnFeedback(String jobName, Map<String, String> jobParm, boolean crumbFlag) {
+
+		// TODO JHE (24.08.2020): not sure we'll this one anymore, might be easier with jenkins-cli
+
+
+		/*
 		try {
 			PipelineJobWithDetails job = jenkinsServer.getPipelineJob(jobName);
 			job.build(jobParm, crumbFlag);
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.triggerPipelineJobWithoutWaitingOnFeedback.exception", new Object[]{e.getMessage(), jobName});
 		}
+		*/
 	}
 
 	@Override
 	public void cancelPatchPipeline(Patch patch) {
+
+		// TODO JHE (24.08.2020): Probably here we'll be able to call the "stop-builds" from jenkins-cli
+
+		/*
 		processInputAction(patch, CANCEL_CONS, null);
+
+		 */
 	}
 
+	// TODO JHE (24.08.2020) : Probably ok to be removed
+	/*
 	private PipelineBuild getPipelineBuild(JenkinsServer jenkinsServer, String jobName) throws IOException {
 		PipelineJobWithDetails job = jenkinsServer.getPipelineJob(jobName);
 		PipelineBuild lastBuild = job.getLastBuild();
 		return lastBuild;
 	}
+	*/
+
 
 	@Override
 	public void processInputAction(Patch patch, Map<String, String> parameter) {
@@ -146,11 +184,17 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	@Override
 	public void processInputAction(Patch patch, String targetName, String stage) {
+
+		// TODO JHE (24.08.2020) : It doesn't seem that jenkins-cli contains a function to provide an input to a Job.
+		//						   Here we might have to implement it without jenkins-cli, using an approach mentioned within https://jira.apgsga.ch/browse/IT-35956
+
+
+		/*
 		String action = stage.equals(CANCEL_CONS) ? stage
 				: PATCH_CONS + patch.getPatchNummer() + stage + targetName + OK_CONS;
 		JenkinsServer jenkinsServer = null;
 		try {
-			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
+			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsSshUser, jenkinsUserAuthKey);
 			PipelineBuild lastBuild = getPipelineBuild(jenkinsServer, PATCH_CONS + patch.getPatchNummer());
 			validateLastPipelineBuilder(patch.getPatchNummer(), lastBuild);
 			inputActionForPipeline(patch, action, lastBuild);
@@ -164,8 +208,10 @@ public class JenkinsClientImpl implements JenkinsClient {
 				jenkinsServer.close();
 			}
 		}
+		 */
 	}
 
+	/*
 	private void inputActionForPipeline(Patch patch, String action, PipelineBuild lastBuild)
 			throws IOException, InterruptedException {
 		int i = 0; 
@@ -174,7 +220,9 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 		}
 	}
+	 */
 
+	/*
 	private boolean waitForAndProcessInput(Patch patch, String action, PipelineBuild lastBuild, int loops)
 			throws IOException, InterruptedException {
 		WorkflowRun wfRun = lastBuild.getWorkflowRun();
@@ -207,6 +255,9 @@ public class JenkinsClientImpl implements JenkinsClient {
 		}
 	}
 
+	 */
+
+	/*
 	private void validateLastPipelineBuilder(String patchNumber, PipelineBuild lastBuild) throws IOException {
 		if (lastBuild == null || lastBuild.equals(Build.BUILD_HAS_NEVER_RUN)
 				|| lastBuild.equals(Build.BUILD_HAS_BEEN_CANCELLED)) {
@@ -219,14 +270,21 @@ public class JenkinsClientImpl implements JenkinsClient {
 		}
 	}
 
+	 */
+
 	@Override
 	public void onClone(String source, String target) {
+
+		//TODO JHE: Not 100% sure yet, the interface might change, but basicallym using the jenkins-cli "build" function should do it
+
+
+		/*
 		String jobName = "onClone" + target.toUpperCase();
 		LOGGER.info("Starting onClone process for " + target + ". " + jobName + " pipeline will be started.");
 
 		try {
-			JenkinsServer jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
-			LOGGER.info("Connected to Jenkinsserver with, url: " + jenkinsUrl + " and user: " + jenkinsUser);
+			JenkinsServer jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsSshUser, jenkinsUserAuthKey);
+			LOGGER.info("Connected to Jenkinsserver with, url: " + jenkinsUrl + " and user: " + jenkinsSshUser);
 			Map<String, String> jobParm = Maps.newHashMap();
 			jobParm.put(TOKEN_CONS, jobName);
 			jobParm.put("target", target);
@@ -240,9 +298,10 @@ public class JenkinsClientImpl implements JenkinsClient {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsAdminClientImpl.startPipeline.error",
 					new Object[] { e.getMessage(), target }, e);
 		}
-
+*/
 	}
 
+	/*
 	private void onCloneJobLog(JenkinsServer jenkinsServer, String jobName) throws IOException, InterruptedException {
 		PipelineBuild onCloneBuild = getPipelineBuild(jenkinsServer, jobName);		
 		final int MAX_RETRY = 10;
@@ -261,6 +320,9 @@ public class JenkinsClientImpl implements JenkinsClient {
 		}
 	}
 
+	 */
+
+	/*
 	private static synchronized PipelineBuild triggerPipelineJobAndWaitUntilBuilding(JenkinsServer server, String jobName,
 			Map<String, String> params, boolean crumbFlag) throws IOException, InterruptedException {
 		LOGGER.info("Getting Job Details for Job \"" + jobName + "\"");
@@ -270,6 +332,9 @@ public class JenkinsClientImpl implements JenkinsClient {
 		return triggerPipelineJobAndWaitUntilBuilding(server, jobName, queueRef);
 	}
 
+	 */
+
+	/*
 	private static PipelineBuild triggerPipelineJobAndWaitUntilBuilding(JenkinsServer server, String jobName,
 			QueueReference queueRef) throws IOException, InterruptedException {
 		LOGGER.info("Getting Job Details for Job \"" + jobName + "\"");
@@ -314,37 +379,59 @@ public class JenkinsClientImpl implements JenkinsClient {
 				"JenkinsPatchClientImpl.triggerPipelineJobAndWaitUntilBuilding.error", new Object[] { jobName });
 	}
 
+	 */
+
 	@Override
 	public boolean isProdPatchPipelineRunning(String patchNumber) {
+
+		//TODO JHE (24.08.2020): We might be able and want to remove this from the interface
+
+		return false;
+		/*
 		JenkinsServer jenkinsServer;
 		try {
-			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
+			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsSshUser, jenkinsUserAuthKey);
 			PipelineBuild lastBuild = getPipelineBuild(jenkinsServer, PATCH_CONS + patchNumber);
 			return lastBuild.details().isBuilding();
 		} catch (Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.isProdPipelineForPatchRunning.error", new Object[]{patchNumber});
 		}
+
+		 */
 	}
 
 	@Override
-	public BuildResult getProdPipelineBuildResult(String patchNumber) {
+	public String getProdPipelineBuildResult(String patchNumber) {
+
+		//TODO JHE (24.08.2020): We might be able and want to remove this from the interface
+
+		return "";
+
+		/*
 		JenkinsServer jenkinsServer;
 		try {
-			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
+			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsSshUser, jenkinsUserAuthKey);
 			PipelineBuild lastBuild = getPipelineBuild(jenkinsServer, PATCH_CONS + patchNumber);
 			return lastBuild.details().getResult();
 		} catch (Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.getProdPipelineBuildResult.error", new Object[]{patchNumber});
 		}
+
+		 */
 	}
 
 	@Override
 	public void startAssembleAndDeployPipeline(String target) {
+
+		//TODO JHE: Probably doable with jenkins-cli "build" function should do it
+
+
+		/*
 		JenkinsServer jenkinsServer;
 		try {
 			String jobName = "assembleAndDeploy_" + target;
-			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
-			LOGGER.info("Connected to Jenkinsserver with, url: " + jenkinsUrl + " and user: " + jenkinsUser);
+			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsSshUser, jenkinsUserAuthKey);
+			LOGGER.info("Connected to Jenkinsserver with, url: " + jenkinsUrl + " and user: " + jenkinsSshUser);
 			Map<String, String> jobParm = Maps.newHashMap();
 			jobParm.put(TOKEN_CONS, jobName);
 			jobParm.put("TARGET", target);
@@ -355,15 +442,22 @@ public class JenkinsClientImpl implements JenkinsClient {
 		catch (Exception ex) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startAssembleAndDeployPipeline.error", new Object[]{target,ex.getMessage()});
 		}
+
+		 */
 	}
 
 	@Override
 	public void startInstallPipeline(String target) {
+
+		//TODO JHE: Probably doable with jenkins-cli "build" function should do it
+
+
+		/*
 		JenkinsServer jenkinsServer;
 		try {
 			String jobName = "install_" + target;
-			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
-			LOGGER.info("Connected to Jenkinsserver with, url: " + jenkinsUrl + " and user: " + jenkinsUser);
+			jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsSshUser, jenkinsUserAuthKey);
+			LOGGER.info("Connected to Jenkinsserver with, url: " + jenkinsUrl + " and user: " + jenkinsSshUser);
 			Map<String, String> jobParm = Maps.newHashMap();
 			jobParm.put(TOKEN_CONS, jobName);
 			jobParm.put("TARGET", target);
@@ -374,5 +468,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 		catch (Exception ex) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startInstall.error", new Object[]{target,ex.getMessage()});
 		}
+
+		 */
 	}
 }

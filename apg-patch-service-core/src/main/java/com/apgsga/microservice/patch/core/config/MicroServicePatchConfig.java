@@ -10,10 +10,10 @@ import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClientImpl;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsMockClient;
 import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
-import com.apgsga.microservice.patch.core.impl.vcs.JschSessionCmdRunnerFactory;
-import com.apgsga.microservice.patch.core.impl.vcs.LoggingMockVcsRunnerFactory;
-import com.apgsga.microservice.patch.core.impl.vcs.ProcessBuilderCmdRunnerFactory;
-import com.apgsga.microservice.patch.core.impl.vcs.VcsCommandRunnerFactory;
+import com.apgsga.microservice.patch.core.ssh.JschSessionCmdRunnerFactory;
+import com.apgsga.microservice.patch.core.ssh.LoggingMockSshRunnerFactory;
+import com.apgsga.microservice.patch.core.ssh.ProcessBuilderCmdRunnerFactory;
+import com.apgsga.microservice.patch.core.ssh.SshCommandRunnerFactory;
 import com.apgsga.system.mapping.api.TargetSystemMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -130,18 +130,20 @@ public class MicroServicePatchConfig {
 	public JenkinsClient jenkinsPatchClient() {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource rDbLocation = rl.getResource(dbLocation);
-		return new JenkinsClientImpl(rDbLocation, jenkinsHost, jenkinsUser, jenkinsAuthKey, threadPoolTaskExecutor());
+		// TODO JHE (24.08.2020): Here we'll have to pass different parameters retrieved from new properties
+//		return new JenkinsClientImpl(rDbLocation, jenkinsHost, jenkinsUser, jenkinsAuthKey, threadPoolTaskExecutor());
+		return new JenkinsClientImpl(rDbLocation, "172.17.139.248", "53801", "jhe", threadPoolTaskExecutor());
 	}
 
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile({ "live", "remotecvs" })
-	public VcsCommandRunnerFactory jsessionFactory() {
+	public SshCommandRunnerFactory jsessionFactory() {
 		return new JschSessionCmdRunnerFactory(vcsUser, vcsHost);
 	}
 
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile({ "live", "localcvs" })
-	public VcsCommandRunnerFactory vcsLocalFactory() {
+	public SshCommandRunnerFactory vcsLocalFactory() {
 		return new ProcessBuilderCmdRunnerFactory();
 	}
 
@@ -153,8 +155,8 @@ public class MicroServicePatchConfig {
 
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile("mock")
-	public VcsCommandRunnerFactory jsessionFactoryMock() {
-		return new LoggingMockVcsRunnerFactory();
+	public SshCommandRunnerFactory jsessionFactoryMock() {
+		return new LoggingMockSshRunnerFactory();
 	}
 
 	@Bean(name = "groovyActionFactory")

@@ -1,67 +1,68 @@
-package com.apgsga.microservice.patch.core.impl.vcs;
+package com.apgsga.microservice.patch.core.ssh.patch.vcs;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.apgsga.microservice.patch.core.ssh.SshCommand;
+import com.apgsga.microservice.patch.core.ssh.SshCommandBaseImpl;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.google.common.collect.Lists;
 
-public abstract class PatchVcsCommand implements VcsCommand {
+public abstract class PatchSshCommand extends SshCommandBaseImpl {
 	
-	protected static final Log LOGGER = LogFactory.getLog(PatchVcsCommand.class.getName());
+	protected static final Log LOGGER = LogFactory.getLog(PatchSshCommand.class.getName());
 
-
-	public static VcsCommand createCreatePatchBranchCmd(String patchBranch, String prodBranch, List<String> modules) {
+	// TODO JHE: Shouldn't all these static create* method be in a separated Factory class ??
+	public static SshCommand createCreatePatchBranchCmd(String patchBranch, String prodBranch, List<String> modules) {
 		return new CreatePatchBranchCmd(patchBranch, prodBranch, modules);
 	}
 
-	public static VcsCommand createCreatePatchBranchCmd(String patchBranch, String prodBranch, String additionalOptions,
-			List<String> modules) {
+	public static SshCommand createCreatePatchBranchCmd(String patchBranch, String prodBranch, String additionalOptions,
+														List<String> modules) {
 		return new CreatePatchBranchCmd(patchBranch, prodBranch, additionalOptions, modules);
 	}
 
-	public static VcsCommand createDiffPatchModulesCmd(String patchBranch, String prodBranch, List<String> modules) {
+	public static SshCommand createDiffPatchModulesCmd(String patchBranch, String prodBranch, List<String> modules) {
 		return new DiffPatchModulesCmd(patchBranch, prodBranch, modules);
 	}
 
-	public static VcsCommand createDiffPatchModulesCmd(String patchBranch, String prodBranch, String module) {
+	public static SshCommand createDiffPatchModulesCmd(String patchBranch, String prodBranch, String module) {
 		return new DiffPatchModulesCmd(patchBranch, prodBranch, Lists.newArrayList(module));
 	}
 	
-	public static VcsCommand createDiffPatchModulesCmd(String patchBranch, String prodBranch,String additionalOptions, String module) {
+	public static SshCommand createDiffPatchModulesCmd(String patchBranch, String prodBranch, String additionalOptions, String module) {
 		return new DiffPatchModulesCmd(patchBranch, prodBranch,additionalOptions, Lists.newArrayList(module));
 	}
 	
-	public static VcsCommand createDiffPatchModulesCmd(String patchBranch, String prodBranch,String additionalOptions, List<String> modules) {
+	public static SshCommand createDiffPatchModulesCmd(String patchBranch, String prodBranch, String additionalOptions, List<String> modules) {
 		return new DiffPatchModulesCmd(patchBranch, prodBranch, additionalOptions,modules);
 	}
 
 
-	public static VcsCommand createTagPatchModulesCmd(String patchBranch, String prodBranch, List<String> modules) {
+	public static SshCommand createTagPatchModulesCmd(String patchBranch, String prodBranch, List<String> modules) {
 		return new TagPatchModulesCmd(patchBranch, prodBranch, modules);
 	}
 
-	public static VcsCommand createTagPatchModulesCmd(String patchBranch, String prodBranch, String additionalOptions,
-			List<String> modules) {
+	public static SshCommand createTagPatchModulesCmd(String patchBranch, String prodBranch, String additionalOptions,
+													  List<String> modules) {
 		return new TagPatchModulesCmd(patchBranch, prodBranch, additionalOptions, modules);
 	}
 	
-	public static VcsCommand createSilentCoCvsModuleCmd(String cvsBranch, List<String> modules, String lastPart) {
+	public static SshCommand createSilentCoCvsModuleCmd(String cvsBranch, List<String> modules, String lastPart) {
 		return new SilentCOCvsModuleCmd(cvsBranch, modules, lastPart);
 	}
 
-	public static VcsCommand createCoCvsModuleToDirectoryCmd(String patchBranch, String prodBranch, List<String> modules, String additionalOptions) {
+	public static SshCommand createCoCvsModuleToDirectoryCmd(String patchBranch, String prodBranch, List<String> modules, String additionalOptions) {
 		return new ExportModulesInFolderCmd(prodBranch,patchBranch,modules,additionalOptions);
 	}
 
-	public static VcsCommand createRmTmpCheckoutFolder(String coFolder) {
+	public static SshCommand createRmTmpCheckoutFolder(String coFolder) {
 		return new RmTmpCheckoutFolder(coFolder);
 	}
-
 
 	protected String patchTag;
 
@@ -70,26 +71,24 @@ public abstract class PatchVcsCommand implements VcsCommand {
 	protected List<String> modules;
 
 	protected String additionalOptions = null;
-	
-	protected String lastPart = null;
-	
-	protected boolean noSystemCheck = false; 
 
-	public PatchVcsCommand(String patchBranch, String prodBranch, List<String> modules) {
+	protected String lastPart = null;
+
+	public PatchSshCommand(String patchBranch, String prodBranch, List<String> modules) {
 		super();
 		this.patchTag = patchBranch;
 		this.prodBranch = prodBranch;
 		this.modules = modules;
 	}
 	
-	public PatchVcsCommand(String cvsBranch, List<String> modules, String lastPart) {
+	public PatchSshCommand(String cvsBranch, List<String> modules, String lastPart) {
 		super();
 		this.prodBranch = cvsBranch;
 		this.modules = modules;
 		this.lastPart = lastPart;
 	}
 
-	public PatchVcsCommand(String patchBranch, String prodBranch, String additionalOptions, List<String> modules) {
+	public PatchSshCommand(String patchBranch, String prodBranch, String additionalOptions, List<String> modules) {
 		super();
 		this.patchTag = patchBranch;
 		this.prodBranch = prodBranch;
@@ -97,6 +96,7 @@ public abstract class PatchVcsCommand implements VcsCommand {
 		this.modules = modules;
 	}
 
+	// TODO JHE: Consider moving this to a super class
 	@Override
 	public String[] getCommand() {
 		String[] processBuilderParm;
@@ -109,8 +109,9 @@ public abstract class PatchVcsCommand implements VcsCommand {
 		return processBuilderParm; 
 	}
 
-	private String getParameterSpaceSeperated() {
-		String[] processParm = Stream.concat(Arrays.stream(getFristPart()), Arrays.stream(modules.toArray()))
+	@Override
+	protected String getParameterSpaceSeperated() {
+		String[] processParm = Stream.concat(Arrays.stream(getFirstPart()), Arrays.stream(modules.toArray()))
 				.toArray(String[]::new);
 		if(lastPart != null) {
 			processParm = Stream.concat(Arrays.stream(processParm), Arrays.stream(new String[] {lastPart})).toArray(String[]::new);
@@ -121,9 +122,10 @@ public abstract class PatchVcsCommand implements VcsCommand {
 		}
 		return parameter;
 	}
-	
-	private String[] getParameterAsArray() {
-		String[] parameter = Stream.concat(Arrays.stream(getFristPart()), Arrays.stream(modules.toArray()))
+
+	@Override
+	protected String[] getParameterAsArray() {
+		String[] parameter = Stream.concat(Arrays.stream(getFirstPart()), Arrays.stream(modules.toArray()))
 				.toArray(String[]::new);
 		
 		if(lastPart != null) {
@@ -136,13 +138,11 @@ public abstract class PatchVcsCommand implements VcsCommand {
 		return processBuilderParm;
 	}
 
-	protected abstract String[] getFristPart();
-
 	@Override
-	public void noSystemCheck(boolean noChecnk) {
-		this.noSystemCheck = noChecnk;
+	public void noSystemCheck(boolean noCheck) {
+		this.noSystemCheck = noCheck;
 	}
 	
-	
+	protected abstract String[] getFirstPart();
 
 }
