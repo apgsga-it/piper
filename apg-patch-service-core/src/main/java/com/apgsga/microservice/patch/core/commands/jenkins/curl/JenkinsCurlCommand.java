@@ -24,6 +24,14 @@ public abstract class JenkinsCurlCommand extends CommandBaseImpl {
         return new JenkinsCurlGetLastBuildCmd(jenkinsUrl,jenkinsUserName,jenkinsUserPwd,jobName);
     }
 
+    public static JenkinsCurlCommand createJenkinsCurlGetJobInputStatus(String jenkinsUrl, String jenkinsUserName, String jenkinsUserPwd, String jobName) {
+        return new JenkinsCurlGetInputStatus(jenkinsUrl,jenkinsUserName,jenkinsUserPwd,jobName);
+    }
+
+    public static JenkinsCurlCommand createJenkinsCurlSubmitPipelineInput(String jenkinsUrl, String jenkinsUserName, String jenkinsUserPwd, String jobName, String jobExecutionNumber, String inputId, String action) {
+        return new JenkinsCurlSubmitPipelineInput(jenkinsUrl,jenkinsUserName,jenkinsUserPwd,jobName,jobExecutionNumber,inputId,action);
+    }
+
     @Override
     protected String[] getParameterAsArray() {
         String[] parameter = Stream.concat(Arrays.stream(getFirstPart()), Arrays.stream(getCurlCmd()))

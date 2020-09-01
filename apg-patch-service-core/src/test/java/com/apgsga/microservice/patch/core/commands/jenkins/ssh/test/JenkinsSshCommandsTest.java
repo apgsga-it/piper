@@ -5,11 +5,13 @@ import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.google.common.collect.Maps;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
 
+@Ignore
 public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
 
     @Test

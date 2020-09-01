@@ -61,6 +61,7 @@ public class JenkinsMockClient implements JenkinsClient {
 	public String getProdPipelineBuildResult(String patchNumber) {
 		LOGGER.info("getProdPipelineBuildResult for : " + patchNumber);
 		// TODO JHE (24.08.2020) : not sure what to return, not sure the interface will really require a String to be returned
+		// TODO JHE (01.09.2020) : not even sure we want to keep this on the interface
 		return "TO BE DETERMINE";
 	}
 

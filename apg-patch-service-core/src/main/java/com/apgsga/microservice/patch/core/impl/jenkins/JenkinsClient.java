@@ -22,6 +22,7 @@ public interface JenkinsClient {
 	public boolean isProdPatchPipelineRunning(String patchNumber);
 
 	// TODO JHE (24.08.2020): not sure we want a String here .... just that it compiles for first set of refactoring
+	// TODO JHE (01.09.2020): could not find where it would be used, we might want to remove it from the interface
 	public String getProdPipelineBuildResult(String patchNumber);
 
 	public void startAssembleAndDeployPipeline(String target);

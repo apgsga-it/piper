@@ -3,10 +3,12 @@ package com.apgsga.microservice.patch.core.commands.jenkins.ssh.test;
 import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunner;
 import com.google.common.collect.Lists;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
 
+@Ignore
 public class JenkinsCliCommandTests extends JenkinsCliBaseTest{
 
     @Test

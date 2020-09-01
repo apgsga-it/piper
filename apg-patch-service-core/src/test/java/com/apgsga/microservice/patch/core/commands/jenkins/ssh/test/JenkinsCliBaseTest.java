@@ -7,6 +7,7 @@ import java.util.List;
 public abstract class JenkinsCliBaseTest {
 
     public static final String JENKINS_SSH_USER = "jhe";
+    public static final String JENKINS_USER_TOKEN = "1121097812220766a1129ba16a294a489e";
     public static final String JENKINS_HOST = "192.168.26.197";
     public static final String JENKINS_PORT = "8080";
     public static final String JENKINS_SSH_PORT = "53801";

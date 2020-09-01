@@ -4,16 +4,16 @@ import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.PatchPersistence;
+import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.JschSessionCmdRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.LoggingMockSshRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactory;
 import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactoryImpl;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClientImpl;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsMockClient;
 import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
-import com.apgsga.microservice.patch.core.commands.JschSessionCmdRunnerFactory;
-import com.apgsga.microservice.patch.core.commands.LoggingMockSshRunnerFactory;
-import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
-import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
 import com.apgsga.system.mapping.api.TargetSystemMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,6 +45,9 @@ public class MicroServicePatchConfig {
 
 	@Value("${jenkins.host:https://jenkins.apgsga.ch/}")
 	private String jenkinsHost;
+
+	@Value("${jenkins.ssh.port:53801}")
+	private String jenkinsSshPort;
 
 	@Value("${jenkins.user}")
 	private String jenkinsUser;
@@ -130,9 +133,7 @@ public class MicroServicePatchConfig {
 	public JenkinsClient jenkinsPatchClient() {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource rDbLocation = rl.getResource(dbLocation);
-		// TODO JHE (24.08.2020): Here we'll have to pass different parameters retrieved from new properties
-//		return new JenkinsClientImpl(rDbLocation, jenkinsHost, jenkinsUser, jenkinsAuthKey, threadPoolTaskExecutor());
-		return new JenkinsClientImpl(rDbLocation, "172.17.139.248", "53801", "jhe", threadPoolTaskExecutor());
+		return new JenkinsClientImpl(rDbLocation, jenkinsHost, jenkinsSshPort, jenkinsUser, jenkinsAuthKey, threadPoolTaskExecutor());
 	}
 
 	@Bean(name = "vcsCmdRunnerFactory")

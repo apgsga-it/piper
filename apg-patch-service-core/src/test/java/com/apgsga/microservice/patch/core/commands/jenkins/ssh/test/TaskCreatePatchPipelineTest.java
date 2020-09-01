@@ -3,11 +3,11 @@ package com.apgsga.microservice.patch.core.commands.jenkins.ssh.test;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.core.impl.jenkins.TaskCreatePatchPipeline;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class TaskCreatePatchPipelineTest extends JenkinsCliBaseTest {
-
-    //TODO JHE (27.08.2020): add comment that it's a kind of dummy test, should be ignored by default ...
 
     @Test
     public void testCreatePatchPipelineTest() {

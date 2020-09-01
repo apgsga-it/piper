@@ -16,7 +16,6 @@ public abstract class PatchSshCommand extends CommandBaseImpl {
 	
 	protected static final Log LOGGER = LogFactory.getLog(PatchSshCommand.class.getName());
 
-	// TODO JHE: Shouldn't all these static create* method be in a separated Factory class ??
 	public static Command createCreatePatchBranchCmd(String patchBranch, String prodBranch, List<String> modules) {
 		return new CreatePatchBranchCmd(patchBranch, prodBranch, modules);
 	}
@@ -96,7 +95,6 @@ public abstract class PatchSshCommand extends CommandBaseImpl {
 		this.modules = modules;
 	}
 
-	// TODO JHE: Consider moving this to a super class
 	@Override
 	public String[] getCommand() {
 		String[] processBuilderParm;
