@@ -23,12 +23,6 @@ public class JenkinsMockClient implements JenkinsClient {
 	}
 	
 	@Override
-	public void restartProdPatchPipeline(Patch patch) {
-		LOGGER.info("restartProdPatchPipeline for : " + patch.toString() );
-		
-	}
-
-	@Override
 	public void processInputAction(Patch patch, String target, String stage) {
 		LOGGER.info("approvate for target " + target + ",stage: " + stage + " and patch: " + patch.toString());
 
@@ -38,31 +32,6 @@ public class JenkinsMockClient implements JenkinsClient {
 	public void processInputAction(Patch patch, Map<String, String> parameter) {
 		LOGGER.info("processInputAction for patch: " + patch.toString() + ",with parameters: " + parameter.toString());
 
-	}
-
-	@Override
-	public void cancelPatchPipeline(Patch patch) {
-		LOGGER.info("cancelPatchPipeline for : " + patch.toString());
-
-	}
-	
-	@Override
-	public void onClone(String source, String target) {
-		LOGGER.info("onClone for source=" + source + " , target=" + target);		
-	}
-
-	@Override
-	public boolean isProdPatchPipelineRunning(String patchNumber) {
-		LOGGER.info("isProdPatchPipelineRunning for :" + patchNumber);
-		return false;
-	}
-
-	@Override
-	public String getProdPipelineBuildResult(String patchNumber) {
-		LOGGER.info("getProdPipelineBuildResult for : " + patchNumber);
-		// TODO JHE (24.08.2020) : not sure what to return, not sure the interface will really require a String to be returned
-		// TODO JHE (01.09.2020) : not even sure we want to keep this on the interface
-		return "TO BE DETERMINE";
 	}
 
 	@Override

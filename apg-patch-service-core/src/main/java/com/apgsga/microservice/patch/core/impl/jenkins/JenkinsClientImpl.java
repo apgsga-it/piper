@@ -61,17 +61,11 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	@Override
 	public void startProdPatchPipeline(Patch patch) {
-		startPipeline(patch, "", false);
+		startPipeline(patch, "");
 
 	}
 
-	@Override
-	public void restartProdPatchPipeline(Patch patch) {
-		startPipeline(patch, "", true);
-
-	}
-
-	private void startPipeline(Patch patch, String jobSuffix, boolean restart) {
+	private void startPipeline(Patch patch, String jobSuffix) {
 		try {
 			String patchName = PATCH_CONS + patch.getPatchNummer();
 			String jobName = patchName + jobSuffix;
@@ -94,13 +88,6 @@ public class JenkinsClientImpl implements JenkinsClient {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startPipeline.exception",
 					new Object[] { e.getMessage(), patch.toString() }, e);
 		}
-	}
-
-	@Override
-	public void cancelPatchPipeline(Patch patch) {
-		//TODO JHE (31.08.2020) : could/should we here rather use the "stop-builds" of Jenkinscli? Should work with our JenkinsSshStopBuildCmd class.
-		processInputAction(patch, CANCEL_CONS, null);
-
 	}
 
 	@Override
@@ -211,31 +198,6 @@ public class JenkinsClientImpl implements JenkinsClient {
 		if (lastBuildNumber == lastSuccessfulBuildNumber) {
 			LOGGER.warn("Job with patchNumber: " + patchNumber + IS_NOT_BUILDING_CONS);
 		}
-	}
-
-	@Override
-	public void onClone(String source, String target) {
-		// TODO JHE (01.09.2020): Not 100% sure yet, this might be done differently
-		String jobName = "onClone" + target.toUpperCase();
-		LOGGER.info("Starting onClone process for " + target + ". " + jobName + " pipeline will be started.");
-		Map<String,String> params = Maps.newHashMap();
-		params.put("source",source);
-		params.put("target",target);
-		JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,jobName,params,null);
-	}
-
-	@Override
-	public boolean isProdPatchPipelineRunning(String patchNumber) {
-		Map jenkinsJobsBuilds = getJenkinsJobsBuilds(PATCH_CONS + patchNumber);
-		Integer lastBuild = (Integer) ((Map)jenkinsJobsBuilds.get("lastBuild")).get("number");
-		Integer lastCompletedBuild = (Integer) ((Map)jenkinsJobsBuilds.get("lastCompletedBuild")).get("number");
-		return lastBuild != lastCompletedBuild;
-	}
-
-	@Override
-	public String getProdPipelineBuildResult(String patchNumber) {
-		//TODO JHE (24.08.2020): We might be able and want to remove this from the interface, didn't find any place where it would be used
-		return "";
 	}
 
 	@Override
