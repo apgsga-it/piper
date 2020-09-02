@@ -58,9 +58,6 @@ public class MicroServicePatchConfig {
 	@Value("${maven.localrepo.location}")
 	private String localRepo;
 
-	@Value("${config.common.location:/etc/opt/apg-patch-common}")
-	private String configCommon;
-
 	@Value("${taskexecutor.corePoolSize:5}")
 	private Integer corePoolSize;
 
@@ -83,7 +80,7 @@ public class MicroServicePatchConfig {
 	private String mavenRepoUserDecryptKey;
 
 	@Autowired
-	TargetSystemMapping targetSystemMapping;
+	private TargetSystemMapping targetSystemMapping;
 
 	@Bean(name = "patchPersistence")
 	public PatchPersistence patchFilebasePersistence() throws IOException {
