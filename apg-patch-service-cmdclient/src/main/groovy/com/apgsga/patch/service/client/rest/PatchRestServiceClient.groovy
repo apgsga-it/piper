@@ -65,7 +65,13 @@ class PatchRestServiceClient implements PatchOpService {
 		restTemplate.postForLocation(getRestBaseUri() + "/save", patch);
 		println patch.toString() + " Saved Patch."
 	}
-	
+
+	@Override
+	void savePatchLog(String patchNumber) {
+		restTemplate.postForLocation(getRestBaseUri() + "/savePatchLog", patchNumber)
+		println "Saved PatchLog for " + patchNumber
+	}
+
 	@Override
 	void executeStateTransitionActionInDb(String patchNumber, Long statusNum) {
 		restTemplate.postForLocation(getRestBaseUri() + "/executeStateTransitionActionInDb/{patchNumber}/{statusNum}", null, [patchNumber:patchNumber,statusNum:statusNum])

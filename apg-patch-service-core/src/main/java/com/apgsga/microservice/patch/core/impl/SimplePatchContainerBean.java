@@ -143,7 +143,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		repo.savePatch(patch);
 		return patch;
 	}
-	
+
+	@Override
+	public void savePatchLog(String patchNumber) {
+		repo.savePatchLog(patchNumber);
+	}
+
 	@Override
 	public void log(Patch patch) {
 		//JHE: To be verified, any other pre-check to be done? Eventually that patchLog.patchLogDetail is correct
