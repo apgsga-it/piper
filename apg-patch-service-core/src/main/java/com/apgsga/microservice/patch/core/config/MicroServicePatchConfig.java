@@ -4,16 +4,16 @@ import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.PatchPersistence;
+import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.JschSessionCmdRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.LoggingMockSshRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactory;
 import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactoryImpl;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClientImpl;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsMockClient;
 import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
-import com.apgsga.microservice.patch.core.impl.vcs.JschSessionCmdRunnerFactory;
-import com.apgsga.microservice.patch.core.impl.vcs.LoggingMockVcsRunnerFactory;
-import com.apgsga.microservice.patch.core.impl.vcs.ProcessBuilderCmdRunnerFactory;
-import com.apgsga.microservice.patch.core.impl.vcs.VcsCommandRunnerFactory;
 import com.apgsga.system.mapping.api.TargetSystemMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +46,9 @@ public class MicroServicePatchConfig {
 	@Value("${jenkins.host:https://jenkins.apgsga.ch/}")
 	private String jenkinsHost;
 
+	@Value("${jenkins.ssh.port:53801}")
+	private String jenkinsSshPort;
+
 	@Value("${jenkins.user}")
 	private String jenkinsUser;
 
@@ -54,9 +57,6 @@ public class MicroServicePatchConfig {
 
 	@Value("${maven.localrepo.location}")
 	private String localRepo;
-
-	@Value("${config.common.location:/etc/opt/apg-patch-common}")
-	private String configCommon;
 
 	@Value("${taskexecutor.corePoolSize:5}")
 	private Integer corePoolSize;
@@ -80,7 +80,7 @@ public class MicroServicePatchConfig {
 	private String mavenRepoUserDecryptKey;
 
 	@Autowired
-	TargetSystemMapping targetSystemMapping;
+	private TargetSystemMapping targetSystemMapping;
 
 	@Bean(name = "patchPersistence")
 	public PatchPersistence patchFilebasePersistence() throws IOException {
@@ -130,18 +130,18 @@ public class MicroServicePatchConfig {
 	public JenkinsClient jenkinsPatchClient() {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource rDbLocation = rl.getResource(dbLocation);
-		return new JenkinsClientImpl(rDbLocation, jenkinsHost, jenkinsUser, jenkinsAuthKey, threadPoolTaskExecutor());
+		return new JenkinsClientImpl(rDbLocation, jenkinsHost, jenkinsSshPort, jenkinsUser, jenkinsAuthKey, threadPoolTaskExecutor());
 	}
 
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile({ "live", "remotecvs" })
-	public VcsCommandRunnerFactory jsessionFactory() {
+	public CommandRunnerFactory jsessionFactory() {
 		return new JschSessionCmdRunnerFactory(vcsUser, vcsHost);
 	}
 
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile({ "live", "localcvs" })
-	public VcsCommandRunnerFactory vcsLocalFactory() {
+	public CommandRunnerFactory vcsLocalFactory() {
 		return new ProcessBuilderCmdRunnerFactory();
 	}
 
@@ -153,8 +153,8 @@ public class MicroServicePatchConfig {
 
 	@Bean(name = "vcsCmdRunnerFactory")
 	@Profile("mock")
-	public VcsCommandRunnerFactory jsessionFactoryMock() {
-		return new LoggingMockVcsRunnerFactory();
+	public CommandRunnerFactory jsessionFactoryMock() {
+		return new LoggingMockSshRunnerFactory();
 	}
 
 	@Bean(name = "groovyActionFactory")

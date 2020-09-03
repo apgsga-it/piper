@@ -4,10 +4,10 @@ import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
-import com.apgsga.microservice.patch.core.impl.vcs.PatchVcsCommand;
-import com.apgsga.microservice.patch.core.impl.vcs.VcsCommand;
-import com.apgsga.microservice.patch.core.impl.vcs.VcsCommandRunner;
-import com.apgsga.microservice.patch.core.impl.vcs.VcsCommandRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.Command;
+import com.apgsga.microservice.patch.core.commands.CommandRunner;
+import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.apgsga.patch.db.integration.api.PatchRdbms;
@@ -53,7 +53,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private ArtifactDependencyResolver dependecyResolver;
 
 	@Autowired
-	private VcsCommandRunnerFactory vcsCommandRunnerFactory;
+	private CommandRunnerFactory sshCommandRunnerFactory;
 
 	@Autowired
 	private PatchActionExecutorFactory patchActionExecutorFactory;
@@ -143,7 +143,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		repo.savePatch(patch);
 		return patch;
 	}
-	
+
+	@Override
+	public void savePatchLog(String patchNumber) {
+		repo.savePatchLog(patchNumber);
+	}
+
 	@Override
 	public void log(Patch patch) {
 		//JHE: To be verified, any other pre-check to be done? Eventually that patchLog.patchLogDetail is correct
@@ -195,11 +200,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		if (dbModules == null) {
 			return;
 		}
-		final VcsCommandRunner vcsCommandRunner = vcsCommandRunnerFactory.create();
-		vcsCommandRunner.preProcess();
-		vcsCommandRunner.run(PatchVcsCommand.createCreatePatchBranchCmd(patch.getDbPatchBranch(), patch.getProdBranch(),
+		final CommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
+		sshCommandRunner.preProcess();
+		sshCommandRunner.run(PatchSshCommand.createCreatePatchBranchCmd(patch.getDbPatchBranch(), patch.getProdBranch(),
 				dbModules.getDbModules()));
-		vcsCommandRunner.postProcess();
+		sshCommandRunner.postProcess();
 
 	}
 
@@ -217,12 +222,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		if (dbModules == null) {
 			return Lists.newArrayList();
 		}
-		final VcsCommandRunner vcsCmdRunner = vcsCommandRunnerFactory.create();
-		vcsCmdRunner.preProcess();
+		final CommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
+		sshCommandRunner.preProcess();
 		List<DbObject> dbObjects = Lists.newArrayList();
 		for (String dbModule : dbModules.getDbModules()) {
 			if (Strings.isNullOrEmpty(dbModule) || dbModule.contains(searchString)) {
-				List<String> result = vcsCmdRunner.run(PatchVcsCommand
+				List<String> result = sshCommandRunner.run(PatchSshCommand
 						.createDiffPatchModulesCmd(patch.getDbPatchBranch(), patch.getProdBranch(), dbModule));
 				List<String> files = result.stream()
 						.filter(s -> s.startsWith("Index: "))
@@ -237,7 +242,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 			}
 		}
-		vcsCmdRunner.postProcess();
+		sshCommandRunner.postProcess();
 		return dbObjects;
 	}
 
@@ -263,8 +268,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		if (dbModules == null) {
 			return Lists.newArrayList();
 		}
-		final VcsCommandRunner vcsCmdRunner = vcsCommandRunnerFactory.create();
-		vcsCmdRunner.preProcess();
+		final CommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
+		sshCommandRunner.preProcess();
 		List<DbObject> dbObjects = Lists.newArrayList();
 		for (String dbModule : dbModules.getDbModules()) {
 			if (dbModule.contains(searchString)) {
@@ -273,7 +278,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				String coFolder = tmpDir + "/" + tempSubFolderName + suffixForCoFolder;
 				String additionalOptions = "-d " + coFolder;
 				LOGGER.info("Temporary checkout folder for listing all DB Objects will be: " + coFolder);
-				List<String> result = vcsCmdRunner.run(PatchVcsCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), patch.getProdBranch(), Lists.newArrayList(dbModule), additionalOptions));
+				List<String> result = sshCommandRunner.run(PatchSshCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), patch.getProdBranch(), Lists.newArrayList(dbModule), additionalOptions));
 				result.forEach(r -> {
 					// JHE : In production, cvs is on a separated server, therefore we can't checkout, and parse the local result ...
 					//		 We rely on the output given back from the CVS command, might not be the most robust solution :( ... but so far ok for a function which is not crucial.
@@ -286,10 +291,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					dbObjects.add(dbObject);
 				});
 
-				List<String> rmResult = vcsCmdRunner.run(PatchVcsCommand.createRmTmpCheckoutFolder(coFolder));
+				List<String> rmResult = sshCommandRunner.run(PatchSshCommand.createRmTmpCheckoutFolder(coFolder));
 			}
 		}
-		vcsCmdRunner.postProcess();
+		sshCommandRunner.postProcess();
 		return dbObjects;
 	}
 
@@ -301,7 +306,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
 
-		VcsCommandRunner cmdRunner = getJschSessionFactory().create();
+		CommandRunner cmdRunner = getJschSessionFactory().create();
 		cmdRunner.preProcess();
 		List<MavenArtifact> artifactWihInvalidNames = Lists.newArrayList();
 
@@ -313,7 +318,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				if (artifactName == null) {
 					artifactWihInvalidNames.add(ma);
 				} else {
-					VcsCommand silentCoCmd = PatchVcsCommand.createSilentCoCvsModuleCmd(cvsBranch,
+					Command silentCoCmd = PatchSshCommand.createSilentCoCvsModuleCmd(cvsBranch,
 							Lists.newArrayList(artifactName), "&>/dev/null ; echo $?");
 					List<String> cvsResults = cmdRunner.run(silentCoCmd);
 					// JHE: SilentCOCvsModuleCmd returns 0 when all OK, 1
@@ -359,8 +364,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		this.jenkinsClient = jenkinsClient;
 	}
 
-	public VcsCommandRunnerFactory getJschSessionFactory() {
-		return vcsCommandRunnerFactory;
+	public CommandRunnerFactory getJschSessionFactory() {
+		return sshCommandRunnerFactory;
 	}
 
 	public TaskExecutor getThreadExecutor() {
@@ -404,12 +409,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private boolean containsObject(String patchNumber, String objectName) {
 		Patch patch = findById(patchNumber);
 		for(MavenArtifact ma : patch.getMavenArtifacts()) {
-			// TODO JHE : verifiy if we really want to check only on artifact id, maybe also on name?
 			if(ma.getArtifactId()!= null && ma.getArtifactId().toUpperCase().contains(objectName.toUpperCase()))
 				return true;
 		}
 		for(DbObject dbo : patch.getDbObjects()) {
-			// TODO JHE : verifiy if we really want to check on fileName
 			if(dbo.getFileName() != null && dbo.getFileName().toUpperCase().contains(objectName.toUpperCase())) {
 				return true;
 			}

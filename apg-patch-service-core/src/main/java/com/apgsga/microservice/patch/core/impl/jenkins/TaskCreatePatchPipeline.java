@@ -1,62 +1,64 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
-import java.net.URI;
-import java.util.Map;
-
+import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
-import com.google.common.collect.Maps;
-import com.offbytwo.jenkins.JenkinsServer;
-import com.offbytwo.jenkins.JenkinsTriggerHelper;
-import com.offbytwo.jenkins.model.BuildResult;
-import com.offbytwo.jenkins.model.BuildWithDetails;
+import java.util.List;
+import java.util.Map;
 
 public class TaskCreatePatchPipeline implements Runnable {
 
 	protected static final Log LOGGER = LogFactory.getLog(TaskCreatePatchPipeline.class.getName());
-	
-	public static Runnable create(String jenkinsUrl, String jenkinsUser, String jenkinsUserAuthKey, Patch patch) {
-		return new TaskCreatePatchPipeline(jenkinsUrl, jenkinsUser, jenkinsUserAuthKey, patch); 
+
+	public static Runnable create(String jenkinsHost, String jenkinsSshPort, String jenkinsSshUser, Patch patch) {
+		return new TaskCreatePatchPipeline(jenkinsHost,jenkinsSshPort,jenkinsSshUser,patch);
 	}
 
-	private String jenkinsUrl;
-	private String jenkinsUser;
-	private String jenkinsUserAuthKey;
 	private Patch patch;
-	
 
-	private TaskCreatePatchPipeline(String jenkinsUrl, String jenkinsUser, String jenkinsUserAuthKey, Patch patch) {
+	private String jenkinsHost;
+
+	private String jenkinsSshPort;
+
+	private String jenkinsSshUser;
+
+	private TaskCreatePatchPipeline(String jenkinsHost, String jenkinsSshPort, String jenkinsSshUser, Patch patch) {
 		super();
-		this.jenkinsUrl = jenkinsUrl;
-		this.jenkinsUser = jenkinsUser;
-		this.jenkinsUserAuthKey = jenkinsUserAuthKey;
+		this.jenkinsHost = jenkinsHost;
+		this.jenkinsSshPort = jenkinsSshPort;
+		this.jenkinsSshUser = jenkinsSshUser;
 		this.patch = patch;
 	}
 
 	@Override
 	public void run() {
 		try {
-			JenkinsServer jenkinsServer = new JenkinsServer(new URI(jenkinsUrl), jenkinsUser, jenkinsUserAuthKey);
-			JenkinsTriggerHelper jth = new JenkinsTriggerHelper(jenkinsServer, 2000L);
 			Map<String, String> jobParm = Maps.newHashMap();
-			jobParm.put("token", "PATCHBUILDER_START");
 			jobParm.put("patchnumber", patch.getPatchNummer());
-			BuildWithDetails patchBuilderResult = jth.triggerJobAndWaitUntilFinished("PatchBuilder", jobParm, true);
-			if (!patchBuilderResult.getResult().equals(BuildResult.SUCCESS)) {
-				LOGGER.error("PatchBuilder failed: " + patchBuilderResult.getResult().toString());
+			JenkinsSshCommand buildJobCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForCompleteCmd(jenkinsHost, jenkinsSshPort, jenkinsSshUser, "PatchBuilder", jobParm);
+			ProcessBuilderCmdRunnerFactory factory = new ProcessBuilderCmdRunnerFactory();
+			List<String> result = factory.create().run(buildJobCmd);
+			if (!result.stream().anyMatch(c -> {
+				return c.contains("SUCCESS");
+			})) {
+				LOGGER.error("PatchBuilder failed: " + result);
 				throw ExceptionFactory.createPatchServiceRuntimeException(
 						"JenkinsPatchClientImpl.createPatchPipelines.error",
-						new Object[] { patch.toString(), patchBuilderResult.getResult().toString() });
+						new Object[]{patch.toString(), result});
 			}
-			LOGGER.info(patchBuilderResult.getConsoleOutputText().toString());
-		} catch (Exception e) {
+		}
+		catch (AssertionError | Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"JenkinsPatchClientImpl.createPatchPipelines.exception",
-					new Object[] { e.getMessage(), patch.toString() }, e);
+					new Object[]{e.getMessage(), patch.toString()}, e);
 		}
+
+
 	}
 
 }
