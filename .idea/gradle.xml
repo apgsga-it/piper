@@ -20,7 +20,6 @@
             <option value="$PROJECT_DIR$/apg-patch-service-cmdclient" />
             <option value="$PROJECT_DIR$/apg-patch-service-core" />
             <option value="$PROJECT_DIR$/apg-patch-service-server" />
-            <option value="$PROJECT_DIR$/apg-patch-system-mapping" />
           </set>
         </option>
       </GradleProjectSettings>

@@ -23,7 +23,6 @@ dependencies {
 	compile project(':apg-patch-service-api')
 	compile project(':apg-patch-artifact-querymanager')
 	compile project(':apg-patch-service-core')
-	compile project(':apg-patch-system-mapping')
 	compile project(':apg-patch-db-integration')
 	compile group: 'de.codecentric', name: 'spring-boot-admin-starter-client'
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
