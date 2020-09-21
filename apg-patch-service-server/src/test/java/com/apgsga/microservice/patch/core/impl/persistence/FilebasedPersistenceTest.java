@@ -1,12 +1,10 @@
 package com.apgsga.microservice.patch.core.impl.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.apgsga.microservice.patch.api.*;
 import org.assertj.core.util.Lists;
@@ -22,11 +20,15 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileCopyUtils;
 
+import static org.junit.Assert.*;
+
 @RunWith(SpringRunner.class)
 @TestPropertySource(properties = { "dblocation=db", "dbworkdir=work" })
 public class FilebasedPersistenceTest {
 
 	private PatchPersistence repo;
+
+	private PatchSystemMetaInfoPersistence patchSystemInfoRepo;
 
 	@Value("${dblocation}")
 	private String dbLocation;
@@ -41,6 +43,7 @@ public class FilebasedPersistenceTest {
 		Resource db = rl.getResource(dbLocation);
 		Resource workDir = rl.getResource(dbWorkLocation);
 		repo = new FilebasedPatchPersistence(db, workDir);
+		patchSystemInfoRepo = new FilebasedPatchPersistence(db,workDir);
 		Resource testResources = rl.getResource("src/test/resources/json");
 		final PatchPersistence per = new FilebasedPatchPersistence(testResources, workDir);
 		Patch testPatch5401 = per.findById("5401");
@@ -49,10 +52,12 @@ public class FilebasedPersistenceTest {
 
 		try {
 			File persistSt = new File(dbLocation);
-			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/ServicesMetaData.json"),
-					new File(persistSt, "ServicesMetaData.json"));
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/ServicesMetaData.json"), new File(persistSt, "ServicesMetaData.json"));
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/OnDemandTargets.json"), new File(persistSt, "OnDemandTargets.json"));
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/StageMappings.json"), new File(persistSt, "StageMappings.json"));
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/TargetInstances.json"), new File(persistSt, "TargetInstances.json"));
 		} catch (IOException e) {
-			Assert.fail("Unable to copy ServiceData.json test file into testDb folder");
+			Assert.fail("Unable to copy JSON test files into testDb folder");
 		}
 
 		repo.savePatch(testPatch5401);
@@ -141,5 +146,56 @@ public class FilebasedPersistenceTest {
 		repo.saveServicesMetaData(data);
 		ServicesMetaData serviceData = repo.getServicesMetaData();
 		assertEquals(data, serviceData);
+	}
+
+	@Test
+	public void testLoadOnDemandTargets() {
+		OnDemandTargets onDemandTargets = patchSystemInfoRepo.onDemandTargets();
+		assertEquals(4,onDemandTargets.getOnDemandTargets().size());
+		assertTrue(onDemandTargets.getOnDemandTargets().contains("DEV-CHEI212"));
+		assertTrue(onDemandTargets.getOnDemandTargets().contains("DEV-CHEI211"));
+		assertTrue(onDemandTargets.getOnDemandTargets().contains("DEV-CM"));
+		assertTrue(onDemandTargets.getOnDemandTargets().contains("DEV-JHE"));
+	}
+
+	@Test
+	public void testLoadStageMappings() {
+		StageMappings stageMappings = patchSystemInfoRepo.stageMapping();
+		assertEquals(4,stageMappings.getStageMappings().size());
+		for(StageMapping stageMapping : stageMappings.getStageMappings()) {
+			// JHE : Just test two, not even sure it makes sense to load a complete file
+			if(stageMapping.equals("Entwicklung")) {
+				assertEquals("DEV-CHEI212",stageMapping.getTarget());
+			}
+			if(stageMapping.equals("Produktion")) {
+				assertEquals("DEV-CHPI211",stageMapping.getTarget());
+			}
+			assertEquals(2,stageMapping.getStages().size());
+		}
+	}
+
+	@Test
+	public void testLoadTargetInstances() {
+		TargetInstances targetInstances = patchSystemInfoRepo.targetInstances();
+		assertEquals(4,targetInstances.getTargetInstances().size());
+		for(TargetInstance targetInstance : targetInstances.getTargetInstances()) {
+			// JHE : Just test two, not even sure it makes sense to load a complete file
+			if(targetInstance.getName().equals("DEV-CHPI211")) {
+				assertEquals(5,targetInstance.getServices().size());
+				List<String> devChpi211ServiceNames = Stream.of("it21-db","ds-db","digiflex","jadas","it21_ui").collect(Collectors.toList());
+				for(ServiceMetaData serviceMetaData : targetInstance.getServices()) {
+					assertTrue(devChpi211ServiceNames.contains(serviceMetaData.getServiceName()));
+				}
+			}
+			if(targetInstance.getName().equals("DEV-CHQI211")) {
+				assertEquals(2,targetInstance.getServices().size());
+				List<String> devChqi211ServiceNames = Stream.of("it21-db","it21_ui").collect(Collectors.toList());
+				List<String> devChqi211NoServiceNames = Stream.of("ds-db","digiflex","jadas").collect(Collectors.toList());
+				for(ServiceMetaData serviceMetaData : targetInstance.getServices()) {
+					assertTrue(devChqi211ServiceNames.contains(serviceMetaData.getServiceName()));
+					assertFalse(devChqi211NoServiceNames.contains(serviceMetaData.getServiceName()));
+				}
+			}
+		}
 	}
 }

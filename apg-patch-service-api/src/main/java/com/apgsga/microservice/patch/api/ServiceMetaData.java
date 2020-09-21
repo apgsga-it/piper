@@ -10,6 +10,8 @@ public class ServiceMetaData extends AbstractTransientEntity {
 	private String microServiceBranch;
 	private String baseVersionNumber;
 	private String revisionMnemoPart;
+	private String installationHost;
+	private ServiceType serviceType;
 	
 	public ServiceMetaData(String serviceName, String microServiceBranch, String baseVersionNumber,
 						   String revisionMnemoPart) {

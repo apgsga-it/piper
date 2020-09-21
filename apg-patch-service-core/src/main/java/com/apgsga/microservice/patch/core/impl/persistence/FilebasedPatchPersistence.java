@@ -1,31 +1,24 @@
 package com.apgsga.microservice.patch.core.impl.persistence;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.apgsga.microservice.patch.api.*;
+import com.apgsga.microservice.patch.exceptions.Asserts;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.Resource;
 
-import com.apgsga.microservice.patch.api.DbModules;
-import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchLog;
-import com.apgsga.microservice.patch.api.PatchLogDetails;
-import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.api.ServiceMetaData;
-import com.apgsga.microservice.patch.api.ServicesMetaData;
-import com.apgsga.microservice.patch.exceptions.Asserts;
-import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class FilebasedPatchPersistence implements PatchPersistence {
+public class FilebasedPatchPersistence implements PatchPersistence, PatchSystemMetaInfoPersistence {
 
 	private static final String JSON = ".json";
 
@@ -34,6 +27,12 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	private static final String PATCH_LOG = "PatchLog";
 
 	private static final String SERVICE_META_DATA_JSON = "ServicesMetaData.json";
+
+	private static final String ON_DEMAND_TARGETS_DATA_JSON = "OnDemandTargets.json";
+
+	private static final String STAGE_MAPPINGS_DATA_JSON = "StageMappings.json";
+
+	private static final String TARGET_INSTANCES_DATA_JSON = "TargetInstances.json";
 
 	private static final String DB_MODULES_JSON = "DbModules.json";
 
@@ -264,6 +263,54 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		return result.get(0);
 	}
 
+	@Override
+	public OnDemandTargets onDemandTargets() {
+		try {
+			File onDemandTargetFile = createFile(ON_DEMAND_TARGETS_DATA_JSON);
+			if (!onDemandTargetFile.exists()) {
+				return null;
+			}
+			ObjectMapper mapper = new ObjectMapper();
+			OnDemandTargets result = mapper.readValue(onDemandTargetFile, OnDemandTargets.class);
+			return result;
+		} catch (IOException e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"FilebasedPatchPersistence.onDemandTargets.exception", new Object[] { e.getMessage() }, e);
+		}
+	}
+
+	@Override
+	public StageMappings stageMapping() {
+		try {
+			File stageMappingFile = createFile(STAGE_MAPPINGS_DATA_JSON);
+			if (!stageMappingFile.exists()) {
+				return null;
+			}
+			ObjectMapper mapper = new ObjectMapper();
+			StageMappings result = mapper.readValue(stageMappingFile, StageMappings.class);
+			return result;
+		} catch (IOException e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"FilebasedPatchPersistence.stageMapping.exception", new Object[] { e.getMessage() }, e);
+		}
+	}
+
+	@Override
+	public TargetInstances targetInstances() {
+		try {
+			File targetInstanceFile = createFile(TARGET_INSTANCES_DATA_JSON);
+			if (!targetInstanceFile.exists()) {
+				return null;
+			}
+			ObjectMapper mapper = new ObjectMapper();
+			TargetInstances result = mapper.readValue(targetInstanceFile, TargetInstances.class);
+			return result;
+		} catch (IOException e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"FilebasedPatchPersistence.targetInstance.exception", new Object[] { e.getMessage() }, e);
+		}
+	}
+
 	private synchronized <T> void writeToFile(T object, String filename) {
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonRequestString;
@@ -290,4 +337,6 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 	public Resource getTempStoragePath() {
 		return tempStoragePath;
 	}
+
+
 }
