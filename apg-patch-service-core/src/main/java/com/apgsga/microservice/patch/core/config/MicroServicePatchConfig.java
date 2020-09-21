@@ -14,7 +14,6 @@ import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClientImpl;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsMockClient;
 import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
-import com.apgsga.system.mapping.api.TargetSystemMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -78,9 +77,6 @@ public class MicroServicePatchConfig {
 
 	@Value("${mavenrepo.user.decryptpwd.key:}")
 	private String mavenRepoUserDecryptKey;
-
-	@Autowired
-	private TargetSystemMapping targetSystemMapping;
 
 	@Bean(name = "patchPersistence")
 	public PatchPersistence patchFilebasePersistence() throws IOException {
@@ -160,7 +156,8 @@ public class MicroServicePatchConfig {
 	@Bean(name = "groovyActionFactory")
 	@Profile({ "groovyactions" })
 	public PatchActionExecutorFactory groovyPatchActionFactory() {
-		return new PatchActionExecutorFactoryImpl(targetSystemMapping);
+		// TODO JHE (21.09.2020) : Here we probably have to pass info coming from old targetSystemMapping
+		return new PatchActionExecutorFactoryImpl();
 	}
 
 	@Bean(name = "taskExecutor")

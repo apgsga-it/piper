@@ -2,7 +2,6 @@ package com.apgsga.microservice.patch.core.impl;
 
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
-import com.apgsga.system.mapping.api.TargetSystemMapping;
 import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,16 +15,14 @@ public class PatchActionExecutorImpl implements PatchActionExecutor {
 
 	protected static final Log LOGGER = LogFactory.getLog(PatchActionExecutorImpl.class.getName());
 
-	private TargetSystemMapping tsm;
 	private SimplePatchContainerBean patchContainer;
 
 	public PatchActionExecutorImpl() {
 		super();
 	}
 
-	public PatchActionExecutorImpl(TargetSystemMapping tsm, SimplePatchContainerBean patchContainer) {
+	public PatchActionExecutorImpl(SimplePatchContainerBean patchContainer) {
 		super();
-		this.tsm = tsm;
 		this.patchContainer = patchContainer;
 	}
 
@@ -35,7 +32,8 @@ public class PatchActionExecutorImpl implements PatchActionExecutor {
 				new Object[] {toStatus });
 		Asserts.isTrue((patchContainer.getRepo().patchExists(patchNumber)),
 				"PatchActionExecutorImpl.execute.patch.exists.assert", new Object[] { patchNumber, toStatus });
-		Map<String, Map<String, String>> stateMap = tsm.stateMap();
+		// TODO JHE (21.09.2020) : before tsm.stateMap() was called -> need to do the equivalent
+		Map<String, Map<String, String>> stateMap = null; //tsm.stateMap();
 		Map<String, String> bean = stateMap.get(toStatus);
 		Asserts.notNull(bean,"PatchActionExecutorImpl.executePatchAction.state.exits.assert",new String[]{toStatus,patchNumber});
 		try {

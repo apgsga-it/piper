@@ -11,7 +11,6 @@ import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.apgsga.patch.db.integration.api.PatchRdbms;
-import com.apgsga.system.mapping.api.TargetSystemMapping;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -60,9 +59,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Autowired
 	private TaskExecutor threadExecutor;
-
-	@Autowired
-	private TargetSystemMapping targetSystemMapping;
 
 	@Autowired
 	@Qualifier("patchRdbms")
@@ -210,7 +206,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public List<String> listInstallationTargetsFor(String requestingTarget) {
-		return targetSystemMapping.listInstallTargets();
+		// TODO JHE (21.09.2020): info was before retrieved from TSM ....
+		return null;
 	}
 
 	@Override
@@ -382,7 +379,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public void copyPatchFiles(Map<String,String> params) {
-		int statusCode = targetSystemMapping.findStatus(params.get("status"));
+		// TODO JHE (21.09.2020): need to fetch newly the statusCode
+		int statusCode = -22;
+		//		int statusCode = targetSystemMapping.findStatus(params.get("status"));
 		List<String> patchIds = patchRdbms.patchIdsForStatus(String.valueOf(statusCode));
 		List<Patch> patchesToCopy = findByIds(patchIds);
 		ObjectMapper mapper = new ObjectMapper();
