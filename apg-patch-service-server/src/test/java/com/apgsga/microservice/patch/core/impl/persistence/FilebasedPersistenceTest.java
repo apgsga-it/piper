@@ -37,13 +37,14 @@ public class FilebasedPersistenceTest {
 	private String dbWorkLocation;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws IOException {
 		// It self a test ;-)
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource db = rl.getResource(dbLocation);
 		Resource workDir = rl.getResource(dbWorkLocation);
 		repo = new FilebasedPatchPersistence(db, workDir);
-		patchSystemInfoRepo = new FilebasedPatchPersistence(db,workDir);
+		// TODO JHE (21.09.2020): instantiate here the correct new implementation
+		patchSystemInfoRepo = new FilePatchSystemMetaInfoPersistence(db,workDir);
 		Resource testResources = rl.getResource("src/test/resources/json");
 		final PatchPersistence per = new FilebasedPatchPersistence(testResources, workDir);
 		Patch testPatch5401 = per.findById("5401");

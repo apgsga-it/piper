@@ -1,5 +1,6 @@
 package com.apgsga.microservice.patch.core.impl.persistence.utils;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.core.io.FileSystemResourceLoader;
@@ -37,7 +38,7 @@ public class ServicesMetaDataUtil {
 		serviceList.add(someOtherService);
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		final PatchPersistence db = new FilebasedPatchPersistence(rl.getResource("db"), rl.getResource("work"));
 		final ServicesMetaData data = new ServicesMetaData();

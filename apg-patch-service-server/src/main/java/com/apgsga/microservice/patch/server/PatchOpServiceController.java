@@ -150,11 +150,6 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 
 	}
 
-	@Override
-	public void init() throws IOException {
-		throw new UnsupportedOperationException();
-	}
-
 	@RequestMapping(value = "/cleanLocalMavenRepo", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	@Override

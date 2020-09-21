@@ -56,7 +56,7 @@ public class MicroServicePatchClientTest {
 	private String localPort;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws IOException {
 		patchClient = new MicroservicePatchClient("localhost:" + localPort);
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource testResources = rl.getResource("src/test/resources/json");

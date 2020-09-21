@@ -84,7 +84,6 @@ public class MicroServicePatchConfig {
 		Resource dbStorabe = rl.getResource(dbLocation);
 		Resource workDir = rl.getResource(workDirLocation);
 		final PatchPersistence per = new FilebasedPatchPersistence(dbStorabe, workDir);
-		per.init();
 		return per;
 	}
 

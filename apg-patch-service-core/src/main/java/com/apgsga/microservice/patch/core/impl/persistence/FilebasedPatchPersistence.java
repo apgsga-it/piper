@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FilebasedPatchPersistence implements PatchPersistence, PatchSystemMetaInfoPersistence {
+public class FilebasedPatchPersistence extends AbstractFilebasedPersistence implements PatchPersistence {
 
 	private static final String JSON = ".json";
 
@@ -28,36 +28,15 @@ public class FilebasedPatchPersistence implements PatchPersistence, PatchSystemM
 
 	private static final String SERVICE_META_DATA_JSON = "ServicesMetaData.json";
 
-	private static final String ON_DEMAND_TARGETS_DATA_JSON = "OnDemandTargets.json";
-
-	private static final String STAGE_MAPPINGS_DATA_JSON = "StageMappings.json";
-
-	private static final String TARGET_INSTANCES_DATA_JSON = "TargetInstances.json";
-
 	private static final String DB_MODULES_JSON = "DbModules.json";
 
 	protected static final Log LOGGER = LogFactory.getLog(FilebasedPatchPersistence.class.getName());
 
-	private Resource storagePath;
-
-	private Resource tempStoragePath;
-
-	public FilebasedPatchPersistence(Resource storagePath, Resource workDir) {
+	public FilebasedPatchPersistence(Resource storagePath, Resource workDir) throws IOException {
 		super();
 		this.storagePath = storagePath;
 		this.tempStoragePath = workDir;
-	}
-
-	public void init() throws IOException {
-		if (!storagePath.exists()) {
-			LOGGER.info("Creating persistence directory: " + storagePath);
-			storagePath.getFile().mkdir();
-		}
-
-		if (!tempStoragePath.exists()) {
-			LOGGER.info("Creating Temporary work directory: " + tempStoragePath);
-			tempStoragePath.getFile().mkdir();
-		}
+		init();
 	}
 
 	@Override
@@ -84,15 +63,6 @@ public class FilebasedPatchPersistence implements PatchPersistence, PatchSystemM
 		}
 	}
 	
-	private <T> T findFile(File f, Class<T> clazz) throws IOException {
-			if (!f.exists()) {
-				return null;
-			}
-			ObjectMapper mapper = new ObjectMapper();
-			T patchData = mapper.readValue(f, clazz);
-			return patchData;
-	}
-
 	@Override
 	public synchronized Boolean patchExists(String patchNumber) {
 		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.patchExists.patchnumber.notnullorempty.assert",
@@ -126,7 +96,7 @@ public class FilebasedPatchPersistence implements PatchPersistence, PatchSystemM
 		Asserts.notNull(patch, "FilebasedPatchPersistence.save.patchobject.notnull.assert", new Object[] {});
 		Asserts.notNullOrEmpty(patch.getPatchNummer(),
 				"FilebasedPatchPersistence.save.patchnumber.notnullorempty.assert", new Object[] { patch.toString() });
-		writeToFile(patch, PATCH + patch.getPatchNummer() + JSON);
+		writeToFile(patch, PATCH + patch.getPatchNummer() + JSON, this);
 	}
 	
 	@Override
@@ -137,7 +107,7 @@ public class FilebasedPatchPersistence implements PatchPersistence, PatchSystemM
 			patchLog = createPatchLog(patchNumber);
 		}
 		patchLog.addLog(createPatchLogDetail(patchNumber));
-		writeToFile(patchLog, PATCH_LOG + patchLog.getPatchNumber() + JSON);
+		writeToFile(patchLog, PATCH_LOG + patchLog.getPatchNumber() + JSON, this);
 	}
 	
 	private PatchLogDetails createPatchLogDetail(String patchNumber) {
@@ -178,7 +148,7 @@ public class FilebasedPatchPersistence implements PatchPersistence, PatchSystemM
 
 	@Override
 	public void saveServicesMetaData(ServicesMetaData serviceData) {
-		writeToFile(serviceData, SERVICE_META_DATA_JSON);
+		writeToFile(serviceData, SERVICE_META_DATA_JSON, this);
 	}
 
 	@Override
@@ -199,7 +169,7 @@ public class FilebasedPatchPersistence implements PatchPersistence, PatchSystemM
 
 	@Override
 	public void saveDbModules(DbModules dbModules) {
-		writeToFile(dbModules, DB_MODULES_JSON);
+		writeToFile(dbModules, DB_MODULES_JSON, this);
 	}
 
 	@Override
@@ -262,81 +232,4 @@ public class FilebasedPatchPersistence implements PatchPersistence, PatchSystemM
 		Asserts.isTrue(result.size() == 1, "FilebasedPatchPersistence.findServiceByName.exception", new Object[] {});
 		return result.get(0);
 	}
-
-	@Override
-	public OnDemandTargets onDemandTargets() {
-		try {
-			File onDemandTargetFile = createFile(ON_DEMAND_TARGETS_DATA_JSON);
-			if (!onDemandTargetFile.exists()) {
-				return null;
-			}
-			ObjectMapper mapper = new ObjectMapper();
-			OnDemandTargets result = mapper.readValue(onDemandTargetFile, OnDemandTargets.class);
-			return result;
-		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"FilebasedPatchPersistence.onDemandTargets.exception", new Object[] { e.getMessage() }, e);
-		}
-	}
-
-	@Override
-	public StageMappings stageMapping() {
-		try {
-			File stageMappingFile = createFile(STAGE_MAPPINGS_DATA_JSON);
-			if (!stageMappingFile.exists()) {
-				return null;
-			}
-			ObjectMapper mapper = new ObjectMapper();
-			StageMappings result = mapper.readValue(stageMappingFile, StageMappings.class);
-			return result;
-		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"FilebasedPatchPersistence.stageMapping.exception", new Object[] { e.getMessage() }, e);
-		}
-	}
-
-	@Override
-	public TargetInstances targetInstances() {
-		try {
-			File targetInstanceFile = createFile(TARGET_INSTANCES_DATA_JSON);
-			if (!targetInstanceFile.exists()) {
-				return null;
-			}
-			ObjectMapper mapper = new ObjectMapper();
-			TargetInstances result = mapper.readValue(targetInstanceFile, TargetInstances.class);
-			return result;
-		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"FilebasedPatchPersistence.targetInstance.exception", new Object[] { e.getMessage() }, e);
-		}
-	}
-
-	private synchronized <T> void writeToFile(T object, String filename) {
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonRequestString;
-		try {
-			jsonRequestString = mapper.writeValueAsString(object);
-		} catch (JsonProcessingException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.writeToFile.exception",
-					new Object[] { e.getMessage(), filename }, e);
-		}
-		AtomicFileWriteManager.create(this).write(jsonRequestString, filename);
-
-	}
-
-	private File createFile(String fileName) throws IOException {
-		File parentDir = storagePath.getFile();
-		File revisions = new File(parentDir, fileName);
-		return revisions;
-	}
-
-	public Resource getStoragePath() {
-		return storagePath;
-	}
-
-	public Resource getTempStoragePath() {
-		return tempStoragePath;
-	}
-
-
 }
