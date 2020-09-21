@@ -5,7 +5,6 @@ include ':apg-patch-service-server'
 include ':apg-patch-service-core'
 include ':apg-patch-service-cmdclient'
 include ':apg-patch-artifact-querymanager'
-include ':apg-patch-system-mapping'
 include ':apg-patch-db-integration'
 
 project(':apg-patch-service-client').projectDir = "$rootDir/apg-patch-service-client" as File
@@ -14,7 +13,6 @@ project(':apg-patch-service-server').projectDir = "$rootDir/apg-patch-service-se
 project(':apg-patch-service-core').projectDir = "$rootDir/apg-patch-service-core" as File
 project(':apg-patch-service-cmdclient').projectDir = "$rootDir/apg-patch-service-cmdclient" as File
 project(':apg-patch-artifact-querymanager').projectDir = "$rootDir/apg-patch-artifact-querymanager" as File
-project(':apg-patch-system-mapping').projectDir = "$rootDir/apg-patch-system-mapping" as File
 project(':apg-patch-db-integration').projectDir = "$rootDir/apg-patch-db-integration" as File
 
 
