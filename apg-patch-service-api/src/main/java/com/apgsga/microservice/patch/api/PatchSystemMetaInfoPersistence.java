@@ -2,7 +2,7 @@ package com.apgsga.microservice.patch.api;
 
 public interface PatchSystemMetaInfoPersistence {
 
-    // TODO JHE: implements what's missing based on tests .... all the rest, what we're not sure yet if needed ot not, won't be implemented
+    // TODO JHE (22.09.2020): The interface is obviously not complete. Will be complete when we'll start developing our Pipelines, and see what's exactly required.
 
     /**
      *
@@ -22,4 +22,11 @@ public interface PatchSystemMetaInfoPersistence {
      */
     TargetInstances targetInstances();
 
+
+    /**
+     *
+     * @return : StageMapping for the corresponding toStatus
+     * @param toStatus : eg. : Entwicklunginstallationbereit, Anwendertestinstallationbereit
+     */
+    StageMapping stageMappingFor(String toStatus);
 }

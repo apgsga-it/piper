@@ -1,11 +1,5 @@
 package com.apgsga.microservice.patch.core.impl.persistence;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.apgsga.microservice.patch.api.*;
 import org.assertj.core.util.Lists;
 import org.junit.Assert;
@@ -19,6 +13,12 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileCopyUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
@@ -43,7 +43,6 @@ public class FilebasedPersistenceTest {
 		Resource db = rl.getResource(dbLocation);
 		Resource workDir = rl.getResource(dbWorkLocation);
 		repo = new FilebasedPatchPersistence(db, workDir);
-		// TODO JHE (21.09.2020): instantiate here the correct new implementation
 		patchSystemInfoRepo = new FilePatchSystemMetaInfoPersistence(db,workDir);
 		Resource testResources = rl.getResource("src/test/resources/json");
 		final PatchPersistence per = new FilebasedPatchPersistence(testResources, workDir);
@@ -197,6 +196,19 @@ public class FilebasedPersistenceTest {
 					assertFalse(devChqi211NoServiceNames.contains(serviceMetaData.getServiceName()));
 				}
 			}
+		}
+	}
+
+	@Test
+	public void testStageMappingFor() {
+		StageMapping stageMapping = patchSystemInfoRepo.stageMappingFor("EntwicklungInstallationsbereit");
+		assertEquals("Entwicklung",stageMapping.getName());
+		assertEquals("DEV-CHEI212",stageMapping.getTarget());
+		for(Stage stage : stageMapping.getStages()) {
+			Stream.of("startPipelineAndTag","cancel").collect(Collectors.toList()).contains(stage.getName());
+			Stream.of("2","0").collect(Collectors.toList()).contains(stage.getCode());
+			Stream.of("com.apgsga.microservice.patch.server.impl.EntwicklungInstallationsbereitAction","com.apgsga.microservice.patch.server.impl.PipelineInputAction").collect(Collectors.toList()).contains(stage.getImplcls());
+			Stream.of("Installationsbereit","").collect(Collectors.toList()).contains(stage.getToState());
 		}
 	}
 }

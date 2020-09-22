@@ -4,6 +4,7 @@ import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.PatchPersistence;
+import com.apgsga.microservice.patch.api.PatchSystemMetaInfoPersistence;
 import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.JschSessionCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.LoggingMockSshRunnerFactory;
@@ -13,8 +14,8 @@ import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactoryImpl;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClientImpl;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsMockClient;
+import com.apgsga.microservice.patch.core.impl.persistence.FilePatchSystemMetaInfoPersistence;
 import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,8 +40,14 @@ public class MicroServicePatchConfig {
 	@Value("${json.db.location:db}")
 	private String dbLocation;
 
+	@Value("${json.meta.info.db.location:metaInfoDb}")
+	private String metaInfoDbLocation;
+
 	@Value("${json.db.work.location:work}")
 	private String workDirLocation;
+
+	@Value("${json.meta.info.db.work.location:metaInfoWork}")
+	private String metaInfoWorkDirLocation;
 
 	@Value("${jenkins.host:https://jenkins.apgsga.ch/}")
 	private String jenkinsHost;
@@ -85,6 +92,15 @@ public class MicroServicePatchConfig {
 		Resource workDir = rl.getResource(workDirLocation);
 		final PatchPersistence per = new FilebasedPatchPersistence(dbStorabe, workDir);
 		return per;
+	}
+	
+	@Bean(name = "patchMetaInfoPersistence")
+	public PatchSystemMetaInfoPersistence patchSystemMetaInfoPersistence() throws IOException {
+		final ResourceLoader rl = new FileSystemResourceLoader();
+		Resource metaInfoDbStorage = rl.getResource(metaInfoDbLocation);
+		Resource metaInfoWorkdir = rl.getResource(metaInfoWorkDirLocation);
+		final PatchSystemMetaInfoPersistence metaInfoPer = new FilePatchSystemMetaInfoPersistence(metaInfoDbStorage,metaInfoWorkdir);
+		return metaInfoPer;
 	}
 
 	@Bean(name = "dependencyResolver")
@@ -155,7 +171,6 @@ public class MicroServicePatchConfig {
 	@Bean(name = "groovyActionFactory")
 	@Profile({ "groovyactions" })
 	public PatchActionExecutorFactory groovyPatchActionFactory() {
-		// TODO JHE (21.09.2020) : Here we probably have to pass info coming from old targetSystemMapping
 		return new PatchActionExecutorFactoryImpl();
 	}
 

@@ -1,9 +1,6 @@
 package com.apgsga.microservice.patch.core.impl.persistence;
 
-import com.apgsga.microservice.patch.api.OnDemandTargets;
-import com.apgsga.microservice.patch.api.PatchSystemMetaInfoPersistence;
-import com.apgsga.microservice.patch.api.StageMappings;
-import com.apgsga.microservice.patch.api.TargetInstances;
+import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.Resource;
@@ -72,5 +69,18 @@ public class FilePatchSystemMetaInfoPersistence extends AbstractFilebasedPersist
             throw ExceptionFactory.createPatchServiceRuntimeException(
                     "FilebasedPatchPersistence.targetInstance.exception", new Object[] { e.getMessage() }, e);
         }
+    }
+
+    @Override
+    public StageMapping stageMappingFor(String toStatus) {
+        StageMappings stageMappings = stageMapping();
+        for(StageMapping stageMapping : stageMappings.getStageMappings()) {
+            for(Stage stage : stageMapping.getStages()) {
+                if((stageMapping.getName() + stage.getToState()).equals(toStatus)) {
+                    return stageMapping;
+                }
+            }
+        }
+        return null;
     }
 }

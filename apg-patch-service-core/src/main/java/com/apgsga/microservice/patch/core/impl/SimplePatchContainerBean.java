@@ -43,6 +43,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private PatchPersistence repo;
 
 	@Autowired
+	@Qualifier("patchMetaInfoPersistence")
+	private PatchSystemMetaInfoPersistence metaInfoRepo;
+
+	@Autowired
 	private JenkinsClient jenkinsClient;
 
 	@Autowired
@@ -71,9 +75,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		super();
 	}
 
-	public SimplePatchContainerBean(PatchPersistence repo) {
+	public SimplePatchContainerBean(PatchPersistence repo, PatchSystemMetaInfoPersistence metaInfoRepo) {
 		super();
 		this.repo = repo;
+		this.metaInfoRepo = metaInfoRepo;
 	}
 
 	@Override
@@ -347,6 +352,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	public PatchPersistence getRepo() {
 		return repo;
+	}
+
+	public PatchSystemMetaInfoPersistence getMetaInfoRepo() {
+		return metaInfoRepo;
 	}
 
 	protected void setRepo(PatchPersistence repo) {

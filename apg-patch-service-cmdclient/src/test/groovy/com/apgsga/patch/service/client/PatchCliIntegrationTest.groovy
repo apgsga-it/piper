@@ -6,15 +6,20 @@ import com.apgsga.microservice.patch.api.PatchPersistence
 import com.apgsga.microservice.patch.server.MicroPatchServer
 import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.sql.Sql
+import org.junit.Assert
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
+import org.springframework.core.io.FileSystemResourceLoader
+import org.springframework.core.io.Resource
+import org.springframework.core.io.ResourceLoader
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.annotation.DirtiesContext.ClassMode
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
+import org.springframework.util.FileCopyUtils
 import spock.lang.Ignore
 import spock.lang.Requires
 import spock.lang.Specification
@@ -27,6 +32,9 @@ class PatchCliIntegrationTest extends Specification {
 
 	@Value('${json.db.location}')
 	private String dbLocation
+
+	@Value('${json.meta.info.db.location}')
+	private String metaInfoDbLocation
 
 	@Autowired
 	@Qualifier("patchPersistence")
@@ -41,6 +49,18 @@ class PatchCliIntegrationTest extends Specification {
 		System.properties['spring_profiles_active'] = 'default'
 		System.properties['piper.host.url'] = 'localhost:9020'
 		println System.getProperties()
+
+		try {
+			final ResourceLoader rl = new FileSystemResourceLoader();
+			Resource testResources = rl.getResource("src/test/resources");
+			File persistSt = new File(metaInfoDbLocation);
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/ServicesMetaData.json"), new File(persistSt, "ServicesMetaData.json"));
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/OnDemandTargets.json"), new File(persistSt, "OnDemandTargets.json"));
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/StageMappings.json"), new File(persistSt, "StageMappings.json"));
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/TargetInstances.json"), new File(persistSt, "TargetInstances.json"));
+		} catch (IOException e) {
+			Assert.fail("Unable to copy JSON test files into testDb folder");
+		}
 	}
 
 
