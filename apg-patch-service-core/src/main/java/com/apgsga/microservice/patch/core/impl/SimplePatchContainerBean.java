@@ -388,9 +388,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public void copyPatchFiles(Map<String,String> params) {
-		// TODO JHE (21.09.2020): need to fetch newly the statusCode
-		int statusCode = -22;
-		//		int statusCode = targetSystemMapping.findStatus(params.get("status"));
+		int statusCode = metaInfoRepo.findStatus(params.get("status"));
 		List<String> patchIds = patchRdbms.patchIdsForStatus(String.valueOf(statusCode));
 		List<Patch> patchesToCopy = findByIds(patchIds);
 		ObjectMapper mapper = new ObjectMapper();

@@ -160,7 +160,7 @@ public class FilebasedPersistenceTest {
 
 	@Test
 	public void testLoadStageMappings() {
-		StageMappings stageMappings = patchSystemInfoRepo.stageMapping();
+		StageMappings stageMappings = patchSystemInfoRepo.stageMappings();
 		assertEquals(4,stageMappings.getStageMappings().size());
 		for(StageMapping stageMapping : stageMappings.getStageMappings()) {
 			// JHE : Just test two, not even sure it makes sense to load a complete file

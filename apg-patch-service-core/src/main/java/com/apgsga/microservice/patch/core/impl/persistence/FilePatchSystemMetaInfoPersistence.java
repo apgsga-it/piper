@@ -40,7 +40,7 @@ public class FilePatchSystemMetaInfoPersistence extends AbstractFilebasedPersist
     }
 
     @Override
-    public StageMappings stageMapping() {
+    public StageMappings stageMappings() {
         try {
             File stageMappingFile = createFile(STAGE_MAPPINGS_DATA_JSON);
             if (!stageMappingFile.exists()) {
@@ -73,7 +73,7 @@ public class FilePatchSystemMetaInfoPersistence extends AbstractFilebasedPersist
 
     @Override
     public StageMapping stageMappingFor(String toStatus) {
-        StageMappings stageMappings = stageMapping();
+        StageMappings stageMappings = stageMappings();
         for(StageMapping stageMapping : stageMappings.getStageMappings()) {
             for(Stage stage : stageMapping.getStages()) {
                 if((stageMapping.getName() + stage.getToState()).equals(toStatus)) {
@@ -82,5 +82,19 @@ public class FilePatchSystemMetaInfoPersistence extends AbstractFilebasedPersist
             }
         }
         return null;
+    }
+
+    @Override
+    public Integer findStatus(String toStatus) {
+        StageMappings stageMappings = stageMappings();
+        for(StageMapping stageMapping : stageMappings.getStageMappings()) {
+            for(Stage stage : stageMapping.getStages()) {
+                if((stageMapping.getName() + stage.getToState()).equals(toStatus)) {
+                    return Integer.valueOf(stage.getCode());
+                }
+            }
+        }
+        return null;
+
     }
 }

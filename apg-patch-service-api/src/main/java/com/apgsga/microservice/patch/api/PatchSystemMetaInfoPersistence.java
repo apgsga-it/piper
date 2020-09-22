@@ -14,7 +14,7 @@ public interface PatchSystemMetaInfoPersistence {
      *
      * @return : load content of the StageMappings.json file
      */
-    StageMappings stageMapping();
+    StageMappings stageMappings();
 
     /**
      *
@@ -29,4 +29,11 @@ public interface PatchSystemMetaInfoPersistence {
      * @param toStatus : eg. : Entwicklunginstallationbereit, Anwendertestinstallationbereit
      */
     StageMapping stageMappingFor(String toStatus);
+
+    /**
+     *
+     * @param toStatus : the current patch status number
+     * @return : the next patch status
+     */
+    Integer findStatus(String toStatus);
 }
