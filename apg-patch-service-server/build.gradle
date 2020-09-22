@@ -103,12 +103,12 @@ ospackage {
 		fileMode 0775
 	}
 	
-	from("packaging/common") {
-	   	into "/etc/opt/apg-patch-common"
+	from("packaging/metaInfoDb") {
+	   	into "/var/opt/${project.name}/metaInfoDb"
 		user "root"
 		permissionGroup "root"
 		// TODO (che 22.5) :  we need a common group for this directory
-		fileMode 0644 
+		fileMode 0755
 		fileType CONFIG | NOREPLACE
 	}
 	
