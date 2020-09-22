@@ -51,6 +51,9 @@ public class MicroServicePatchClientTest {
 
 	@Value("${json.db.work.location:work}")
 	private String dbWorkLocation;
+
+	@Value("${json.meta.info.db.location}")
+	private String metaInfoDbLocation;
 	
 	@Value("${local.server.port}")
 	private String localPort;
@@ -67,9 +70,11 @@ public class MicroServicePatchClientTest {
 		repo.clean();
 
 		try {
-			File persistSt = new File(dbLocation);
-			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/ServicesMetaData.json"),
-					new File(persistSt, "ServicesMetaData.json"));
+			File persistSt = new File(metaInfoDbLocation);
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/ServicesMetaData.json"),new File(persistSt, "ServicesMetaData.json"));
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/OnDemandTargets.json"),new File(persistSt, "OnDemandTargets.json"));
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/StageMappings.json"),new File(persistSt, "StageMappings.json"));
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/TargetInstances.json"),new File(persistSt, "TargetInstances.json"));
 		} catch (IOException e) {
 			fail("Unable to copy ServicesMetaData.json test file into testDb folder : " + e.getMessage());
 		}
@@ -206,5 +211,15 @@ public class MicroServicePatchClientTest {
 		assertTrue(patchClient.findWithObjectName("ma3").size() == 2);
 		assertTrue(patchClient.findWithObjectName("wrongName").size() == 0);
 		assertTrue(patchClient.findWithObjectName("test-db2").size() == 1);
+	}
+
+	@Test
+	public void listOnDemandTargets() {
+		List<String> onDemandTargets = patchClient.listOnDemandTargets();
+		assertEquals(4,onDemandTargets.size());
+		assertTrue(onDemandTargets.contains("DEV-CHEI212"));
+		assertTrue(onDemandTargets.contains("DEV-CHEI211"));
+		assertTrue(onDemandTargets.contains("DEV-CM"));
+		assertTrue(onDemandTargets.contains("DEV-JHE"));
 	}
 }

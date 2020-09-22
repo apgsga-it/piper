@@ -210,9 +210,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public List<String> listInstallationTargetsFor(String requestingTarget) {
-		// TODO JHE (21.09.2020): info was before retrieved from TSM ....
-		return null;
+	public List<String> listOnDemandTargets() {
+		OnDemandTargets onDemandTargets = metaInfoRepo.onDemandTargets();
+		return onDemandTargets.getOnDemandTargets();
 	}
 
 	@Override

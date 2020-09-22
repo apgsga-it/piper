@@ -257,6 +257,16 @@ public class MicroServicePatchServerTest {
 	}
 
 	@Test
+	public void testListOnDemandTargets() {
+		List<String> onDemandTargets = patchService.listOnDemandTargets();
+		assertEquals(4,onDemandTargets.size());
+		assertTrue(onDemandTargets.contains("DEV-CHEI212"));
+		assertTrue(onDemandTargets.contains("DEV-CHEI211"));
+		assertTrue(onDemandTargets.contains("DEV-CM"));
+		assertTrue(onDemandTargets.contains("DEV-JHE"));
+	}
+
+	@Test
 	// JHE (17.08.2020) : Ignoring it since it requires DB pre-requisite to work
 	//					  Also the following properties have to be correctly defined into application-test.properties
 	//							rdbms.oracle.url

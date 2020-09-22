@@ -15,10 +15,9 @@ public interface PatchService {
 	
 	
 	/**
-	 * @param masterTarget the System Target the Patch System is requested from
-	 * @return List for Installation Targets for the Requesting TargetSystem
+	 * @return List of all targets installable via onDemand
 	 */
-    List<String> listInstallationTargetsFor(String masterTarget);
+    List<String> listOnDemandTargets();
 	
 	/**
 	 * List all known DbModules
