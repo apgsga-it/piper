@@ -28,16 +28,16 @@ import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
  */
 public class AtomicFileWriteManager {
 
-	public static AtomicFileWriteManager create(FilebasedPatchPersistence fileBasedPersistance) {
+	public static AtomicFileWriteManager create(AbstractFilebasedPersistence fileBasedPersistance) {
 		return new AtomicFileWriteManager(fileBasedPersistance);
 	}
 
 	protected static final Log LOGGER = LogFactory.getLog(AtomicFileWriteManager.class.getName());
 	private LoggerFacade loggerFacade = new CommonsLoggingLogger(LOGGER);
 
-	private FilebasedPatchPersistence fileBasedPersistenance;
+	private AbstractFilebasedPersistence fileBasedPersistenance;
 
-	private AtomicFileWriteManager(FilebasedPatchPersistence fileBasedPersistenance) {
+	private AtomicFileWriteManager(AbstractFilebasedPersistence fileBasedPersistenance) {
 		super();
 		this.fileBasedPersistenance = fileBasedPersistenance;
 	}

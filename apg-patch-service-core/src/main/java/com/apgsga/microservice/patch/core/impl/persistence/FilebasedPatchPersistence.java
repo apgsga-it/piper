@@ -1,31 +1,24 @@
 package com.apgsga.microservice.patch.core.impl.persistence;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.apgsga.microservice.patch.api.*;
+import com.apgsga.microservice.patch.exceptions.Asserts;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.Resource;
 
-import com.apgsga.microservice.patch.api.DbModules;
-import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchLog;
-import com.apgsga.microservice.patch.api.PatchLogDetails;
-import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.api.ServiceMetaData;
-import com.apgsga.microservice.patch.api.ServicesMetaData;
-import com.apgsga.microservice.patch.exceptions.Asserts;
-import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class FilebasedPatchPersistence implements PatchPersistence {
+public class FilebasedPatchPersistence extends AbstractFilebasedPersistence implements PatchPersistence {
 
 	private static final String JSON = ".json";
 
@@ -39,26 +32,11 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	protected static final Log LOGGER = LogFactory.getLog(FilebasedPatchPersistence.class.getName());
 
-	private Resource storagePath;
-
-	private Resource tempStoragePath;
-
-	public FilebasedPatchPersistence(Resource storagePath, Resource workDir) {
+	public FilebasedPatchPersistence(Resource storagePath, Resource workDir) throws IOException {
 		super();
 		this.storagePath = storagePath;
 		this.tempStoragePath = workDir;
-	}
-
-	public void init() throws IOException {
-		if (!storagePath.exists()) {
-			LOGGER.info("Creating persistence directory: " + storagePath);
-			storagePath.getFile().mkdir();
-		}
-
-		if (!tempStoragePath.exists()) {
-			LOGGER.info("Creating Temporary work directory: " + tempStoragePath);
-			tempStoragePath.getFile().mkdir();
-		}
+		init();
 	}
 
 	@Override
@@ -85,15 +63,6 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		}
 	}
 	
-	private <T> T findFile(File f, Class<T> clazz) throws IOException {
-			if (!f.exists()) {
-				return null;
-			}
-			ObjectMapper mapper = new ObjectMapper();
-			T patchData = mapper.readValue(f, clazz);
-			return patchData;
-	}
-
 	@Override
 	public synchronized Boolean patchExists(String patchNumber) {
 		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.patchExists.patchnumber.notnullorempty.assert",
@@ -127,7 +96,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 		Asserts.notNull(patch, "FilebasedPatchPersistence.save.patchobject.notnull.assert", new Object[] {});
 		Asserts.notNullOrEmpty(patch.getPatchNummer(),
 				"FilebasedPatchPersistence.save.patchnumber.notnullorempty.assert", new Object[] { patch.toString() });
-		writeToFile(patch, PATCH + patch.getPatchNummer() + JSON);
+		writeToFile(patch, PATCH + patch.getPatchNummer() + JSON, this);
 	}
 	
 	@Override
@@ -138,7 +107,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 			patchLog = createPatchLog(patchNumber);
 		}
 		patchLog.addLog(createPatchLogDetail(patchNumber));
-		writeToFile(patchLog, PATCH_LOG + patchLog.getPatchNumber() + JSON);
+		writeToFile(patchLog, PATCH_LOG + patchLog.getPatchNumber() + JSON, this);
 	}
 	
 	private PatchLogDetails createPatchLogDetail(String patchNumber) {
@@ -179,7 +148,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	@Override
 	public void saveServicesMetaData(ServicesMetaData serviceData) {
-		writeToFile(serviceData, SERVICE_META_DATA_JSON);
+		writeToFile(serviceData, SERVICE_META_DATA_JSON, this);
 	}
 
 	@Override
@@ -200,7 +169,7 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 
 	@Override
 	public void saveDbModules(DbModules dbModules) {
-		writeToFile(dbModules, DB_MODULES_JSON);
+		writeToFile(dbModules, DB_MODULES_JSON, this);
 	}
 
 	@Override
@@ -262,32 +231,5 @@ public class FilebasedPatchPersistence implements PatchPersistence {
 				.collect(Collectors.toList());
 		Asserts.isTrue(result.size() == 1, "FilebasedPatchPersistence.findServiceByName.exception", new Object[] {});
 		return result.get(0);
-	}
-
-	private synchronized <T> void writeToFile(T object, String filename) {
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonRequestString;
-		try {
-			jsonRequestString = mapper.writeValueAsString(object);
-		} catch (JsonProcessingException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.writeToFile.exception",
-					new Object[] { e.getMessage(), filename }, e);
-		}
-		AtomicFileWriteManager.create(this).write(jsonRequestString, filename);
-
-	}
-
-	private File createFile(String fileName) throws IOException {
-		File parentDir = storagePath.getFile();
-		File revisions = new File(parentDir, fileName);
-		return revisions;
-	}
-
-	public Resource getStoragePath() {
-		return storagePath;
-	}
-
-	public Resource getTempStoragePath() {
-		return tempStoragePath;
 	}
 }

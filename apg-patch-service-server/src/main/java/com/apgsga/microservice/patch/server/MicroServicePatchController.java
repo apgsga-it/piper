@@ -119,11 +119,11 @@ public class MicroServicePatchController implements PatchService {
 		return patchService.listServiceData();
 	}
 
-	@RequestMapping(value = "/listInstallationTargets/{requestingTarget}", method = RequestMethod.GET)
+	@RequestMapping(value = "/listInstallationTargets", method = RequestMethod.GET)
 	@ResponseBody
 	@Override
-	public List<String> listInstallationTargetsFor(@PathVariable("requestingTarget") String requestingTarget) {
-		return patchService.listInstallationTargetsFor(requestingTarget);
+	public List<String> listOnDemandTargets() {
+		return patchService.listOnDemandTargets();
 	}
 
 	@RequestMapping(value = "/findByIds", method = RequestMethod.POST)

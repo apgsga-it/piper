@@ -11,7 +11,6 @@ import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.apgsga.patch.db.integration.api.PatchRdbms;
-import com.apgsga.system.mapping.api.TargetSystemMapping;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -44,6 +43,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private PatchPersistence repo;
 
 	@Autowired
+	@Qualifier("patchMetaInfoPersistence")
+	private PatchSystemMetaInfoPersistence metaInfoRepo;
+
+	@Autowired
 	private JenkinsClient jenkinsClient;
 
 	@Autowired
@@ -62,9 +65,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private TaskExecutor threadExecutor;
 
 	@Autowired
-	private TargetSystemMapping targetSystemMapping;
-
-	@Autowired
 	@Qualifier("patchRdbms")
 	private PatchRdbms patchRdbms;
 
@@ -75,9 +75,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		super();
 	}
 
-	public SimplePatchContainerBean(PatchPersistence repo) {
+	public SimplePatchContainerBean(PatchPersistence repo, PatchSystemMetaInfoPersistence metaInfoRepo) {
 		super();
 		this.repo = repo;
+		this.metaInfoRepo = metaInfoRepo;
 	}
 
 	@Override
@@ -209,8 +210,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public List<String> listInstallationTargetsFor(String requestingTarget) {
-		return targetSystemMapping.listInstallTargets();
+	public List<String> listOnDemandTargets() {
+		OnDemandTargets onDemandTargets = metaInfoRepo.onDemandTargets();
+		return onDemandTargets.getOnDemandTargets();
 	}
 
 	@Override
@@ -352,6 +354,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		return repo;
 	}
 
+	public PatchSystemMetaInfoPersistence getMetaInfoRepo() {
+		return metaInfoRepo;
+	}
+
 	protected void setRepo(PatchPersistence repo) {
 		this.repo = repo;
 	}
@@ -382,7 +388,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public void copyPatchFiles(Map<String,String> params) {
-		int statusCode = targetSystemMapping.findStatus(params.get("status"));
+		int statusCode = metaInfoRepo.findStatus(params.get("status"));
 		List<String> patchIds = patchRdbms.patchIdsForStatus(String.valueOf(statusCode));
 		List<Patch> patchesToCopy = findByIds(patchIds);
 		ObjectMapper mapper = new ObjectMapper();

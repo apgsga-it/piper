@@ -43,7 +43,7 @@ public class MicroservicePatchClient implements PatchService {
 
 	private static final String LIST_ALL_DBOBJECTS_FOR_USER = "/listAllDbObjectsForUser/{id}/{search}/{username}";
 
-	private static final String LIST_INSTALLTARGETS = "/listInstallationTargets/{requestingTarget}";
+	private static final String LIST_INSTALLTARGETS = "/listInstallationTargets";
 
 	private static final String REMOVE = "/remove";
 	
@@ -178,10 +178,8 @@ public class MicroservicePatchClient implements PatchService {
 	}
 
 	@Override
-	public List<String> listInstallationTargetsFor(String requestingTarget) {
-		Map<String, String> params = Maps.newHashMap();
-		params.put("requestingTarget", requestingTarget);
-		String[] result = restTemplate.getForObject(getRestBaseUri() + LIST_INSTALLTARGETS, String[].class, params);
+	public List<String> listOnDemandTargets() {
+		String[] result = restTemplate.getForObject(getRestBaseUri() + LIST_INSTALLTARGETS, String[].class);
 		return Lists.newArrayList(result);
 	}
 
