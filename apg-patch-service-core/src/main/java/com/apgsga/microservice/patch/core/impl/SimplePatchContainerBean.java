@@ -3,11 +3,11 @@ package com.apgsga.microservice.patch.core.impl;
 import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.*;
-import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.core.commands.Command;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
+import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.apgsga.patch.db.integration.api.PatchRdbms;
@@ -22,7 +22,6 @@ import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -67,9 +66,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Autowired
 	@Qualifier("patchRdbms")
 	private PatchRdbms patchRdbms;
-
-	@Value("${config.common.location:/etc/opt/apg-patch-common}")
-	private String configCommon;
 
 	public SimplePatchContainerBean() {
 		super();
@@ -436,4 +432,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		return patchRdbms.patchIdsForStatus(statusCode);
 	}
 
+	@Override
+	public void startJenkinsJob(String jobName) {
+		jenkinsClient.startJenkinsJob(jobName);
+	}
+
+	@Override
+	public void startJenkinsJob(String jobName, Map<String, String> jobParams) {
+		jenkinsClient.startJenkinsJob(jobName,jobParams);
+	}
 }

@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -190,5 +189,19 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@Override
 	public List<String> patchIdsForStatus(@PathVariable("status") String statusCode) {
 		return patchService.patchIdsForStatus(statusCode);
+	}
+
+	@RequestMapping(value = "/startJenkinsJob/{jobName}", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public void startJenkinsJob(@PathVariable String jobName) {
+		patchService.startJenkinsJob(jobName);
+	}
+
+	@RequestMapping(value = "/startJenkinsJobWithParam/{jobName}", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public void startJenkinsJob(@PathVariable String jobName, @RequestBody Map<String, String> jobParams) {
+		patchService.startJenkinsJob(jobName,jobParams);
 	}
 }

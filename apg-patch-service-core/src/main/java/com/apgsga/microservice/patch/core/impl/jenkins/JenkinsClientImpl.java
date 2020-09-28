@@ -204,13 +204,27 @@ public class JenkinsClientImpl implements JenkinsClient {
 	public void startAssembleAndDeployPipeline(String target) {
 		//TODO JHE (01.09.2020) : Will be started with parameter ... but the pipeline doesn't exist yet ...
 		String jobName = "assembleAndDeploy_" + target;
-		JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,jobName);
+		JenkinsSshCommand cmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName);
+		cmdRunner.run(cmd);
 	}
 
 	@Override
 	public void startInstallPipeline(String target) {
 		//TODO JHE (01.09.2020) : Will maybe be started with parameter ... but the pipeline doesn't exist yet ...
 		String jobName = "install_" + target;
-		JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,jobName);
+		JenkinsSshCommand cmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName);
+		cmdRunner.run(cmd);
+	}
+
+	@Override
+	public void startJenkinsJob(String jobName) {
+		JenkinsSshCommand cmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName);
+		cmdRunner.run(cmd);
+	}
+
+	@Override
+	public void startJenkinsJob(String jobName, Map<String, String> jobParams) {
+		JenkinsSshCommand cmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName, jobParams, null);
+		cmdRunner.run(cmd);
 	}
 }

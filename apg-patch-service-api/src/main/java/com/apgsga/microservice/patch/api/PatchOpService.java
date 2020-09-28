@@ -52,4 +52,17 @@ public interface PatchOpService extends PatchRdbms {
 	 * @param params : 2 parameters required with following keys: "status" and "destFolder"
 	 */
 	void copyPatchFiles(Map<String,String> params);
+
+	/**
+	 * Starts a Jenkins Job
+	 * @param jobName
+	 */
+	void startJenkinsJob(String jobName);
+
+	/**
+	 *
+	 * @param jobName
+	 * @param jobParams key=paramName, value=paramValue -> for each job parameter
+	 */
+	void startJenkinsJob(String jobName, Map<String,String> jobParams);
 }

@@ -1,6 +1,5 @@
 package com.apgsga.patch.service.client.rest
 
-
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.PatchOpService
 import com.apgsga.patch.service.client.PatchCliExceptionHandler
@@ -80,6 +79,16 @@ class PatchRestServiceClient implements PatchOpService {
 	@Override
 	List<String> patchIdsForStatus(String statusCode) {
 		return restTemplate.getForObject(getRestBaseUri() + "/patchIdsForStatus/{status}", String[].class, [status:statusCode]);
+	}
+
+	@Override
+	void startJenkinsJob(String jobName) {
+		restTemplate.postForLocation(getRestBaseUri() + "/startJenkinsJob/{jobName}",null, [jobName:jobName])
+	}
+
+	@Override
+	void startJenkinsJob(String jobName, Map<String, String> jobParams) {
+		restTemplate.postForLocation(getRestBaseUri() + "/startJenkinsJobWithParam/{jobName}",jobParams, [jobName:jobName]);
 	}
 
 	class PatchServiceErrorHandler implements ResponseErrorHandler {
