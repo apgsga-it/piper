@@ -94,7 +94,7 @@ public abstract class JenkinsSshCommand extends CommandBaseImpl {
             return new String[] {"cat ", getFileNameParameter(), " | ", "-l", jenkinsSshUser, "-p", jenkinsSshPort, jenkinsHost};
         }
         else {
-            return new String[]{"-l", jenkinsSshUser, "-p", jenkinsSshPort, jenkinsHost};
+            return new String[]{"ssh", "-l", jenkinsSshUser, "-p", jenkinsSshPort, jenkinsHost};
         }
     }
 

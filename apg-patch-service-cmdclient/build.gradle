@@ -111,25 +111,6 @@ ospackage {
 		into '/etc/profile.d'
 		//expand project.properties
 	}
-	
-	from("pkg/rpm/conf") {
-		into "/etc/opt/${finalName}"
-		fileType CONFIG | NOREPLACE
-		include 'ops.properties'
-		user 'root'
-		permissionGroup 'jenkins'
-		addParentDirs false
-		fileMode 0740
-	}
-	
-	from("pkg/rpm/conf") {
-		into "/etc/opt/${finalName}"
-		fileType CONFIG
-		include 'application.properties'
-		user 'root'
-		addParentDirs false
-		fileMode 0777
-	}
 }
  buildRpm {
  	// Parameter are as follow: directory(String path, int permissions, String user, String permissionGroup, boolean addParents)
@@ -167,7 +148,7 @@ artifactory {
     contextUrl = "${mavenRepoBaseUrl}"
     publish {
         repository {
-            repoKey = "${yumRepoDevName}"   
+            repoKey = "${yumRepoDevName}"
             username = mavenRepoUser
             password = mavenRepoPwd
             ivy {

@@ -5,15 +5,20 @@ import java.util.Map;
 import com.apgsga.microservice.patch.api.Patch;
 
 public interface JenkinsClient {
-	public void createPatchPipelines(Patch patch);
 
-	public void startProdPatchPipeline(Patch patch);
+	void createPatchPipelines(Patch patch);
 
-	public void processInputAction(Patch patch, Map<String, String> parameter);
+	void startProdPatchPipeline(Patch patch);
 
-	public void processInputAction(Patch patch, String target, String stage);
+	void processInputAction(Patch patch, Map<String, String> parameter);
+
+	void processInputAction(Patch patch, String target, String stage);
 	
-	public void startAssembleAndDeployPipeline(String target);
+	void startAssembleAndDeployPipeline(String target);
 
-	public void startInstallPipeline(String target);
+	void startInstallPipeline(String target);
+
+	void startJenkinsJob(String jobName);
+
+	void startJenkinsJob(String jobName, Map<String,String> jobParams);
 }

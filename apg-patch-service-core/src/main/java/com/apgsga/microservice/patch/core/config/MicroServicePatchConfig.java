@@ -49,14 +49,14 @@ public class MicroServicePatchConfig {
 	@Value("${json.meta.info.db.work.location:metaInfoWork}")
 	private String metaInfoWorkDirLocation;
 
-	@Value("${jenkins.host:https://jenkins.apgsga.ch/}")
+	@Value("${jenkins.host:jenkins.apgsga.ch}")
 	private String jenkinsHost;
 
 	@Value("${jenkins.ssh.port:53801}")
 	private String jenkinsSshPort;
 
-	@Value("${jenkins.user}")
-	private String jenkinsUser;
+	@Value("${jenkins.ssh.user:apg_install}")
+	private String jenkinsSshUser;
 
 	@Value("${jenkins.authkey}")
 	private String jenkinsAuthKey;
@@ -141,7 +141,7 @@ public class MicroServicePatchConfig {
 	public JenkinsClient jenkinsPatchClient() {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource rDbLocation = rl.getResource(dbLocation);
-		return new JenkinsClientImpl(rDbLocation, jenkinsHost, jenkinsSshPort, jenkinsUser, jenkinsAuthKey, threadPoolTaskExecutor());
+		return new JenkinsClientImpl(rDbLocation, jenkinsHost, jenkinsSshPort, jenkinsSshUser, jenkinsAuthKey, threadPoolTaskExecutor());
 	}
 
 	@Bean(name = "vcsCmdRunnerFactory")

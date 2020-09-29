@@ -43,4 +43,17 @@ public class JenkinsMockClient implements JenkinsClient {
 	public void startInstallPipeline(String target) {
 		LOGGER.info("startInstallPipeline for target=" + target);
 	}
+
+	@Override
+	public void startJenkinsJob(String jobName) {
+		LOGGER.info("startJenkinsJob, jobName=" + jobName);
+	}
+
+	@Override
+	public void startJenkinsJob(String jobName, Map<String, String> jobParams) {
+		LOGGER.info("startJenkinsjob, jobName=" + jobName);
+		jobParams.keySet().forEach(k -> {
+			LOGGER.info("Param key = " + k + ", value = " + jobParams.get(k));
+		});
+	}
 }
