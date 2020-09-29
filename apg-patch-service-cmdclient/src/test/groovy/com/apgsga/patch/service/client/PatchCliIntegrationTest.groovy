@@ -47,7 +47,7 @@ class PatchCliIntegrationTest extends Specification {
 			println ("Buildfolder has been created ${created}")
 		}
 		System.properties['spring_profiles_active'] = 'default'
-		System.properties['piper.host.url'] = 'localhost:9020'
+		System.properties['piper.host.default.url'] = 'localhost:9020'
 		println System.getProperties()
 
 		try {

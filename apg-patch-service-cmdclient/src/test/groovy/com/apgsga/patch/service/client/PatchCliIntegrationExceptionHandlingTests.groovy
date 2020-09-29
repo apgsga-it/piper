@@ -27,7 +27,7 @@ class PatchCliIntegrationExceptionHandlingTests extends Specification {
 			println ("Buildfolder has been created ${created}")
 		}
 		System.properties['spring_profiles_active'] = 'default'
-		System.properties['piper.host.url'] = 'localhost:9020'
+		System.properties['piper.host.default.url'] = 'localhost:9020'
 	}
 
 	def "Patch Cli should be ok with returnCode == 0 for nonexisting findById"() {
