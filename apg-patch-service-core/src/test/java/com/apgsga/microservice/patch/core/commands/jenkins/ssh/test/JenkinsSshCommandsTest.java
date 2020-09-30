@@ -70,7 +70,6 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
     }
 
     @Test
-    @Ignore
     public void testJenkinsSshBuildJobWithParameterCmdAndWaitForStart() {
         Map<String,String> params = Maps.newHashMap();
         params.put("patchnumber","2222");
