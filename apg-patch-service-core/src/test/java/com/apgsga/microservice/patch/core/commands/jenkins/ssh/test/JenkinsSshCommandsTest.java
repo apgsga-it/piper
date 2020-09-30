@@ -70,6 +70,7 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
     }
 
     @Test
+    @Ignore
     public void testJenkinsSshBuildJobWithParameterCmdAndWaitForStart() {
         Map<String,String> params = Maps.newHashMap();
         params.put("patchnumber","2222");
@@ -81,7 +82,6 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
     }
 
     @Test
-    @Ignore
     public void testJenkinsSshBuildJobWithFileParameterCmdWithoutWaiting() {
         Map<String, File> fileParams = Maps.newHashMap();
         fileParams.put("patchFile.json",new File("src/test/resources/Patch5401.json"));
