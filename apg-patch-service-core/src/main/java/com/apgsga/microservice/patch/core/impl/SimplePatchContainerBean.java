@@ -438,7 +438,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public void startJenkinsJob(String jobName, Map<String, String> jobParams) {
-		jenkinsClient.startJenkinsJob(jobName,jobParams);
+	public void startJenkinsJob(String jobName, Map<JenkinsParameterType, Map> params) {
+		jenkinsClient.startJenkinsJob(jobName,params);
 	}
 }

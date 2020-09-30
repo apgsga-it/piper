@@ -1,7 +1,9 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
+import java.io.File;
 import java.util.Map;
 
+import com.apgsga.microservice.patch.api.JenkinsParameterType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -50,10 +52,20 @@ public class JenkinsMockClient implements JenkinsClient {
 	}
 
 	@Override
-	public void startJenkinsJob(String jobName, Map<String, String> jobParams) {
+	public void startJenkinsJob(String jobName, Map<JenkinsParameterType, Map> params) {
 		LOGGER.info("startJenkinsjob, jobName=" + jobName);
-		jobParams.keySet().forEach(k -> {
-			LOGGER.info("Param key = " + k + ", value = " + jobParams.get(k));
-		});
+		Map<String,String> stringParam = params.get(JenkinsParameterType.STRING_PARAM);
+		Map<String,File> fileParam = params.get(JenkinsParameterType.FILE_PARAM);
+		if(stringParam != null && !stringParam.isEmpty()) {
+			stringParam.keySet().forEach(k -> {
+				LOGGER.info("Job Param key = " + k + ", value = " + stringParam.get(k));
+			});
+		}
+		if(fileParam != null && !fileParam.isEmpty()) {
+			fileParam.keySet().forEach(k -> {
+				LOGGER.info("File Param key = " + k + ", value (as filePath) = " + fileParam.get(k));
+			});
+		}
+
 	}
 }

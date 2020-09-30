@@ -2,6 +2,7 @@ package com.apgsga.microservice.patch.api;
 
 import com.apgsga.patch.db.integration.api.PatchRdbms;
 
+import java.io.File;
 import java.util.Map;
 
 public interface PatchOpService extends PatchRdbms {
@@ -62,7 +63,8 @@ public interface PatchOpService extends PatchRdbms {
 	/**
 	 *
 	 * @param jobName
-	 * @param jobParams key=paramName, value=paramValue -> for each job parameter
+	 * @param params key contains the type of Parameter: STANDARD_P or FILE_P
+	 *               value is a standard Map, key=value for each parameter
 	 */
-	void startJenkinsJob(String jobName, Map<String,String> jobParams);
+	void startJenkinsJob(String jobName, Map<JenkinsParameterType,Map> params);
 }

@@ -243,16 +243,28 @@ class PatchCliIntegrationTest extends Specification {
 			repo.clean()
 	}
 
-	def "Patch cli startJenkinsJob with parameters" () {
+	def "Patch cli startJenkinsJob with string parameters" () {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-sjp", 'testJob,param1@=value1@:p2@=v2@:testParam3@=thisisThirdValue'])
+			def result = client.process(["-sjsp", 'testJob,param1@=value1@:p2@=v2@:testParam3@=thisisThirdValue'])
 		then:
 			result.returnCode == 0
 			result.results != null
 		cleanup:
 			repo.clean()
+	}
+
+	def "Patch cli startJenkinsJob with file parameters" () {
+		setup:
+		def client = PatchCli.create()
+		when:
+		def result = client.process(["-sjfp", 'testJob,param1@=src/test/resources/Patch5401.json'])
+		then:
+		result.returnCode == 0
+		result.results != null
+		cleanup:
+		repo.clean()
 	}
 
 	// JHE (18.08.2020): Ignoring the test as it requires pre-requisite in DB. However, keeping it for future sanity checks

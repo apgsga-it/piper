@@ -1,8 +1,9 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
-import java.util.Map;
-
+import com.apgsga.microservice.patch.api.JenkinsParameterType;
 import com.apgsga.microservice.patch.api.Patch;
+
+import java.util.Map;
 
 public interface JenkinsClient {
 
@@ -19,6 +20,5 @@ public interface JenkinsClient {
 	void startInstallPipeline(String target);
 
 	void startJenkinsJob(String jobName);
-
-	void startJenkinsJob(String jobName, Map<String,String> jobParams);
+	void startJenkinsJob(String jobName, Map<JenkinsParameterType,Map> params);
 }
