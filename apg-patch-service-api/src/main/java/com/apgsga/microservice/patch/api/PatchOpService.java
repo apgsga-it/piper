@@ -63,7 +63,7 @@ public interface PatchOpService extends PatchRdbms {
 	/**
 	 *
 	 * @param jobName
-	 * @param params key contains the type of Parameter: STANDARD_P or FILE_P
+	 * @param params key contains the type of Parameter
 	 *               value is a standard Map, key=value for each parameter
 	 */
 	void startJenkinsJob(String jobName, Map<JenkinsParameterType,Map> params);
