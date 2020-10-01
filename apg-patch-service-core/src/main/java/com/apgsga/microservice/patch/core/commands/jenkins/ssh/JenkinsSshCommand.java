@@ -76,8 +76,13 @@ public abstract class JenkinsSshCommand extends CommandBaseImpl {
 
     @Override
     protected String[] getParameterAsArray() {
+        //TODO JHE (01.10.2020) : put this correctly again after testing
+        /*
         String[] parameter = Stream.concat(Arrays.stream(getFirstPart()), Arrays.stream(getJenkinsCmd()))
                 .toArray(String[]::new);
+
+         */
+        String[] parameter = Arrays.stream(getJenkinsCmd()).toArray(String[]::new);
         return parameter;
     }
 
@@ -93,8 +98,10 @@ public abstract class JenkinsSshCommand extends CommandBaseImpl {
         if(hasFileParam()) {
             // TODO JHE (01.10.2020): do not forget to set that correctly again
             //return new String[] {"cat", "/home/jhe/Patch0.json", "|", "ssh", "-l", jenkinsSshUser, "-p", jenkinsSshPort, jenkinsHost};
-            System.out.println("getFirstPart() -> " + "cat /home/jhe/Patch0.json | ssh -l " + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost);
-            return new String[] {"/bin/sh", "-c", "cat /home/jhe/Patch0.json | ssh -l " + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost};
+
+           // System.out.println("getFirstPart() -> " + "cat /home/jhe/Patch0.json | ssh -l " + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost);
+            //return new String[] {"/bin/sh", "-c", "cat /home/jhe/Patch0.json | ssh -l " + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost};
+            return new String[]{};
         }
         else {
             return new String[]{"ssh", "-l", jenkinsSshUser, "-p", jenkinsSshPort, jenkinsHost};

@@ -53,7 +53,7 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
         List<String> tmpCmd = Lists.newArrayList();
 
 
-        String s = "cat /home/jhe/Patch0.json | ssh -l" + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost + " build Patch1 -p patchFile.json=";
+        String s = "cat /home/jhe/Patch0.json | ssh -l " + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost + " build Patch1 -p patchFile.json=";
 
         System.out.println("getJenkinsCmd, s => " + s);
 
