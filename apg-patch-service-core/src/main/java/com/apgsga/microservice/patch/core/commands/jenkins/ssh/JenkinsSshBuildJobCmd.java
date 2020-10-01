@@ -50,50 +50,54 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
     @Override
     protected String[] getJenkinsCmd() {
 
-        List<String> tmpCmd = Lists.newArrayList();
-
-
-        String s = "cat /home/jhe/Patch0.json | ssh -l " + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost + " build Patch1 -p patchFile.json=";
-
-        System.out.println("getJenkinsCmd, s => " + s);
-
-        tmpCmd.add("/bin/sh");
-        tmpCmd.add("-c");
-        tmpCmd.add(s);
-
-        return tmpCmd.stream().toArray(String[]::new);
-
-// TODO JHE (01.10.2020) : do not forget to put that correct again
-        /*
-        List<String> cmd = Lists.newArrayList();
-        cmd.add("build");
-        cmd.add(jobName);
-
-        if (jobParameters != null && !jobParameters.isEmpty()) {
-            for (String key : jobParameters.keySet()) {
-                cmd.add("-p");
-                cmd.add(key + "=" + jobParameters.get(key));
-            }
-        }
+        // TODO JHE (01.10.2020) : do not forget to put that correct again
 
         if(hasFileParam()) {
-            String fileParamName = (String) fileParams.keySet().toArray()[0];
-            cmd.add("-p");
-            cmd.add(fileParamName + "=");
+            List<String> tmpCmd = Lists.newArrayList();
+
+
+            String s = "cat /home/jhe/Patch0.json | ssh -l " + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost + " build Patch1 -p patchFile.json=";
+
+            System.out.println("getJenkinsCmd, s => " + s);
+
+            tmpCmd.add("/bin/sh");
+            tmpCmd.add("-c");
+            tmpCmd.add(s);
+
+            return tmpCmd.stream().toArray(String[]::new);
+        }
+        else {
+
+            List<String> cmd = Lists.newArrayList();
+            cmd.add("build");
+            cmd.add(jobName);
+
+            if (jobParameters != null && !jobParameters.isEmpty()) {
+                for (String key : jobParameters.keySet()) {
+                    cmd.add("-p");
+                    cmd.add(key + "=" + jobParameters.get(key));
+                }
+            }
+
+            if(hasFileParam()) {
+                String fileParamName = (String) fileParams.keySet().toArray()[0];
+                cmd.add("-p");
+                cmd.add(fileParamName + "=");
+
+            }
+
+            if(waitForJobToBeFinish) {
+                cmd.add("-f");
+            }
+
+            if(waitForJobToStart) {
+                cmd.add("-w");
+            }
+
+            return cmd.stream().toArray(String[]::new);
+
 
         }
-
-        if(waitForJobToBeFinish) {
-            cmd.add("-f");
-        }
-
-        if(waitForJobToStart) {
-            cmd.add("-w");
-        }
-
-        return cmd.stream().toArray(String[]::new);
-
-        */
 
     }
 }

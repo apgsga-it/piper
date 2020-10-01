@@ -82,7 +82,13 @@ public abstract class JenkinsSshCommand extends CommandBaseImpl {
                 .toArray(String[]::new);
 
          */
-        String[] parameter = Arrays.stream(getJenkinsCmd()).toArray(String[]::new);
+        String[] parameter;
+        if(hasFileParam()) {
+            parameter = Arrays.stream(getJenkinsCmd()).toArray(String[]::new);
+        }
+        else {
+            parameter = Stream.concat(Arrays.stream(getFirstPart()), Arrays.stream(getJenkinsCmd())).toArray(String[]::new);
+        }
         return parameter;
     }
 
