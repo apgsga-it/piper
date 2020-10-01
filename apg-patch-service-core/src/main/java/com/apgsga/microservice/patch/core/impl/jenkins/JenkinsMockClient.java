@@ -55,7 +55,7 @@ public class JenkinsMockClient implements JenkinsClient {
 	public void startJenkinsJob(String jobName, Map<JenkinsParameterType, Map> params) {
 		LOGGER.info("startJenkinsjob, jobName=" + jobName);
 		Map<String,String> stringParam = params.get(JenkinsParameterType.STRING_PARAM);
-		Map<String,File> fileParam = params.get(JenkinsParameterType.FILE_PARAM);
+		Map<String,String> fileParam = params.get(JenkinsParameterType.FILE_PARAM);
 		if(stringParam != null && !stringParam.isEmpty()) {
 			stringParam.keySet().forEach(k -> {
 				LOGGER.info("Job Param key = " + k + ", value = " + stringParam.get(k));

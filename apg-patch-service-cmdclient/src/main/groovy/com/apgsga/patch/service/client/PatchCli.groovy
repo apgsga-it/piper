@@ -299,7 +299,7 @@ class PatchCli {
 
 	}
 
-	private Map<String,File> fileParameterAsMap(def fileParams) {
+	private Map<String,String> fileParameterAsMap(def fileParams) {
 		if(fileParams == null) {
 			return null
 		}
@@ -309,7 +309,7 @@ class PatchCli {
 		def keyPair = fileParams.split("@:")
 		keyPair.each {kp ->
 			def values = kp.split("@=")
-			paramAsMap.put(values[0],new File(values[1]))
+			paramAsMap.put(values[0],values[1])
 		}
 
 		return paramAsMap
