@@ -12,7 +12,7 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
 
     private Map<String,String> jobParameters;
 
-    private Map<String,File> fileParams;
+    private Map<String,String> fileParams;
 
     private boolean waitForJobToBeFinish;
 
@@ -25,7 +25,7 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
         this.waitForJobToBeFinish = waitForJobToBeFinish;
     }
 
-    public JenkinsSshBuildJobCmd(String jenkinsHost, String jenkinsSshPort, String jenkinsSshUser, String jobName, Map<String,String> jobParameters ,Map<String,File> fileParams, boolean waitFoJobToStart, boolean waitForJobToBeFinish) {
+    public JenkinsSshBuildJobCmd(String jenkinsHost, String jenkinsSshPort, String jenkinsSshUser, String jobName, Map<String,String> jobParameters ,Map<String,String> fileParams, boolean waitFoJobToStart, boolean waitForJobToBeFinish) {
         super(jenkinsHost, jenkinsSshPort, jenkinsSshUser);
         this.jobName = jobName;
         this.jobParameters = jobParameters;
@@ -40,9 +40,16 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
     }
 
     @Override
-    protected String getFileNameParameter() {
+    protected String getFileParameterName() {
         if(hasFileParam()) {
-            return fileParams.get(fileParams.keySet().toArray()[0]).getName();
+            return fileParams.keySet().stream().findFirst().get();
+        }
+        return null;
+    }
+
+    private String getFileParameterValue() {
+        if(hasFileParam()) {
+            return fileParams.get(getFileParameterName());
         }
         return null;
     }
@@ -50,19 +57,18 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
     @Override
     protected String[] getJenkinsCmd() {
 
-        // TODO JHE (01.10.2020) : do not forget to put that correct again
+        // JHE (01.10.2020): in the "cat" scenario, we have to provide the command in a "single shot".
+        //                      see also : https://stackoverflow.com/questions/3776195/using-java-processbuilder-to-execute-a-piped-command
+        //                      we're encountering the same behavior, but with "cat" command
 
         if(hasFileParam()) {
             List<String> tmpCmd = Lists.newArrayList();
-
-
-            String s = "cat /home/jhe/Patch0.json | ssh -l " + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost + " build Patch1 -p patchFile.json=";
-
-            System.out.println("getJenkinsCmd, s => " + s);
-
+            String catCmd = "cat " + getFileParameterValue() + " | ssh -l " + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost + " build Patch1 -p " + getFileParameterName() + "=";
             tmpCmd.add("/bin/sh");
             tmpCmd.add("-c");
-            tmpCmd.add(s);
+            tmpCmd.add(catCmd);
+
+            //TODO JHE (01.10.2020): eventually add -w and -f options, but not sure that would work
 
             return tmpCmd.stream().toArray(String[]::new);
         }
@@ -77,13 +83,6 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
                     cmd.add("-p");
                     cmd.add(key + "=" + jobParameters.get(key));
                 }
-            }
-
-            if(hasFileParam()) {
-                String fileParamName = (String) fileParams.keySet().toArray()[0];
-                cmd.add("-p");
-                cmd.add(fileParamName + "=");
-
             }
 
             if(waitForJobToBeFinish) {

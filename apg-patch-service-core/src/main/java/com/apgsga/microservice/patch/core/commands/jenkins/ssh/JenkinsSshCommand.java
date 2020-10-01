@@ -32,11 +32,11 @@ public abstract class JenkinsSshCommand extends CommandBaseImpl {
         return new JenkinsSshBuildJobCmd(jenkinsHost,jenkinsSshPort,jenkinsSshUser,jobName,false,false);
     }
 
-    public static JenkinsSshCommand createJenkinsSshBuildJobAndReturnImmediatelyCmd(String jenkinsHost, String jenkinsSshPort, String jenkinsSshUser, String jobName, Map<String,String> jobParameters, Map<String,File> fileParams) {
+    public static JenkinsSshCommand createJenkinsSshBuildJobAndReturnImmediatelyCmd(String jenkinsHost, String jenkinsSshPort, String jenkinsSshUser, String jobName, Map<String,String> jobParameters, Map<String,String> fileParams) {
         return new JenkinsSshBuildJobCmd(jenkinsHost,jenkinsSshPort,jenkinsSshUser,jobName, jobParameters,fileParams,false,false);
     }
 
-    public static JenkinsSshCommand createJenkinsSshBuildJobAndWaitForStartCmd(String jenkinsHost, String jenkinsSshPort, String jenkinsSshUser, String jobName, Map<String,String> jobParameters,Map<String,File> fileParams) {
+    public static JenkinsSshCommand createJenkinsSshBuildJobAndWaitForStartCmd(String jenkinsHost, String jenkinsSshPort, String jenkinsSshUser, String jobName, Map<String,String> jobParameters,Map<String,String> fileParams) {
         return new JenkinsSshBuildJobCmd(jenkinsHost,jenkinsSshPort,jenkinsSshUser,jobName,jobParameters,fileParams,true,false);
     }
 
@@ -58,12 +58,10 @@ public abstract class JenkinsSshCommand extends CommandBaseImpl {
 
     @Override
     public String[] getCommand() {
-
         if(hasFileParam() && SystemUtils.IS_OS_WINDOWS) {
             throw ExceptionFactory.createPatchServiceRuntimeException(
                     "JenkinsSshCommand.startJobWithFileParam.windows.error", new Object[] {});
         }
-
         String[] processBuilderParm;
         if (SystemUtils.IS_OS_WINDOWS && !noSystemCheck) {
             processBuilderParm = new String[] { "bash.exe", "-c", "-s", " " + getParameterSpaceSeperated() };
@@ -76,14 +74,11 @@ public abstract class JenkinsSshCommand extends CommandBaseImpl {
 
     @Override
     protected String[] getParameterAsArray() {
-        //TODO JHE (01.10.2020) : put this correctly again after testing
-        /*
-        String[] parameter = Stream.concat(Arrays.stream(getFirstPart()), Arrays.stream(getJenkinsCmd()))
-                .toArray(String[]::new);
-
-         */
         String[] parameter;
         if(hasFileParam()) {
+            // JHE (01.10.2020): in that case we do not get the first part from the common place because the command has to be built in "one shot".
+            //                   see also : https://stackoverflow.com/questions/3776195/using-java-processbuilder-to-execute-a-piped-command
+            //                          -> we're getting the same behavior, but with the "cat" command
             parameter = Arrays.stream(getJenkinsCmd()).toArray(String[]::new);
         }
         else {
@@ -101,22 +96,13 @@ public abstract class JenkinsSshCommand extends CommandBaseImpl {
     }
 
     private String[] getFirstPart() {
-        if(hasFileParam()) {
-            // TODO JHE (01.10.2020): do not forget to set that correctly again
-            //return new String[] {"cat", "/home/jhe/Patch0.json", "|", "ssh", "-l", jenkinsSshUser, "-p", jenkinsSshPort, jenkinsHost};
-
-           // System.out.println("getFirstPart() -> " + "cat /home/jhe/Patch0.json | ssh -l " + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost);
-            //return new String[] {"/bin/sh", "-c", "cat /home/jhe/Patch0.json | ssh -l " + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost};
-            return new String[]{};
-        }
-        else {
-            return new String[]{"ssh", "-l", jenkinsSshUser, "-p", jenkinsSshPort, jenkinsHost};
-        }
+         return new String[]{"ssh", "-l", jenkinsSshUser, "-p", jenkinsSshPort, jenkinsHost};
     }
 
     protected abstract boolean hasFileParam();
 
-    protected abstract String getFileNameParameter();
+    // TODO JHE (01.10.2020) : Really need this as abstract here ?
+    protected abstract String getFileParameterName();
 
     protected abstract String[] getJenkinsCmd();
 

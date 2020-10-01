@@ -70,6 +70,7 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
     }
 
     @Test
+    @Ignore
     public void testJenkinsSshBuildJobWithParameterCmdAndWaitForStart() {
         Map<String,String> params = Maps.newHashMap();
         params.put("patchnumber","2222");
@@ -81,10 +82,9 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
     }
 
     @Test
-    @Ignore
     public void testJenkinsSshBuildJobWithFileParameterCmdWithoutWaiting() {
-        Map<String, File> fileParams = Maps.newHashMap();
-        fileParams.put("patchFile.json",new File("src/test/resources/Patch5401.json"));
+        Map<String, String> fileParams = Maps.newHashMap();
+        fileParams.put("patchFile.json","src/test/resources/Patch5401.json");
         JenkinsSshCommand jenkinsSshCommand = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(JENKINS_HOST,JENKINS_SSH_PORT,JENKINS_SSH_USER,JOB_NAME_WITH_FILE_PARAM,null,fileParams);
         ProcessBuilderCmdRunnerFactory runnerFactory = new ProcessBuilderCmdRunnerFactory();
         CommandRunner runner = runnerFactory.create();

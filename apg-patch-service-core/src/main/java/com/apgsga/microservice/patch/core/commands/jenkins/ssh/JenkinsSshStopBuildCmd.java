@@ -25,7 +25,7 @@ public class JenkinsSshStopBuildCmd extends JenkinsSshCommand {
     }
 
     @Override
-    protected String getFileNameParameter() {
+    protected String getFileParameterName() {
         return null;
     }
 
