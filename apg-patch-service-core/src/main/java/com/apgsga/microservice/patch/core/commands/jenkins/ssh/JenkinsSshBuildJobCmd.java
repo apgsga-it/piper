@@ -49,6 +49,22 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
 
     @Override
     protected String[] getJenkinsCmd() {
+
+        List<String> tmpCmd = Lists.newArrayList();
+
+
+        String s = "cat /home/jhe/Patch0.json | ssh -l" + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost + "build Patch1 -p patchFile.json=";
+
+        System.out.println("getJenkinsCmd, s => " + s);
+
+        tmpCmd.add("/bin/sh");
+        tmpCmd.add("-c");
+        tmpCmd.add(s);
+
+        return tmpCmd.stream().toArray(String[]::new);
+
+// TODO JHE (01.10.2020) : do not forget to put that correct again
+        /*
         List<String> cmd = Lists.newArrayList();
         cmd.add("build");
         cmd.add(jobName);
@@ -76,6 +92,8 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
         }
 
         return cmd.stream().toArray(String[]::new);
+
+        */
 
     }
 }
