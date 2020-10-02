@@ -68,7 +68,10 @@ class PatchCli {
 			} else if (options.sjp) {
 				def jobName = options.sjps[0]
 				def params = options.sjps[1]
-				cmdResults.result = startJenkinsJob(patchClient,jobName,params)
+				cmdResults.result = startJenkinsJob(patchClient, jobName, params)
+			} else if (options.bps) {
+				def patchNumber = options.bps[0]
+				cmdResults.result = buildJenkinsPipeline(patchClient,patchNumber)
 			}
 			cmdResults.returnCode = 0
 			return cmdResults
@@ -90,7 +93,7 @@ class PatchCli {
 	}
 
 	def validateOpts(args) {
-		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-purl <piperUrl>] [-i <target>] [-cpf <statusCode,destFolder>] [-dbsta <patchNumber,toState>] [-adp <target>] [-log <patchNumber>] [-cm] [-sa <patchFile>] [-sta <patchnumber,toState,[aps]] [-sj <jobName>] [-sjp <jobName,jobParams>]')
+		def cli = new CliBuilder(usage: 'apspli.sh [-u <url>] [-h] [-purl <piperUrl>] [-i <target>] [-cpf <statusCode,destFolder>] [-dbsta <patchNumber,toState>] [-adp <target>] [-log <patchNumber>] [-cm] [-sa <patchFile>] [-sta <patchnumber,toState,[aps]] [-sj <jobName>] [-sjsp <jobName,jobParams>]')
 		cli.formatter.setDescPadding(0)
 		cli.formatter.setLeftPadding(0)
 		cli.formatter.setWidth(100)
@@ -106,8 +109,9 @@ class PatchCli {
 			dbsta longOpt: 'dbstateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to the database', required: false
 			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "statusCode,destFolder", 'Copy patch files for a given status into the destfolder', required: false
 			i longOpt: 'install', args:1, argName: 'target', "starts an install pipeline for the given target", required: false
+			bp longOpt: 'buildPipeline', args:1, argName: 'patchNumber', "start a build pipeline foer the given patch pipeline", required: false
 			sj longOpt: 'startJenkinsJob', args:1, argName: 'jobName', "starts a jenkins job without job parameter", required: false
-			sjp longOpt: 'startJenkinsJobWithParam', args:2, valueSeparator: ",", argName: 'jobName,jobParams', "start a jenkins job with a list of jenkins job parameter (p1@=v1@:p2@=v2@:p3@=v3)", required: false
+			sjp longOpt: 'startJenkinsJobParam', args:2, valueSeparator: ",", argName: 'jobName,jobParams', "start a jenkins job with a list of jenkins job parameter (p1@=v1@:p2@=v2@:p3@=v3)", required: false
 		}
 
 		def options = cli.parse(args)
@@ -208,6 +212,13 @@ class PatchCli {
 			}
 		}
 
+		if(options.bps) {
+			if(options.bps.size() != 1) {
+				println "Patch number has to be provided when starting a Jenkins Build Pipeline"
+				error = true
+			}
+		}
+
 		if (error) {
 			cli.usage()
 			return null
@@ -273,7 +284,7 @@ class PatchCli {
 		patchClient.copyPatchFiles(params)
 	}
 
-	void startJenkinsJob(PatchRestServiceClient patchClient, def jobName, def params) {
+	def startJenkinsJob(PatchRestServiceClient patchClient, def jobName, def params) {
 		if(params == null) {
 			patchClient.startJenkinsJob(jobName)
 		}
@@ -290,12 +301,16 @@ class PatchCli {
 
 	}
 
-	private def fetchPiperUrl(def options ) {
+	private def fetchPiperUrl(def options) {
 		if(options.purls && options.purls.size() == 1) {
 			return options.purls[0]
 		}
 		else {
 			return System.getProperty("piper.host.default.url")
 		}
+	}
+
+	def buildJenkinsPipeline(PatchRestServiceClient patchRestServiceClient, def patchNumber) {
+		patchRestServiceClient.startJenkinsBuildPipeline(patchNumber)
 	}
 }

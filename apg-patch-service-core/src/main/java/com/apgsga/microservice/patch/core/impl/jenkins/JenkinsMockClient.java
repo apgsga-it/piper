@@ -1,11 +1,10 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
-import java.util.Map;
-
+import com.apgsga.microservice.patch.api.Patch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.apgsga.microservice.patch.api.Patch;
+import java.util.Map;
 
 public class JenkinsMockClient implements JenkinsClient {
 
@@ -50,10 +49,12 @@ public class JenkinsMockClient implements JenkinsClient {
 	}
 
 	@Override
-	public void startJenkinsJob(String jobName, Map<String, String> jobParams) {
+	public void startJenkinsJob(String jobName, Map<String,String> params) {
 		LOGGER.info("startJenkinsjob, jobName=" + jobName);
-		jobParams.keySet().forEach(k -> {
-			LOGGER.info("Param key = " + k + ", value = " + jobParams.get(k));
-		});
+		if(params != null && !params.isEmpty()) {
+			params.keySet().forEach(k -> {
+				LOGGER.info("Job Param key = " + k + ", value = " + params.get(k));
+			});
+		}
 	}
 }

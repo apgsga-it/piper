@@ -1,7 +1,7 @@
 package com.apgsga.microservice.patch.core.commands.jenkins.ssh.test;
 
-import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
+import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.google.common.collect.Maps;
 import org.junit.Assert;
@@ -72,5 +72,19 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
         CommandRunner runner = runnerFactory.create();
         List<String> result = runner.run(jenkinsSshCommand);
         Assert.assertTrue("Returned message should contain SUCCESS",result.stream().anyMatch(c -> {return c.contains("Started " + JOB_NAME_WITHOUT_FILE_PARAM + " #");}));
+    }
+
+    @Test
+    public void testJenkinsSshBuildJobWithFileParameterCmdWithoutWaiting() {
+        Map<String, String> fileParams = Maps.newHashMap();
+        fileParams.put("patchFile.json","src/test/resources/Patch5401.json");
+        JenkinsSshCommand jenkinsSshCommand = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(JENKINS_HOST,JENKINS_SSH_PORT,JENKINS_SSH_USER,JOB_NAME_WITH_FILE_PARAM,null,fileParams);
+        ProcessBuilderCmdRunnerFactory runnerFactory = new ProcessBuilderCmdRunnerFactory();
+        CommandRunner runner = runnerFactory.create();
+        List<String> result = runner.run(jenkinsSshCommand);
+        result.forEach(s -> {
+            System.out.println(s);
+        });
+        System.out.println("DONE");
     }
 }
