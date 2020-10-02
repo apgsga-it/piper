@@ -1,6 +1,5 @@
 package com.apgsga.patch.service.client.rest
 
-import com.apgsga.microservice.patch.api.JenkinsParameterType
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.PatchOpService
 import com.apgsga.patch.service.client.PatchCliExceptionHandler
@@ -48,6 +47,11 @@ class PatchRestServiceClient implements PatchOpService {
 	}
 
 	@Override
+	void startJenkinsBuildPipeline(String patchNumber) {
+		restTemplate.postForLocation(getRestBaseUri() + "/startJenkinsBuildPipeline/{patchNumber}", null, [patchNumber:patchNumber]);
+	}
+
+	@Override
 	void copyPatchFiles(Map params) {
 		restTemplate.postForLocation(getRestBaseUri() + "/copyPatchFiles", params);
 	}
@@ -88,7 +92,7 @@ class PatchRestServiceClient implements PatchOpService {
 	}
 
 	@Override
-	void startJenkinsJob(String jobName, Map<JenkinsParameterType, Map> params) {
+	void startJenkinsJob(String jobName, Map<String,String> params) {
 		restTemplate.postForLocation(getRestBaseUri() + "/startJenkinsJobWithParam/{jobName}",params, [jobName:jobName]);
 	}
 

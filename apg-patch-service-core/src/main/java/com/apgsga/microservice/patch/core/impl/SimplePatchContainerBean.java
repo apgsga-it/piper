@@ -408,6 +408,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public void startInstallPipeline(String target) { jenkinsClient.startInstallPipeline(target); }
 
+	@Override
+	public void startJenkinsBuildPipeline(String patchNumber) {
+		Patch patch = repo.findById(patchNumber);
+		jenkinsClient.startProdPatchPipeline(patch);
+	}
+
 	private boolean containsObject(String patchNumber, String objectName) {
 		Patch patch = findById(patchNumber);
 		for(MavenArtifact ma : patch.getMavenArtifacts()) {
@@ -438,7 +444,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public void startJenkinsJob(String jobName, Map<JenkinsParameterType, Map> params) {
+	public void startJenkinsJob(String jobName, Map<String,String> params) {
 		jenkinsClient.startJenkinsJob(jobName,params);
 	}
 }

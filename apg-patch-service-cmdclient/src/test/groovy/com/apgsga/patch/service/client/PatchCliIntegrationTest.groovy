@@ -53,11 +53,11 @@ class PatchCliIntegrationTest extends Specification {
 		try {
 			final ResourceLoader rl = new FileSystemResourceLoader();
 			Resource testResources = rl.getResource("src/test/resources");
-			File persistSt = new File(metaInfoDbLocation);
-			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/ServicesMetaData.json"), new File(persistSt, "ServicesMetaData.json"));
-			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/OnDemandTargets.json"), new File(persistSt, "OnDemandTargets.json"));
-			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/StageMappings.json"), new File(persistSt, "StageMappings.json"));
-			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/TargetInstances.json"), new File(persistSt, "TargetInstances.json"));
+			File metaInfoPersistFolder = new File(metaInfoDbLocation);
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/ServicesMetaData.json"), new File(metaInfoPersistFolder, "ServicesMetaData.json"));
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/OnDemandTargets.json"), new File(metaInfoPersistFolder, "OnDemandTargets.json"));
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/StageMappings.json"), new File(metaInfoPersistFolder, "StageMappings.json"));
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/TargetInstances.json"), new File(metaInfoPersistFolder, "TargetInstances.json"));
 		} catch (IOException e) {
 			Assert.fail("Unable to copy JSON test files into testDb folder");
 		}
@@ -247,7 +247,7 @@ class PatchCliIntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-sjsp", 'testJob,param1@=value1@:p2@=v2@:testParam3@=thisisThirdValue'])
+			def result = client.process(["-sjp", 'testJob,param1@=value1@:p2@=v2@:testParam3@=thisisThirdValue'])
 		then:
 			result.returnCode == 0
 			result.results != null
@@ -255,16 +255,21 @@ class PatchCliIntegrationTest extends Specification {
 			repo.clean()
 	}
 
-	def "Patch cli startJenkinsJob with file parameters" () {
+	def "Patch cli buildPipeline" () {
 		setup:
-		def client = PatchCli.create()
+			def client = PatchCli.create()
 		when:
-		def result = client.process(["-sjfp", 'testJob,param1@=src/test/resources/Patch5401.json'])
+			def resultSa = client.process(["-sa", "src/test/resources/Patch5401.json"])
+			def resultBp = client.process(["-bp", '5401'])
 		then:
-		result.returnCode == 0
-		result.results != null
+			resultSa.returnCode == 0
+			resultSa.results != null
+			File patchFile = new File("${dbLocation}/Patch5401.json")
+			patchFile.exists()
+			resultBp.returnCode == 0
+			resultBp.results != null
 		cleanup:
-		repo.clean()
+			repo.clean()
 	}
 
 	// JHE (18.08.2020): Ignoring the test as it requires pre-requisite in DB. However, keeping it for future sanity checks

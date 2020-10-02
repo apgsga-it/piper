@@ -1,6 +1,5 @@
 package com.apgsga.patch.service.client
 
-import com.apgsga.microservice.patch.api.JenkinsParameterType
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.patch.service.client.rest.PatchRestServiceClient
 import com.google.common.collect.Maps
@@ -65,15 +64,14 @@ class PatchCli {
 				cmdResults.result = copyPatchFile(patchClient,status,destFolder)
 			} else if (options.sj) {
 				def jobName = options.sjs[0]
-				cmdResults.result = startJenkinsJob(patchClient,jobName,null,null)
-			} else if (options.sjsp) {
-				def jobName = options.sjsps[0]
-				def params = options.sjsps[1]
-				cmdResults.result = startJenkinsJob(patchClient,jobName,params,null)
-			} else if (options.sjfp) {
-				def jobName = options.sjfps[0]
-				def params = options.sjfps[1]
-				cmdResults.result = startJenkinsJob(patchClient,jobName,null,params)
+				cmdResults.result = startJenkinsJob(patchClient,jobName,null)
+			} else if (options.sjp) {
+				def jobName = options.sjps[0]
+				def params = options.sjps[1]
+				cmdResults.result = startJenkinsJob(patchClient, jobName, params)
+			} else if (options.bps) {
+				def patchNumber = options.bps[0]
+				cmdResults.result = buildJenkinsPipeline(patchClient,patchNumber)
 			}
 			cmdResults.returnCode = 0
 			return cmdResults
@@ -111,9 +109,9 @@ class PatchCli {
 			dbsta longOpt: 'dbstateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to the database', required: false
 			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "statusCode,destFolder", 'Copy patch files for a given status into the destfolder', required: false
 			i longOpt: 'install', args:1, argName: 'target', "starts an install pipeline for the given target", required: false
+			bp longOpt: 'buildPipeline', args:1, argName: 'patchNumber', "start a build pipeline foer the given patch pipeline", required: false
 			sj longOpt: 'startJenkinsJob', args:1, argName: 'jobName', "starts a jenkins job without job parameter", required: false
-			sjsp longOpt: 'startJenkinsJobWithStringParam', args:2, valueSeparator: ",", argName: 'jobName,jobParams', "start a jenkins job with a list of jenkins job parameter (p1@=v1@:p2@=v2@:p3@=v3)", required: false
-			sjfp longOpt: 'startJenkinsJobWithFileParam', args:2, valueSeparator: ",", argName: 'jobName,jobParams', "start a jenkins job with a list of jenkins job parameter (p1@=v1@:p2@=v2@:p3@=v3). Values are path to file", required: false
+			sjp longOpt: 'startJenkinsJobParam', args:2, valueSeparator: ",", argName: 'jobName,jobParams', "start a jenkins job with a list of jenkins job parameter (p1@=v1@:p2@=v2@:p3@=v3)", required: false
 		}
 
 		def options = cli.parse(args)
@@ -207,16 +205,16 @@ class PatchCli {
 			}
 		}
 
-		if(options.sjsp) {
-			if(options.sjsps.size() != 2) {
-				println "Job name and parameter(s) have to be provided when starting a job with string params"
+		if(options.sjp) {
+			if(options.sjps.size() != 2) {
+				println "Job name and parameter(s) have to be provided when starting a job with params"
 				error = true
 			}
 		}
 
-		if(options.sjfp) {
-			if(options.sjfps.size() != 2) {
-				println "Job name and parameter(s) have to be provided when starting a job with file params"
+		if(options.bps) {
+			if(options.bps.size() != 1) {
+				println "Patch number has to be provided when starting a Jenkins Build Pipeline"
 				error = true
 			}
 		}
@@ -286,57 +284,33 @@ class PatchCli {
 		patchClient.copyPatchFiles(params)
 	}
 
-	void startJenkinsJob(PatchRestServiceClient patchClient, def jobName, def stringParams, def fileParams) {
-		if(stringParams == null && fileParams == null) {
+	def startJenkinsJob(PatchRestServiceClient patchClient, def jobName, def params) {
+		if(params == null) {
 			patchClient.startJenkinsJob(jobName)
 		}
 		else {
-			def params = [:]
-			params.put(JenkinsParameterType.STRING_PARAM,stringParametersAsMap(stringParams))
-			params.put(JenkinsParameterType.FILE_PARAM,fileParameterAsMap(fileParams))
-			patchClient.startJenkinsJob(jobName,params)
+			def paramAsMap = [:]
+			// params has the following form: p1@=v1@:p2@=v2@:p3@=v3
+			def keyPair = params.split("@:")
+			keyPair.each {kp ->
+				def values = kp.split("@=")
+				paramAsMap.put(values[0],values[1])
+			}
+			patchClient.startJenkinsJob(jobName,paramAsMap)
 		}
 
 	}
 
-	private Map<String,String> fileParameterAsMap(def fileParams) {
-		if(fileParams == null) {
-			return null
-		}
-
-		def paramAsMap = [:]
-		// stringParams has the following form: p1@=v1@:p2@=v2@:p3@=v3
-		def keyPair = fileParams.split("@:")
-		keyPair.each {kp ->
-			def values = kp.split("@=")
-			paramAsMap.put(values[0],values[1])
-		}
-
-		return paramAsMap
-	}
-
-	private Map<String,String> stringParametersAsMap(def stringParams) {
-		if(stringParams == null) {
-			return null
-		}
-
-		def paramAsMap = [:]
-		// stringParams has the following form: p1@=v1@:p2@=v2@:p3@=v3
-		def keyPair = stringParams.split("@:")
-		keyPair.each {kp ->
-			def values = kp.split("@=")
-			paramAsMap.put(values[0],values[1])
-		}
-
-		return paramAsMap
-	}
-
-	private def fetchPiperUrl(def options ) {
+	private def fetchPiperUrl(def options) {
 		if(options.purls && options.purls.size() == 1) {
 			return options.purls[0]
 		}
 		else {
 			return System.getProperty("piper.host.default.url")
 		}
+	}
+
+	def buildJenkinsPipeline(PatchRestServiceClient patchRestServiceClient, def patchNumber) {
+		patchRestServiceClient.startJenkinsBuildPipeline(patchNumber)
 	}
 }

@@ -1,6 +1,5 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
-import com.apgsga.microservice.patch.api.JenkinsParameterType;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
@@ -224,8 +223,8 @@ public class JenkinsClientImpl implements JenkinsClient {
 	}
 
 	@Override
-	public void startJenkinsJob(String jobName, Map<JenkinsParameterType,Map> params) {
-		JenkinsSshCommand cmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName, params.get(JenkinsParameterType.STRING_PARAM), params.get(JenkinsParameterType.FILE_PARAM));
+	public void startJenkinsJob(String jobName, Map<String,String> params) {
+		JenkinsSshCommand cmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName, params,null);
 		cmdRunner.run(cmd);
 	}
 }
