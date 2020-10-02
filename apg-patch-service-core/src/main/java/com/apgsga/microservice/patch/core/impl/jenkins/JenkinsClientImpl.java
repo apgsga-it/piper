@@ -71,7 +71,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 			String jobName = patchName + jobSuffix;
 			File patchFile = new File(dbLocation.getFile(), patchName + JSON_CONS);
 			Map<String,String> fileParams = Maps.newHashMap();
-			fileParams.put("patchJson",patchFile.getAbsolutePath());
+			fileParams.put("patchFile.json",patchFile.getAbsolutePath());
 
 			if(jobSuffix.equalsIgnoreCase("ondemand")) {
 				JenkinsSshCommand onDemandCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName, null, fileParams);
