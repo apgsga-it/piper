@@ -2,7 +2,6 @@ package com.apgsga.microservice.patch.api;
 
 import com.apgsga.patch.db.integration.api.PatchRdbms;
 
-import java.io.File;
 import java.util.Map;
 
 public interface PatchOpService extends PatchRdbms {

@@ -1,22 +1,20 @@
 package com.apgsga.microservice.patch.core.commands.jenkins.ssh.test;
 
-import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
+import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.google.common.collect.Maps;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-//@Ignore
+@Ignore
 public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
 
     @Test
-    @Ignore
     public void testJenkinsSshBuildCommandWithoutWaiting() {
         JenkinsSshCommand jenkinsSshCommand = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(JENKINS_HOST,JENKINS_SSH_PORT, JENKINS_SSH_USER, JOB_NAME_WITHOUT_FILE_PARAM);
         ProcessBuilderCmdRunnerFactory runnerFactory = new ProcessBuilderCmdRunnerFactory();
@@ -26,7 +24,6 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
     }
 
     @Test
-    @Ignore
     public void testJenkinsSshBuildWithParameterCommandWithoutWaiting() {
         Map<String,String> params = Maps.newHashMap();
         params.put("patchnumber","2222");
@@ -38,7 +35,6 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
     }
 
     @Test
-    @Ignore
     public void testJenkinsSshBuildCommandWithWaiting() {
         JenkinsSshCommand jenkinsSshCommand = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForCompleteCmd(JENKINS_HOST,JENKINS_SSH_PORT, JENKINS_SSH_USER, JOB_NAME_WITHOUT_FILE_PARAM);
         ProcessBuilderCmdRunnerFactory runnerFactory = new ProcessBuilderCmdRunnerFactory();
@@ -48,7 +44,6 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
     }
 
     @Test
-    @Ignore
     public void testJenkinsSshBuildWithParameterCommandWithWaiting() {
         Map<String,String> params = Maps.newHashMap();
         params.put("patchnumber","2222");
@@ -60,7 +55,6 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
     }
 
     @Test
-    @Ignore
     public void testJenkinsSshBuildJobCmdAndWaitForStart() {
         JenkinsSshCommand jenkinsSshCommand = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForStartCmd(JENKINS_HOST,JENKINS_SSH_PORT, JENKINS_SSH_USER, JOB_NAME_WITHOUT_FILE_PARAM);
         ProcessBuilderCmdRunnerFactory runnerFactory = new ProcessBuilderCmdRunnerFactory();
@@ -70,7 +64,6 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
     }
 
     @Test
-    @Ignore
     public void testJenkinsSshBuildJobWithParameterCmdAndWaitForStart() {
         Map<String,String> params = Maps.newHashMap();
         params.put("patchnumber","2222");
@@ -82,7 +75,6 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
     }
 
     @Test
-    @Ignore
     public void testJenkinsSshBuildJobWithFileParameterCmdWithoutWaiting() {
         Map<String, String> fileParams = Maps.newHashMap();
         fileParams.put("patchFile.json","src/test/resources/Patch5401.json");
@@ -95,6 +87,4 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
         });
         System.out.println("DONE");
     }
-
-
 }
