@@ -214,12 +214,25 @@ public class MicroServicePatchClientTest {
 	}
 
 	@Test
-	public void listOnDemandTargets() {
+	public void testListOnDemandTargets() {
 		List<String> onDemandTargets = patchClient.listOnDemandTargets();
 		assertEquals(4,onDemandTargets.size());
 		assertTrue(onDemandTargets.contains("DEV-CHEI212"));
 		assertTrue(onDemandTargets.contains("DEV-CHEI211"));
 		assertTrue(onDemandTargets.contains("DEV-CM"));
 		assertTrue(onDemandTargets.contains("DEV-JHE"));
+	}
+
+	@Test
+	public void testStageMappingsWithinPatch() {
+		Patch patch = new Patch();
+		patch.setPatchNummer("2222");
+		patchClient.save(patch);
+		Patch result = patchClient.findById("2222");
+		List<String> stagesMapping = result.getStagesMapping();
+		stagesMapping.get(0).equals("Entwicklung");
+		stagesMapping.get(1).equals("Informatiktest");
+		stagesMapping.get(2).equals("Anwendertest");
+		stagesMapping.get(3).equals("Produktion");
 	}
 }

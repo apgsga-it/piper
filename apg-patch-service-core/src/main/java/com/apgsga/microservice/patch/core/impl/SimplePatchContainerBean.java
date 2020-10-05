@@ -157,6 +157,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	private void preProcessSave(Patch patch) {
 		if (!repo.patchExists(patch.getPatchNummer())) {
+			patch.setStagesMapping(getStageMappings());
 			createBranchForDbModules(patch);
 			jenkinsClient.createPatchPipelines(patch);
 		}
@@ -166,6 +167,15 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					.forEach(art -> addModuleName(art, service.getMicroServiceBranch()));
 		}
 
+	}
+
+	private List<String> getStageMappings() {
+		List<String> mapping = Lists.newArrayList();
+		List<StageMapping> stageMappings = metaInfoRepo.stageMappings().getStageMappings();
+		stageMappings.forEach(stage -> {
+			mapping.add(stage.getName());
+		});
+		return mapping;
 	}
 
 	private MavenArtifact addModuleName(MavenArtifact art, String cvsBranch) {

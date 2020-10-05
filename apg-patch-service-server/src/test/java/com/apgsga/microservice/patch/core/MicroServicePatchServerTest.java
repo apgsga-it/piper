@@ -267,6 +267,19 @@ public class MicroServicePatchServerTest {
 	}
 
 	@Test
+	public void testStageMappingsWithinPatch() {
+		Patch patch = new Patch();
+		patch.setPatchNummer("2222");
+		patchService.save(patch);
+		Patch result = patchService.findById("2222");
+		List<String> stagesMapping = result.getStagesMapping();
+		stagesMapping.get(0).equals("Entwicklung");
+		stagesMapping.get(1).equals("Informatiktest");
+		stagesMapping.get(2).equals("Anwendertest");
+		stagesMapping.get(3).equals("Produktion");
+	}
+
+	@Test
 	// JHE (17.08.2020) : Ignoring it since it requires DB pre-requisite to work
 	//					  Also the following properties have to be correctly defined into application-test.properties
 	//							rdbms.oracle.url

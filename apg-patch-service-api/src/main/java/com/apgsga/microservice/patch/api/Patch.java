@@ -40,6 +40,8 @@ public class Patch extends AbstractTransientEntity {
 
     public static final String CURRENT_PIPELINE_TASK = "currentPipelineTask";
 
+    public static final String STAGES_MAPPING = "stagesMapping";
+
 
     private String patchNummer;
     private String dbPatchBranch;
@@ -58,6 +60,7 @@ public class Patch extends AbstractTransientEntity {
     private String currentTarget;
     private String currentPipelineTask;
     private String logText;
+    private List<String> stagesMapping;
 
     public Patch() {
         super();
@@ -86,7 +89,6 @@ public class Patch extends AbstractTransientEntity {
         this.dbPatchBranch = dbPatchBranch;
         firePropertyChangeAndMarkDirty(DB_PATCH_BRANCH, oldValue, dbPatchBranch);
     }
-
 
     public String getProdBranch() {
         return prodBranch;
@@ -249,6 +251,16 @@ public class Patch extends AbstractTransientEntity {
         final Object oldValue = this.currentPipelineTask;
         this.currentPipelineTask = currentPipelineTask;
         firePropertyChange(CURRENT_PIPELINE_TASK, oldValue, currentPipelineTask);
+    }
+
+    public List<String> getStagesMapping() {
+        return stagesMapping;
+    }
+
+    public void setStagesMapping(List<String> stagesMapping) {
+        final Object oldValue = this.stagesMapping;
+        this.stagesMapping = stagesMapping;
+        firePropertyChange(STAGES_MAPPING, oldValue, stagesMapping);
     }
 
     public Service getService(String serviceName) {
