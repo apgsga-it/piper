@@ -170,12 +170,6 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		patchService.startInstallPipeline(target);
 	}
 
-	@RequestMapping(value = "/startJenkinsBuildPipeline/{patchNumber}", method = RequestMethod.POST)
-	@ResponseStatus(HttpStatus.OK)
-	@Override
-	public void startJenkinsBuildPipeline(@PathVariable("patchNumber") String patchNumber) {
-		patchService.startJenkinsBuildPipeline(patchNumber);
-	}
 
 	@RequestMapping(value = "/copyPatchFiles", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
@@ -198,17 +192,5 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		return patchService.patchIdsForStatus(statusCode);
 	}
 
-	@RequestMapping(value = "/startJenkinsJob/{jobName}", method = RequestMethod.POST)
-	@ResponseStatus(HttpStatus.OK)
-	@Override
-	public void startJenkinsJob(@PathVariable String jobName) {
-		patchService.startJenkinsJob(jobName);
-	}
 
-	@RequestMapping(value = "/startJenkinsJobWithParam/{jobName}", method = RequestMethod.POST)
-	@ResponseStatus(HttpStatus.OK)
-	@Override
-	public void startJenkinsJob(@PathVariable String jobName, @RequestBody Map<String,String> params) {
-		patchService.startJenkinsJob(jobName,params);
-	}
 }

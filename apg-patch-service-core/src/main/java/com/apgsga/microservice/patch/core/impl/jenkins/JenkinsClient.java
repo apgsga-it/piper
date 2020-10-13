@@ -14,11 +14,8 @@ public interface JenkinsClient {
 
 	void processInputAction(Patch patch, String target, String stage);
 	
-	void startAssembleAndDeployPipeline(String target);
+	void startAssembleAndDeployPipeline(String target, String parameter);
 
-	void startInstallPipeline(String target);
+	void startInstallPipeline(String target, String parameter);
 
-	void startJenkinsJob(String jobName);
-
-	void startJenkinsJob(String jobName, Map<String,String> params);
 }

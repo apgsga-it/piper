@@ -3,9 +3,13 @@ package com.apgsga.microservice.patch.core.impl.jenkins;
 import com.apgsga.microservice.patch.api.Patch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+@Profile("mock")
+@Component("jenkinsBean")
 public class JenkinsMockClient implements JenkinsClient {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());
@@ -34,27 +38,14 @@ public class JenkinsMockClient implements JenkinsClient {
 	}
 
 	@Override
-	public void startAssembleAndDeployPipeline(String target) {
+	public void startAssembleAndDeployPipeline(String target, String parameter) {
 		LOGGER.info("startAssembleAndDeployPipeline for target=" + target);
 	}
 
 	@Override
-	public void startInstallPipeline(String target) {
+	public void startInstallPipeline(String target, String parameter) {
 		LOGGER.info("startInstallPipeline for target=" + target);
 	}
 
-	@Override
-	public void startJenkinsJob(String jobName) {
-		LOGGER.info("startJenkinsJob, jobName=" + jobName);
-	}
 
-	@Override
-	public void startJenkinsJob(String jobName, Map<String,String> params) {
-		LOGGER.info("startJenkinsjob, jobName=" + jobName);
-		if(params != null && !params.isEmpty()) {
-			params.keySet().forEach(k -> {
-				LOGGER.info("Job Param key = " + k + ", value = " + params.get(k));
-			});
-		}
-	}
 }

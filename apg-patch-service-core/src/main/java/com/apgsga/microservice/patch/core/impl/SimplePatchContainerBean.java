@@ -410,20 +410,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		});
 	}
 
-	@Override
-	public void startAssembleAndDeployPipeline(String target) {
-		jenkinsClient.startAssembleAndDeployPipeline(target);
-	}
-
-	@Override
-	public void startInstallPipeline(String target) { jenkinsClient.startInstallPipeline(target); }
-
-	@Override
-	public void startJenkinsBuildPipeline(String patchNumber) {
-		Patch patch = repo.findById(patchNumber);
-		jenkinsClient.startProdPatchPipeline(patch);
-	}
-
 	private boolean containsObject(String patchNumber, String objectName) {
 		Patch patch = findById(patchNumber);
 		for(MavenArtifact ma : patch.getMavenArtifacts()) {
@@ -439,6 +425,20 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
+	public void startAssembleAndDeployPipeline(String target) {
+		// TOOO (JHE, CHE: 13.10) And String parameter as Json according to Pipeline Requirements
+		jenkinsClient.startAssembleAndDeployPipeline(target,"");
+	}
+
+	@Override
+	public void startInstallPipeline(String target) {
+		// TOOO (JHE, CHE: 13.10) And String parameter as Json according to Pipeline Requirements
+		jenkinsClient.startInstallPipeline(target,  "");
+	}
+
+
+
+	@Override
 	public void executeStateTransitionActionInDb(String patchNumber, Long statusNum) {
 		patchRdbms.executeStateTransitionActionInDb(patchNumber,statusNum);
 	}
@@ -448,13 +448,5 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		return patchRdbms.patchIdsForStatus(statusCode);
 	}
 
-	@Override
-	public void startJenkinsJob(String jobName) {
-		jenkinsClient.startJenkinsJob(jobName);
-	}
 
-	@Override
-	public void startJenkinsJob(String jobName, Map<String,String> params) {
-		jenkinsClient.startJenkinsJob(jobName,params);
-	}
 }

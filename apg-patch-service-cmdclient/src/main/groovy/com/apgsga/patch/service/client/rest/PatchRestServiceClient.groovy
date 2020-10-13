@@ -47,11 +47,6 @@ class PatchRestServiceClient implements PatchOpService {
 	}
 
 	@Override
-	void startJenkinsBuildPipeline(String patchNumber) {
-		restTemplate.postForLocation(getRestBaseUri() + "/startJenkinsBuildPipeline/{patchNumber}", null, [patchNumber:patchNumber]);
-	}
-
-	@Override
 	void copyPatchFiles(Map params) {
 		restTemplate.postForLocation(getRestBaseUri() + "/copyPatchFiles", params);
 	}
@@ -86,15 +81,6 @@ class PatchRestServiceClient implements PatchOpService {
 		return restTemplate.getForObject(getRestBaseUri() + "/patchIdsForStatus/{status}", String[].class, [status:statusCode]);
 	}
 
-	@Override
-	void startJenkinsJob(String jobName) {
-		restTemplate.postForLocation(getRestBaseUri() + "/startJenkinsJob/{jobName}",null, [jobName:jobName])
-	}
-
-	@Override
-	void startJenkinsJob(String jobName, Map<String,String> params) {
-		restTemplate.postForLocation(getRestBaseUri() + "/startJenkinsJobWithParam/{jobName}",params, [jobName:jobName]);
-	}
 
 	class PatchServiceErrorHandler implements ResponseErrorHandler {
 

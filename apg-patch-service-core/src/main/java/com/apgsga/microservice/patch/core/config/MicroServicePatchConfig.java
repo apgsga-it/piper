@@ -49,20 +49,9 @@ public class MicroServicePatchConfig {
 	@Value("${json.meta.info.db.work.location:metaInfoWork}")
 	private String metaInfoWorkDirLocation;
 
-	@Value("${jenkins.host:jenkins.apgsga.ch}")
-	private String jenkinsHost;
-
-	@Value("${jenkins.ssh.port:53801}")
-	private String jenkinsSshPort;
-
-	@Value("${jenkins.ssh.user:apg_install}")
-	private String jenkinsSshUser;
-
-	@Value("${jenkins.authkey}")
-	private String jenkinsAuthKey;
 
 	@Value("${maven.localrepo.location}")
-	private String localRepo;
+	public String localRepo;
 
 	@Value("${taskexecutor.corePoolSize:5}")
 	private Integer corePoolSize;
@@ -134,14 +123,6 @@ public class MicroServicePatchConfig {
 	@Profile("mockMavenRepo")
 	public ArtifactManager mockArtifactManager() {
 		return ArtifactManager.createMock(localRepo);
-	}
-
-	@Bean(name = "jenkinsBean")
-	@Profile("live")
-	public JenkinsClient jenkinsPatchClient() {
-		final ResourceLoader rl = new FileSystemResourceLoader();
-		Resource rDbLocation = rl.getResource(dbLocation);
-		return new JenkinsClientImpl(rDbLocation, jenkinsHost, jenkinsSshPort, jenkinsSshUser, jenkinsAuthKey, threadPoolTaskExecutor());
 	}
 
 	@Bean(name = "vcsCmdRunnerFactory")

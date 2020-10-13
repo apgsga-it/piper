@@ -1,6 +1,7 @@
 package com.apgsga.microservice.patch.core.commands.jenkins.ssh;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import java.io.File;
 import java.util.List;
@@ -12,7 +13,7 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
 
     private Map<String,String> jobParameters;
 
-    private Map<String,String> fileParams;
+    private Map<String,String> fileParams = Maps.newHashMap();
 
     private boolean waitForJobToBeFinish;
 
@@ -30,6 +31,14 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
         this.jobName = jobName;
         this.jobParameters = jobParameters;
         this.fileParams = fileParams;
+        this.waitForJobToStart = waitFoJobToStart;
+        this.waitForJobToBeFinish = waitForJobToBeFinish;
+    }
+
+    public JenkinsSshBuildJobCmd(String jenkinsHost, String jenkinsSshPort, String jenkinsSshUser, String jobName, Map<String,String> jobParameters , boolean waitFoJobToStart, boolean waitForJobToBeFinish) {
+        super(jenkinsHost, jenkinsSshPort, jenkinsSshUser);
+        this.jobName = jobName;
+        this.jobParameters = jobParameters;
         this.waitForJobToStart = waitFoJobToStart;
         this.waitForJobToBeFinish = waitForJobToBeFinish;
     }
