@@ -67,6 +67,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Qualifier("patchRdbms")
 	private PatchRdbms patchRdbms;
 
+	@Autowired
+	Map<String,PatchAction> patchActions;
+
 	public SimplePatchContainerBean() {
 		super();
 	}
@@ -309,7 +312,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public void executeStateTransitionAction(String patchNumber, String toStatus) {
 		PatchActionExecutor patchActionExecutor = patchActionExecutorFactory.create(this);
-		patchActionExecutor.execute(patchNumber, toStatus);
+		patchActionExecutor.execute(patchNumber, toStatus, patchActions);
 	}
 
 	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {

@@ -6,6 +6,7 @@ import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.MutablePropertyValues;
 
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class PatchActionExecutorImpl implements PatchActionExecutor {
 	}
 
 	@Override
-	public void execute(String patchNumber, String toStatus) {
+	public void execute(String patchNumber, String toStatus, Map<String,PatchAction> patchActions) {
 		Asserts.notNullOrEmpty(patchNumber, "PatchActionExecutorImpl.execute.patchnumber.notnullorempty.assert", new Object[] {toStatus });
 		Asserts.isTrue((patchContainer.getRepo().patchExists(patchNumber)),"PatchActionExecutorImpl.execute.patch.exists.assert", new Object[] { patchNumber, toStatus });
 		StageMapping stageMapping = patchContainer.getMetaInfoRepo().stageMappingFor(toStatus);
@@ -36,8 +37,7 @@ public class PatchActionExecutorImpl implements PatchActionExecutor {
 		Map<String,String> parameters = Maps.newHashMap();
 		parameters.put("target",stageMapping.getTarget());
 		parameters.put("stage",stage.getName());
-		PipelineInputAction pia = new PipelineInputAction(patchContainer);
-		// TODO JHE (13.10.2020): pia.executeToStateAction returns a String but .... do we really want to do something with?
-		pia.executeToStateAction(patchNumber,toStatus,parameters);
+		PatchAction pa = patchActions.get(toStatus);
+		pa.executeToStateAction(patchNumber,toStatus,parameters);
 	}
 }

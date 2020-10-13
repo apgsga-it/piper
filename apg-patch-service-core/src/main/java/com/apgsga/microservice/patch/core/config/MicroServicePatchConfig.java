@@ -9,6 +9,7 @@ import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.JschSessionCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.LoggingMockSshRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
+import com.apgsga.microservice.patch.core.impl.PatchAction;
 import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactory;
 import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactoryImpl;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
@@ -16,6 +17,7 @@ import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClientImpl;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsMockClient;
 import com.apgsga.microservice.patch.core.impl.persistence.FilePatchSystemMetaInfoPersistence;
 import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +29,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Configuration
 public class MicroServicePatchConfig {
@@ -183,6 +186,13 @@ public class MicroServicePatchConfig {
 		executor.setKeepAliveSeconds(1200);
 		executor.initialize();
 		return executor;
+	}
+
+	@Bean(name = "patchAction")
+	public Map<String, PatchAction> patchActions() {
+		Map<String, PatchAction> actions = Maps.newHashMap();
+		// TODO JHE: fill actions based on info taken from our StageMappings.json
+		return actions;
 	}
 
 }
