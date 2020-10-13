@@ -58,17 +58,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private CommandRunnerFactory sshCommandRunnerFactory;
 
 	@Autowired
-	private PatchActionExecutorFactory patchActionExecutorFactory;
-
-	@Autowired
 	private TaskExecutor threadExecutor;
 
 	@Autowired
 	@Qualifier("patchRdbms")
 	private PatchRdbms patchRdbms;
-
-	@Autowired
-	Map<String,PatchAction> patchActions;
 
 	public SimplePatchContainerBean() {
 		super();
@@ -311,7 +305,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public void executeStateTransitionAction(String patchNumber, String toStatus) {
-		PatchActionExecutor patchActionExecutor = patchActionExecutorFactory.create(this);
+		PatchActionExecutor patchActionExecutor = new PatchActionExecutorImpl(this);
 		patchActionExecutor.execute(patchNumber, toStatus);
 	}
 

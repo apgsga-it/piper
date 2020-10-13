@@ -29,7 +29,6 @@ import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.core.impl.PatchActionExecutorImpl;
 import com.apgsga.microservice.patch.core.impl.PatchActionExecutor;
-import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactory;
 import com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean;
 import org.springframework.util.FileCopyUtils;
 
@@ -54,9 +53,6 @@ public class MicroServicePatchServerExceptionTests {
 	@Autowired
 	@Qualifier("patchPersistence")
 	private PatchPersistence repo;
-
-	@Autowired
-	private PatchActionExecutorFactory patchActionFactory;
 
 	@Before
 	public void setUp() {
@@ -188,7 +184,7 @@ public class MicroServicePatchServerExceptionTests {
 		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
 		patch.addServices(service);
 		patchService.save(patch);
-		PatchActionExecutor patchActionExecutor = patchActionFactory.create(patchService); 
+		PatchActionExecutor patchActionExecutor = new PatchActionExecutorImpl(patchService);
 		try {
 			patchActionExecutor.execute("SomeUnqiueNumber3", "xxxxxxx");
 			fail("Expected Runtime Exception");
@@ -200,7 +196,7 @@ public class MicroServicePatchServerExceptionTests {
 
 	@Test
 	public void testPatchExeuteToStatePatchNumberNullOrEmpy() {
-		PatchActionExecutorImpl patchActionExecutor = (PatchActionExecutorImpl) patchActionFactory.create(patchService);
+		PatchActionExecutorImpl patchActionExecutor = new PatchActionExecutorImpl(patchService);
 		try {
 			patchActionExecutor.execute("", "xxxxxxx");
 			fail("Expected Runtime Exception");
@@ -212,7 +208,7 @@ public class MicroServicePatchServerExceptionTests {
 	
 	@Test
 	public void testPatchExeuteToStatePatchNumberDoesnotExist() {
-		PatchActionExecutorImpl patchActionExecutor = (PatchActionExecutorImpl) patchActionFactory.create(patchService);
+		PatchActionExecutorImpl patchActionExecutor = new PatchActionExecutorImpl(patchService);
 		try {
 			patchActionExecutor.execute("xxxxxx", "xxxxxxx");
 			fail("Expected Runtime Exception");
