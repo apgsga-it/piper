@@ -1,12 +1,15 @@
 package com.apgsga.microservice.patch.core.impl;
 
+import com.apgsga.microservice.patch.api.PatchSystemMetaInfoPersistence;
 import com.apgsga.microservice.patch.api.Stage;
 import com.apgsga.microservice.patch.api.StageMapping;
+import com.apgsga.microservice.patch.api.StageMappings;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.Assert;
 
 import java.util.Map;
 
@@ -34,7 +37,12 @@ public class PatchActionExecutorImpl implements PatchActionExecutor {
 
 	private void initPatchActions() {
 		patchActions = Maps.newHashMap();
-		patchContainer.getMetaInfoRepo().stageMappings().getStageMappings().forEach(stageMapping -> {
+		Assert.notNull(patchContainer,"Patch Container shouldn't be null");
+		PatchSystemMetaInfoPersistence metaInfoRepo = patchContainer.getMetaInfoRepo();
+		Assert.notNull(metaInfoRepo,"Patchsystem Metainfo shouldn't be null");
+		StageMappings stageMappings = metaInfoRepo.stageMappings();
+		Assert.notNull(stageMappings,"Stagemappings  shouldn't be null");
+		stageMappings.getStageMappings().forEach(stageMapping -> {
 			stageMapping.getStages().forEach(stage -> {
 				patchActions.put(stageMapping.getName() + stage.getToState(), getAction(stage.getImplcls()));
 			});
