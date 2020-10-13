@@ -163,6 +163,7 @@ publishing {
 	}
 }
 
+publishToMavenLocal {}.dependsOn(buildRpm)
 artifactoryPublish {}.dependsOn(buildRpm)
 artifactory {
 	contextUrl = "${mavenRepoBaseUrl}/"

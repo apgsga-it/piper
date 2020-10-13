@@ -5,13 +5,20 @@ import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.jenkins.curl.JenkinsCurlCommand;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
+import com.apgsga.microservice.patch.core.config.MicroServicePatchConfig;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.google.common.collect.Maps;
 import groovy.json.JsonSlurper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -20,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Profile("live")
+@Component("jenkinsBean")
 public class JenkinsClientImpl implements JenkinsClient {
 
 	private static final String OK_CONS = "Ok";
@@ -34,22 +43,38 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	protected static final Log LOGGER = LogFactory.getLog(JenkinsClientImpl.class.getName());
 
-	private Resource dbLocation;
-	private String jenkinsUrl;
-	private String jenkinsSshPort;
-	private String jenkinsSshUser;
-	private String jenkinsUserPwd;
+	@Value("${json.db.location:db}")
+	private String dbLocation;
+
+	@Value("${jenkins.host:jenkins.apgsga.ch}")
+	public String jenkinsUrl;
+
+	@Value("${jenkins.ssh.port:53801}")
+	public String jenkinsSshPort;
+
+	@Value("${jenkins.ssh.user:apg_install}")
+	public String jenkinsSshUser;
+
+	@Value("${jenkins.authkey}")
+	public String jenkinsUserPwd;
+
+	@Value("${jenkins.pipeline.repo}")
+	public String jenkinsPipelineRepo;
+
+	@Value("${jenkins.pipeline.repo.branch}")
+	public String jenkinsPipelineRepoBranch;
+
+	@Value("${jenkins.pipeline.repo.install.script}")
+	public String jenkinsPipelineInstallScript;
+
+	@Value("${jenkins.pipeline.repo.assemble.script}")
+	public String jenkinsPipelineAssembleScript;
+
+	@Autowired
 	private TaskExecutor threadExecutor;
 	private CommandRunner cmdRunner;
 
-	public JenkinsClientImpl(Resource dbLocation, String jenkinsUrl, String jenkinsSshPort, String jenkinsSshUser, String jenkinsUserPwd, TaskExecutor taskExectuor) {
-		super();
-		this.dbLocation = dbLocation;
-		this.jenkinsUrl = jenkinsUrl;
-		this.jenkinsSshPort = jenkinsSshPort;
-		this.jenkinsSshUser = jenkinsSshUser;
-		this.jenkinsUserPwd = jenkinsUserPwd;
-		this.threadExecutor = taskExectuor;
+	public JenkinsClientImpl() {
 		ProcessBuilderCmdRunnerFactory runnerFactory = new ProcessBuilderCmdRunnerFactory();
 		cmdRunner = runnerFactory.create();
 	}
@@ -69,7 +94,9 @@ public class JenkinsClientImpl implements JenkinsClient {
 		try {
 			String patchName = PATCH_CONS + patch.getPatchNummer();
 			String jobName = patchName + jobSuffix;
-			File patchFile = new File(dbLocation.getFile(), patchName + JSON_CONS);
+			final ResourceLoader rl = new FileSystemResourceLoader();
+			Resource rDbLocation = rl.getResource(dbLocation);
+			File patchFile = new File(rDbLocation.getFile(), patchName + JSON_CONS);
 			Map<String,String> fileParams = Maps.newHashMap();
 			fileParams.put("patchFile.json",patchFile.getAbsolutePath());
 
@@ -119,13 +146,6 @@ public class JenkinsClientImpl implements JenkinsClient {
 		return (Map) parsedData.get("lastBuild");
 	}
 
-	private Map getJenkinsJobsBuilds(String jenkinsJobName) {
-		JenkinsCurlCommand lastBuildCmd = JenkinsCurlCommand.createJenkinsCurlGetLastBuildCmd(jenkinsUrl, jenkinsSshUser, jenkinsUserPwd, jenkinsJobName);
-		List<String> result = cmdRunner.run(lastBuildCmd);
-		JsonSlurper js = new JsonSlurper();
-		Map parsedData = (Map) js.parse(new ByteArrayInputStream(result.get(0).getBytes()));
-		return parsedData;
-	}
 
 	private Map getLastJenkinsPipelineJobInfo(String jenkinsJobName) {
 		JenkinsCurlCommand jenkinsCurlCommand = JenkinsCurlCommand.createJenkinsCurlGetJobInputStatus(jenkinsUrl,jenkinsSshUser,jenkinsUserPwd,jenkinsJobName);
@@ -201,30 +221,26 @@ public class JenkinsClientImpl implements JenkinsClient {
 	}
 
 	@Override
-	public void startAssembleAndDeployPipeline(String target) {
-		//TODO JHE (01.09.2020) : Will be started with parameter ... but the pipeline doesn't exist yet ...
-		String jobName = "assembleAndDeploy_" + target;
-		JenkinsSshCommand cmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName);
-		cmdRunner.run(cmd);
+	public void startAssembleAndDeployPipeline(String target, String parameter) {
+		startGenericPipelineJobBuilder("assembleAndDeploy", target, parameter);
 	}
 
 	@Override
-	public void startInstallPipeline(String target) {
-		//TODO JHE (01.09.2020) : Will maybe be started with parameter ... but the pipeline doesn't exist yet ...
-		String jobName = "install_" + target;
-		JenkinsSshCommand cmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName);
+	public void startInstallPipeline(String target, String parameter) {
+		startGenericPipelineJobBuilder("install", target, parameter);
+
+	}
+
+	private void startGenericPipelineJobBuilder(String jobPreFix, String target, String parameter) {
+		Map<String,String> parameters = Maps.newHashMap();
+		parameters.put("target", target );
+		parameters.put("jobPreFix", jobPreFix);
+		parameters.put("parameter", parameter);
+		parameters.put("github_repo", jenkinsPipelineRepo);
+		parameters.put("github_repo_branch", jenkinsPipelineRepoBranch);
+		parameters.put("script_path", this.jenkinsPipelineAssembleScript);
+		JenkinsSshCommand cmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, "GenericPipelineJobBuilder", parameters);
 		cmdRunner.run(cmd);
 	}
 
-	@Override
-	public void startJenkinsJob(String jobName) {
-		JenkinsSshCommand cmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName);
-		cmdRunner.run(cmd);
-	}
-
-	@Override
-	public void startJenkinsJob(String jobName, Map<String,String> params) {
-		JenkinsSshCommand cmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName, params,null);
-		cmdRunner.run(cmd);
-	}
 }

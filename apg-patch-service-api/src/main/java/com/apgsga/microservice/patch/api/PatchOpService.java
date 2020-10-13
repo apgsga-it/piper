@@ -48,28 +48,10 @@ public interface PatchOpService extends PatchRdbms {
 	void startInstallPipeline(String target);
 
 	/**
-	 * Starts the corresponding build (or compile) pipeline
-	 * @param patchNumber eg.: 3456
-	 */
-	void startJenkinsBuildPipeline(String patchNumber);
-
-	/**
 	 * Copies JSON Patch files to a destination folder
 	 * @param params : 2 parameters required with following keys: "status" and "destFolder"
 	 */
 	void copyPatchFiles(Map<String,String> params);
 
-	/**
-	 * Starts a Jenkins Job
-	 * @param jobName
-	 */
-	void startJenkinsJob(String jobName);
 
-	/**
-	 *
-	 * @param jobName
-	 * @param params Standard key=value parameters Map
-	 *
-	 */
-	void startJenkinsJob(String jobName, Map<String,String> params);
 }
