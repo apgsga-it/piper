@@ -233,7 +233,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	private void startGenericPipelineJobBuilder(String jobPreFix, String target, String parameter) {
 		Map<String,String> parameters = Maps.newHashMap();
-		parameters.put("target", "target" );
+		parameters.put("target", target );
 		parameters.put("jobPreFix", jobPreFix);
 		parameters.put("parameter", parameter);
 		parameters.put("github_repo", jenkinsPipelineRepo);
