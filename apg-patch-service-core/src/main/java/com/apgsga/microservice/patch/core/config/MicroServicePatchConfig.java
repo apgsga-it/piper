@@ -9,8 +9,6 @@ import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.JschSessionCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.LoggingMockSshRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
-import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactory;
-import com.apgsga.microservice.patch.core.impl.PatchActionExecutorFactoryImpl;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClientImpl;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsMockClient;
@@ -149,12 +147,6 @@ public class MicroServicePatchConfig {
 		return new LoggingMockSshRunnerFactory();
 	}
 
-	@Bean(name = "groovyActionFactory")
-	@Profile({ "groovyactions" })
-	public PatchActionExecutorFactory groovyPatchActionFactory() {
-		return new PatchActionExecutorFactoryImpl();
-	}
-
 	@Bean(name = "taskExecutor")
 	public TaskExecutor threadPoolTaskExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
@@ -165,5 +157,4 @@ public class MicroServicePatchConfig {
 		executor.initialize();
 		return executor;
 	}
-
 }
