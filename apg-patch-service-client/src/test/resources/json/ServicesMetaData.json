@@ -6,14 +6,16 @@
 			"serviceName": "It21Ui",
 			"microServiceBranch": "it21_release_9_1_0_admin_uimig",
 			"baseVersionNumber": "9.1.0",
-			"revisionMnemoPart": "ADMIN-UIMIG"
+			"revisionMnemoPart": "ADMIN-UIMIG",
+			"packagerName": "it21uiPackager"
 		},
 		{
 			"className": "com.apgsga.microservice.patch.api.ServiceMetaData",
 			"serviceName": "SomeOtherService",
 			"microServiceBranch": "it21_release_9_1_0_some_tag",
 			"baseVersionNumber": "9.1.0",
-			"revisionMnemoPart": "SOME-TAG"
+			"revisionMnemoPart": "SOME-TAG",
+			"packagerName": "someOtherServicePackager"
 		}
 	]
 }

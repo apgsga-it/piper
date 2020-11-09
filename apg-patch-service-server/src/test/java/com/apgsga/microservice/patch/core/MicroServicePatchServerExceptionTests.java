@@ -179,7 +179,7 @@ public class MicroServicePatchServerExceptionTests {
 	public void testPatchInvalidToState() {
 		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
-		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
+		Service service = Service.create().serviceName("It21Ui").microServiceBranch(("SomeBaseBranch"));
 		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
 		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
 		patch.addServices(service);

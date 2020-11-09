@@ -10,16 +10,16 @@ public class ServiceMetaData extends AbstractTransientEntity {
 	private String microServiceBranch;
 	private String baseVersionNumber;
 	private String revisionMnemoPart;
-	private String installationHost;
-	private ServiceType serviceType;
-	
+	private String packagerName;
+
 	public ServiceMetaData(String serviceName, String microServiceBranch, String baseVersionNumber,
-						   String revisionMnemoPart) {
+						   String revisionMnemoPart, String packagerName) {
 		super();
 		this.serviceName = serviceName;
 		this.microServiceBranch = microServiceBranch;
 		this.baseVersionNumber = baseVersionNumber;
 		this.revisionMnemoPart = revisionMnemoPart;
+		this.packagerName = packagerName;
 	}
 
 	public ServiceMetaData() {
@@ -49,6 +49,8 @@ public class ServiceMetaData extends AbstractTransientEntity {
 	public void setRevisionMnemoPart(String revisionMnemoPart) {
 		this.revisionMnemoPart = revisionMnemoPart;
 	}
+	public String getPackagerName(){ return packagerName; }
+	public void setPackagerName(String packagerName) { this.packagerName = packagerName; }
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -57,6 +59,7 @@ public class ServiceMetaData extends AbstractTransientEntity {
 		result = prime * result + ((microServiceBranch == null) ? 0 : microServiceBranch.hashCode());
 		result = prime * result + ((revisionMnemoPart == null) ? 0 : revisionMnemoPart.hashCode());
 		result = prime * result + ((serviceName == null) ? 0 : serviceName.hashCode());
+		result = prime * result + ((packagerName == null) ? 0 : packagerName.hashCode());
 		return result;
 	}
 	@Override
@@ -90,6 +93,7 @@ public class ServiceMetaData extends AbstractTransientEntity {
 	@Override
 	public String toString() {
 		return "PatchLogDetails [serviceName=" + serviceName + ", microServiceBranch=" + microServiceBranch
-				+ ", baseVersionNumber=" + baseVersionNumber + ", revisionMnemoPart=" + revisionMnemoPart + "]";
+				+ ", baseVersionNumber=" + baseVersionNumber + ", revisionMnemoPart=" + revisionMnemoPart
+				+ ", packagerName=" + packagerName + "]";
 	} 
 }
