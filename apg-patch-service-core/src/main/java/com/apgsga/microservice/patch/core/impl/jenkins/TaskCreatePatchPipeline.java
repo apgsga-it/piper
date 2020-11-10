@@ -1,9 +1,11 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.StageMapping;
 import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +42,7 @@ public class TaskCreatePatchPipeline implements Runnable {
 		try {
 			Map<String, String> jobParm = Maps.newHashMap();
 			jobParm.put("patchnumber", patch.getPatchNummer());
+			jobParm.put("stages", getStages());
 			JenkinsSshCommand buildJobCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForCompleteCmd(jenkinsHost, jenkinsSshPort, jenkinsSshUser, "PatchJobBuilder", jobParm);
 			ProcessBuilderCmdRunnerFactory factory = new ProcessBuilderCmdRunnerFactory();
 			List<String> result = factory.create().run(buildJobCmd);
@@ -61,4 +64,11 @@ public class TaskCreatePatchPipeline implements Runnable {
 
 	}
 
+	private String getStages() {
+		String stagesAsCSV = "";
+		for(StageMapping sm : this.patch.getStagesMapping()) {
+			stagesAsCSV += sm.getName() + ",";
+		}
+		return stagesAsCSV.substring(0,stagesAsCSV.length()-1);
+	}
 }
