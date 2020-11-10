@@ -5,7 +5,6 @@ import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.jenkins.curl.JenkinsCurlCommand;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
-import com.apgsga.microservice.patch.core.config.MicroServicePatchConfig;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.google.common.collect.Maps;
 import groovy.json.JsonSlurper;
@@ -48,6 +47,9 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	@Value("${jenkins.host:jenkins.apgsga.ch}")
 	public String jenkinsUrl;
+
+	@Value("${jenkins.port:8080}")
+	public String jenkinsPort;
 
 	@Value("${jenkins.ssh.port:53801}")
 	public String jenkinsSshPort;
@@ -120,16 +122,19 @@ public class JenkinsClientImpl implements JenkinsClient {
 	@Override
 	public void processInputAction(Patch patch, Map<String, String> parameter) {
 		// TODO (che, 25.4) : Switch to logical Target name
-		processInputAction(patch, parameter.get("target"), parameter.get("stage"));
+		String target = parameter.get("target");
+		String stage = parameter.get("stage");
+		LOGGER.info("Processing input action for patch " + patch.getPatchNummer() + " with target=" + target + " and stage=" + stage);
+		processInputAction(patch, target, stage);
 	}
 
 	@Override
 	public void processInputAction(Patch patch, String targetName, String stage) {
-		String action = stage.equals(CANCEL_CONS) ? stage : PATCH_CONS + patch.getPatchNummer() + stage + targetName + OK_CONS;
+		String jobInputId = stage.equals(CANCEL_CONS) ? stage : PATCH_CONS + patch.getPatchNummer() + stage + targetName + OK_CONS;
 		try {
-			Map lastBuild = getLastJenkinsJobBuild(PATCH_CONS + patch.getPatchNummer());
+			Map lastBuild = getJenkinsJobBuild(PATCH_CONS + patch.getPatchNummer());
 			validateLastPipelineBuilder(lastBuild,patch.getPatchNummer());
-			inputActionForPipeline(patch, action, PATCH_CONS + patch.getPatchNummer());
+			inputActionForPipeline(patch, jobInputId, PATCH_CONS + patch.getPatchNummer());
 
 		} catch (Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
@@ -138,17 +143,23 @@ public class JenkinsClientImpl implements JenkinsClient {
 		}
 	}
 	
-	private Map getLastJenkinsJobBuild(String jenkinsJobName) {
-		JenkinsCurlCommand lastBuildCmd = JenkinsCurlCommand.createJenkinsCurlGetLastBuildCmd(jenkinsUrl, jenkinsSshUser, jenkinsUserPwd, jenkinsJobName);
+	private Map getJenkinsJobBuild(String jenkinsJobName) {
+		String jenkinsUrlAndPort = jenkinsUrl + ":" + jenkinsPort;
+		JenkinsCurlCommand lastBuildCmd = JenkinsCurlCommand.createJenkinsCurlGetLastBuildCmd(jenkinsUrlAndPort, jenkinsSshUser, jenkinsUserPwd, jenkinsJobName);
+		LOGGER.info("Getting last jenkins job build with following parameter: jenkinsUrl=" + jenkinsUrlAndPort
+				+ ", jenkinsSshUser=" + jenkinsSshUser
+				+ ", jenkinsUserPwd=" + jenkinsUserPwd
+				+ ", jenkinsJobName=" + jenkinsJobName);
 		List<String> result = cmdRunner.run(lastBuildCmd);
 		JsonSlurper js = new JsonSlurper();
 		Map parsedData = (Map) js.parse(new ByteArrayInputStream(result.get(0).getBytes()));
-		return (Map) parsedData.get("lastBuild");
+		return parsedData;
 	}
 
 
 	private Map getLastJenkinsPipelineJobInfo(String jenkinsJobName) {
-		JenkinsCurlCommand jenkinsCurlCommand = JenkinsCurlCommand.createJenkinsCurlGetJobInputStatus(jenkinsUrl,jenkinsSshUser,jenkinsUserPwd,jenkinsJobName);
+		String jenkinsUrlAndPort = jenkinsUrl + ":" + jenkinsPort;
+		JenkinsCurlCommand jenkinsCurlCommand = JenkinsCurlCommand.createJenkinsCurlGetJobInputStatus(jenkinsUrlAndPort,jenkinsSshUser,jenkinsUserPwd,jenkinsJobName);
 		List<String> result = cmdRunner.run(jenkinsCurlCommand);
 		JsonSlurper js = new JsonSlurper();
 		ArrayList<Map> parsedData = (ArrayList<Map>) js.parse(new ByteArrayInputStream(result.get(0).getBytes()));
@@ -156,21 +167,21 @@ public class JenkinsClientImpl implements JenkinsClient {
 		return lastBuiltState;
 	}
 
-	private void inputActionForPipeline(Patch patch, String action, String jobName)
+	private void inputActionForPipeline(Patch patch, String inputId, String jobName)
 			throws InterruptedException {
 		int i = 0; 
-		while (waitForAndProcessInput(patch, action, jobName) && i < 10) {
+		while (waitForAndProcessInput(patch, inputId, jobName) && i < 10) {
 			// Loops with condition
 		}
 	}
 
-	private boolean waitForAndProcessInput(Patch patch, String action, String jobName) throws InterruptedException {
+	private boolean waitForAndProcessInput(Patch patch, String inputId, String jobName) throws InterruptedException {
 
 		// TODO JHE : Define couple of constants ....
 
-		Map lastPipelineBuild = getLastJenkinsJobBuild(jobName);
+		Map lastPipelineBuild = getJenkinsJobBuild(jobName);
 
-		// The pipeline never ran
+		// The pipeline never ran or didn't start yet
 		if(lastPipelineBuild.get("lastBuild") == null) {
 			LOGGER.warn("Pipeline for patchNumber: " + patch.getPatchNummer() + IS_NOT_BUILDING_CONS);
 			return false;
@@ -180,22 +191,24 @@ public class JenkinsClientImpl implements JenkinsClient {
 		Map lastBuild = (Map) lastPipelineBuild.get("lastBuild");
 		Map lastCompletedBuild = (Map) lastPipelineBuild.get("lastCompletedBuild");
 		if(lastCompletedBuild != null && lastBuild.get("number") == lastCompletedBuild.get("number")) {
-			LOGGER.warn("Pipeline for patchNumber: " + patch.getPatchNummer() + " " + IS_NOT_BUILDING_CONS);
+			LOGGER.warn("Pipeline for patchNumber: " + patch.getPatchNummer() + " is finish.");
 			return false;
 		}
 
 		// If job is not waiting on Input, that means the job is currently running
 		Map pipelineJobInfo = getLastJenkinsPipelineJobInfo(jobName);
 		if(!((String)pipelineJobInfo.get("status")).equalsIgnoreCase("paused_pending_input")) {
+			LOGGER.info("Pipeline for patchNumber " + patch.getPatchNummer() + " currently running, waiting 2 seconds ...");
 			Thread.sleep(2000);
 			return true;
 		}
 		// We can process the input
 		else {
-			String lastJobExecutionNumber = (String) getLastJenkinsJobBuild(jobName).get("lastBuild");
-			// TODO JHE (01.09.2020) : inputId will have to be build dynamically, or ... really needed to have distinguished name?
-			String inputId = "Oktocontinue";
-			JenkinsCurlCommand.createJenkinsCurlSubmitPipelineInput(jenkinsUrl,jenkinsSshUser,jenkinsUserPwd,jobName,lastJobExecutionNumber,inputId,action);
+			LOGGER.info("Pipeline for patchNumber " + patch.getPatchNummer() + " is waiting on Input, process can continue...");
+			Map lastJob = (Map) getJenkinsJobBuild(jobName).get("lastBuild");
+			String lastJobExecutionNumber = String.valueOf((Integer)lastJob.get("number"));
+			JenkinsCurlCommand submitPipelineInputCmd = JenkinsCurlCommand.createJenkinsCurlSubmitPipelineInput(jenkinsUrl + ":" + jenkinsPort, jenkinsSshUser, jenkinsUserPwd, jobName, lastJobExecutionNumber,inputId,"proceedEmpty");
+			cmdRunner.run(submitPipelineInputCmd);
 			return false;
 		}
 

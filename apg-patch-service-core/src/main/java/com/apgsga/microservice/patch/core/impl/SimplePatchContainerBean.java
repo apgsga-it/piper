@@ -22,6 +22,7 @@ import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -63,6 +64,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Autowired
 	@Qualifier("patchRdbms")
 	private PatchRdbms patchRdbms;
+
+	@Value("${piper.running.with.db.integration:true}")
+	private boolean isRunningWithDbIntegration;
 
 	public SimplePatchContainerBean() {
 		super();
@@ -154,7 +158,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	private void preProcessSave(Patch patch) {
 		if (!repo.patchExists(patch.getPatchNummer())) {
-			patch.setStagesMapping(getStageMappings());
+			patch.setStagesMapping(metaInfoRepo.stageMappings().getStageMappings());
 			createBranchForDbModules(patch);
 			jenkinsClient.createPatchPipelines(patch);
 		}
@@ -162,17 +166,14 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		for (Service service : patch.getServices()) {
 			service.getMavenArtifactsToBuild().stream().filter(art -> Strings.isNullOrEmpty(art.getName()))
 					.forEach(art -> addModuleName(art, service.getMicroServiceBranch()));
+			addPackagerName(service);
 		}
-
 	}
 
-	private List<String> getStageMappings() {
-		List<String> mapping = Lists.newArrayList();
-		List<StageMapping> stageMappings = metaInfoRepo.stageMappings().getStageMappings();
-		stageMappings.forEach(stage -> {
-			mapping.add(stage.getName());
-		});
-		return mapping;
+	private void addPackagerName(Service service) {
+		String packagerName = metaInfoRepo.packagerNameFor(service);
+		Asserts.notNullOrEmpty(packagerName,"SimplePatchContainerBean.addPackagerName.packagerName.notnull",new Object[] { service.getServiceName() });
+		service.setPackagerName(packagerName);
 	}
 
 	private MavenArtifact addModuleName(MavenArtifact art, String cvsBranch) {
@@ -437,7 +438,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public void executeStateTransitionActionInDb(String patchNumber, Long statusNum) {
-		patchRdbms.executeStateTransitionActionInDb(patchNumber,statusNum);
+		//TODO JHE (02.11.2020) : don't do this in "withoutDb" mode
+		if(isRunningWithDbIntegration) {
+			patchRdbms.executeStateTransitionActionInDb(patchNumber, statusNum);
+		}
+		else {
+			LOGGER.info("Piper running without DB Integration -> executeStateTransitionActionInDb called with patchNumber=" + patchNumber + ", statusNum=" + statusNum);
+		}
 	}
 
 	@Override

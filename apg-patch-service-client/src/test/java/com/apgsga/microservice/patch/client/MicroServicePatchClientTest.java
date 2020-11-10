@@ -150,7 +150,7 @@ public class MicroServicePatchClientTest {
 	public void testSaveWithArtifacts() {
 		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
-		Service service = Service.create().serviceName("It21ui").microServiceBranch("SomeBaseBranch");
+		Service service = Service.create().serviceName("It21Ui").microServiceBranch("SomeBaseBranch");
 		patch.addServices(service);
 		patch.setDbPatchBranch("SomePatchBranch");
 		patch.addDbObjects(new DbObject("FileName1", "FilePath1"));
@@ -183,8 +183,8 @@ public class MicroServicePatchClientTest {
 		p2.setPatchNummer("p2");
 		patchClient.save(p1);
 		patchClient.save(p2);
-		Service service1 = Service.create().serviceName("It21ui1").microServiceBranch("SomeBaseBranch1");
-		Service service2 = Service.create().serviceName("It21ui2").microServiceBranch("SomeBaseBranch2");
+		Service service1 = Service.create().serviceName("It21Ui").microServiceBranch("SomeBaseBranch1");
+		Service service2 = Service.create().serviceName("It21Ui").microServiceBranch("SomeBaseBranch2");
 		assertNotNull(patchClient.findById("p1"));
 		assertNotNull(patchClient.findById("p2"));
 		MavenArtifact ma1 = new MavenArtifact("test-ma1", "com.apgsga", "1.0");
@@ -229,10 +229,10 @@ public class MicroServicePatchClientTest {
 		patch.setPatchNummer("2222");
 		patchClient.save(patch);
 		Patch result = patchClient.findById("2222");
-		List<String> stagesMapping = result.getStagesMapping();
-		stagesMapping.get(0).equals("Entwicklung");
-		stagesMapping.get(1).equals("Informatiktest");
-		stagesMapping.get(2).equals("Anwendertest");
-		stagesMapping.get(3).equals("Produktion");
+		List<StageMapping> stagesMapping = result.getStagesMapping();
+		stagesMapping.get(0).getName().equals("Entwicklung");
+		stagesMapping.get(1).getName().equals("Informatiktest");
+		stagesMapping.get(2).getName().equals("Anwendertest");
+		stagesMapping.get(3).getName().equals("Produktion");
 	}
 }

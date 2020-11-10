@@ -22,6 +22,12 @@ public interface PatchSystemMetaInfoPersistence {
      */
     TargetInstances targetInstances();
 
+    /**
+     *
+     * @return: load content of the ServiceMetadata.json file
+     */
+    ServicesMetaData servicesMetaData();
+
 
     /**
      *
@@ -36,4 +42,11 @@ public interface PatchSystemMetaInfoPersistence {
      * @return : the next patch status
      */
     Integer findStatus(String toStatus);
+
+    /**
+     *
+     * @param service
+     * @return : the packager name define in our ServiceMetadata.json file for the corresponding service
+     */
+    String packagerNameFor(Service service);
 }
