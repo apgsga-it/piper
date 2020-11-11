@@ -5,7 +5,7 @@ server.port=<%= $piper_server_port %>
 endpoints.shutdown.enabled=true
 management.security.enabled=false
 logging.file=log/apg-patch-service-server.log
-spring.profiles.active=live,remotecvs
+spring.profiles.active=<%= $piper_spring_profiles %>
 
 # Appication Configuration 
 # File Location 

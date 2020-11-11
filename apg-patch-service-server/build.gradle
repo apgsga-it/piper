@@ -16,7 +16,6 @@ project.gradle.startParameter.excludedTaskNames.add('startScripts')
 description = 'Server , which provides  Patch Functionality through a Restful Controller  '
 jar {
 	baseName = 'apg-patch-service-server'
-	//exclude('**/application.properties')
 }
 
 dependencies {
@@ -43,7 +42,7 @@ sourceSets {
   test {
     resources {
       srcDir 'src/test/java'
-      include '**/*.properties' 
+      include '**/*.properties'
     }
   }
 }

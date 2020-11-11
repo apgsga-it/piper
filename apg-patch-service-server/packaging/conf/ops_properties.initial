@@ -1,0 +1,4 @@
+# Rdmbs module properties
+rdbms.oracle.url=jdbc:oracle:thin:@<%= $cm_db_host %>:1521:<%= $cm_db_instance %>
+rdbms.oracle.user.name=<%= $cm_db_piper_user %>
+rdbms.oracle.user.pwd=<%= $cm_db_piper_pw%>
