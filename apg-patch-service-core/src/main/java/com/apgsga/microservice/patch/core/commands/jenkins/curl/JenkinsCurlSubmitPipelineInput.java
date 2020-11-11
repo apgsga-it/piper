@@ -10,16 +10,16 @@ public class JenkinsCurlSubmitPipelineInput extends JenkinsCurlCommand {
 
     private String jobExecutionNumber;
 
-    private String inputId;
-
     private String action;
+
+    private String inputId;
 
     public JenkinsCurlSubmitPipelineInput(String jenkinsUrl, String jenkinsUserName, String jenkinsUserPwd, String jobName, String jobExecutionNumber, String inputId, String action) {
         super(jenkinsUrl,jenkinsUserName,jenkinsUserPwd);
         this.jobName = jobName;
         this.jobExecutionNumber = jobExecutionNumber;
-        this.inputId = inputId;
         this.action = action;
+        this.inputId = inputId;
     }
 
     @Override

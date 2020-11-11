@@ -150,7 +150,7 @@ public class MicroServicePatchServerTest {
 	public void testSaveWithArtifacts() {
 		Patch patch = new Patch();
 		patch.setPatchNummer("SomeUnqiueNumber3");
-		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
+		Service service = Service.create().serviceName("It21Ui").microServiceBranch(("SomeBaseBranch"));
 		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
 		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
 		patch.addServices(service);
@@ -209,8 +209,8 @@ public class MicroServicePatchServerTest {
 		patchService.save(p2);
 		assertNotNull(patchService.findById("p1"));
 		assertNotNull(patchService.findById("p2"));
-		Service service1 = Service.create().serviceName("It21ui1").microServiceBranch(("SomeBaseBranch1"));
-		Service service2 = Service.create().serviceName("It21ui2").microServiceBranch(("SomeBaseBranch2"));
+		Service service1 = Service.create().serviceName("It21Ui").microServiceBranch(("SomeBaseBranch1"));
+		Service service2 = Service.create().serviceName("It21Ui").microServiceBranch(("SomeBaseBranch2"));
 		MavenArtifact ma1 = new MavenArtifact("test-ma1", "com.apgsga", "1.0");
 		MavenArtifact ma2 = new MavenArtifact("test-ma2", "com.apgsga", "1.0");
 		MavenArtifact ma3 = new MavenArtifact("test-ma3", "com.apgsga", "1.0");
@@ -228,8 +228,8 @@ public class MicroServicePatchServerTest {
 		p2.addServices(service2);
 		patchService.save(p1);
 		patchService.save(p2);
-		assertEquals(2, patchService.findById("p1").getService("It21ui1").getMavenArtifacts().size());
-		assertEquals(2, patchService.findById("p2").getService("It21ui2").getMavenArtifacts().size());
+		assertEquals(2, patchService.findById("p1").getService("It21Ui").getMavenArtifacts().size());
+		assertEquals(2, patchService.findById("p2").getService("It21Ui").getMavenArtifacts().size());
 		assertEquals(1, patchService.findWithObjectName("ma1").size());
 		assertEquals(1, patchService.findWithObjectName("ma2").size());
 		assertEquals(2, patchService.findWithObjectName("ma3").size());
@@ -267,11 +267,30 @@ public class MicroServicePatchServerTest {
 		patch.setPatchNummer("2222");
 		patchService.save(patch);
 		Patch result = patchService.findById("2222");
-		List<String> stagesMapping = result.getStagesMapping();
-		stagesMapping.get(0).equals("Entwicklung");
-		stagesMapping.get(1).equals("Informatiktest");
-		stagesMapping.get(2).equals("Anwendertest");
-		stagesMapping.get(3).equals("Produktion");
+		List<StageMapping> stagesMapping = result.getStagesMapping();
+		stagesMapping.get(0).getName().equals("Entwicklung");
+		stagesMapping.get(1).getName().equals("Informatiktest");
+		stagesMapping.get(2).getName().equals("Anwendertest");
+		stagesMapping.get(3).getName().equals("Produktion");
+	}
+
+	@Test(expected = Exception.class)
+	public void testServiceNotInServiceMetadata() {
+		Patch patch = new Patch();
+		patch.setPatchNummer("1234");
+		Service s = new Service();
+		s.setServiceName("dummyTestServiceNotInServiceMetadataJson");
+		patch.addServices(s);
+		patchService.save(patch);
+	}
+
+	@Test
+	public void testServiceInServiceMetadata() {
+		Patch patch = new Patch();
+		patch.setPatchNummer("1234");
+		Service s = new Service();
+		s.setServiceName("It21Ui");
+		patch.addServices(s);
 	}
 
 	@Test

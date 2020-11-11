@@ -60,7 +60,7 @@ public class Patch extends AbstractTransientEntity {
     private String currentTarget;
     private String currentPipelineTask;
     private String logText;
-    private List<String> stagesMapping;
+    private List<StageMapping> stagesMapping;
 
     public Patch() {
         super();
@@ -253,11 +253,11 @@ public class Patch extends AbstractTransientEntity {
         firePropertyChange(CURRENT_PIPELINE_TASK, oldValue, currentPipelineTask);
     }
 
-    public List<String> getStagesMapping() {
+    public List<StageMapping> getStagesMapping() {
         return stagesMapping;
     }
 
-    public void setStagesMapping(List<String> stagesMapping) {
+    public void setStagesMapping(List<StageMapping> stagesMapping) {
         final Object oldValue = this.stagesMapping;
         this.stagesMapping = stagesMapping;
         firePropertyChange(STAGES_MAPPING, oldValue, stagesMapping);

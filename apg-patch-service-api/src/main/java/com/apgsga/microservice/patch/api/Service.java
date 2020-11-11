@@ -23,6 +23,9 @@ public class Service  extends AbstractTransientEntity {
     public static final String REVISION_MNEMO_PART = "revisionMnemoPart";
     public static final String MAVEN_ARTIFACTS = "mavenArtifacts";
     public static final String INSTALL_ON_EMPTY_MODULES = "installOnEmptyModules";
+    public static final String REVISION = "revision";
+    public static final String LAST_REVISION = "lastRevision";
+    private static final String PACKAGER_NAME = "packagerName";
 
     private String serviceName;
     private String microServiceBranch;
@@ -32,6 +35,7 @@ public class Service  extends AbstractTransientEntity {
     private String revision;
     private String lastRevision;
     private List<MavenArtifact> mavenArtifacts = Lists.newArrayList();
+    private String packagerName;
 
     public Service(String serviceName, String microServiceBranch, String baseVersionNumber, String revisionMnemoPart) {
         this.serviceName = serviceName;
@@ -137,7 +141,9 @@ public class Service  extends AbstractTransientEntity {
     }
 
     public void setRevision(String revisionNumber) {
+        final Object oldValue = this.revision;
         this.revision = revisionNumber;
+        firePropertyChangeAndMarkDirty(REVISION, oldValue, revision);
     }
 
     public String getLastRevision() {
@@ -145,7 +151,19 @@ public class Service  extends AbstractTransientEntity {
     }
 
     public void setLastRevision(String lastRevisionNumber) {
+        final Object oldValue = this.lastRevision;
         this.lastRevision = lastRevisionNumber;
+        firePropertyChangeAndMarkDirty(LAST_REVISION, oldValue, lastRevision);
+    }
+
+    public String getPackagerName() {
+        return packagerName;
+    }
+
+    public void setPackagerName(String packagerName) {
+        final Object oldValue = this.packagerName;
+        this.packagerName = packagerName;
+        firePropertyChangeAndMarkDirty(PACKAGER_NAME, oldValue, packagerName);
     }
 
     public List<String> getMavenArtifactsAsVcsPath() {

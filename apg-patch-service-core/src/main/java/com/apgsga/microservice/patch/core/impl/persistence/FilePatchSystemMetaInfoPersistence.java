@@ -16,6 +16,8 @@ public class FilePatchSystemMetaInfoPersistence extends AbstractFilebasedPersist
 
     private static final String TARGET_INSTANCES_DATA_JSON = "TargetInstances.json";
 
+    private static final String SERVICES_METADATA_DATA_JSON = "ServicesMetaData.json";
+
     public FilePatchSystemMetaInfoPersistence(Resource storagePath, Resource workDir) throws IOException {
         super();
         this.storagePath = storagePath;
@@ -72,6 +74,22 @@ public class FilePatchSystemMetaInfoPersistence extends AbstractFilebasedPersist
     }
 
     @Override
+    public ServicesMetaData servicesMetaData() {
+        try {
+            File servicesMetadata = createFile(SERVICES_METADATA_DATA_JSON);
+            if (!servicesMetadata.exists()) {
+                return null;
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            ServicesMetaData result = mapper.readValue(servicesMetadata, ServicesMetaData.class);
+            return result;
+        } catch (IOException e) {
+            throw ExceptionFactory.createPatchServiceRuntimeException(
+                    "FilebasedPatchPersistence.servicemetadata.exception", new Object[] { e.getMessage() }, e);
+        }
+    }
+
+    @Override
     public StageMapping stageMappingFor(String toStatus) {
         StageMappings stageMappings = stageMappings();
         for(StageMapping stageMapping : stageMappings.getStageMappings()) {
@@ -96,5 +114,15 @@ public class FilePatchSystemMetaInfoPersistence extends AbstractFilebasedPersist
         }
         return null;
 
+    }
+
+    @Override
+    public String packagerNameFor(Service service) {
+        for(ServiceMetaData smd : servicesMetaData().getServicesMetaData()) {
+            if(smd.getServiceName().equals(service.getServiceName())) {
+                return smd.getPackagerName();
+            }
+        }
+        return null;
     }
 }

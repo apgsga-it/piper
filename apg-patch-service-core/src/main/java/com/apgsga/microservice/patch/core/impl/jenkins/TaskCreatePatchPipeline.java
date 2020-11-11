@@ -40,7 +40,7 @@ public class TaskCreatePatchPipeline implements Runnable {
 		try {
 			Map<String, String> jobParm = Maps.newHashMap();
 			jobParm.put("patchnumber", patch.getPatchNummer());
-			JenkinsSshCommand buildJobCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForCompleteCmd(jenkinsHost, jenkinsSshPort, jenkinsSshUser, "PatchBuilder", jobParm);
+			JenkinsSshCommand buildJobCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForCompleteCmd(jenkinsHost, jenkinsSshPort, jenkinsSshUser, "PatchJobBuilder", jobParm);
 			ProcessBuilderCmdRunnerFactory factory = new ProcessBuilderCmdRunnerFactory();
 			List<String> result = factory.create().run(buildJobCmd);
 			if (!result.stream().anyMatch(c -> {
