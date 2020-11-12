@@ -235,23 +235,23 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	@Override
 	public void startAssembleAndDeployPipeline(String target, String parameter) {
-		startGenericPipelineJobBuilder("assembleAndDeploy", target, parameter);
+		startGenericPipelineJobBuilder("assembleAndDeploy", jenkinsPipelineAssembleScript, target, parameter);
 	}
 
 	@Override
 	public void startInstallPipeline(String target, String parameter) {
-		startGenericPipelineJobBuilder("install", target, parameter);
+		startGenericPipelineJobBuilder("install", jenkinsPipelineInstallScript, target, parameter);
 
 	}
 
-	private void startGenericPipelineJobBuilder(String jobPreFix, String target, String parameter) {
+	private void startGenericPipelineJobBuilder(String jobPreFix, String scriptPath, String target, String parameter) {
 		Map<String,String> parameters = Maps.newHashMap();
 		parameters.put("target", target );
 		parameters.put("jobPreFix", jobPreFix);
 		parameters.put("parameter", parameter);
 		parameters.put("github_repo", jenkinsPipelineRepo);
 		parameters.put("github_repo_branch", jenkinsPipelineRepoBranch);
-		parameters.put("script_path", this.jenkinsPipelineAssembleScript);
+		parameters.put("script_path", scriptPath);
 		JenkinsSshCommand cmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, "GenericPipelineJobBuilder", parameters);
 		cmdRunner.run(cmd);
 	}
