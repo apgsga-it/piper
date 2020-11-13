@@ -67,7 +67,10 @@ public class TaskCreatePatchPipeline implements Runnable {
 	private String getStages() {
 		String stagesAsCSV = "";
 		for(StageMapping sm : this.patch.getStagesMapping()) {
-			stagesAsCSV += sm.getName() + ",";
+			// TODO JHE (11.11.2020) : add constant for "entwicklung", or a list of stage to be excluded
+			if(!sm.getName().equalsIgnoreCase("entwicklung")) {
+				stagesAsCSV += sm.getName() + ",";
+			}
 		}
 		return stagesAsCSV.substring(0,stagesAsCSV.length()-1);
 	}

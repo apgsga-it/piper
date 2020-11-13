@@ -1,15 +1,14 @@
 package com.apgsga.microservice.patch.core.impl;
 
-import com.apgsga.microservice.patch.api.Service;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
-import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
+import com.apgsga.microservice.patch.api.Service;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
+import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
+import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class TaskEntwicklungInstallationsbereit implements Runnable {
 
@@ -55,10 +54,6 @@ public class TaskEntwicklungInstallationsbereit implements Runnable {
 		for (Service service : patch.getServices() ) {
 			dependencyResolver.resolveDependencies(service.getMavenArtifacts());
 		}
-
 		repo.savePatch(patch);
-		LOGGER.info("Running EntwicklungInstallationsbereitAction startProdPatchPipeline");
-		jenkinsPatchClient.startProdPatchPipeline(patch);
 	}
-
 }
