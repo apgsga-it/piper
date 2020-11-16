@@ -114,8 +114,6 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 		Patch patch = findById(patchNumber);
 		PatchLogDetails pld = new PatchLogDetails();
 		pld.setLogText(patch.getLogText());
-		pld.setPatchPipelineTask(patch.getCurrentPipelineTask());
-		pld.setTarget(patch.getCurrentTarget());
 		pld.setDateTime(new Date());
 		return pld;
 	}

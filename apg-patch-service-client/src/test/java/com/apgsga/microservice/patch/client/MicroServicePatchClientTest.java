@@ -98,7 +98,6 @@ public class MicroServicePatchClientTest {
 	public void testSavePatchLog() {
 		Patch p = new Patch();
 		p.setPatchNummer("anotherUniqueId");
-		p.setCurrentTarget("chei212");
 		p.setLogText("Build Started");
 		patchClient.save(p);
 		try {

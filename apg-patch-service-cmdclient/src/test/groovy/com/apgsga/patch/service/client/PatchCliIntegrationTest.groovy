@@ -187,8 +187,6 @@ class PatchCliIntegrationTest extends Specification {
 			patchFile.exists()
 			ObjectMapper patchMapper = new ObjectMapper()
 			def p = patchMapper.readValue(patchFile,Patch.class)
-			p.setCurrentTarget("chei211")
-			p.setCurrentPipelineTask("Build")
 			p.setLogText("started")
 			patchMapper.writeValue(patchFile, p)
 		when:
