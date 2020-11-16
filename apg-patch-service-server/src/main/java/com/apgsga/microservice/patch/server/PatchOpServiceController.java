@@ -56,11 +56,11 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		return patchService.save(patch);
 	}
 	
-	@RequestMapping(value = "/savePatchLog", method = RequestMethod.POST)
-	@ResponseBody
+	@RequestMapping(value = "/savePatchLog/{patchNumber}", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
 	@Override
-	public void savePatchLog(@RequestBody String patchNumber) {
-		repo.savePatchLog(patchNumber);
+	public void savePatchLog(@PathVariable String patchNumber, @RequestBody PatchLogDetails logDetails) {
+		repo.savePatchLog(patchNumber,logDetails);
 	}
 
 	@RequestMapping(value = "/savePatch", method = RequestMethod.POST)

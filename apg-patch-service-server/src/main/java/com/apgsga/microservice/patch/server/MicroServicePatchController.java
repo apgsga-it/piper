@@ -2,6 +2,7 @@ package com.apgsga.microservice.patch.server;
 
 import java.util.List;
 
+import com.apgsga.microservice.patch.api.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.apgsga.microservice.patch.api.DbObject;
-import com.apgsga.microservice.patch.api.MavenArtifact;
-import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchLog;
-import com.apgsga.microservice.patch.api.PatchService;
-import com.apgsga.microservice.patch.api.SearchCondition;
-import com.apgsga.microservice.patch.api.ServiceMetaData;
 
 @RestController
 @Scope(org.springframework.web.context.WebApplicationContext.SCOPE_SESSION)
@@ -49,11 +42,11 @@ public class MicroServicePatchController implements PatchService {
 		return patchService.save(patch);
 	}
 	
-	@RequestMapping(value = "/log", method = RequestMethod.POST)
+	@RequestMapping(value = "/log/{patchNumber}", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	@Override
-	public void log(@RequestBody Patch patch) {
-  		patchService.log(patch);
+	public void log(@PathVariable String patchNumber, @RequestBody PatchLogDetails logDetails) {
+  		patchService.log(patchNumber,logDetails);
 	}
 
 	@RequestMapping(value = "/remove", method = RequestMethod.POST)

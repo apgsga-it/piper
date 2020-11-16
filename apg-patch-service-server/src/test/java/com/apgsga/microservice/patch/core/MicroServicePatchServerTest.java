@@ -30,6 +30,7 @@ import org.springframework.util.FileCopyUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -85,11 +86,12 @@ public class MicroServicePatchServerTest {
 		try {
 			Patch patch = new Patch();
 			patch.setPatchNummer("SomeUnqiueNumber1");
-			patchService.log(patch);
+			PatchLogDetails pld = new PatchLogDetails();
+			patchService.log("SomeUnqiueNumber1",pld);
 			fail();
 		} catch(PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			assertEquals("SimplePatchContainerBean.log.patchisnull", e.getMessageKey());
+			assertEquals("SimplePatchContainerBean.log.patch.not.exist", e.getMessageKey());
 		}
 	}
 	
@@ -98,9 +100,12 @@ public class MicroServicePatchServerTest {
 		String patchNumber = "someUniqueNum1";
 		Patch p = new Patch();
 		p.setPatchNummer(patchNumber);
-		p.setLogText("started");
 		patchService.save(p);
-		patchService.log(p);
+		PatchLogDetails pld = new PatchLogDetails();
+		pld.setTarget("dev-jhe");
+		pld.setPatchPipelineTask("Build");
+		pld.setDateTime(new Date());
+		patchService.log(p.getPatchNummer(),pld);
 		PatchLog result = patchService.findPatchLogById(patchNumber);
 		assertNotNull(result);
 		assertTrue(result.getLogDetails().size() == 1);
@@ -108,21 +113,30 @@ public class MicroServicePatchServerTest {
 	
 	@Test
 	public void testSavePatchLogWithSeveralDetail() {
+		PatchLogDetails pld = new PatchLogDetails();
+		pld.setTarget("dev-jhe");
+		pld.setPatchPipelineTask("Build");
+		pld.setDateTime(new Date());
+		PatchLogDetails pld2 = new PatchLogDetails();
+		pld2.setTarget("dev-jhe");
+		pld2.setPatchPipelineTask("Build 2");
+		pld2.setDateTime(new Date());
+		PatchLogDetails pld3 = new PatchLogDetails();
+		pld3.setTarget("dev-jhe");
+		pld3.setPatchPipelineTask("Build 3");
+		pld3.setDateTime(new Date());
 		String patchNumber = "notEmpty1";
 		Patch p = new Patch();
 		p.setPatchNummer(patchNumber);
-		p.setLogText("started");
 		patchService.save(p);
-		patchService.log(p);
+		patchService.log(p.getPatchNummer(),pld);
 		PatchLog result = patchService.findPatchLogById(patchNumber);
 		assertNotNull(result);
 		assertTrue(result.getLogDetails().size() == 1);
-		p.setLogText("done");
 		patchService.save(p);
-		patchService.log(p);
-		p.setLogText("started");
+		patchService.log(p.getPatchNummer(),pld2);
 		patchService.save(p);
-		patchService.log(p);
+		patchService.log(p.getPatchNummer(),pld3);
 		result = patchService.findPatchLogById(patchNumber);
 		assertTrue(result.getLogDetails().size() == 3);
 	}

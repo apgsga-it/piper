@@ -1,6 +1,7 @@
 package com.apgsga.patch.service.client
 
 import com.apgsga.microservice.patch.api.Patch
+import com.apgsga.microservice.patch.api.PatchLogDetails
 import com.apgsga.patch.service.client.rest.PatchRestServiceClient
 import com.google.common.collect.Maps
 import org.codehaus.groovy.runtime.StackTraceUtils
@@ -94,7 +95,7 @@ class PatchCli {
 			// TODO (CHE,13.9) Get rid of the component parameter, needs to be coordinated with current Patch System (PatchOMat)
 			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can only be aps ', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
-			log longOpt: 'log', args:1, argName: 'patchNumber', 'Log a patch steps for a patch', required: false
+			log longOpt: 'log', args:4, valueSeparator: ",", argName: 'patchNumber,target,step,text', 'Log a patch steps for a patch', required: false
 			adp longOpt: 'assembleDeployPipeline', args:1, argName: 'target', "starts an assembleAndDeploy pipeline for the given target", required: false
 			dbsta longOpt: 'dbstateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to the database', required: false
 			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "statusCode,destFolder", 'Copy patch files for a given status into the destfolder', required: false
@@ -149,8 +150,8 @@ class PatchCli {
 			}
 		}
 		if (options.log) {
-			if (options.logs.size() != 1) {
-				println "Logging activity requires a Patch number as Parameter"
+			if (options.logs.size() != 4) {
+				println "Logging activity requires a Patch number, target, step and text"
 				error = true
 			}
 		}
@@ -223,8 +224,16 @@ class PatchCli {
 
 	static def logPatchActivity(def patchClient, def options) {
 		def patchNumber = options.logs[0]
-		println "Logging patch activity for patch number ${patchNumber}"
-		patchClient.savePatchLog(patchNumber)
+		def target = options.logs[1]
+		def step = options.logs[2]
+		def text = options.logs[3]
+		PatchLogDetails pld = new PatchLogDetails()
+		pld.setTarget(target)
+		pld.setPatchPipelineTask(step)
+		pld.setLogText(text)
+		pld.setDateTime(new Date())
+		println "Logging patch activity for patch number ${patchNumber} with following info : target=${target},step=${step},text=${text}"
+		patchClient.savePatchLog(patchNumber,pld)
 	}
 
 	static def assembleAndDeployPipeline(def patchClient, def options) {

@@ -187,10 +187,9 @@ class PatchCliIntegrationTest extends Specification {
 			patchFile.exists()
 			ObjectMapper patchMapper = new ObjectMapper()
 			def p = patchMapper.readValue(patchFile,Patch.class)
-			p.setLogText("started")
 			patchMapper.writeValue(patchFile, p)
 		when:
-			client.process(["-log", "5401"])
+			client.process(["-log", "5401,dev-jhe,build,started"])
 		then:
 			preCondResult != null
 			preCondResult.returnCode == 0

@@ -33,8 +33,6 @@ public class Patch extends AbstractTransientEntity {
 
     public static final String DEVELOPER_BRANCH = "developerBranch";
 
-    public static final String LOG_TEXT = "logText";
-
     public static final String STAGES_MAPPING = "stagesMapping";
 
 
@@ -48,7 +46,6 @@ public class Patch extends AbstractTransientEntity {
     private List<String> dockerServices = Lists.newArrayList();
     private List<Service> services = Lists.newArrayList();
     private boolean installDockerServices = false;
-    private String logText;
     private List<StageMapping> stagesMapping;
 
     public Patch() {
@@ -202,16 +199,6 @@ public class Patch extends AbstractTransientEntity {
         firePropertyChangeEvent(PATCH_TAG, oldValue, patchTag);
     }
 
-    public String getLogText() {
-        return logText;
-    }
-
-    public void setLogText(String logText) {
-        final Object oldValue = this.logText;
-        this.logText = logText;
-        firePropertyChange(LOG_TEXT, oldValue, logText);
-    }
-
     public List<StageMapping> getStagesMapping() {
         return stagesMapping;
     }
@@ -272,7 +259,6 @@ public class Patch extends AbstractTransientEntity {
                 ", dockerServices=" + dockerServices +
                 ", services=" + services +
                 ", installDockerServices=" + installDockerServices +
-                ", logText='" + logText + '\'' +
                 '}';
     }
 }

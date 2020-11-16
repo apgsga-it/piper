@@ -25,9 +25,9 @@ public interface PatchOpService extends PatchRdbms {
 
 	/**
 	 * Save patch information in a PatchLog<patchNumber>.log file
-	 * @param patchNumber
+	 * @param logDetails
 	 */
-	void savePatchLog(String patchNumber);
+	void savePatchLog(String patchNumber, PatchLogDetails logDetails);
 
 	/**
 	 * Clean local Mavenrepo

@@ -1,6 +1,7 @@
 package com.apgsga.patch.service.client.rest
 
 import com.apgsga.microservice.patch.api.Patch
+import com.apgsga.microservice.patch.api.PatchLogDetails
 import com.apgsga.microservice.patch.api.PatchOpService
 import com.apgsga.patch.service.client.PatchCliExceptionHandler
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -66,9 +67,9 @@ class PatchRestServiceClient implements PatchOpService {
 	}
 
 	@Override
-	void savePatchLog(String patchNumber) {
-		restTemplate.postForLocation(getRestBaseUri() + "/savePatchLog", patchNumber)
-		println "Saved PatchLog for " + patchNumber
+	void savePatchLog(String patchNumber, PatchLogDetails patchLogDetails) {
+		restTemplate.postForLocation(getRestBaseUri() + "/savePatchLog/${patchNumber}", patchLogDetails);
+		println "Saved PatchLog for " + patchNumber;
 	}
 
 	@Override

@@ -108,11 +108,11 @@ public class MicroServicePatchServerExceptionTests {
 	@Test
 	public void testSavePatchLogNullException() {
 		try {
-			patchService.log(null);
+			patchService.log(null,null);
 			fail();
 		} catch(PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("SimplePatchContainerBean.log.patch.null.assert", e.getMessageKey());
+			Assert.assertEquals("SimplePatchContainerBean.log.patchnumber.isnullorempty", e.getMessageKey());
 		}
 	}
 	

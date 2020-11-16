@@ -3,7 +3,6 @@ package com.apgsga.microservice.patch.core.impl.persistence;
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
@@ -100,22 +99,15 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 	}
 	
 	@Override
-	public void savePatchLog(String patchNumber) {
+	public void savePatchLog(String patchNumber, PatchLogDetails logDetails) {
+		Asserts.notNull(logDetails,"FilebasedPatchPersistence.save.patchlog.null.loginfo",new Object[] {});
 		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.save.patchlognumber.notnullorempty.assert", new Object[] {patchNumber});
 		PatchLog patchLog = findPatchLogById(patchNumber);
 		if(patchLog == null) {
 			patchLog = createPatchLog(patchNumber);
 		}
-		patchLog.addLog(createPatchLogDetail(patchNumber));
+		patchLog.addLog(logDetails);
 		writeToFile(patchLog, PATCH_LOG + patchLog.getPatchNumber() + JSON, this);
-	}
-	
-	private PatchLogDetails createPatchLogDetail(String patchNumber) {
-		Patch patch = findById(patchNumber);
-		PatchLogDetails pld = new PatchLogDetails();
-		pld.setLogText(patch.getLogText());
-		pld.setDateTime(new Date());
-		return pld;
 	}
 
 	private PatchLog createPatchLog(String patchNumber) {
