@@ -79,10 +79,10 @@ public class JenkinsClientImpl implements JenkinsClient {
 	@Override
 	public void startBuildPatchPipeline(Patch patch, StageMapping stage) {
 		String jobSuffix = "_build_" + stage.getName();
-		startBuildPipeline(patch, jobSuffix,stage.getTarget());
+		startBuildPipeline(patch, jobSuffix,stage.getTarget(),stage);
 	}
 
-	private void startBuildPipeline(Patch patch, String jobSuffix, String target) {
+	private void startBuildPipeline(Patch patch, String jobSuffix, String target, StageMapping stage) {
 		try {
 			String patchName = PATCH_CONS + patch.getPatchNummer();
 			String jobName = patchName + jobSuffix;
@@ -101,6 +101,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 			else {
 				Map<String,String> jobParameters = Maps.newHashMap();
 				jobParameters.put("TARGET",target);
+				jobParameters.put("STAGE",stage.getName());
 				LOGGER.info("JobParameters passed to " + jobName + " Pipeline :" + jobParameters.toString());
 				JenkinsSshCommand buildPipelineCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForStartCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName, jobParameters, fileParams);
 				List<String> result = cmdRunner.run(buildPipelineCmd);
