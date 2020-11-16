@@ -201,14 +201,15 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private void createBranchForDbModules(Patch patch) {
 		DbModules dbModules = repo.getDbModules();
 		if (dbModules == null) {
+			LOGGER.warn("Could not create CVS DB-Branch for patch " + patch.getPatchNummer() + " as no dbModules are define!");
 			return;
 		}
+		LOGGER.info("Create CVS DB-Branch for patch " + patch.getPatchNummer());
 		final CommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
 		sshCommandRunner.preProcess();
 		sshCommandRunner.run(PatchSshCommand.createCreatePatchBranchCmd(patch.getDbPatchBranch(), patch.getProdBranch(),
 				dbModules.getDbModules()));
 		sshCommandRunner.postProcess();
-
 	}
 
 	@Override
