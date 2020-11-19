@@ -11,7 +11,7 @@ import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.apgsga.patch.db.integration.api.PatchRdbms;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.apgsga.patch.db.integration.impl.NotifyDbParameters;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FilenameUtils;
@@ -22,11 +22,9 @@ import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -64,9 +62,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Autowired
 	@Qualifier("patchRdbms")
 	private PatchRdbms patchRdbms;
-
-	@Value("${piper.running.with.db.integration:true}")
-	private boolean isRunningWithDbIntegration;
 
 	public SimplePatchContainerBean() {
 		super();
@@ -304,9 +299,32 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public void executeStateTransitionAction(String patchNumber, String toStatus) {
-		PatchActionExecutor patchActionExecutor = new PatchActionExecutorImpl(this);
-		patchActionExecutor.execute(patchNumber, toStatus);
+	public void build(String patchNumber, String stage, String successNotification) {
+		LOGGER.info("Build patch " + patchNumber + " for stage " + stage + " with successNotification=" + successNotification);
+		Patch patch = repo.findById(patchNumber);
+		Asserts.notNull(patch,"SimplePatchContainerBean.build.patch.exists.assert", new Object[] {patchNumber});
+		String target = metaInfoRepo.targetFor(stage);
+		Asserts.notNullOrEmpty(target,"SimplePatchContainerBean.build.target.notnull", new Object[]{patchNumber});
+		jenkinsClient.startProdBuildPatchPipeline(patch,stage,target,successNotification);
+	}
+
+	@Override
+	public void setup(String patchNumber, String successNotification) {
+		LOGGER.info("Setup started for Patch " + patchNumber + " with successNotification=" + successNotification);
+		Patch patch = repo.findById(patchNumber);
+		Asserts.notNull(patch, "SimplePatchContainerBean.patch.exists.assert",new Object[] { patchNumber});
+		createAndSaveTagForPatch(patch);
+		CommandRunner jschSession = getJschSessionFactory().create();
+		PatchSetupTask.create(jschSession, patch, dependecyResolver,
+				jenkinsClient, repo, patchRdbms, successNotification).run();
+	}
+
+	private void createAndSaveTagForPatch(Patch patch) {
+		patch.incrementTagNr();
+		Integer tagNr = patch.getTagNr();
+		String patchBranch = patch.getDbPatchBranch();
+		patch.setPatchTag(patchBranch + "_" + tagNr.toString());
+		repo.savePatch(patch);
 	}
 
 	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
@@ -391,6 +409,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public void copyPatchFiles(Map<String,String> params) {
+
+		//TODO JHE (18.11.2020) : empty for now as this is a deprecated method which will probably be deleted
+		/*
 		int statusCode = metaInfoRepo.findStatus(params.get("status"));
 		List<String> patchIds = patchRdbms.patchIdsForStatus(String.valueOf(statusCode));
 		List<Patch> patchesToCopy = findByIds(patchIds);
@@ -405,6 +426,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 						new Object[] { e.getMessage(), destFile }, e);
 			}
 		});
+
+		 */
 	}
 
 	private boolean containsObject(String patchNumber, String objectName) {
@@ -433,17 +456,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		jenkinsClient.startInstallPipeline(target,  "");
 	}
 
-
-
 	@Override
-	public void executeStateTransitionActionInDb(String patchNumber, Long statusNum) {
-		//TODO JHE (02.11.2020) : don't do this in "withoutDb" mode
-		if(isRunningWithDbIntegration) {
-			patchRdbms.executeStateTransitionActionInDb(patchNumber, statusNum);
-		}
-		else {
-			LOGGER.info("Piper running without DB Integration -> executeStateTransitionActionInDb called with patchNumber=" + patchNumber + ", statusNum=" + statusNum);
-		}
+	public void notifyDb(NotifyDbParameters params) {
+		patchRdbms.notifyDb(params);
 	}
 
 	@Override

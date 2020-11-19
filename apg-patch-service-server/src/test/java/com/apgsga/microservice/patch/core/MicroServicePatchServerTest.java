@@ -1,8 +1,6 @@
 package com.apgsga.microservice.patch.core;
 
 import com.apgsga.microservice.patch.api.*;
-import com.apgsga.microservice.patch.core.impl.PatchActionExecutor;
-import com.apgsga.microservice.patch.core.impl.PatchActionExecutorImpl;
 import com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
@@ -172,41 +170,19 @@ public class MicroServicePatchServerTest {
 	}
 
 	@Test
-	public void testPatchActionEntwicklungInstallationsbereit() {
-		Patch patch = new Patch();
-		patch.setPatchNummer("SomeUnqiueNumber3");
-		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
-		patchService.save(patch);
-		PatchActionExecutor patchActionExecutor = new PatchActionExecutorImpl(patchService);
-		patchActionExecutor.execute("SomeUnqiueNumber3", "EntwicklungInstallationsbereit");
+	public void testBuildPatch() {
+		Patch p = new Patch();
+		p.setPatchNummer("2222");
+		patchService.save(p);
+		try {
+			patchService.build("2222", "Informatiktest", "InformatiktestOk");
+		}
+		catch(Exception e) {
+			LOGGER.error(repo.toString());
+			fail("An error occured while testing the build of a patch");
+		}
 	}
 
-	@Test
-	public void testPatchPipelineInputAction() {
-		Patch patch = new Patch();
-		patch.setPatchNummer("SomeUnqiueNumber3");
-		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
-		patchService.save(patch);
-		PatchActionExecutor patchActionExecutor = new PatchActionExecutorImpl(patchService);
-		patchActionExecutor.execute("SomeUnqiueNumber3", "InformatiktestInstallationsbereit");
-	}
-
-	@Test
-	public void testPatchCancelAction() {
-		Patch patch = new Patch();
-		patch.setPatchNummer("SomeUnqiueNumber3");
-		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
-		patchService.save(patch);
-		PatchActionExecutor patchActionExecutor = new PatchActionExecutorImpl(patchService);
-		patchActionExecutor.execute("SomeUnqiueNumber3", "Entwicklung");
-	}
-	
 	@Test
 	public void testFindWithObjectName() {
 		Patch p1 = new Patch();
@@ -299,17 +275,6 @@ public class MicroServicePatchServerTest {
 		Service s = new Service();
 		s.setServiceName("It21Ui");
 		patch.addServices(s);
-	}
-
-	@Test
-	// JHE (17.08.2020) : Ignoring it since it requires DB pre-requisite to work
-	//					  Also the following properties have to be correctly defined into application-test.properties
-	//							rdbms.oracle.url
-	//							rdbms.oracle.user.name
-	//							rdbms.oracle.user.pwd
-	@Ignore
-	public void testExecuteStateTransitionActionInDb() {
-		patchService.executeStateTransitionActionInDb("7018",0L);
 	}
 
 	@Test

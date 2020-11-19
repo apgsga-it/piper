@@ -1,6 +1,7 @@
 package com.apgsga.microservice.patch.server;
 
 import com.apgsga.microservice.patch.api.*;
+import com.apgsga.patch.db.integration.impl.NotifyDbParameters;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -112,16 +113,21 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 
 	}
 
-	@RequestMapping(value = "/executeStateChangeAction/{patchNumber}/{toStatus}", method = RequestMethod.POST)
+	@RequestMapping(value = "/build/{patchNumber}/{stage}/{successNotification}", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	@Override
-	public void executeStateTransitionAction(@PathVariable("patchNumber") String patchNumber,
-			@PathVariable("toStatus") String toStatus) {
-		LOGGER.info("Got executeStateChangeAction Request for Patch: " + patchNumber + ", toState: " + toStatus);
-		patchService.executeStateTransitionAction(patchNumber, toStatus);
-		LOGGER.info(
-				"Got executeStateChangeAction Request for Patch: " + patchNumber + ", toState: " + toStatus + " Done.");
+	public void build(@PathVariable("patchNumber") String patchNumber,
+			@PathVariable("stage") String stage, @PathVariable("successNotification") String successNotification) {
+		LOGGER.info("Got Build Request for Patch " + patchNumber + " for stage " + stage + " and successNotification=" + successNotification );
+		patchService.build(patchNumber,stage,successNotification);
+	}
 
+	@RequestMapping(value = "/setup/{patchNumber}/{successNotification}", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public void setup(@PathVariable String patchNumber, @PathVariable String successNotification) {
+		LOGGER.info("Got setup request for patch " + patchNumber + " and successNotification=" + successNotification);
+		patchService.setup(patchNumber,successNotification);
 	}
 
 	@RequestMapping(value = "/listAllFiles", method = RequestMethod.GET)
@@ -178,11 +184,11 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		patchService.copyPatchFiles(params);
 	}
 
-	@RequestMapping(value = "/executeStateTransitionActionInDb/{patchNumber}/{statusNum}", method = RequestMethod.POST)
+	@RequestMapping(value = "/notifyDb", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	@Override
-	public void executeStateTransitionActionInDb(@PathVariable("patchNumber") String patchNumber, @PathVariable("statusNum")Long statusNum) {
-		patchService.executeStateTransitionActionInDb(patchNumber,statusNum);
+	public void notifyDb(@RequestBody NotifyDbParameters params) {
+		patchService.notifyDb(params);
 	}
 
 	@RequestMapping(value = "/patchIdsForStatus/{status}")
@@ -191,6 +197,4 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	public List<String> patchIdsForStatus(@PathVariable("status") String statusCode) {
 		return patchService.patchIdsForStatus(statusCode);
 	}
-
-
 }

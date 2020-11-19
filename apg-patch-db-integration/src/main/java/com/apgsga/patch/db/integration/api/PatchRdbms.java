@@ -1,15 +1,16 @@
 package com.apgsga.patch.db.integration.api;
 
+import com.apgsga.patch.db.integration.impl.NotifyDbParameters;
+
 import java.util.List;
 
 public interface PatchRdbms {
 
     /**
-     * Update a Patch with the status passed as parameter
-     * @param patchNumber
-     * @param statusNum
+     * notify the DB that a task has been correctly done for a patch
+     * @param params
      */
-    void executeStateTransitionActionInDb(String patchNumber, Long statusNum);
+    void notifyDb(NotifyDbParameters params);
 
     /**
      *

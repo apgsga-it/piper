@@ -1,7 +1,6 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.StageMapping;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
@@ -77,37 +76,27 @@ public class JenkinsClientImpl implements JenkinsClient {
 	}
 
 	@Override
-	public void startBuildPatchPipeline(Patch patch, StageMapping stage) {
-		String jobSuffix = "_build_" + stage.getName();
-		startBuildPipeline(patch, jobSuffix,stage.getTarget(),stage);
+	public void startProdBuildPatchPipeline(Patch patch, String stage, String target, String successNotification) {
+		startBuildPipeline(patch,stage,target,successNotification);
 	}
 
-	private void startBuildPipeline(Patch patch, String jobSuffix, String target, StageMapping stage) {
+	private void startBuildPipeline(Patch patch, String stage, String target, String successNotification) {
 		try {
 			String patchName = PATCH_CONS + patch.getPatchNummer();
-			String jobName = patchName + jobSuffix;
+			String jobName = patchName + "_build_" + stage;
 			final ResourceLoader rl = new FileSystemResourceLoader();
 			Resource rDbLocation = rl.getResource(dbLocation);
 			File patchFile = new File(rDbLocation.getFile(), patchName + JSON_CONS);
 			Map<String,String> fileParams = Maps.newHashMap();
 			fileParams.put("patchFile.json",patchFile.getAbsolutePath());
-
-			// TODO JHE (12.11.2020): onDemand will probably come from a different place
-			if(jobSuffix.equalsIgnoreCase("ondemand")) {
-				JenkinsSshCommand onDemandCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName, null, fileParams);
-				cmdRunner.run(onDemandCmd);
-				LOGGER.info("ondemand job for patch " + patch.getPatchNummer() + " has been started. No post-submit verification will be done.");
-			}
-			else {
-				Map<String,String> jobParameters = Maps.newHashMap();
-				jobParameters.put("TARGET",target);
-				jobParameters.put("STAGE",stage.getName());
-				LOGGER.info("JobParameters passed to " + jobName + " Pipeline :" + jobParameters.toString());
-				JenkinsSshCommand buildPipelineCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForStartCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName, jobParameters, fileParams);
-				List<String> result = cmdRunner.run(buildPipelineCmd);
-				LOGGER.info("Result of Pipeline Job " + jobName + ", : " + result.toString());
-			}
-
+			Map<String,String> jobParameters = Maps.newHashMap();
+			jobParameters.put("TARGET",target);
+			jobParameters.put("STAGE",stage);
+			jobParameters.put("SUCCESS_NOTIFICATION",successNotification);
+			LOGGER.info("JobParameters passed to " + jobName + " Pipeline :" + jobParameters.toString());
+			JenkinsSshCommand buildPipelineCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForStartCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName, jobParameters, fileParams);
+			List<String> result = cmdRunner.run(buildPipelineCmd);
+			LOGGER.info("Result of Pipeline Job " + jobName + ", : " + result.toString());
 		} catch (Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startPipeline.exception",
 					new Object[] { e.getMessage(), patch.toString() }, e);

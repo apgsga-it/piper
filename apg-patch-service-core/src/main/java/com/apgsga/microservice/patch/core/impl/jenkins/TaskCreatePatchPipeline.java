@@ -17,6 +17,8 @@ public class TaskCreatePatchPipeline implements Runnable {
 
 	protected static final Log LOGGER = LogFactory.getLog(TaskCreatePatchPipeline.class.getName());
 
+	public static final String ENTWICKLUNG_STAGE = "entwicklung";
+
 	public static Runnable create(String jenkinsHost, String jenkinsSshPort, String jenkinsSshUser, Patch patch) {
 		return new TaskCreatePatchPipeline(jenkinsHost,jenkinsSshPort,jenkinsSshUser,patch);
 	}
@@ -67,8 +69,7 @@ public class TaskCreatePatchPipeline implements Runnable {
 	private String getStages() {
 		String stagesAsCSV = "";
 		for(StageMapping sm : this.patch.getStagesMapping()) {
-			// TODO JHE (11.11.2020) : add constant for "entwicklung", or a list of stage to be excluded
-			if(!sm.getName().equalsIgnoreCase("entwicklung")) {
+			if(!sm.getName().equalsIgnoreCase(ENTWICKLUNG_STAGE)) {
 				stagesAsCSV += sm.getName() + ",";
 			}
 		}

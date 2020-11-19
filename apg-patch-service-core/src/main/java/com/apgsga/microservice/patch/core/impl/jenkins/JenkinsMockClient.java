@@ -1,7 +1,6 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.StageMapping;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Profile;
@@ -19,9 +18,8 @@ public class JenkinsMockClient implements JenkinsClient {
 	}
 
 	@Override
-	public void startBuildPatchPipeline(Patch patch, StageMapping stage) {
-		LOGGER.info("startBuildPatchPipeline for patch " + patch.toString() + " and stage " + stage.toString());
-
+	public void startProdBuildPatchPipeline(Patch patch, String stage, String target, String successNotification) {
+		LOGGER.info("Start build Pipeline for patch " + patch.getPatchNummer() + " for stage=" + stage + ", target=" + target + "with successNotification=" + successNotification);
 	}
 
 	@Override

@@ -7,13 +7,18 @@ import java.util.Map;
 public interface PatchOpService extends PatchRdbms {
 
 	/**
-	 * Execute a Action, which leads when successful to the toStatus
-	 * 
-	 * @param patchNumber
-	 * @param toStatus
+	 * Starts a build Pipeline for the given patch. Notify back the db with the successsNotification
+	 * Parameter example: 8000,Informatiktest,InformatiktestBuildOk
 	 */
-	void executeStateTransitionAction(String patchNumber, String toStatus);
-	
+	void build(String patchNumber, String stage, String successNotification);
+
+	/**
+	 * Trigger a piper internal process which will setup the pre-requisite for a patch to be build
+	 * @param patchNumber
+	 * @param successNotification
+	 */
+	void setup(String patchNumber, String successNotification);
+
 	/**
 	 * All changes on a patch Object need to be saved.
 	 * 
@@ -51,6 +56,8 @@ public interface PatchOpService extends PatchRdbms {
 	 * Copies JSON Patch files to a destination folder
 	 * @param params : 2 parameters required with following keys: "status" and "destFolder"
 	 */
+	//TODO JHE (18.11.2020): will probably be removed, but I want to wait until implemenation of assembleAndDeploy to be 100% sure
+	@Deprecated
 	void copyPatchFiles(Map<String,String> params);
 
 

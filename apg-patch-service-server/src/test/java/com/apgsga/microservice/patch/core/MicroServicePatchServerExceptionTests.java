@@ -1,8 +1,9 @@
 package com.apgsga.microservice.patch.core;
 
-import static org.junit.Assert.fail;
-
-import com.apgsga.microservice.patch.api.Service;
+import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchPersistence;
+import com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean;
+import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,18 +23,12 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.api.MavenArtifact;
-import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
-import com.apgsga.microservice.patch.core.impl.PatchActionExecutorImpl;
-import com.apgsga.microservice.patch.core.impl.PatchActionExecutor;
-import com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean;
 import org.springframework.util.FileCopyUtils;
 
 import java.io.File;
 import java.io.IOException;
+
+import static org.junit.Assert.fail;
 
 @RunWith(SpringRunner.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
@@ -174,48 +169,32 @@ public class MicroServicePatchServerExceptionTests {
 			Assert.assertEquals("SimplePatchContainerBean.listAllObjectsChangedForDbModule.patch.exists.assert", e.getMessageKey());
 		}
 	}
-	
+
 	@Test
-	public void testPatchInvalidToState() {
-		Patch patch = new Patch();
-		patch.setPatchNummer("SomeUnqiueNumber3");
-		Service service = Service.create().serviceName("It21Ui").microServiceBranch(("SomeBaseBranch"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
-		patch.addServices(service);
-		patchService.save(patch);
-		PatchActionExecutor patchActionExecutor = new PatchActionExecutorImpl(patchService);
+	public void testBuildPatchForInvalidPatchNumber() {
 		try {
-			patchActionExecutor.execute("SomeUnqiueNumber3", "xxxxxxx");
-			fail("Expected Runtime Exception");
-		} catch (PatchServiceRuntimeException e) {
+			patchService.build("xxxx","dev-chei212,","dev-informatiktest");
+			fail("A runtime exception was expected");
+		}
+		catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("PatchActionExecutorImpl.executePatchAction.state.exits.assert", e.getMessageKey());
+			Assert.assertEquals("SimplePatchContainerBean.build.patch.exists.assert",e.getMessageKey());
 		}
 	}
 
 	@Test
-	public void testPatchExeuteToStatePatchNumberNullOrEmpy() {
-		PatchActionExecutorImpl patchActionExecutor = new PatchActionExecutorImpl(patchService);
+	public void testBuildPatchForNullTarget() {
 		try {
-			patchActionExecutor.execute("", "xxxxxxx");
-			fail("Expected Runtime Exception");
-		} catch (PatchServiceRuntimeException e) {
+			Patch p = new Patch();
+			p.setPatchNummer("2222");
+			patchService.save(p);
+			Assert.assertTrue("Patch 2222 hasn't been saved correctly",patchService.findById("2222") != null);
+			patchService.build("2222",null, "dev-informatiktest");
+			fail("A runtime exception was expected");
+		}
+		catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("PatchActionExecutorImpl.execute.patchnumber.notnullorempty.assert", e.getMessageKey());
+			Assert.assertEquals("SimplePatchContainerBean.build.target.notnull",e.getMessageKey());
 		}
 	}
-	
-	@Test
-	public void testPatchExeuteToStatePatchNumberDoesnotExist() {
-		PatchActionExecutorImpl patchActionExecutor = new PatchActionExecutorImpl(patchService);
-		try {
-			patchActionExecutor.execute("xxxxxx", "xxxxxxx");
-			fail("Expected Runtime Exception");
-		} catch (PatchServiceRuntimeException e) {
-			LOGGER.info(e.toString());
-			Assert.assertEquals("PatchActionExecutorImpl.execute.patch.exists.assert", e.getMessageKey());
-		}
-	}
-
 }
