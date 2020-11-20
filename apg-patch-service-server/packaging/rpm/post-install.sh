@@ -9,8 +9,9 @@ chown -R apg-patch-service-server:apg-patch-service-server /etc/opt/apg-patch-se
 if [ "$1" = "1" ]; then
 	echo "Registering apg-patch-service-server for Boot time start"
 	systemctl enable apg-patch-service-server
-	echo "Starting apg-patch-service-server"
-	systemctl start apg-patch-service-server
+	## On initial  install of Rpm the server is  not startet, puppet plan will do this
+	## echo "Starting apg-patch-service-server"
+	## systemctl start apg-patch-service-server
 fi
 if [ "$1" = "2" ]; then
 	echo "Starting apg-patch-service-server"

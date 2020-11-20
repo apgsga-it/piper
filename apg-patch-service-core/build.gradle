@@ -7,7 +7,6 @@ apply plugin: 'groovy'
 description = 'Service , which provides the Core functionality '
 jar {
 	baseName = 'apg-patch-service-core'
-	//exclude('**/application.properties')
 }
 
 dependencies {

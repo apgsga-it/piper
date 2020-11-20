@@ -47,7 +47,6 @@ public class MicroServicePatchConfig {
 	@Value("${json.meta.info.db.work.location:metaInfoWork}")
 	private String metaInfoWorkDirLocation;
 
-
 	@Value("${maven.localrepo.location}")
 	public String localRepo;
 
