@@ -6,8 +6,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
 @Profile("mock")
 @Component("jenkinsBean")
 public class JenkinsMockClient implements JenkinsClient {
@@ -20,21 +18,8 @@ public class JenkinsMockClient implements JenkinsClient {
 	}
 
 	@Override
-	public void startProdPatchPipeline(Patch patch) {
-		LOGGER.info("startProdPatchPipeline for : " + patch.toString());
-
-	}
-	
-	@Override
-	public void processInputAction(Patch patch, String target, String stage) {
-		LOGGER.info("approvate for target " + target + ",stage: " + stage + " and patch: " + patch.toString());
-
-	}
-
-	@Override
-	public void processInputAction(Patch patch, Map<String, String> parameter) {
-		LOGGER.info("processInputAction for patch: " + patch.toString() + ",with parameters: " + parameter.toString());
-
+	public void startProdBuildPatchPipeline(Patch patch, String stage, String target, String successNotification) {
+		LOGGER.info("Start build Pipeline for patch " + patch.getPatchNummer() + " for stage=" + stage + ", target=" + target + "with successNotification=" + successNotification);
 	}
 
 	@Override

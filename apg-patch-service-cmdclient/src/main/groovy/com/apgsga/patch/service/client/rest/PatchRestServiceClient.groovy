@@ -1,7 +1,9 @@
 package com.apgsga.patch.service.client.rest
 
 import com.apgsga.microservice.patch.api.Patch
+import com.apgsga.microservice.patch.api.PatchLogDetails
 import com.apgsga.microservice.patch.api.PatchOpService
+import com.apgsga.patch.db.integration.impl.NotifyDbParameters
 import com.apgsga.patch.service.client.PatchCliExceptionHandler
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.client.ClientHttpResponse
@@ -27,10 +29,6 @@ class PatchRestServiceClient implements PatchOpService {
 		"http://" + baseUrl + "/patch/private";
 	}
 
-	@Override
-	public void executeStateTransitionAction(String patchNumber, String toStatus) {
-		restTemplate.postForLocation(getRestBaseUri() + "/executeStateChangeAction/{patchNumber}/{toStatus}", null, [patchNumber:patchNumber,toStatus:toStatus]);
-	}
 	@Override
 	public void cleanLocalMavenRepo() {
 		restTemplate.postForLocation(getRestBaseUri() + "/cleanLocalMavenRepo", null);
@@ -60,20 +58,31 @@ class PatchRestServiceClient implements PatchOpService {
 	}
 
 	@Override
+	void build(String patchNumber, String stage, String successNotification) {
+		restTemplate.postForLocation(getRestBaseUri() + "/build/${patchNumber}/${stage}/${successNotification}",null, [patchNumber:patchNumber,stage:stage,successNotification:successNotification])
+	}
+
+	@Override
+	void setup(String patchNumber, String successNotification) {
+		restTemplate.postForLocation(getRestBaseUri() + "/setup/${patchNumber}/${successNotification}",null, [patchNumber:patchNumber,successNotification:successNotification])
+	}
+
+	@Override
 	public Patch save(Patch patch) {
 		restTemplate.postForLocation(getRestBaseUri() + "/save", patch);
 		println patch.toString() + " Saved Patch."
 	}
 
 	@Override
-	void savePatchLog(String patchNumber) {
-		restTemplate.postForLocation(getRestBaseUri() + "/savePatchLog", patchNumber)
-		println "Saved PatchLog for " + patchNumber
+	void savePatchLog(String patchNumber, PatchLogDetails patchLogDetails) {
+		restTemplate.postForLocation(getRestBaseUri() + "/savePatchLog/${patchNumber}", patchLogDetails);
+		println "Saved PatchLog for " + patchNumber;
 	}
 
 	@Override
-	void executeStateTransitionActionInDb(String patchNumber, Long statusNum) {
-		restTemplate.postForLocation(getRestBaseUri() + "/executeStateTransitionActionInDb/{patchNumber}/{statusNum}", null, [patchNumber:patchNumber,statusNum:statusNum])
+	void notifyDb(NotifyDbParameters params) {
+		restTemplate.postForLocation(getRestBaseUri() + "/notifyDb", params)
+		println "DB Notified with following params: " + params.toString()
 	}
 
 	@Override

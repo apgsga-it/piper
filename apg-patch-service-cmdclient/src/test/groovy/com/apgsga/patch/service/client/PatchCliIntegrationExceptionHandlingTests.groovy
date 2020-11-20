@@ -58,27 +58,4 @@ class PatchCliIntegrationExceptionHandlingTests extends Specification {
 		result.returnCode ==  0
 	}
 	
-	def "Patch Cli should print Server Exception and return returnCode > 0  with Patchnumber empty for State Change Action"() {
-		setup:
-		def client = PatchCli.create()
-		client.validate = false
-		when:
-		def result = client.process(["-sta", "   ,EntwicklungInstallationsbereit,aps"])
-		then:
-		result.returnCode >  0
-		result.results.containsKey('error') == true
-		result.results['error'].errorKey == "PatchActionExecutorImpl.execute.patchnumber.notnullorempty.assert"
-	}
-	
-
-	def "Patch Cli should print Server Exception and return returnCode > 0  with Patch for for State Change Action does not exist"() {
-		setup:
-		def client = PatchCli.create()
-		when:
-		def result = client.process(["-sta", "9999,EntwicklungInstallationsbereit,aps"])
-		then:
-		result.returnCode >  0
-		result.results.containsKey('error') == true
-		result.results['error'].errorKey == "PatchActionExecutorImpl.execute.patch.exists.assert"
-	}
 }

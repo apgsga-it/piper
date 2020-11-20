@@ -90,37 +90,21 @@ public class FilePatchSystemMetaInfoPersistence extends AbstractFilebasedPersist
     }
 
     @Override
-    public StageMapping stageMappingFor(String toStatus) {
-        StageMappings stageMappings = stageMappings();
-        for(StageMapping stageMapping : stageMappings.getStageMappings()) {
-            for(Stage stage : stageMapping.getStages()) {
-                if((stageMapping.getName() + stage.getToState()).equals(toStatus)) {
-                    return stageMapping;
-                }
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Integer findStatus(String toStatus) {
-        StageMappings stageMappings = stageMappings();
-        for(StageMapping stageMapping : stageMappings.getStageMappings()) {
-            for(Stage stage : stageMapping.getStages()) {
-                if((stageMapping.getName() + stage.getToState()).equals(toStatus)) {
-                    return Integer.valueOf(stage.getCode());
-                }
-            }
-        }
-        return null;
-
-    }
-
-    @Override
     public String packagerNameFor(Service service) {
         for(ServiceMetaData smd : servicesMetaData().getServicesMetaData()) {
             if(smd.getServiceName().equals(service.getServiceName())) {
                 return smd.getPackagerName();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String targetFor(String stageName) {
+        StageMappings sms = stageMappings();
+        for(StageMapping sm : sms.getStageMappings()) {
+            if(sm.getName().equalsIgnoreCase(stageName)) {
+                return sm.getTarget();
             }
         }
         return null;

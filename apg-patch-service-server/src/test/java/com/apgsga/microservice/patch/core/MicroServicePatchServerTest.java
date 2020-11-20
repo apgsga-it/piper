@@ -1,8 +1,6 @@
 package com.apgsga.microservice.patch.core;
 
 import com.apgsga.microservice.patch.api.*;
-import com.apgsga.microservice.patch.core.impl.PatchActionExecutor;
-import com.apgsga.microservice.patch.core.impl.PatchActionExecutorImpl;
 import com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
@@ -30,6 +28,7 @@ import org.springframework.util.FileCopyUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -85,11 +84,12 @@ public class MicroServicePatchServerTest {
 		try {
 			Patch patch = new Patch();
 			patch.setPatchNummer("SomeUnqiueNumber1");
-			patchService.log(patch);
+			PatchLogDetails pld = new PatchLogDetails();
+			patchService.log("SomeUnqiueNumber1",pld);
 			fail();
 		} catch(PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			assertEquals("SimplePatchContainerBean.log.patchisnull", e.getMessageKey());
+			assertEquals("SimplePatchContainerBean.log.patch.not.exist", e.getMessageKey());
 		}
 	}
 	
@@ -98,11 +98,12 @@ public class MicroServicePatchServerTest {
 		String patchNumber = "someUniqueNum1";
 		Patch p = new Patch();
 		p.setPatchNummer(patchNumber);
-		p.setCurrentTarget("chei211");
-		p.setLogText("started");
-		p.setCurrentPipelineTask("Build");
 		patchService.save(p);
-		patchService.log(p);
+		PatchLogDetails pld = new PatchLogDetails();
+		pld.setTarget("dev-jhe");
+		pld.setPatchPipelineTask("Build");
+		pld.setDateTime(new Date());
+		patchService.log(p.getPatchNummer(),pld);
 		PatchLog result = patchService.findPatchLogById(patchNumber);
 		assertNotNull(result);
 		assertTrue(result.getLogDetails().size() == 1);
@@ -110,25 +111,30 @@ public class MicroServicePatchServerTest {
 	
 	@Test
 	public void testSavePatchLogWithSeveralDetail() {
+		PatchLogDetails pld = new PatchLogDetails();
+		pld.setTarget("dev-jhe");
+		pld.setPatchPipelineTask("Build");
+		pld.setDateTime(new Date());
+		PatchLogDetails pld2 = new PatchLogDetails();
+		pld2.setTarget("dev-jhe");
+		pld2.setPatchPipelineTask("Build 2");
+		pld2.setDateTime(new Date());
+		PatchLogDetails pld3 = new PatchLogDetails();
+		pld3.setTarget("dev-jhe");
+		pld3.setPatchPipelineTask("Build 3");
+		pld3.setDateTime(new Date());
 		String patchNumber = "notEmpty1";
 		Patch p = new Patch();
 		p.setPatchNummer(patchNumber);
-		p.setCurrentTarget("chei211");
-		p.setCurrentPipelineTask("Build");
-		p.setLogText("started");
 		patchService.save(p);
-		patchService.log(p);
+		patchService.log(p.getPatchNummer(),pld);
 		PatchLog result = patchService.findPatchLogById(patchNumber);
 		assertNotNull(result);
 		assertTrue(result.getLogDetails().size() == 1);
-		p.setCurrentPipelineTask("Build");
-		p.setLogText("done");
 		patchService.save(p);
-		patchService.log(p);
-		p.setCurrentPipelineTask("Installation");
-		p.setLogText("started");
+		patchService.log(p.getPatchNummer(),pld2);
 		patchService.save(p);
-		patchService.log(p);
+		patchService.log(p.getPatchNummer(),pld3);
 		result = patchService.findPatchLogById(patchNumber);
 		assertTrue(result.getLogDetails().size() == 3);
 	}
@@ -164,41 +170,19 @@ public class MicroServicePatchServerTest {
 	}
 
 	@Test
-	public void testPatchActionEntwicklungInstallationsbereit() {
-		Patch patch = new Patch();
-		patch.setPatchNummer("SomeUnqiueNumber3");
-		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
-		patchService.save(patch);
-		PatchActionExecutor patchActionExecutor = new PatchActionExecutorImpl(patchService);
-		patchActionExecutor.execute("SomeUnqiueNumber3", "EntwicklungInstallationsbereit");
+	public void testBuildPatch() {
+		Patch p = new Patch();
+		p.setPatchNummer("2222");
+		patchService.save(p);
+		try {
+			patchService.build("2222", "Informatiktest", "InformatiktestOk");
+		}
+		catch(Exception e) {
+			LOGGER.error(repo.toString());
+			fail("An error occured while testing the build of a patch");
+		}
 	}
 
-	@Test
-	public void testPatchPipelineInputAction() {
-		Patch patch = new Patch();
-		patch.setPatchNummer("SomeUnqiueNumber3");
-		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
-		patchService.save(patch);
-		PatchActionExecutor patchActionExecutor = new PatchActionExecutorImpl(patchService);
-		patchActionExecutor.execute("SomeUnqiueNumber3", "InformatiktestInstallationsbereit");
-	}
-
-	@Test
-	public void testPatchCancelAction() {
-		Patch patch = new Patch();
-		patch.setPatchNummer("SomeUnqiueNumber3");
-		Service service = Service.create().serviceName("It21ui").microServiceBranch(("SomeBaseBranch"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId1", "GroupId1", "Version1"));
-		service.addMavenArtifacts(new MavenArtifact("ArtifactId2", "GroupId2", "Version2"));
-		patchService.save(patch);
-		PatchActionExecutor patchActionExecutor = new PatchActionExecutorImpl(patchService);
-		patchActionExecutor.execute("SomeUnqiueNumber3", "Entwicklung");
-	}
-	
 	@Test
 	public void testFindWithObjectName() {
 		Patch p1 = new Patch();
@@ -291,17 +275,6 @@ public class MicroServicePatchServerTest {
 		Service s = new Service();
 		s.setServiceName("It21Ui");
 		patch.addServices(s);
-	}
-
-	@Test
-	// JHE (17.08.2020) : Ignoring it since it requires DB pre-requisite to work
-	//					  Also the following properties have to be correctly defined into application-test.properties
-	//							rdbms.oracle.url
-	//							rdbms.oracle.user.name
-	//							rdbms.oracle.user.pwd
-	@Ignore
-	public void testExecuteStateTransitionActionInDb() {
-		patchService.executeStateTransitionActionInDb("7018",0L);
 	}
 
 	@Test

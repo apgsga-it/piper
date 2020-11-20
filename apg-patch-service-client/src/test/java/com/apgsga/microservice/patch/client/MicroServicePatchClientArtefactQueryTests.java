@@ -2,9 +2,11 @@ package com.apgsga.microservice.patch.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Predicate;
 
+import com.apgsga.microservice.patch.api.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,11 +26,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileCopyUtils;
 
-import com.apgsga.microservice.patch.api.MavenArtifact;
-import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchLog;
-import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.api.SearchCondition;
 import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
@@ -77,7 +74,14 @@ public class MicroServicePatchClientArtefactQueryTests {
 
 		repo.savePatch(testPatch5401);
 		repo.savePatch(testPatch5402);
-		repo.savePatchLog("5401");
+
+		PatchLogDetails pld = new PatchLogDetails();
+		pld.setTarget("dev-jhe");
+		pld.setPatchPipelineTask("Build");
+		pld.setLogText("Done");
+		pld.setDateTime(new Date());
+
+		repo.savePatchLog("5401",pld);
 	}
 
 	@Test

@@ -86,9 +86,9 @@ public interface PatchService {
 	
 	/**
 	 * Log all steps done for a patch
-	 * @param patch , Patch where to get the information from
+	 * @param logDetails
 	 */
-    void log(Patch patch);
+    void log(String patchNumber, PatchLogDetails logDetails);
 
 	/**
 	 * A Patch object is removed from the PatchContainer

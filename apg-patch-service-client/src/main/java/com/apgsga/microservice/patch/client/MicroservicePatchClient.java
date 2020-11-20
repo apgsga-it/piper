@@ -1,21 +1,14 @@
 package com.apgsga.microservice.patch.client;
 
-import java.util.List;
-import java.util.Map;
-
+import com.apgsga.microservice.patch.api.*;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.client.RestTemplate;
 
-import com.apgsga.microservice.patch.api.DbObject;
-import com.apgsga.microservice.patch.api.MavenArtifact;
-import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchLog;
-import com.apgsga.microservice.patch.api.PatchService;
-import com.apgsga.microservice.patch.api.SearchCondition;
-import com.apgsga.microservice.patch.api.ServiceMetaData;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.List;
+import java.util.Map;
 
 public class MicroservicePatchClient implements PatchService {
 
@@ -114,7 +107,7 @@ public class MicroservicePatchClient implements PatchService {
 	}
 	
 	@Override
-	public void log(Patch patch) {
+	public void log(String patchNumber, PatchLogDetails logDetails) {
 		throw new UnsupportedOperationException("Logging patch activity not supported");
 	}
 

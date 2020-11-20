@@ -124,57 +124,6 @@ class PatchCliIntegrationTest extends Specification {
 			repo.clean()
 	}
 
-	def "Patch Cli invalid State Change Action"() {
-		setup:
-			def client = PatchCli.create()
-		when:
-			def result = client.process(["-sta", "9999,XXXXXX,aps"])
-		then:
-			result != null
-			result.returnCode == 1
-	}
-
-	def "Patch Cli valid State Change Action for config aps"() {
-		setup:
-			def client = PatchCli.create()
-		when:
-			def preCondResult = client.process(["-sa", "src/test/resources/Patch5401.json"])
-			def result = client.process(["-sta", '5401,EntwicklungInstallationsbereit,aps'])
-		then:
-			preCondResult != null
-			preCondResult.returnCode == 0
-			result != null
-			result.returnCode == 0
-		cleanup:
-			repo.clean()
-	}
-
-	def "Patch Cli valid State Change Action for config nil"() {
-		setup:
-			def client = PatchCli.create()
-		when:
-			def preCondResult = client.process(["-sa", "src/test/resources/Patch5401.json"])
-			def result = client.process(["-sta", '5401,EntwicklungInstallationsbereit,nil'])
-		then:
-			preCondResult != null
-			preCondResult.returnCode == 0
-			result != null
-			result.returnCode == 0
-		cleanup:
-			repo.clean()
-	}
-
-
-	def "Patch Cli Missing configuration for State Change Action"() {
-		setup:
-			def client = PatchCli.create()
-		when:
-			def result = client.process(["-sta", "9999,EntwicklungInstallationsbereit"])
-		then:
-			result != null
-			result.returnCode == 0
-	}
-
 	def "Patch Cli Log Patch activity in PatchLog file "() {
 		setup:
 			def client = PatchCli.create()
@@ -187,12 +136,9 @@ class PatchCliIntegrationTest extends Specification {
 			patchFile.exists()
 			ObjectMapper patchMapper = new ObjectMapper()
 			def p = patchMapper.readValue(patchFile,Patch.class)
-			p.setCurrentTarget("chei211")
-			p.setCurrentPipelineTask("Build")
-			p.setLogText("started")
 			patchMapper.writeValue(patchFile, p)
 		when:
-			client.process(["-log", "5401"])
+			client.process(["-log", "5401,dev-jhe,build,started"])
 		then:
 			preCondResult != null
 			preCondResult.returnCode == 0
@@ -231,58 +177,63 @@ class PatchCliIntegrationTest extends Specification {
 			repo.clean()
 	}
 
-	def "Patch cli startJenkinsJob" () {
+	def "Patch cli start build Pipeline for a stage"() {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-sj", "testJob"])
+			def preCondResult = client.process(["-sa", "src/test/resources/Patch5401.json"])
 		then:
-			result.returnCode == 0
-			result.results != null
-		cleanup:
-			repo.clean()
-	}
-
-	def "Patch cli startJenkinsJob with string parameters" () {
-		setup:
-			def client = PatchCli.create()
-		when:
-			def result = client.process(["-sjp", 'testJob,param1@=value1@:p2@=v2@:testParam3@=thisisThirdValue'])
-		then:
-			result.returnCode == 0
-			result.results != null
-		cleanup:
-			repo.clean()
-	}
-
-	def "Patch cli buildPipeline" () {
-		setup:
-			def client = PatchCli.create()
-		when:
-			def resultSa = client.process(["-sa", "src/test/resources/Patch5401.json"])
-			def resultBp = client.process(["-bp", '5401'])
-		then:
-			resultSa.returnCode == 0
-			resultSa.results != null
+			preCondResult != null
+			preCondResult.returnCode == 0
 			File patchFile = new File("${dbLocation}/Patch5401.json")
 			patchFile.exists()
-			resultBp.returnCode == 0
-			resultBp.results != null
+			ObjectMapper patchMapper = new ObjectMapper()
+			def p = patchMapper.readValue(patchFile,Patch.class)
+			patchMapper.writeValue(patchFile, p)
+		when:
+			def result = client.process(["-build", "5401,Informatiktest,InformatiktestDone"])
+		then:
+			result != null
+			result.returnCode == 0
 		cleanup:
 			repo.clean()
 	}
 
-	// JHE (18.08.2020): Ignoring the test as it requires pre-requisite in DB. However, keeping it for future sanity checks
-	@Ignore
-	@Requires({PatchCliIntegrationTest.dbAvailable()})
-	def "Patch Cli update status of Patch"() {
+	def "Patch cli test setup step for a patch"() {
+		setup:
+			def client = PatchCli.create()
 		when:
-			def patchcli = PatchCli.create()
-			def result = patchcli.process(["-dbsta", "7018,0"])
+			def preCondResult = client.process(["-sa", "src/test/resources/Patch5401.json"])
 		then:
+			preCondResult != null
+			preCondResult.returnCode == 0
+			File patchFile = new File("${dbLocation}/Patch5401.json")
+			patchFile.exists()
+			ObjectMapper patchMapper = new ObjectMapper()
+			def p = patchMapper.readValue(patchFile,Patch.class)
+			patchMapper.writeValue(patchFile, p)
+		when:
+			def result = client.process(["-setup", "5401,setupDone"])
+		then:
+			result != null
+			result.returnCode == 0
+		cleanup:
+			repo.clean()
+	}
+
+	def "Patch cli test notifydb"() {
+		setup:
+			def client = PatchCli.create()
+		when:
+			def result = client.process(["-notifydb", "5401,Informatiktest,done"])
+		then:
+			result != null
 			result.returnCode == 0
 			println result
+		cleanup:
+			repo.clean()
 	}
+
 
 	// JHE (19.08.2020) : Ignoring this one because not guaranteed that Patches still exist
 	@Ignore

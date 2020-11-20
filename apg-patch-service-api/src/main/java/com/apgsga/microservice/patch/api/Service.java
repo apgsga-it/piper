@@ -32,7 +32,9 @@ public class Service  extends AbstractTransientEntity {
     private String baseVersionNumber;
     private String revisionMnemoPart;
     private boolean installOnEmptyModules = false;
+    //TODO JHE (16.11.2020): Not sure revision will be needed anymore
     private String revision;
+    //TODO JHE (16.11.2020): Not sure lastRevision will be needed anymore
     private String lastRevision;
     private List<MavenArtifact> mavenArtifacts = Lists.newArrayList();
     private String packagerName;

@@ -2,75 +2,19 @@
   "stageMappings": [
     {
       "name": "Entwicklung",
-      "target": "DEV-CHEI212",
-      "stages": [
-        {
-          "name": "startPipelineAndTag",
-          "toState": "Installationsbereit",
-          "code": 2,
-          "implcls": "com.apgsga.microservice.patch.core.impl.EntwicklungInstallationsbereitAction"
-        },
-        {
-          "name": "cancel",
-          "toState": "",
-          "code": 0,
-          "implcls": "com.apgsga.microservice.patch.core.impl.PipelineInputAction"
-        }
-      ]
+      "target": "DEV-CHEI212"
     },
     {
       "name": "Informatiktest",
-      "target": "DEV-CHEI211",
-      "stages": [
-        {
-          "name": "BuildFor",
-          "toState": "Installationsbereit",
-          "code": 15,
-          "implcls": "com.apgsga.microservice.patch.core.impl.PipelineInputAction"
-        },
-        {
-          "name": "InstallFor",
-          "toState": "",
-          "code": 20,
-          "implcls": "com.apgsga.microservice.patch.core.impl.PipelineInputAction"
-        }
-      ]
+      "target": "DEV-CHEI211"
     },
     {
       "name": "Anwendertest",
-      "target": "DEV-CHTI211",
-      "stages": [
-        {
-          "name": "BuildFor",
-          "toState": "Installationsbereit",
-          "code": 25,
-          "implcls": "com.apgsga.microservice.patch.core.impl.PipelineInputAction"
-        },
-        {
-          "name": "InstallFor",
-          "toState": "",
-          "code": 30,
-          "implcls": "com.apgsga.microservice.patch.core.impl.PipelineInputAction"
-        }
-      ]
+      "target": "DEV-CHTI211"
     },
     {
       "name": "Produktion",
-      "target": "DEV-CHPI211",
-      "stages": [
-        {
-          "name": "BuildFor",
-          "toState": "Installationsbereit",
-          "code": 65,
-          "implcls": "com.apgsga.microservice.patch.core.impl.PipelineInputAction"
-        },
-        {
-          "name": "InstallFor",
-          "toState": "",
-          "code": 80,
-          "implcls": "com.apgsga.microservice.patch.core.impl.PipelineInputAction"
-        }
-      ]
+      "target": "DEV-CHPI211"
     }
   ]
 }

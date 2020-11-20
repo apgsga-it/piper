@@ -1,13 +1,10 @@
 package com.apgsga.microservice.patch.client;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import com.apgsga.microservice.patch.api.*;
+import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
+import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
+import com.apgsga.microservice.patch.server.MicroPatchServer;
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,10 +23,12 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileCopyUtils;
 
-import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
-import com.apgsga.microservice.patch.server.MicroPatchServer;
-import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
@@ -81,7 +80,12 @@ public class MicroServicePatchClientTest {
 
 		repo.savePatch(testPatch5401);
 		repo.savePatch(testPatch5402);
-		repo.savePatchLog("5401");
+		PatchLogDetails pld = new PatchLogDetails();
+		pld.setTarget("dev-jhe");
+		pld.setPatchPipelineTask("Build");
+		pld.setLogText("Started");
+		pld.setDateTime(new Date());
+		repo.savePatchLog("5401",pld);
 	}
 
 	@Test
@@ -98,11 +102,14 @@ public class MicroServicePatchClientTest {
 	public void testSavePatchLog() {
 		Patch p = new Patch();
 		p.setPatchNummer("anotherUniqueId");
-		p.setCurrentTarget("chei212");
-		p.setLogText("Build Started");
 		patchClient.save(p);
+		PatchLogDetails pld = new PatchLogDetails();
+		pld.setTarget("dev-jhe");
+		pld.setPatchPipelineTask("Build");
+		pld.setLogText("Started");
+		pld.setDateTime(new Date());
 		try {
-			patchClient.log(p);
+			patchClient.log("anotherUniqueId",pld);
 			fail();
 		}
 		catch(UnsupportedOperationException ex) {
@@ -135,17 +142,6 @@ public class MicroServicePatchClientTest {
 		}
 	}
 	
-	@Test
-	public void testSavePatchLogEmptyWithoutId() {
-		Patch patch = new Patch();
-		try {
-			patchClient.log(patch);
-			fail();
-		} catch (Throwable e) {
-			// TODO Detail , Exception Handling
-		}
-	}
-
 	@Test
 	public void testSaveWithArtifacts() {
 		Patch patch = new Patch();

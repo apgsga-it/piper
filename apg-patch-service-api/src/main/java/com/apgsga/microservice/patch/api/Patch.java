@@ -14,6 +14,7 @@ public class Patch extends AbstractTransientEntity {
 
     private static final String PROD_BRANCH_DEFAULT = "prod";
     private static final long serialVersionUID = 1L;
+
     public static final String PATCH_NUMMER = "patchNummer";
 
     public static final String DB_PATCH_BRANCH = "dbPatchBranch";
@@ -32,14 +33,6 @@ public class Patch extends AbstractTransientEntity {
 
     public static final String DEVELOPER_BRANCH = "developerBranch";
 
-    public static final String INSTALLS_TARGET = "installationTarget";
-
-    public static final String CURRENT_TARGET = "currentTarget";
-
-    public static final String LOG_TEXT = "logText";
-
-    public static final String CURRENT_PIPELINE_TASK = "currentPipelineTask";
-
     public static final String STAGES_MAPPING = "stagesMapping";
 
 
@@ -49,17 +42,10 @@ public class Patch extends AbstractTransientEntity {
     private String patchTag = "";
     private String developerBranch = "";
     private Integer tagNr = 0;
-    private String installationTarget;
-    private String targetToState;
-    private String runningNr;
     private List<DbObject> dbObjects = Lists.newArrayList();
     private List<String> dockerServices = Lists.newArrayList();
     private List<Service> services = Lists.newArrayList();
     private boolean installDockerServices = false;
-    private String lastPipelineTask = "";
-    private String currentTarget;
-    private String currentPipelineTask;
-    private String logText;
     private List<StageMapping> stagesMapping;
 
     public Patch() {
@@ -213,46 +199,6 @@ public class Patch extends AbstractTransientEntity {
         firePropertyChangeEvent(PATCH_TAG, oldValue, patchTag);
     }
 
-    public String getInstallationTarget() {
-        return installationTarget;
-    }
-
-    public void setInstallationTarget(String installationTarget) {
-        final Object oldValue = this.installationTarget;
-        this.installationTarget = installationTarget;
-        firePropertyChangeEvent(INSTALLS_TARGET, oldValue, installationTarget);
-    }
-
-    public String getCurrentTarget() {
-        return currentTarget;
-    }
-
-    public void setCurrentTarget(String currentTarget) {
-        final Object oldValue = this.currentTarget;
-        this.currentTarget = currentTarget;
-        firePropertyChangeEvent(CURRENT_TARGET, oldValue, currentTarget);
-    }
-
-    public String getLogText() {
-        return logText;
-    }
-
-    public void setLogText(String logText) {
-        final Object oldValue = this.logText;
-        this.logText = logText;
-        firePropertyChange(LOG_TEXT, oldValue, logText);
-    }
-
-    public String getCurrentPipelineTask() {
-        return currentPipelineTask;
-    }
-
-    public void setCurrentPipelineTask(String currentPipelineTask) {
-        final Object oldValue = this.currentPipelineTask;
-        this.currentPipelineTask = currentPipelineTask;
-        firePropertyChange(CURRENT_PIPELINE_TASK, oldValue, currentPipelineTask);
-    }
-
     public List<StageMapping> getStagesMapping() {
         return stagesMapping;
     }
@@ -287,33 +233,6 @@ public class Patch extends AbstractTransientEntity {
         // Intentionally empty
     }
 
-
-    public String getRunningNr() {
-        return this.runningNr;
-    }
-
-    public void setRunningNr(String runningNr) {
-        this.runningNr = runningNr;
-    }
-
-
-    public String getTargetToState() {
-        return targetToState;
-    }
-
-    public void setTargetToState(String targetToState) {
-        this.targetToState = targetToState;
-    }
-
-
-    public String getLastPipelineTask() {
-        return lastPipelineTask;
-    }
-
-    public void setLastPipelineTask(String pipelineTask) {
-        this.lastPipelineTask = pipelineTask;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -336,17 +255,10 @@ public class Patch extends AbstractTransientEntity {
                 ", patchTag='" + patchTag + '\'' +
                 ", developerBranch='" + developerBranch + '\'' +
                 ", tagNr=" + tagNr +
-                ", installationTarget='" + installationTarget + '\'' +
-                ", targetToState='" + targetToState + '\'' +
-                ", runningNr='" + runningNr + '\'' +
                 ", dbObjects=" + dbObjects +
                 ", dockerServices=" + dockerServices +
                 ", services=" + services +
                 ", installDockerServices=" + installDockerServices +
-                ", lastPipelineTask='" + lastPipelineTask + '\'' +
-                ", currentTarget='" + currentTarget + '\'' +
-                ", currentPipelineTask='" + currentPipelineTask + '\'' +
-                ", logText='" + logText + '\'' +
                 '}';
     }
 }

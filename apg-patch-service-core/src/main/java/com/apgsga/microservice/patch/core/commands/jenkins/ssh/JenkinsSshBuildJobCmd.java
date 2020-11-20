@@ -73,6 +73,11 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
         if(hasFileParam()) {
             List<String> tmpCmd = Lists.newArrayList();
             String catCmd = "cat " + getFileParameterValue() + " | ssh -l " + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost + " build " + jobName + " -p " + getFileParameterName() + "=";
+            if (jobParameters != null && !jobParameters.isEmpty()) {
+                for (String key : jobParameters.keySet()) {
+                    catCmd += " -p " + key + "=" + jobParameters.get(key);
+                }
+            }
             tmpCmd.add("/bin/sh");
             tmpCmd.add("-c");
             tmpCmd.add(catCmd);

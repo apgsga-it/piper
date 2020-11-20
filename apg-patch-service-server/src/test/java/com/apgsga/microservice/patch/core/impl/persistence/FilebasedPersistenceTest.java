@@ -164,13 +164,12 @@ public class FilebasedPersistenceTest {
 		assertEquals(4,stageMappings.getStageMappings().size());
 		for(StageMapping stageMapping : stageMappings.getStageMappings()) {
 			// JHE : Just test two, not even sure it makes sense to load a complete file
-			if(stageMapping.equals("Entwicklung")) {
+			if(stageMapping.getName().equals("Entwicklung")) {
 				assertEquals("DEV-CHEI212",stageMapping.getTarget());
 			}
-			if(stageMapping.equals("Produktion")) {
+			if(stageMapping.getName().equals("Produktion")) {
 				assertEquals("DEV-CHPI211",stageMapping.getTarget());
 			}
-			assertEquals(2,stageMapping.getStages().size());
 		}
 	}
 
@@ -200,16 +199,9 @@ public class FilebasedPersistenceTest {
 	}
 
 	@Test
-	public void testStageMappingFor() {
-		StageMapping stageMapping = patchSystemInfoRepo.stageMappingFor("EntwicklungInstallationsbereit");
-		assertEquals("Entwicklung",stageMapping.getName());
-		assertEquals("DEV-CHEI212",stageMapping.getTarget());
-		for(Stage stage : stageMapping.getStages()) {
-			Stream.of("startPipelineAndTag","cancel").collect(Collectors.toList()).contains(stage.getName());
-			Stream.of("2","0").collect(Collectors.toList()).contains(stage.getCode());
-			Stream.of("com.apgsga.microservice.patch.server.impl.EntwicklungInstallationsbereitAction","com.apgsga.microservice.patch.server.impl.PipelineInputAction").collect(Collectors.toList()).contains(stage.getImplcls());
-			Stream.of("Installationsbereit","").collect(Collectors.toList()).contains(stage.getToState());
-		}
+	public void testTargetFor() {
+		String target = patchSystemInfoRepo.targetFor("Informatiktest");
+		assertEquals("DEV-CHEI211", target);
 	}
 
 	@Test

@@ -1,6 +1,5 @@
 package com.apgsga.microservice.patch.api;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface PatchPersistence {
@@ -15,7 +14,7 @@ public interface PatchPersistence {
 
 	void savePatch(Patch patch);
 	
-	void savePatchLog(String patchNumber);
+	void savePatchLog(String patchNumber, PatchLogDetails logDetails);
 
 	void removePatch(Patch patch);
 

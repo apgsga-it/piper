@@ -1,6 +1,8 @@
 package com.apgsga.patch.service.client
 
 import com.apgsga.microservice.patch.api.Patch
+import com.apgsga.microservice.patch.api.PatchLogDetails
+import com.apgsga.patch.db.integration.impl.NotifyDbParameters
 import com.apgsga.patch.service.client.rest.PatchRestServiceClient
 import com.google.common.collect.Maps
 import org.codehaus.groovy.runtime.StackTraceUtils
@@ -12,8 +14,6 @@ class PatchCli {
 		return patchCli
 	}
 
-	// TODO JHE (19.08.2020) : Still need aps and nil ???
-	def validComponents = [ "aps", "nil"]
 	def validate = true
 
 	private PatchCli() {
@@ -39,9 +39,9 @@ class PatchCli {
 			if (options.sa) {
 				def result = savePatch(patchClient,options)
 				cmdResults.results['sa']=  result
-			} else if (options.sta) {
-				def result = stateChangeAction(patchClient,options)
-				cmdResults.results['sta'] = result
+			} else if (options.build) {
+				def result = doBuild(patchClient,options)
+				cmdResults.results['build'] = result
 			} else if (options.cm) {
 				def result = cleanLocalMavenRepo(patchClient)
 				cmdResults.results['cm'] = result
@@ -54,14 +54,14 @@ class PatchCli {
 			} else if (options.i) {
 				def result = installPipeline(patchClient, options)
 				cmdResults.results['i'] = result
-			} else if (options.dbsta) {
-				def patchNumber = options.dbstas[0]
-				def statusNum = Long.valueOf(options.dbstas[1])
-				executeStateTransitionActionInDb(patchClient,patchNumber,statusNum)
 			} else if (options.cpf) {
 				def status = options.cpfs[0]
 				def destFolder = options.cpfs[1]
 				cmdResults.result = copyPatchFile(patchClient,status,destFolder)
+			} else if (options.setup) {
+				cmdResults.result = doSetup(patchClient,options)
+			} else if (options.notifydb) {
+				cmdResults.result = doNotifyDb(patchClient,options)
 			}
 			cmdResults.returnCode = 0
 			return cmdResults
@@ -91,14 +91,14 @@ class PatchCli {
 			h longOpt: 'help', 'Show usage information', required: false
 			purl longOpt: 'piperUrl', args:1, argName: 'piperUrl', 'Piper URL', required: false
 			sa longOpt: 'save', args:1, argName: 'patchFile', 'Saves a <patchFile> to the server, which starts the Patch Pipeline', required: false
-			// TODO (CHE,13.9) Get rid of the component parameter, needs to be coordinated with current Patch System (PatchOMat)
-			sta longOpt: 'stateChange', args:3, valueSeparator: ",", argName: 'patchNumber,toState,component', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to a <component> , where <component> can only be aps ', required: false
+			build longOpt: 'build', args:3, valueSeparator: ",", argName: 'patchNumber,stage,successNotification', 'Build a patch for a stage. eg.: 8000,Informatiktest,doneOk', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
-			log longOpt: 'log', args:1, argName: 'patchNumber', 'Log a patch steps for a patch', required: false
+			log longOpt: 'log', args:4, valueSeparator: ",", argName: 'patchNumber,target,step,text', 'Log a patch steps for a patch', required: false
 			adp longOpt: 'assembleDeployPipeline', args:1, argName: 'target', "starts an assembleAndDeploy pipeline for the given target", required: false
-			dbsta longOpt: 'dbstateChange', args:2, valueSeparator: ",", argName: 'patchNumber,toState', 'Notfiy State Change for a Patch with <patchNumber> to <toState> to the database', required: false
 			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "statusCode,destFolder", 'Copy patch files for a given status into the destfolder', required: false
 			i longOpt: 'install', args:1, argName: 'target', "starts an install pipeline for the given target", required: false
+			setup longOpt: 'setup', args:2, valueSeparator: ",", argName: 'patchNumber,successNotification', 'Starts setup for a patch, required before beeing ready to build', required: false
+			notifydb longOpt: 'notifdb', args:3, valueSeparator: ",", argName: "patchNumber,stage,successNotification", 'Notify the DB that a Job has been done successfully', required: false
 		}
 
 		def options = cli.parse(args)
@@ -126,22 +126,30 @@ class PatchCli {
 			}
 		}
 
-		if (options.sta) {
-			if (options.stas.size() != 3 ) {
-				println "Option sta needs 3 arguments: <patchNumber,toState, aps]>"
+		if (options.build) {
+			if (options.builds.size() != 3 ) {
+				println "Option build needs 3 arguments: <patchNumber,stage,successNotification>"
 				error = true
 			}
-			def patchNumber = options.stas[0]
+			def patchNumber = options.builds[0]
 			if (!patchNumber.isInteger()) {
 				println "Patchnumber ${patchNumber} is not a Integer"
 				error = true
 			}
-			def component = options.stas[2]
-			if (component != null && !validComponents.contains(component.toLowerCase()) ) {
-				println "Component ${component} not valid: needs to be one of ${validComponents}"
+		}
+
+		if (options.setup) {
+			if (options.setups.size() != 2 ) {
+				println "Option build needs 2 arguments: <patchNumber,successNotification>"
+				error = true
+			}
+			def patchNumber = options.setups[0]
+			if (!patchNumber.isInteger()) {
+				println "Patchnumber ${patchNumber} is not a Integer"
 				error = true
 			}
 		}
+
 		if (options.cr) {
 			if(options.crs.size() != 1) {
 				println "target parameter is required when cleaning Artifactory releases."
@@ -149,8 +157,8 @@ class PatchCli {
 			}
 		}
 		if (options.log) {
-			if (options.logs.size() != 1) {
-				println "Logging activity requires a Patch number as Parameter"
+			if (options.logs.size() != 4) {
+				println "Logging activity requires a Patch number, target, step and text"
 				error = true
 			}
 		}
@@ -166,12 +174,12 @@ class PatchCli {
 				error = true
 			}
 		}
-		if (options.dbsta) {
-			if (options.dbstas.size() != 2 ) {
-				println "Option sta needs 2 arguments: <patchNumber,toState>>"
+		if (options.notifydb) {
+			if (options.notifydbs.size() != 3 ) {
+				println "Option sta needs 3 arguments: <patchNumber,stage,successnotification>"
 				error = true
 			}
-			def patchNumber = options.dbstas[0]
+			def patchNumber = options.notifydbs[0]
 			if (!patchNumber.isInteger()) {
 				println "Patchnumber ${patchNumber} is not a Integer"
 				error = true
@@ -198,19 +206,38 @@ class PatchCli {
 		cmdResult
 	}
 
-	static def stateChangeAction(def patchClient, def options) {
+	static def doBuild(def patchClient, def options) {
 		def cmdResult = new Expando()
-		def patchNumber = options.stas[0]
-		def toState = options.stas[1]
-		def component = options.stas[2].toLowerCase()
+		def patchNumber = options.builds[0]
+		def stage = options.builds[1]
+		def successNotification = options.builds[2]
 		cmdResult.patchNumber = patchNumber
-		cmdResult.toState = toState
-		cmdResult.component = component
-		if (component.equals("aps")) {
-			patchClient.executeStateTransitionAction(patchNumber,toState)
-		} else {
-			println "Skipping State change Processing for ${patchNumber}"
-		}
+		cmdResult.stage = stage
+		cmdResult.successNotification = successNotification
+		patchClient.build(patchNumber,stage,successNotification)
+		return cmdResult
+	}
+
+	static def doSetup(def patchClient, def options) {
+		def cmdResult = new Expando()
+		def patchNumber = options.setups[0]
+		def successNotification = options.setups[1]
+		cmdResult.patchNumber = patchNumber
+		cmdResult.successNotification = successNotification
+		patchClient.setup(patchNumber,successNotification)
+		return cmdResult
+	}
+
+	static def doNotifyDb(def patchClient, def options) {
+		def cmdResult = new Expando()
+		def patchNumber = options.notifydbs[0]
+		def stage = options.notifydbs[1]
+		def successNotification = options.notifydbs[2]
+		cmdResult.patchNumber = patchNumber
+		cmdResult.stage = stage
+		cmdResult.successNotification = successNotification
+		NotifyDbParameters params = NotifyDbParameters.create(patchNumber).stage(stage).successNotification(successNotification)
+		patchClient.notifyDb(params)
 		return cmdResult
 	}
 
@@ -223,8 +250,16 @@ class PatchCli {
 
 	static def logPatchActivity(def patchClient, def options) {
 		def patchNumber = options.logs[0]
-		println "Logging patch activity for patch number ${patchNumber}"
-		patchClient.savePatchLog(patchNumber)
+		def target = options.logs[1]
+		def step = options.logs[2]
+		def text = options.logs[3]
+		PatchLogDetails pld = new PatchLogDetails()
+		pld.setTarget(target)
+		pld.setPatchPipelineTask(step)
+		pld.setLogText(text)
+		pld.setDateTime(new Date())
+		println "Logging patch activity for patch number ${patchNumber} with following info : target=${target},step=${step},text=${text}"
+		patchClient.savePatchLog(patchNumber,pld)
 	}
 
 	static def assembleAndDeployPipeline(def patchClient, def options) {
@@ -237,10 +272,6 @@ class PatchCli {
 		def target = options.is[0]
 		println "Starting install pipeline for ${target}"
 		patchClient.startInstallPipeline(target)
-	}
-
-	def executeStateTransitionActionInDb(PatchRestServiceClient patchClient, def patchNumber, def statusNum) {
-		patchClient.executeStateTransitionActionInDb(patchNumber,statusNum)
 	}
 
 	def copyPatchFile(PatchRestServiceClient patchClient, def status, def destFolder) throws Exception {
