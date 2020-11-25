@@ -113,21 +113,20 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 
 	}
 
-	@RequestMapping(value = "/build/{patchNumber}/{stage}/{successNotification}", method = RequestMethod.POST)
+	@RequestMapping(value = "/build", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	@Override
-	public void build(@PathVariable("patchNumber") String patchNumber,
-			@PathVariable("stage") String stage, @PathVariable("successNotification") String successNotification) {
-		LOGGER.info("Got Build Request for Patch " + patchNumber + " for stage " + stage + " and successNotification=" + successNotification );
-		patchService.build(patchNumber,stage,successNotification);
+	public void build(@RequestBody BuildParameter buildParams) {
+		LOGGER.info("Got Build Request for " + buildParams.toString());
+		patchService.build(buildParams);
 	}
 
-	@RequestMapping(value = "/setup/{patchNumber}/{successNotification}", method = RequestMethod.POST)
+	@RequestMapping(value = "/setup", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	@Override
-	public void setup(@PathVariable String patchNumber, @PathVariable String successNotification) {
-		LOGGER.info("Got setup request for patch " + patchNumber + " and successNotification=" + successNotification);
-		patchService.setup(patchNumber,successNotification);
+	public void setup(@RequestBody SetupParameter setupParams) {
+		LOGGER.info("Got setup request for " + setupParams.toString());
+		patchService.setup(setupParams);
 	}
 
 	@RequestMapping(value = "/listAllFiles", method = RequestMethod.GET)

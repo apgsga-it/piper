@@ -1,5 +1,6 @@
 package com.apgsga.microservice.patch.core;
 
+import com.apgsga.microservice.patch.api.BuildParameter;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean;
@@ -173,7 +174,8 @@ public class MicroServicePatchServerExceptionTests {
 	@Test
 	public void testBuildPatchForInvalidPatchNumber() {
 		try {
-			patchService.build("xxxx","dev-chei212,","dev-informatiktest");
+			BuildParameter bp = BuildParameter.create().patchNumber("xxxx").stageName("dev-informatiktest").successNotification("success").errorNotification("error");
+			patchService.build(bp);
 			fail("A runtime exception was expected");
 		}
 		catch (PatchServiceRuntimeException e) {
@@ -189,7 +191,8 @@ public class MicroServicePatchServerExceptionTests {
 			p.setPatchNummer("2222");
 			patchService.save(p);
 			Assert.assertTrue("Patch 2222 hasn't been saved correctly",patchService.findById("2222") != null);
-			patchService.build("2222",null, "dev-informatiktest");
+			BuildParameter bp = BuildParameter.create().patchNumber("2222").stageName("dummy").successNotification("success").errorNotification("error");
+			patchService.build(bp);
 			fail("A runtime exception was expected");
 		}
 		catch (PatchServiceRuntimeException e) {

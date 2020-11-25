@@ -175,7 +175,8 @@ public class MicroServicePatchServerTest {
 		p.setPatchNummer("2222");
 		patchService.save(p);
 		try {
-			patchService.build("2222", "Informatiktest", "InformatiktestOk");
+			BuildParameter bp = BuildParameter.create().patchNumber("2222").stageName("Informatiktest").successNotification("success").errorNotification("error");
+			patchService.build(bp);
 		}
 		catch(Exception e) {
 			LOGGER.error(repo.toString());

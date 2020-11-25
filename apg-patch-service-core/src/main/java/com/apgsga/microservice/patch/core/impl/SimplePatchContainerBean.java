@@ -299,24 +299,24 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public void build(String patchNumber, String stage, String successNotification) {
-		LOGGER.info("Build patch " + patchNumber + " for stage " + stage + " with successNotification=" + successNotification);
-		Patch patch = repo.findById(patchNumber);
-		Asserts.notNull(patch,"SimplePatchContainerBean.build.patch.exists.assert", new Object[] {patchNumber});
-		String target = metaInfoRepo.targetFor(stage);
-		Asserts.notNullOrEmpty(target,"SimplePatchContainerBean.build.target.notnull", new Object[]{patchNumber});
-		jenkinsClient.startProdBuildPatchPipeline(patch,stage,target,successNotification);
+	public void build(BuildParameter bp) {
+		LOGGER.info("Build patch " + bp.getPatchNumber() + " for stage " + bp.getStageName() + " with successNotification=" + bp.getSuccessNotification() + " and errorNotification=" + bp.getErrorNotification());
+		Patch patch = repo.findById(bp.getPatchNumber());
+		Asserts.notNull(patch,"SimplePatchContainerBean.build.patch.exists.assert", new Object[] {bp.getPatchNumber()});
+		String target = metaInfoRepo.targetFor(bp.getStageName());
+		Asserts.notNullOrEmpty(target,"SimplePatchContainerBean.build.target.notnull", new Object[]{bp.getPatchNumber()});
+		jenkinsClient.startProdBuildPatchPipeline(bp,target);
 	}
 
 	@Override
-	public void setup(String patchNumber, String successNotification) {
-		LOGGER.info("Setup started for Patch " + patchNumber + " with successNotification=" + successNotification);
-		Patch patch = repo.findById(patchNumber);
-		Asserts.notNull(patch, "SimplePatchContainerBean.patch.exists.assert",new Object[] { patchNumber});
+	public void setup(SetupParameter sp) {
+		LOGGER.info("Setup started for Patch " + sp.getPatchNumber() + " with successNotification=" + sp.getSuccessNotification() + " and errorNotification=" + sp.getErrorNotification());
+		Patch patch = repo.findById(sp.getPatchNumber());
+		Asserts.notNull(patch, "SimplePatchContainerBean.patch.exists.assert",new Object[] { sp.getPatchNumber()});
 		createAndSaveTagForPatch(patch);
 		CommandRunner jschSession = getJschSessionFactory().create();
 		PatchSetupTask.create(jschSession, patch, dependecyResolver,
-				jenkinsClient, repo, patchRdbms, successNotification).run();
+				jenkinsClient, repo, patchRdbms, sp).run();
 	}
 
 	private void createAndSaveTagForPatch(Patch patch) {

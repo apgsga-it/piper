@@ -1,5 +1,6 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
+import com.apgsga.microservice.patch.api.BuildParameter;
 import com.apgsga.microservice.patch.api.Patch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,8 +19,8 @@ public class JenkinsMockClient implements JenkinsClient {
 	}
 
 	@Override
-	public void startProdBuildPatchPipeline(Patch patch, String stage, String target, String successNotification) {
-		LOGGER.info("Start build Pipeline for patch " + patch.getPatchNummer() + " for stage=" + stage + ", target=" + target + "with successNotification=" + successNotification);
+	public void startProdBuildPatchPipeline(BuildParameter bp, String target) {
+		LOGGER.info("Start build Pipeline for patch " + bp.getPatchNumber() + " for stage=" + bp.getStageName() + ", target=" + target + "with successNotification=" + bp.getSuccessNotification() + " and errorNotification=" + bp.getErrorNotification());
 	}
 
 	@Override
