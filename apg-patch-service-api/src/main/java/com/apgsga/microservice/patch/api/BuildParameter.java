@@ -4,6 +4,7 @@ public class BuildParameter {
 
     private String patchNumber;
     private String stageName;
+    private String target;
     private String successNotification;
     private String errorNotification;
 
@@ -33,6 +34,11 @@ public class BuildParameter {
         return this;
     }
 
+    public BuildParameter target(String target) {
+        this.target = target;
+        return this;
+    }
+
     public String getPatchNumber() {
         return patchNumber;
     }
@@ -40,6 +46,8 @@ public class BuildParameter {
     public String getStageName() {
         return stageName;
     }
+
+    public String getTarget() { return target; }
 
     public String getSuccessNotification() {
         return successNotification;
@@ -54,6 +62,7 @@ public class BuildParameter {
         return "BuildParameter{" +
                 "patchNumber='" + patchNumber + '\'' +
                 ", stageName='" + stageName + '\'' +
+                ", target='" + target + '\'' +
                 ", successNotification='" + successNotification + '\'' +
                 ", errorNotification='" + errorNotification + '\'' +
                 '}';

@@ -19,8 +19,8 @@ public class JenkinsMockClient implements JenkinsClient {
 	}
 
 	@Override
-	public void startProdBuildPatchPipeline(BuildParameter bp, String target) {
-		LOGGER.info("Start build Pipeline for patch " + bp.getPatchNumber() + " for stage=" + bp.getStageName() + ", target=" + target + "with successNotification=" + bp.getSuccessNotification() + " and errorNotification=" + bp.getErrorNotification());
+	public void startProdBuildPatchPipeline(BuildParameter bp) {
+		LOGGER.info("Start build Pipeline for " + bp.toString());
 	}
 
 	@Override

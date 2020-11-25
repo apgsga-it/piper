@@ -77,11 +77,11 @@ public class JenkinsClientImpl implements JenkinsClient {
 	}
 
 	@Override
-	public void startProdBuildPatchPipeline(BuildParameter buildParameters, String target) {
-		startBuildPipeline(buildParameters,target);
+	public void startProdBuildPatchPipeline(BuildParameter buildParameters) {
+		startBuildPipeline(buildParameters);
 	}
 
-	private void startBuildPipeline(BuildParameter bp, String target) {
+	private void startBuildPipeline(BuildParameter bp) {
 		try {
 			String patchName = PATCH_CONS + bp.getPatchNumber();
 			String jobName = patchName + "_build_" + bp.getStageName();
@@ -91,7 +91,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 			Map<String,String> fileParams = Maps.newHashMap();
 			fileParams.put("patchFile.json",patchFile.getAbsolutePath());
 			Map<String,String> jobParameters = Maps.newHashMap();
-			jobParameters.put("TARGET",target);
+			jobParameters.put("TARGET",bp.getTarget());
 			jobParameters.put("STAGE",bp.getStageName());
 			jobParameters.put("SUCCESS_NOTIFICATION",bp.getSuccessNotification());
 			jobParameters.put("ERROR_NOTIFICATION", bp.getErrorNotification());

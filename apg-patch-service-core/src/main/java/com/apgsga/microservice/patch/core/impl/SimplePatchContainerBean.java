@@ -305,7 +305,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		Asserts.notNull(patch,"SimplePatchContainerBean.build.patch.exists.assert", new Object[] {bp.getPatchNumber()});
 		String target = metaInfoRepo.targetFor(bp.getStageName());
 		Asserts.notNullOrEmpty(target,"SimplePatchContainerBean.build.target.notnull", new Object[]{bp.getPatchNumber()});
-		jenkinsClient.startProdBuildPatchPipeline(bp,target);
+		bp.target(target);
+		jenkinsClient.startProdBuildPatchPipeline(bp);
 	}
 
 	@Override

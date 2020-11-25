@@ -7,7 +7,7 @@ public interface JenkinsClient {
 
 	void createPatchPipelines(Patch patch);
 
-	void startProdBuildPatchPipeline(BuildParameter parameters, String target);
+	void startProdBuildPatchPipeline(BuildParameter parameters);
 
 	void startAssembleAndDeployPipeline(String target, String parameter);
 
