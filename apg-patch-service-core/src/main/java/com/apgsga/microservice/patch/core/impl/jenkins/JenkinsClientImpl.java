@@ -1,5 +1,6 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
+import com.apgsga.microservice.patch.api.BuildParameter;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
@@ -76,30 +77,31 @@ public class JenkinsClientImpl implements JenkinsClient {
 	}
 
 	@Override
-	public void startProdBuildPatchPipeline(Patch patch, String stage, String target, String successNotification) {
-		startBuildPipeline(patch,stage,target,successNotification);
+	public void startProdBuildPatchPipeline(BuildParameter buildParameters) {
+		startBuildPipeline(buildParameters);
 	}
 
-	private void startBuildPipeline(Patch patch, String stage, String target, String successNotification) {
+	private void startBuildPipeline(BuildParameter bp) {
 		try {
-			String patchName = PATCH_CONS + patch.getPatchNummer();
-			String jobName = patchName + "_build_" + stage;
+			String patchName = PATCH_CONS + bp.getPatchNumber();
+			String jobName = patchName + "_build_" + bp.getStageName();
 			final ResourceLoader rl = new FileSystemResourceLoader();
 			Resource rDbLocation = rl.getResource(dbLocation);
 			File patchFile = new File(rDbLocation.getFile(), patchName + JSON_CONS);
 			Map<String,String> fileParams = Maps.newHashMap();
 			fileParams.put("patchFile.json",patchFile.getAbsolutePath());
 			Map<String,String> jobParameters = Maps.newHashMap();
-			jobParameters.put("TARGET",target);
-			jobParameters.put("STAGE",stage);
-			jobParameters.put("SUCCESS_NOTIFICATION",successNotification);
+			jobParameters.put("TARGET",bp.getTarget());
+			jobParameters.put("STAGE",bp.getStageName());
+			jobParameters.put("SUCCESS_NOTIFICATION",bp.getSuccessNotification());
+			jobParameters.put("ERROR_NOTIFICATION", bp.getErrorNotification());
 			LOGGER.info("JobParameters passed to " + jobName + " Pipeline :" + jobParameters.toString());
 			JenkinsSshCommand buildPipelineCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForStartCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName, jobParameters, fileParams);
 			List<String> result = cmdRunner.run(buildPipelineCmd);
 			LOGGER.info("Result of Pipeline Job " + jobName + ", : " + result.toString());
 		} catch (Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startPipeline.exception",
-					new Object[] { e.getMessage(), patch.toString() }, e);
+					new Object[] { e.getMessage(), bp.getPatchNumber() }, e);
 		}
 	}
 

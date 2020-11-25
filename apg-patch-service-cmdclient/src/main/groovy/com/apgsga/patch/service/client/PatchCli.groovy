@@ -1,7 +1,9 @@
 package com.apgsga.patch.service.client
 
+import com.apgsga.microservice.patch.api.BuildParameter
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.PatchLogDetails
+import com.apgsga.microservice.patch.api.SetupParameter
 import com.apgsga.patch.db.integration.impl.NotifyDbParameters
 import com.apgsga.patch.service.client.rest.PatchRestServiceClient
 import com.google.common.collect.Maps
@@ -91,14 +93,14 @@ class PatchCli {
 			h longOpt: 'help', 'Show usage information', required: false
 			purl longOpt: 'piperUrl', args:1, argName: 'piperUrl', 'Piper URL', required: false
 			sa longOpt: 'save', args:1, argName: 'patchFile', 'Saves a <patchFile> to the server, which starts the Patch Pipeline', required: false
-			build longOpt: 'build', args:3, valueSeparator: ",", argName: 'patchNumber,stage,successNotification', 'Build a patch for a stage. eg.: 8000,Informatiktest,doneOk', required: false
+			build longOpt: 'build', args:4, valueSeparator: ",", argName: 'patchNumber,stage,successNotification,errorNotification', 'Build a patch for a stage. eg.: 8000,Informatiktest,doneOk', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
 			log longOpt: 'log', args:4, valueSeparator: ",", argName: 'patchNumber,target,step,text', 'Log a patch steps for a patch', required: false
 			adp longOpt: 'assembleDeployPipeline', args:1, argName: 'target', "starts an assembleAndDeploy pipeline for the given target", required: false
 			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "statusCode,destFolder", 'Copy patch files for a given status into the destfolder', required: false
 			i longOpt: 'install', args:1, argName: 'target', "starts an install pipeline for the given target", required: false
-			setup longOpt: 'setup', args:2, valueSeparator: ",", argName: 'patchNumber,successNotification', 'Starts setup for a patch, required before beeing ready to build', required: false
-			notifydb longOpt: 'notifdb', args:3, valueSeparator: ",", argName: "patchNumber,stage,successNotification", 'Notify the DB that a Job has been done successfully', required: false
+			setup longOpt: 'setup', args:3, valueSeparator: ",", argName: 'patchNumber,successNotification,errorNotification', 'Starts setup for a patch, required before beeing ready to build', required: false
+			notifydb longOpt: 'notifdb', args:4, valueSeparator: ",", argName: "patchNumber,stage,successNotification,errorNotification", 'Notify the DB that a Job has been done successfully', required: false
 		}
 
 		def options = cli.parse(args)
@@ -127,8 +129,8 @@ class PatchCli {
 		}
 
 		if (options.build) {
-			if (options.builds.size() != 3 ) {
-				println "Option build needs 3 arguments: <patchNumber,stage,successNotification>"
+			if (options.builds.size() != 4 ) {
+				println "Option build needs 4 arguments: <patchNumber,stage,successNotification,errorNotification>"
 				error = true
 			}
 			def patchNumber = options.builds[0]
@@ -139,8 +141,8 @@ class PatchCli {
 		}
 
 		if (options.setup) {
-			if (options.setups.size() != 2 ) {
-				println "Option build needs 2 arguments: <patchNumber,successNotification>"
+			if (options.setups.size() != 3 ) {
+				println "Option build needs 3 arguments: <patchNumber,successNotification,errorNotification>"
 				error = true
 			}
 			def patchNumber = options.setups[0]
@@ -175,8 +177,8 @@ class PatchCli {
 			}
 		}
 		if (options.notifydb) {
-			if (options.notifydbs.size() != 3 ) {
-				println "Option sta needs 3 arguments: <patchNumber,stage,successnotification>"
+			if (options.notifydbs.size() != 4 ) {
+				println "Option sta needs 4 arguments: <patchNumber,stage,successnotification,errorNotification>"
 				error = true
 			}
 			def patchNumber = options.notifydbs[0]
@@ -211,10 +213,13 @@ class PatchCli {
 		def patchNumber = options.builds[0]
 		def stage = options.builds[1]
 		def successNotification = options.builds[2]
+		def errorNotification = options.builds[3]
 		cmdResult.patchNumber = patchNumber
 		cmdResult.stage = stage
 		cmdResult.successNotification = successNotification
-		patchClient.build(patchNumber,stage,successNotification)
+		cmdResult.errorNotification = errorNotification
+		BuildParameter bp = BuildParameter.create().patchNumber(patchNumber).stageName(stage).errorNotification(errorNotification).successNotification(successNotification)
+		patchClient.build(bp)
 		return cmdResult
 	}
 
@@ -222,9 +227,12 @@ class PatchCli {
 		def cmdResult = new Expando()
 		def patchNumber = options.setups[0]
 		def successNotification = options.setups[1]
+		def errorNotification = options.setups[2]
 		cmdResult.patchNumber = patchNumber
 		cmdResult.successNotification = successNotification
-		patchClient.setup(patchNumber,successNotification)
+		cmdResult.errorNotification = errorNotification
+		SetupParameter sp = SetupParameter.create().patchNumber(patchNumber).successNotification(successNotification).errorNotification(errorNotification)
+		patchClient.setup(sp)
 		return cmdResult
 	}
 
@@ -233,10 +241,12 @@ class PatchCli {
 		def patchNumber = options.notifydbs[0]
 		def stage = options.notifydbs[1]
 		def successNotification = options.notifydbs[2]
+		def errorNotification = options.notifydbs[3]
 		cmdResult.patchNumber = patchNumber
 		cmdResult.stage = stage
 		cmdResult.successNotification = successNotification
-		NotifyDbParameters params = NotifyDbParameters.create(patchNumber).stage(stage).successNotification(successNotification)
+		cmdResult.errorNotification = errorNotification
+		NotifyDbParameters params = NotifyDbParameters.create(patchNumber).stage(stage).successNotification(successNotification).errorNotification(errorNotification)
 		patchClient.notifyDb(params)
 		return cmdResult
 	}

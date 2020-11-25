@@ -7,17 +7,14 @@ import java.util.Map;
 public interface PatchOpService extends PatchRdbms {
 
 	/**
-	 * Starts a build Pipeline for the given patch. Notify back the db with the successsNotification
-	 * Parameter example: 8000,Informatiktest,InformatiktestBuildOk
+	 * Starts a build Pipeline with the given parameter
 	 */
-	void build(String patchNumber, String stage, String successNotification);
+	void build(BuildParameter parameters);
 
 	/**
 	 * Trigger a piper internal process which will setup the pre-requisite for a patch to be build
-	 * @param patchNumber
-	 * @param successNotification
 	 */
-	void setup(String patchNumber, String successNotification);
+	void setup(SetupParameter parameters);
 
 	/**
 	 * All changes on a patch Object need to be saved.

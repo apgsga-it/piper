@@ -191,7 +191,7 @@ class PatchCliIntegrationTest extends Specification {
 			def p = patchMapper.readValue(patchFile,Patch.class)
 			patchMapper.writeValue(patchFile, p)
 		when:
-			def result = client.process(["-build", "5401,Informatiktest,InformatiktestDone"])
+			def result = client.process(["-build", "5401,Informatiktest,success,error"])
 		then:
 			result != null
 			result.returnCode == 0
@@ -213,7 +213,7 @@ class PatchCliIntegrationTest extends Specification {
 			def p = patchMapper.readValue(patchFile,Patch.class)
 			patchMapper.writeValue(patchFile, p)
 		when:
-			def result = client.process(["-setup", "5401,setupDone"])
+			def result = client.process(["-setup", "5401,success,error"])
 		then:
 			result != null
 			result.returnCode == 0
@@ -225,7 +225,7 @@ class PatchCliIntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-notifydb", "5401,Informatiktest,done"])
+			def result = client.process(["-notifydb", "5401,Informatiktest,,notok"])
 		then:
 			result != null
 			result.returnCode == 0

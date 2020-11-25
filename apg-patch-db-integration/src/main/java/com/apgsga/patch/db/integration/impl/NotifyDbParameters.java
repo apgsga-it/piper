@@ -10,11 +10,12 @@ public class NotifyDbParameters {
     public static final String PATCH_NOTIFICATION_PROCEDURE_NAME = "cm.cm_patch_notification";
     public static final String PATCH_NUMBER_PARAM = "patchNumber";
     public static final String STAGE_PARAM = "stage";
-    public static final String SUCCESS_NOTIFICATION_PARAM = "successNotification";
+    public static final String SUCCESS_OR_ERROR_PARAM = "notification";
 
     private String patchNumber;
     private String stage;
     private String successNotification;
+    private String errorNotification;
 
     private NotifyDbParameters(){}
 
@@ -37,6 +38,11 @@ public class NotifyDbParameters {
         return this;
     }
 
+    public NotifyDbParameters errorNotification(String errorNotification) {
+        this.errorNotification = errorNotification;
+        return this;
+    }
+
     public String getPatchNumber() {
         return patchNumber;
     }
@@ -49,14 +55,20 @@ public class NotifyDbParameters {
         return successNotification;
     }
 
+    public String getErrorNotification() {
+        return errorNotification;
+    }
+
     public Map<String,String> getAllParameters() {
         Map<String,String> params = Maps.newHashMap();
         params.put(PATCH_NUMBER_PARAM,getPatchNumber());
         if(getStage() != null) {
             params.put(STAGE_PARAM, getStage());
         }
-        if(getSuccessNotification() != null) {
-            params.put(SUCCESS_NOTIFICATION_PARAM, getSuccessNotification());
+        if(getSuccessNotification() != null && !getSuccessNotification().isEmpty()) {
+            params.put(SUCCESS_OR_ERROR_PARAM, getSuccessNotification());
+        } else {
+            params.put(SUCCESS_OR_ERROR_PARAM,getErrorNotification());
         }
         return params;
     }
@@ -64,9 +76,10 @@ public class NotifyDbParameters {
     @Override
     public String toString() {
         return "NotifyDbParameters{" +
-                PATCH_NUMBER_PARAM + "='" + patchNumber + '\'' +
-                "," + STAGE_PARAM + "='" + stage + '\'' +
-                "," + SUCCESS_NOTIFICATION_PARAM + "='" + successNotification + '\'' +
+                "patchNumber='" + patchNumber + '\'' +
+                ", stage='" + stage + '\'' +
+                ", successNotification='" + successNotification + '\'' +
+                ", errorNotification='" + errorNotification + '\'' +
                 '}';
     }
 }
