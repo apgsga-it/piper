@@ -1,12 +1,14 @@
 package com.apgsga.microservice.patch.core.impl.persistence;
 
 import com.apgsga.microservice.patch.api.*;
+import com.apgsga.microservice.patch.api.Package;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class FilePatchSystemMetaInfoPersistence extends AbstractFilebasedPersistence implements PatchSystemMetaInfoPersistence {
 
@@ -90,10 +92,10 @@ public class FilePatchSystemMetaInfoPersistence extends AbstractFilebasedPersist
     }
 
     @Override
-    public String packagerNameFor(Service service) {
+    public List<Package> packagesFor(Service service) {
         for(ServiceMetaData smd : servicesMetaData().getServicesMetaData()) {
             if(smd.getServiceName().equals(service.getServiceName())) {
-                return smd.getPackagerName();
+                return smd.getPackages();
             }
         }
         return null;

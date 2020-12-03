@@ -1,10 +1,14 @@
 package com.apgsga.microservice.patch.api;
 
-import com.apgsga.patch.db.integration.api.PatchRdbms;
 
 import java.util.Map;
 
-public interface PatchOpService extends PatchRdbms {
+public interface PatchOpService {
+
+		/**
+		 * TODO (jhe,2.12) Verfiy API Dependencies
+		 * extends PatchRdbms {
+		 */
 
 	/**
 	 * Starts a build Pipeline with the given parameter

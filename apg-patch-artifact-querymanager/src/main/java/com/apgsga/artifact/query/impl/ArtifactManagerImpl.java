@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
@@ -27,7 +29,6 @@ import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
-import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.transfer.ArtifactNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +40,6 @@ import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.SearchCondition;
-import com.apgsga.microservice.patch.exceptions.Asserts;
-import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 
@@ -52,7 +51,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
 	private static final String DEFAULT_BOM_ARTIFACT_ID = "dm-bom";
 
-	private static Map<SearchCondition, String> templateMap = Maps.newConcurrentMap();
+	private static final Map<SearchCondition, String> templateMap = Maps.newConcurrentMap();
 
 	static {
 		templateMap.put(SearchCondition.FORMS2JAVA, "classpath:templateForms2Java.json");
@@ -72,7 +71,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
 	private final String localRepo;
 
-	private Resource lcoalRepoResource;
+	private Resource localRepoResource;
 
 	public ArtifactManagerImpl(String localRepo, String bomGroupId, String bomArtefactId, RepositorySystemFactory systemFactory) {
 		super();
@@ -88,13 +87,12 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
 	private void init() {
 		final ResourceLoader rl = new FileSystemResourceLoader();
-		lcoalRepoResource = rl.getResource(localRepo);
-		if (!lcoalRepoResource.exists()) {
+		localRepoResource = rl.getResource(localRepo);
+		if (!localRepoResource.exists()) {
 			try {
-				lcoalRepoResource.getFile().mkdir();
+				localRepoResource.getFile().mkdir();
 			} catch (IOException e) {
-				throw ExceptionFactory.createPatchServiceRuntimeException("ArtifactManagerImpl.init.exception",
-						new Object[] { e.getMessage() }, e);
+				throw new RuntimeException("Could not create Local Maven Repo upon initialization",e);
 			}
 		}
 	}
@@ -109,21 +107,21 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
 	@Override
 	public void cleanLocalMavenRepo() {
-		LOGGER.info("About to clean Local Mavenrepo");
+		LOGGER.info("About to clean Local Maven Repo");
 		cleanLocalMavenRepo("com/affichage");
 		cleanLocalMavenRepo("com/apgsga"); 
 	}
 	
 	private void cleanLocalMavenRepo(String path) {
-		LOGGER.info("About to clean Local Mavenrepo");
+		LOGGER.info("About to clean Local Maven Repo");
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource resource = rl.getResource(localRepo + "/" + path);
 		try {
 			Path rootPath = Paths.get(resource.getURI());
 			Files.walk(rootPath).sorted(Comparator.reverseOrder()).forEach(f -> delete(rootPath, f));
-			LOGGER.info("Done cleaning Local Mavenrepo");
+			LOGGER.info("Done cleaning Local Maven Repo");
 		} catch (IOException e) {
-			LOGGER.error("File : " + localRepo + " could'nt be deleted", e);
+			LOGGER.error("File : " + localRepo + " couldn't be deleted", e);
 			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
 		}
 	}
@@ -135,7 +133,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 				LOGGER.info("Deleted: {} ", p.toAbsolutePath());
 			}
 		} catch (IOException e) {
-			LOGGER.error("File : " + p.toFile().getAbsolutePath() + " could'nt be deleted", e);
+			LOGGER.error("File : " + p.toFile().getAbsolutePath() + " couldn't be deleted", e);
 			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
 		}
 	}
@@ -143,12 +141,11 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	@Override
 	public File getMavenLocalRepo() {
 		try {
-			return lcoalRepoResource.getFile();
+			return localRepoResource.getFile();
 		} catch (IOException e) {
 			LOGGER.error("Directory fetched", e);
 			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"ArtifactManagerImpl.cleanLocalMavenRepo.exception", new Object[] { e.getMessage() }, e);
+			throw new RuntimeException("Exception while retrieving Local Maven Repo", e);
 		}
 	}
 
@@ -156,25 +153,23 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	private Model loadBomModel(String bomGroupId, String bomArtefactId, String version)
 			throws ArtifactResolutionException {
 		org.eclipse.aether.artifact.Artifact bom = load(bomGroupId, bomArtefactId, version);
-		Asserts.notNull(bom, "ArtifactManagerImpl.loadBom.assert", new Object[] { bomGroupId, bomArtefactId, version });
+		Preconditions.checkNotNull(bom,String.format("Bom with artifactId: %s, groupId: %s and version %s couldn't be loaded",bomArtefactId,bomGroupId,version));
 		FileReader fileReader = null;
 		try {
-			MavenXpp3Reader mavenreader = new MavenXpp3Reader();
+			MavenXpp3Reader mavenReader = new MavenXpp3Reader();
 			File bomFile = bom.getFile();
 			fileReader = new FileReader(bomFile);
-			Model model = mavenreader.read(fileReader);
-			return model;
+			return mavenReader.read(fileReader);
 		} catch (IOException | XmlPullParserException e) {
 			LOGGER.error("Error Loading Bom Model", e);
 			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
-			throw ExceptionFactory.createPatchServiceRuntimeException("ArtifactManagerImpl.loadBomModel.exception",
-					new Object[] { e.getMessage() }, e);
+			throw new RuntimeException(String.format("Bom with artifactId: %s, groupId: %s and version %s couldn't be parsed",bomArtefactId,bomGroupId,version),e);
 		} finally {
 			if (fileReader != null) {
 				try {
 					fileReader.close();
 				} catch (IOException e) {
-					LOGGER.error("Error Closing Filereader from loading Bom Model", e);
+					LOGGER.error("Error Closing File Reader from loading Bom Model", e);
 					LOGGER.error(ExceptionUtils.getFullStackTrace(e));
 				}
 			}
@@ -222,9 +217,9 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	private List<MavenArtifact> getArtifactsWithVersionFromBom(String bomVersion, SearchCondition searchFilter)
 			throws ArtifactResolutionException {
 		Model model = loadBomModel(bomGroupId, bomArtefactId, bomVersion);
-		List<MavenArtifact> artifacts = getArtifacts(model);
+		final List<MavenArtifact> read = getArtifacts(model);
 		Properties properties = model.getProperties();
-		normalizeVersions(artifacts, properties);
+		final List<MavenArtifact> artifacts = normalizeVersions(read, properties);
 		if (searchFilter.equals(SearchCondition.ALL)) {
 			return artifacts;
 		} else if (searchFilter.equals(SearchCondition.APPLICATION)) {
@@ -243,9 +238,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 					List<MavenArtifact> templateList = Arrays.asList(template);
 					return artifacts.stream().filter(templateList::contains).collect(Collectors.toList());
 				} catch (IOException e) {
-					throw ExceptionFactory.createPatchServiceRuntimeException(
-							"ArtifactManagerImpl.getArtifactsWithVersionFromBom.exception",
-							new Object[] { e.getMessage() }, e);
+					throw new RuntimeException("ArtifactManagerImpl.getArtifactsWithVersionFromBom.exception", e);
 				}
 			}
 			return Collections.emptyList();
@@ -260,36 +253,41 @@ public class ArtifactManagerImpl implements ArtifactManager {
 	}
 
 	public static MavenArtifact create(Dependency dependency) {
-		final MavenArtifact art = new MavenArtifact();
-		art.setArtifactId(dependency.getArtifactId());
-		art.setGroupId(dependency.getGroupId());
-		art.setVersion(dependency.getVersion());
-		return art;
+		return  MavenArtifact.builder()
+				.artifactId(dependency.getArtifactId())
+				.groupId(dependency.getGroupId())
+				.version(dependency.getVersion()).build();
 	}
 
-	private static void normalizeVersions(List<MavenArtifact> artifacts, Properties properties) {
+	private static List<MavenArtifact> normalizeVersions(List<MavenArtifact> artifacts, Properties properties) {
+		List<MavenArtifact> mavenArtifacts = Lists.newArrayList();
 		for (MavenArtifact artifact : artifacts) {
 			String version = artifact.getVersion();
 			if (version.startsWith("${") && version.endsWith("}")) {
-				normalizeVersion(artifact, version, properties);
+				mavenArtifacts.add(normalizeVersion(artifact, version, properties));
 			}
+			mavenArtifacts.add(artifact);
 		}
+		return mavenArtifacts;
 	}
 
-	private static void normalizeVersion(MavenArtifact artifact, String version, Properties properties) {
+	private static MavenArtifact normalizeVersion(MavenArtifact artifact, String version, Properties properties) {
 		String key = version.substring(2, version.length() - 1);
 		String value = properties.getProperty(key);
 		if (value == null) {
 			String errMsg = String.format("Artefact : %s  has null Version reference : %s, ignored",
 					artifact.toString(), version);
 			LOGGER.warn(errMsg);
-			return;
+			return artifact;
 		}
 		if (value.startsWith("${") && value.endsWith("}")) {
 			normalizeVersion(artifact, value, properties);
-			return;
+			return artifact;
 		}
-		artifact.setVersion(value);
+		return MavenArtifact.builder()
+				.artifactId(artifact.getArtifactId())
+				.groupId(artifact.getGroupId())
+				.version(value).build();
 	}
 
 	/*

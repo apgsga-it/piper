@@ -1,16 +1,20 @@
 package com.apgsga.microservice.patch.api;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
+
 import java.util.List;
 
+
+@JsonDeserialize(builder = TargetInstances.TargetInstancesBuilder.class)
+@Value
+@Builder
 public class TargetInstances {
 
     private List<TargetInstance> targetInstances;
 
-    public List<TargetInstance> getTargetInstances() {
-        return targetInstances;
-    }
-
-    public void setTargetInstances(List<TargetInstance> targetInstances) {
-        this.targetInstances = targetInstances;
-    }
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class TargetInstancesBuilder {}
 }

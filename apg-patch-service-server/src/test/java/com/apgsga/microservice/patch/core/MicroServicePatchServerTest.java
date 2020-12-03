@@ -103,7 +103,7 @@ public class MicroServicePatchServerTest {
 		pld.setTarget("dev-jhe");
 		pld.setPatchPipelineTask("Build");
 		pld.setDateTime(new Date());
-		patchService.log(p.getPatchNummer(),pld);
+		patchService.log(p.getPatchNumber(),pld);
 		PatchLog result = patchService.findPatchLogById(patchNumber);
 		assertNotNull(result);
 		assertTrue(result.getLogDetails().size() == 1);
@@ -127,14 +127,14 @@ public class MicroServicePatchServerTest {
 		Patch p = new Patch();
 		p.setPatchNummer(patchNumber);
 		patchService.save(p);
-		patchService.log(p.getPatchNummer(),pld);
+		patchService.log(p.getPatchNumber(),pld);
 		PatchLog result = patchService.findPatchLogById(patchNumber);
 		assertNotNull(result);
 		assertTrue(result.getLogDetails().size() == 1);
 		patchService.save(p);
-		patchService.log(p.getPatchNummer(),pld2);
+		patchService.log(p.getPatchNumber(),pld2);
 		patchService.save(p);
-		patchService.log(p.getPatchNummer(),pld3);
+		patchService.log(p.getPatchNumber(),pld3);
 		result = patchService.findPatchLogById(patchNumber);
 		assertTrue(result.getLogDetails().size() == 3);
 	}

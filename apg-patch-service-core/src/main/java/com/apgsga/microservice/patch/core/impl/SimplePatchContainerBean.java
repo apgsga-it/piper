@@ -3,6 +3,7 @@ package com.apgsga.microservice.patch.core.impl;
 import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.*;
+import com.apgsga.microservice.patch.api.Package;
 import com.apgsga.microservice.patch.core.commands.Command;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
@@ -130,7 +131,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public Patch save(Patch patch) {
 		Asserts.notNull(patch, "SimplePatchContainerBean.save.patchobject.notnull.assert", new Object[] {});
-		Asserts.notNullOrEmpty(patch.getPatchNummer(),
+		Asserts.notNullOrEmpty(patch.getPatchNumber(),
 				"SimplePatchContainerBean.save.patchnumber.notnullorempty.assert", new Object[] { patch.toString() });
 		preProcessSave(patch);
 		repo.savePatch(patch);
@@ -150,7 +151,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	private void preProcessSave(Patch patch) {
-		if (!repo.patchExists(patch.getPatchNummer())) {
+		if (!repo.patchExists(patch.getPatchNumber())) {
 			patch.setStagesMapping(metaInfoRepo.stageMappings().getStageMappings());
 			createBranchForDbModules(patch);
 			jenkinsClient.createPatchPipelines(patch);
@@ -159,14 +160,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		for (Service service : patch.getServices()) {
 			service.getMavenArtifactsToBuild().stream().filter(art -> Strings.isNullOrEmpty(art.getName()))
 					.forEach(art -> addModuleName(art, service.getMicroServiceBranch()));
-			addPackagerName(service);
+			addPackagerNames(service);
 		}
 	}
 
-	private void addPackagerName(Service service) {
-		String packagerName = metaInfoRepo.packagerNameFor(service);
-		Asserts.notNullOrEmpty(packagerName,"SimplePatchContainerBean.addPackagerName.packagerName.notnull",new Object[] { service.getServiceName() });
-		service.setPackagerName(packagerName);
+	private void addPackagerNames(Service service) {
+		List<Package> packages = metaInfoRepo.packagesFor(service);
+		service.setPackagerName(packages);
 	}
 
 	private MavenArtifact addModuleName(MavenArtifact art, String cvsBranch) {
@@ -196,10 +196,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private void createBranchForDbModules(Patch patch) {
 		DbModules dbModules = repo.getDbModules();
 		if (dbModules == null) {
-			LOGGER.warn("Could not create CVS DB-Branch for patch " + patch.getPatchNummer() + " as no dbModules are define!");
+			LOGGER.warn("Could not create CVS DB-Branch for patch " + patch.getPatchNumber() + " as no dbModules are define!");
 			return;
 		}
-		LOGGER.info("Create CVS DB-Branch for patch " + patch.getPatchNummer());
+		LOGGER.info("Create CVS DB-Branch for patch " + patch.getPatchNumber());
 		final CommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
 		sshCommandRunner.preProcess();
 		sshCommandRunner.run(PatchSshCommand.createCreatePatchBranchCmd(patch.getDbPatchBranch(), patch.getProdBranch(),

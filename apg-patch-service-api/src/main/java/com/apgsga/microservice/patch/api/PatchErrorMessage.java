@@ -1,5 +1,12 @@
 package com.apgsga.microservice.patch.api;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.*;
+
+@JsonDeserialize(builder = PatchErrorMessage.PatchErrorMessageBuilder.class)
+@Value
+@Builder
 public class PatchErrorMessage {
 
 	private String timestamp;
@@ -8,63 +15,6 @@ public class PatchErrorMessage {
 	private String causeExceptionMsg;
 	private String stackTrace;
 
-	public PatchErrorMessage() {
-	}
-
-	public PatchErrorMessage(String timeStamp, String errorKey, String errorText, String causeExceptionMsg,
-			String stackTrace) {
-		super();
-		this.timestamp = timeStamp;
-		this.errorKey = errorKey;
-		this.errorText = errorText;
-		this.causeExceptionMsg = causeExceptionMsg;
-		this.stackTrace = stackTrace;
-	}
-
-	public String getErrorText() {
-		return errorText;
-	}
-
-	public void setErrorText(String errorText) {
-		this.errorText = errorText;
-	}
-
-	public String getCauseExceptionMsg() {
-		return causeExceptionMsg;
-	}
-
-	public void setCauseExceptionMsg(String causeExceptionMsg) {
-		this.causeExceptionMsg = causeExceptionMsg;
-	}
-
-	public String getStackTrace() {
-		return stackTrace;
-	}
-
-	public void setStackTrace(String stackTrace) {
-		this.stackTrace = stackTrace;
-	}
-
-	public String getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(String timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	public String getErrorKey() {
-		return errorKey;
-	}
-
-	public void setErrorKey(String errorKey) {
-		this.errorKey = errorKey;
-	}
-
-	@Override
-	public String toString() {
-		return "PatchErrorMessage [timestamp=" + timestamp + ", errorKey=" + errorKey + ", errorText=" + errorText
-				+ ", causeExceptionMsg=" + causeExceptionMsg + ", stackTrace=" + stackTrace + "]";
-	}
-
+	@JsonPOJOBuilder(withPrefix = "")
+	public static class PatchErrorMessageBuilder {}
 }

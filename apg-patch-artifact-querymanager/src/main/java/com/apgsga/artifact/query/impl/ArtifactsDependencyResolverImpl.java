@@ -30,7 +30,6 @@ import org.springframework.core.io.ResourceLoader;
 import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.MavenArtifact;
-import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.google.common.collect.Lists;
 
 public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolver {
@@ -54,8 +53,7 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 			try {
 				resource.getFile().mkdir();
 			} catch (IOException e) {
-				throw ExceptionFactory.createPatchServiceRuntimeException("ArtifactsDependencyResolverImpl.init.exception",
-						new Object[] { e.getMessage() }, e);			}
+				throw new RuntimeException("ArtifactsDependencyResolverImpl.init.exception",e);			}
 		}
 	}
 

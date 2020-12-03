@@ -5,7 +5,6 @@ import com.apgsga.microservice.patch.api.StageMapping;
 import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,7 +42,7 @@ public class TaskCreatePatchPipeline implements Runnable {
 	public void run() {
 		try {
 			Map<String, String> jobParm = Maps.newHashMap();
-			jobParm.put("patchnumber", patch.getPatchNummer());
+			jobParm.put("patchnumber", patch.getPatchNumber());
 			jobParm.put("stages", getStages());
 			JenkinsSshCommand buildJobCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForCompleteCmd(jenkinsHost, jenkinsSshPort, jenkinsSshUser, "PatchJobBuilder", jobParm);
 			ProcessBuilderCmdRunnerFactory factory = new ProcessBuilderCmdRunnerFactory();

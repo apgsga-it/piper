@@ -68,7 +68,7 @@ public class FilebasedPersistenceTest {
 	public void testFindById() {
 		Patch result = repo.findById("5401");
 		assertNotNull(result);
-		assertEquals("5401", result.getPatchNummer());
+		assertEquals("5401", result.getPatchNumber());
 	}
 
 	@Test
@@ -208,7 +208,7 @@ public class FilebasedPersistenceTest {
 	public void testPackagernameFor() {
 		Service s = new Service();
 		s.setServiceName("It21Ui");
-		String packagerName = patchSystemInfoRepo.packagerNameFor(s);
+		String packagerName = patchSystemInfoRepo.packagesFor(s);
 		assertEquals("packagerForIt21",packagerName);
 	}
 }

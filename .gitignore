@@ -27,3 +27,4 @@
 **/CVS/*
 .cvsignore
 */.cvsignore
+/apg-patch-service-api/lombok.config

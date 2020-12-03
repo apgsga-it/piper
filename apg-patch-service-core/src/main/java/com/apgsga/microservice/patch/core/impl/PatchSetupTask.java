@@ -45,32 +45,32 @@ public class PatchSetupTask implements Runnable {
 	@Override
 	public void run() {
 		try {
-			LOGGER.info("Patch Setup Task started for patch " + patch.getPatchNummer());
+			LOGGER.info("Patch Setup Task started for patch " + patch.getPatchNumber());
 			jschSession.preProcess();
 			if (!patch.getDbObjectsAsVcsPath().isEmpty()) {
-				LOGGER.info("Creating Tag for DB Objects for patch " + patch.getPatchNummer());
+				LOGGER.info("Creating Tag for DB Objects for patch " + patch.getPatchNumber());
 				jschSession.run(PatchSshCommand.createTagPatchModulesCmd(patch.getPatchTag(), patch.getDbPatchBranch(),
 						patch.getDbObjectsAsVcsPath()));
 			}
 			for (Service service : patch.getServices()) {
 				if (!service.getMavenArtifactsAsVcsPath().isEmpty()) {
-					LOGGER.info("Creating Tag for Java Artifact for patch " + patch.getPatchNummer() + " and service " + service.getServiceName());
+					LOGGER.info("Creating Tag for Java Artifact for patch " + patch.getPatchNumber() + " and service " + service.getServiceName());
 					jschSession.run(PatchSshCommand.createTagPatchModulesCmd(patch.getPatchTag(), service.getMicroServiceBranch(),
 							service.getMavenArtifactsAsVcsPath()));
 				}
 			}
 			jschSession.postProcess();
 			for (Service service : patch.getServices()) {
-				LOGGER.info("Resolving Java Artifact dependencies for patch " + patch.getPatchNummer() + " and service " + service.getServiceName());
-				dependencyResolver.resolveDependencies(service.getMavenArtifacts());
+				LOGGER.info("Resolving Java Artifact dependencies for patch " + patch.getPatchNumber() + " and service " + service.getServiceName());
+				dependencyResolver.resolveDependencies(service.getArtifactsToPatch());
 			}
 			repo.savePatch(patch);
-			LOGGER.info("Patch Setup Task started for patch " + patch.getPatchNummer() + " DONE !! -> notifying db accordingly!");
-			patchRdms.notifyDb(NotifyDbParameters.create(patch.getPatchNummer()).successNotification(setupParams.getSuccessNotification()));
+			LOGGER.info("Patch Setup Task started for patch " + patch.getPatchNumber() + " DONE !! -> notifying db accordingly!");
+			patchRdms.notifyDb(NotifyDbParameters.create(patch.getPatchNumber()).successNotification(setupParams.getSuccessNotification()));
 		}
 		catch(Exception e) {
-			LOGGER.error("Patch Setup Task for patch " + patch.getPatchNummer() + " encountered an error :" + e.getMessage());
-			patchRdms.notifyDb(NotifyDbParameters.create(patch.getPatchNummer()).errorNotification(setupParams.getErrorNotification()));
+			LOGGER.error("Patch Setup Task for patch " + patch.getPatchNumber() + " encountered an error :" + e.getMessage());
+			patchRdms.notifyDb(NotifyDbParameters.create(patch.getPatchNumber()).errorNotification(setupParams.getErrorNotification()));
 		}
 	}
 }

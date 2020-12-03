@@ -13,7 +13,6 @@ import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,9 +92,9 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 	@Override
 	public synchronized void savePatch(Patch patch) {
 		Asserts.notNull(patch, "FilebasedPatchPersistence.save.patchobject.notnull.assert", new Object[] {});
-		Asserts.notNullOrEmpty(patch.getPatchNummer(),
+		Asserts.notNullOrEmpty(patch.getPatchNumber(),
 				"FilebasedPatchPersistence.save.patchnumber.notnullorempty.assert", new Object[] { patch.toString() });
-		writeToFile(patch, PATCH + patch.getPatchNummer() + JSON, this);
+		writeToFile(patch, PATCH + patch.getPatchNumber() + JSON, this);
 	}
 	
 	@Override
@@ -120,14 +119,14 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 	@Override
 	public synchronized void removePatch(Patch patch) {
 		Asserts.notNull(patch, "FilebasedPatchPersistence.remove.patchobject.notnull.assert", new Object[] {});
-		Asserts.notNullOrEmpty(patch.getPatchNummer(),
+		Asserts.notNullOrEmpty(patch.getPatchNumber(),
 				"FilebasedPatchPersistence.remove.patchnumber.notnullorempty.assert",
 				new Object[] { patch.toString() });
-		Asserts.isTrue((patchExists(patch.getPatchNummer())), "FilebasedPatchPersistence.remove.patch.exists.assert",
+		Asserts.isTrue((patchExists(patch.getPatchNumber())), "FilebasedPatchPersistence.remove.patch.exists.assert",
 				new Object[] { patch.toString() });
 		try {
 			LOGGER.info("Deleting patch: " + patch.toString());
-			File patchFile = createFile(PATCH + patch.getPatchNummer() + JSON);
+			File patchFile = createFile(PATCH + patch.getPatchNumber() + JSON);
 			LOGGER.info("Deleting patch: " + patch.toString() + ", result: " + patchFile.delete());
 
 		} catch (IOException e) {

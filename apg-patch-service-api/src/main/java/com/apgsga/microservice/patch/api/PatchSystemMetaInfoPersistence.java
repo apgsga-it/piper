@@ -1,5 +1,7 @@
 package com.apgsga.microservice.patch.api;
 
+import java.util.List;
+
 public interface PatchSystemMetaInfoPersistence {
 
     /**
@@ -31,7 +33,7 @@ public interface PatchSystemMetaInfoPersistence {
      * @param service
      * @return : the packager name define in our ServiceMetadata.json file for the corresponding service
      */
-    String packagerNameFor(Service service);
+    List<Package> packagesFor(Service service);
 
     /**
      *
