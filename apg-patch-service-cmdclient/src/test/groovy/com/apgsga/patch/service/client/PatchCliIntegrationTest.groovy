@@ -155,7 +155,9 @@ class PatchCliIntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-adp", "chei212"])
+			client.process(["-sa", "src/test/resources/Patch5401.json"])
+			client.process(["-sa", "src/test/resources/Patch5402.json"])
+			def result = client.process(["-adp", "5401;5402,dev-jhe,success,error"])
 		then:
 			result.returnCode == 0
 			result.results != null

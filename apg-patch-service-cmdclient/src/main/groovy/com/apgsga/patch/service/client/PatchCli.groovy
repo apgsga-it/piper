@@ -1,5 +1,6 @@
 package com.apgsga.patch.service.client
 
+import com.apgsga.microservice.patch.api.AssembleAndDeployParameters
 import com.apgsga.microservice.patch.api.BuildParameter
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.PatchLogDetails
@@ -96,7 +97,7 @@ class PatchCli {
 			build longOpt: 'build', args:4, valueSeparator: ",", argName: 'patchNumber,stage,successNotification,errorNotification', 'Build a patch for a stage. eg.: 8000,Informatiktest,doneOk', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
 			log longOpt: 'log', args:4, valueSeparator: ",", argName: 'patchNumber,target,step,text', 'Log a patch steps for a patch', required: false
-			adp longOpt: 'assembleDeployPipeline', args:1, argName: 'target', "starts an assembleAndDeploy pipeline for the given target", required: false
+			adp longOpt: 'assembleDeployPipeline', args:4, valueSeparator: ",", argName: 'listOfPatches,target,successNotification,errorNotification', "starts an assembleAndDeploy pipeline. First parameters is a list seprated with ';'", required: false
 			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "statusCode,destFolder", 'Copy patch files for a given status into the destfolder', required: false
 			i longOpt: 'install', args:1, argName: 'target', "starts an install pipeline for the given target", required: false
 			setup longOpt: 'setup', args:3, valueSeparator: ",", argName: 'patchNumber,successNotification,errorNotification', 'Starts setup for a patch, required before beeing ready to build', required: false
@@ -165,8 +166,8 @@ class PatchCli {
 			}
 		}
 		if (options.adp) {
-			if(options.adps.size() != 1) {
-				println "target parameter is required."
+			if(options.adps.size() != 4) {
+				println "Following parameters are required: <listOfPatch>,<target>,<successNotification>,<errorNotification>"
 				error = true
 			}
 		}
@@ -273,9 +274,16 @@ class PatchCli {
 	}
 
 	static def assembleAndDeployPipeline(def patchClient, def options) {
-		def target = options.adps[0]
-		println "Starting assembleAndDeploy pipeline for ${target}"
-		patchClient.startAssembleAndDeployPipeline(target)
+		def listOfPatches = options.adps[0]
+		def target = options.adps[1]
+		def successNotification = options.adps[2]
+		def errorNotification = options.adps[3]
+		println "Starting assembleAndDeploy pipeline for following patches ${listOfPatches} on target ${target} with successNotification=${successNotification} and errorNotification=${errorNotification}"
+		AssembleAndDeployParameters params = AssembleAndDeployParameters.create().target(target).successNotification(successNotification).errorNotification(errorNotification)
+		listOfPatches.split(";").collect().each {p ->
+			params.addPatchNumber(p)
+		}
+		patchClient.startAssembleAndDeployPipeline(params)
 	}
 
 	static def installPipeline(def patchClient, def options) {

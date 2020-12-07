@@ -1,5 +1,6 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
+import com.apgsga.microservice.patch.api.AssembleAndDeployParameters;
 import com.apgsga.microservice.patch.api.BuildParameter;
 import com.apgsga.microservice.patch.api.Patch;
 
@@ -9,7 +10,7 @@ public interface JenkinsClient {
 
 	void startProdBuildPatchPipeline(BuildParameter parameters);
 
-	void startAssembleAndDeployPipeline(String target, String parameter);
+	void startAssembleAndDeployPipeline(AssembleAndDeployParameters parameters);
 
 	void startInstallPipeline(String target, String parameter);
 }

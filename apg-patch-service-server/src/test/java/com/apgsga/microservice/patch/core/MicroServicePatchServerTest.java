@@ -223,10 +223,27 @@ public class MicroServicePatchServerTest {
 	}
 
 	@Test
-	public void testAssembleAndDeployStartPipeline() {
-		Map<String,String> params = Maps.newHashMap();
-		String target = "chei212";
-		patchService.startAssembleAndDeployPipeline(target);
+	public void testAssembleAndDeployStartPipelineForNonExistingPatch() {
+		AssembleAndDeployParameters params = AssembleAndDeployParameters.create()
+											.target("DEV-JHE")
+											.errorNotification("error")
+											.successNotification("success")
+											.addPatchNumber("1234")
+											.addPatchNumber("5678")
+											.addGradlePackageProjectAsVcsPath("testPkg");
+		patchService.startAssembleAndDeployPipeline(params);
+	}
+
+	@Test
+	public void testAssembleAndDeployStartPipelineForExistingPatch() {
+			AssembleAndDeployParameters params = AssembleAndDeployParameters.create()
+					.target("DEV-JHE")
+					.errorNotification("error")
+					.successNotification("success")
+					.addPatchNumber("1234")
+					.addPatchNumber("5678")
+					.addGradlePackageProjectAsVcsPath("testPkg");
+		patchService.startAssembleAndDeployPipeline(params);
 	}
 
 	@Test
