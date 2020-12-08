@@ -6,6 +6,7 @@ import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.core.commands.Command;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.JschSessionCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.exceptions.Asserts;
@@ -446,9 +447,21 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public void startAssembleAndDeployPipeline(String target) {
-		// TOOO (JHE, CHE: 13.10) And String parameter as Json according to Pipeline Requirements
-		jenkinsClient.startAssembleAndDeployPipeline(target,"");
+	public void startAssembleAndDeployPipeline(AssembleAndDeployParameters parameters) {
+		LOGGER.info("assembleAndDeploy parameters will be completed based on following: " + parameters.toString());
+		if(!parameters.getPatches().isEmpty()) {
+			parameters.getPatches().forEach(patchNumber -> {
+				Patch p = findById(patchNumber);
+				Asserts.notNull(p,"SimplePatchContainerBean.startAssembleAndDeployPipeline.patch.isnull", new Object[]{patchNumber});
+				p.getServices().forEach(service -> {
+					parameters.addGradlePackageProjectAsVcsPath(service.getPackagerName());
+				});
+			});
+			jenkinsClient.startAssembleAndDeployPipeline(parameters);
+		}
+		else {
+			LOGGER.warn("An assembleAndDeploy Pipeline job was requested without any Patch in the list. Parameters were: " + parameters.toString());
+		}
 	}
 
 	@Override
