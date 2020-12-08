@@ -228,8 +228,8 @@ public class MicroServicePatchServerTest {
 											.target("DEV-JHE")
 											.errorNotification("error")
 											.successNotification("success")
-											.addPatchNumber("1234")
-											.addPatchNumber("5678")
+											.addPatchNumber("5401")
+											.addPatchNumber("5402")
 											.addGradlePackageProjectAsVcsPath("testPkg");
 		patchService.startAssembleAndDeployPipeline(params);
 	}
@@ -240,8 +240,8 @@ public class MicroServicePatchServerTest {
 					.target("DEV-JHE")
 					.errorNotification("error")
 					.successNotification("success")
-					.addPatchNumber("1234")
-					.addPatchNumber("5678")
+					.addPatchNumber("5401")
+					.addPatchNumber("5402")
 					.addGradlePackageProjectAsVcsPath("testPkg");
 		patchService.startAssembleAndDeployPipeline(params);
 	}
