@@ -224,6 +224,12 @@ public class MicroServicePatchServerTest {
 
 	@Test
 	public void testAssembleAndDeployStartPipelineForNonExistingPatch() {
+		Patch p = new Patch();
+		p.setPatchNummer("5401");
+		Patch p2 = new Patch();
+		p2.setPatchNummer("5402");
+		patchService.save(p);
+		patchService.save(p2);
 		AssembleAndDeployParameters params = AssembleAndDeployParameters.create()
 											.target("DEV-JHE")
 											.errorNotification("error")
@@ -236,7 +242,13 @@ public class MicroServicePatchServerTest {
 
 	@Test
 	public void testAssembleAndDeployStartPipelineForExistingPatch() {
-			AssembleAndDeployParameters params = AssembleAndDeployParameters.create()
+		Patch p = new Patch();
+		p.setPatchNummer("5401");
+		Patch p2 = new Patch();
+		p2.setPatchNummer("5402");
+		patchService.save(p);
+		patchService.save(p2);
+		AssembleAndDeployParameters params = AssembleAndDeployParameters.create()
 					.target("DEV-JHE")
 					.errorNotification("error")
 					.successNotification("success")
