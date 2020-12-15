@@ -1,11 +1,14 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
+import com.apgsga.microservice.patch.api.AssembleAndDeployParameters;
 import com.apgsga.microservice.patch.api.BuildParameter;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -110,8 +113,14 @@ public class JenkinsClientImpl implements JenkinsClient {
 	}
 
 	@Override
-	public void startAssembleAndDeployPipeline(String target, String parameter) {
-		startGenericPipelineJobBuilder("assembleAndDeploy", jenkinsPipelineAssembleScript, target, parameter);
+	public void startAssembleAndDeployPipeline(AssembleAndDeployParameters parameters) {
+		ObjectMapper om = new ObjectMapper();
+		try {
+			startGenericPipelineJobBuilder("assembleAndDeploy", jenkinsPipelineAssembleScript, parameters.getTarget(), om.writeValueAsString(parameters));
+		} catch (JsonProcessingException e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startAssembleAndDeployPipeline.exception",
+					new Object[] {e.getMessage(),parameters.toString()},e);
+		}
 	}
 
 	@Override

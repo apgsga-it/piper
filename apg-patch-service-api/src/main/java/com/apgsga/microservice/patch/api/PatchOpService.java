@@ -44,10 +44,9 @@ public interface PatchOpService {
 	void cleanLocalMavenRepo();
 
 	/**
-	 * Starts the corresponding "assemble and deploy" pipeline
-	 * @param target target for which will assemble and deploy (chei211,chti211,etc...)
+	 * Dynamically create an assembleAndDeploy Pipeline, and start it
 	 */
-	void startAssembleAndDeployPipeline(String target);
+	void startAssembleAndDeployPipeline(AssembleAndDeployParameters parameters);
 
 	/**
 	 * Starts the corresponding "install" pipeline

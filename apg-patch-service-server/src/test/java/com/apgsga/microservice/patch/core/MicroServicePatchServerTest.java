@@ -308,10 +308,39 @@ public class MicroServicePatchServerTest {
 	}
 
 	@Test
-	public void testAssembleAndDeployStartPipeline() {
-		Map<String,String> params = Maps.newHashMap();
-		String target = "chei212";
-		patchService.startAssembleAndDeployPipeline(target);
+	public void testAssembleAndDeployStartPipelineForNonExistingPatch() {
+		Patch p = new Patch();
+		p.setPatchNummer("5401");
+		Patch p2 = new Patch();
+		p2.setPatchNummer("5402");
+		patchService.save(p);
+		patchService.save(p2);
+		AssembleAndDeployParameters params = AssembleAndDeployParameters.create()
+											.target("DEV-JHE")
+											.errorNotification("error")
+											.successNotification("success")
+											.addPatchNumber("5401")
+											.addPatchNumber("5402")
+											.addGradlePackageProjectAsVcsPath("testPkg");
+		patchService.startAssembleAndDeployPipeline(params);
+	}
+
+	@Test
+	public void testAssembleAndDeployStartPipelineForExistingPatch() {
+		Patch p = new Patch();
+		p.setPatchNummer("5401");
+		Patch p2 = new Patch();
+		p2.setPatchNummer("5402");
+		patchService.save(p);
+		patchService.save(p2);
+		AssembleAndDeployParameters params = AssembleAndDeployParameters.create()
+					.target("DEV-JHE")
+					.errorNotification("error")
+					.successNotification("success")
+					.addPatchNumber("5401")
+					.addPatchNumber("5402")
+					.addGradlePackageProjectAsVcsPath("testPkg");
+		patchService.startAssembleAndDeployPipeline(params);
 	}
 
 	@Test
