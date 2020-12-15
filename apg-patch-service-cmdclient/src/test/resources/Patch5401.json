@@ -26,7 +26,7 @@
 	],
 	"services": [
 		{
-			"serviceName": "It21ui",
+			"serviceName": "It21Ui",
 			"artifactsToPatch": [
 				{
 					"artifactId": "zentraldispo-dao",

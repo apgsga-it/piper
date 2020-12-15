@@ -338,7 +338,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					// TODO (JHE, 15.12) : Move this whole transformation into JenkinsPipelinePreprocessor
 					//TODO (JHE, 15.12) : Address the Multi Packager Scenario
 					//TODO (JHE, 15.12) : Below just a quick fix , that it compiles
-					parameters.addGradlePackageProjectAsVcsPath(service.getServiceMetaData().getPackages().get(0).getPackagerName());
+					parameters.addGradlePackageProjectAsVcsPath(repo.getServiceMetaDataByName(service.getServiceName()).getPackages().get(0).getPackagerName());
 				});
 			});
 			jenkinsClient.startAssembleAndDeployPipeline(parameters);
