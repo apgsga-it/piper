@@ -3,7 +3,6 @@ package com.apgsga.microservice.patch.core.impl.jenkins;
 import com.apgsga.microservice.patch.api.AssembleAndDeployParameters;
 import com.apgsga.microservice.patch.api.BuildParameter;
 import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
@@ -13,7 +12,6 @@ import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileSystemResourceLoader;
@@ -26,6 +24,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 @Profile("live")
 @Component("jenkinsBean")
 public class JenkinsClientImpl implements JenkinsClient {

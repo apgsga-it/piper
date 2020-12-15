@@ -1,7 +1,6 @@
 package com.apgsga.artifact.query.impl;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -21,8 +20,6 @@ import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.test.config.TestConfig;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 

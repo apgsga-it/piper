@@ -34,10 +34,10 @@ public class AtomicFileWriteManager {
 	}
 
 	protected static final Log LOGGER = LogFactory.getLog(AtomicFileWriteManager.class.getName());
-	private LoggerFacade loggerFacade = new CommonsLoggingLogger(LOGGER);
+	private final LoggerFacade loggerFacade = new CommonsLoggingLogger(LOGGER);
 
-	private Resource storagePath;
-	private Resource tempStoragePath;
+	private final Resource storagePath;
+	private final Resource tempStoragePath;
 
 	public AtomicFileWriteManager(Resource storagePath, Resource tempStoragePath) {
 		this.storagePath = storagePath;

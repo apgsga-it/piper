@@ -14,6 +14,6 @@ public abstract class JenkinsCliBaseTest {
     public static final String JENKINS_URL = "http://" + JENKINS_HOST + ":" + JENKINS_PORT;
     public static final String JOB_NAME_WITHOUT_FILE_PARAM = "PatchJobBuilder";
     public static final String JOB_NAME_WITH_FILE_PARAM = "Patch8000";
-    public static List<String> SSH_CMD = Lists.newArrayList("ssh");
-    public static List<String> CURL_CMD = Lists.newArrayList("curl");
+    public static final List<String> SSH_CMD = Lists.newArrayList("ssh");
+    public static final List<String> CURL_CMD = Lists.newArrayList("curl");
 }

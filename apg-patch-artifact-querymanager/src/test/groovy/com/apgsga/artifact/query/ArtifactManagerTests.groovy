@@ -1,24 +1,12 @@
 package com.apgsga.artifact.query
-import java.lang.ClassLoader.ParallelLoaders
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
 
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.io.FileSystemResourceLoader
-import org.springframework.core.io.Resource
-import org.springframework.core.io.ResourceLoader
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.util.FileSystemUtils
-
-import com.apgsga.artifact.query.impl.RepositorySystemFactoryImpl
 import com.apgsga.microservice.patch.api.MavenArtifact
 import com.apgsga.microservice.patch.api.SearchCondition
 import com.apgsga.test.config.TestConfig
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.common.collect.Count
-import groovy.json.JsonBuilder
-import spock.lang.Specification;
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.test.context.ContextConfiguration
+import spock.lang.Specification
 
 @ContextConfiguration(classes = TestConfig.class)
 class ArtifactManagerTests extends Specification {
@@ -36,12 +24,12 @@ class ArtifactManagerTests extends Specification {
 	def mavenRepoUserEncryptedPwd
 	
 	@Value('${mavenrepo.user.decryptpwd.key:}')
-	def mavenRepoUserDecryptKey;
+	def mavenRepoUserDecryptKey
 
-	def RepositorySystemFactory systemFactory
+	RepositorySystemFactory systemFactory
 	
 	def setup() {
-		systemFactory = RepositorySystemFactory.create(repoUrl, repoName, repoUser, mavenRepoUserEncryptedPwd, mavenRepoUserDecryptKey);
+		systemFactory = RepositorySystemFactory.create(repoUrl, repoName, repoUser, mavenRepoUserEncryptedPwd, mavenRepoUserDecryptKey)
 	}
 	
 	def "Default Filter Selection of Artifacts"() {
@@ -76,11 +64,11 @@ class ArtifactManagerTests extends Specification {
 		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", systemFactory)
 		when:
 		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT",SearchCondition.IT21UI)
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper()
 		def expectedTemplate = mapper.readValue(new File("src/test/resources/templateIt21Ui.json"),MavenArtifact[].class)
 		then:
 		assert results.size() > 0
-		assert results.equals(expectedTemplate)
+		assert results.toArray() == expectedTemplate
 	}
 	
 	def "With Application Filter Selection Persistence of Artifacts"() {
@@ -88,11 +76,11 @@ class ArtifactManagerTests extends Specification {
 		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", systemFactory)
 		when:
 		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT",SearchCondition.PERSISTENT).toSorted()
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper()
 		def expectedTemplate = Arrays.asList(mapper.readValue(new File("src/test/resources/templatePersistence.json"),MavenArtifact[].class)).toSorted()
 		then:
 		assert results.size() == 5
-		assert results.equals(expectedTemplate)
+		assert results == expectedTemplate
 	}
 	
 	def "With Application Filter Selection Forms2Java of Artifacts"() {
@@ -100,11 +88,11 @@ class ArtifactManagerTests extends Specification {
 		def artifactManager = ArtifactManager.create("com.affichage.common.maven","dm-bom","target/maverepo", systemFactory)
 		when:
 		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT",SearchCondition.FORMS2JAVA).toSorted()
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper()
 		def expectedTemplate = Arrays.asList(mapper.readValue(new File("src/test/resources/templateForms2Java.json"),MavenArtifact[].class)).toSorted()
 		then:
 		assert results.size() == 15
-		assert results.equals(expectedTemplate)
+		assert results == expectedTemplate
 	}
 	
 	def "With Application Filter Selection of Artifacts"() {
@@ -125,7 +113,7 @@ class ArtifactManagerTests extends Specification {
 		def results = artifactManager.getAllDependencies("9.1.0.ADMIN-UIMIG-SNAPSHOT",SearchCondition.APPLICATION)
 		def numberOfFilesBefore = artifactManager.getMavenLocalRepo().listFiles().length
 		artifactManager.cleanLocalMavenRepo()
-		def localRepo = artifactManager.getMavenLocalRepo(); 
+		def localRepo = artifactManager.getMavenLocalRepo()
 		def comAffichage = new File(localRepo, "com/affichage")
 		def comAffichageNumberOfFilesAfter = comAffichage.listFiles().length
 		def comApgsga = new File(localRepo, "com/apgsga")

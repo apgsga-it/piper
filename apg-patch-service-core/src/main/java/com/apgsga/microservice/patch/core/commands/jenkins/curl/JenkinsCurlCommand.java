@@ -7,11 +7,11 @@ import java.util.stream.Stream;
 
 public abstract class JenkinsCurlCommand extends CommandBaseImpl {
 
-    protected String JENKINS_SSH_USER;
+    protected final String JENKINS_SSH_USER;
 
-    protected String JENKINS_SSH_USER_PWD;
+    protected final String JENKINS_SSH_USER_PWD;
 
-    protected String JENKINS_URL;
+    protected final String JENKINS_URL;
 
     public JenkinsCurlCommand(String jenkinsUrl, String jenkinsUserName, String jenkinsUserPwd) {
         super();
@@ -34,17 +34,15 @@ public abstract class JenkinsCurlCommand extends CommandBaseImpl {
 
     @Override
     protected String[] getParameterAsArray() {
-        String[] parameter = Stream.concat(Arrays.stream(getFirstPart()), Arrays.stream(getCurlCmd()))
+        return Stream.concat(Arrays.stream(getFirstPart()), Arrays.stream(getCurlCmd()))
                 .toArray(String[]::new);
-        return parameter;
     }
 
     @Override
     protected String getParameterSpaceSeperated() {
         String[] processParm = Stream.concat(Arrays.stream(getFirstPart()), Arrays.stream(getCurlCmd()))
                 .toArray(String[]::new);
-        String parameter = String.join(" ", processParm);
-        return parameter;
+        return String.join(" ", processParm);
     }
 
     private String[] getFirstPart() {

@@ -13,7 +13,7 @@ public class IntegrationTestVcsSshCmds {
 
 	@Ignore("TODO make preconditions = cvs setup automatic")
 	@Test
-	public void testCreatePatchBranch() throws Exception {
+	public void testCreatePatchBranch() {
 		// JHE (25.06.2018): Within JAVA8MIG-386, we removed vcs.password, probably this test would noe fail
 		CommandRunner runner = new JschSessionCmdRunnerFactory("che","192.168.17.129").create();
 		runner.preProcess();
@@ -26,7 +26,7 @@ public class IntegrationTestVcsSshCmds {
 	
 	@Ignore("TODO make preconditions = cvs setup automatic")
 	@Test
-	public void testCreatePatchTag() throws Exception {
+	public void testCreatePatchTag() {
 		// JHE (25.06.2018): Within JAVA8MIG-386, we removed vcs.password, probably this test would noe fail		
 		CommandRunner runner = new JschSessionCmdRunnerFactory("che","192.168.17.129").create();
 		runner.preProcess();
@@ -39,7 +39,7 @@ public class IntegrationTestVcsSshCmds {
 	
 	@Ignore("TODO make preconditions = cvs setup automatic")
 	@Test
-	public void testDiff() throws Exception {
+	public void testDiff() {
 		// JHE (25.06.2018): Within JAVA8MIG-386, we removed vcs.password, probably this test would noe fail		
 		CommandRunner runner = new JschSessionCmdRunnerFactory("che","192.168.17.129").create();
 		runner.preProcess();

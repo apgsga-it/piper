@@ -23,15 +23,11 @@ import com.google.common.collect.Lists;
 
 public class RepositorySystemFactoryImpl implements RepositorySystemFactory {
 	
-	private String mavenRepoUsername;
-	private String mavenRepoBaseUrl;
-	private String mavenRepoName;
-	private String mavenRepoUserPwd;
-	
-	public RepositorySystemFactoryImpl(){
-		
-	}
-	
+	private final String mavenRepoUsername;
+	private final String mavenRepoBaseUrl;
+	private final String mavenRepoName;
+	private final String mavenRepoUserPwd;
+
 	public RepositorySystemFactoryImpl(String mavenRepoUsername, String mavenRepoBaseUrl, String mavenRepoName, String mavenRepoUserPwd) {
 		this.mavenRepoBaseUrl = mavenRepoBaseUrl;
 		this.mavenRepoName = mavenRepoName;
@@ -69,38 +65,14 @@ public class RepositorySystemFactoryImpl implements RepositorySystemFactory {
 
 	public List<RemoteRepository> newRepositories() {
 		List<RemoteRepository> remoteRepos = Lists.newArrayList();
-		remoteRepos.add(newCentralRepository("central", mavenRepoBaseUrl + "/" + mavenRepoName));
-		return new ArrayList<RemoteRepository>(remoteRepos);
+		remoteRepos.add(newCentralRepository(mavenRepoBaseUrl + "/" + mavenRepoName));
+		return new ArrayList<>(remoteRepos);
 	}
 
-	private RemoteRepository newCentralRepository(String name, String url) {
+	private RemoteRepository newCentralRepository(String url) {
         Authentication auth = new AuthenticationBuilder().addUsername(mavenRepoUsername).addPassword( this.mavenRepoUserPwd ).build();
-		return new RemoteRepository.Builder(name, "default", url).setAuthentication( auth ).build();
+		return new RemoteRepository.Builder("central", "default", url).setAuthentication( auth ).build();
 	}
 
-	public String getMavenRepoUsername() {
-		return mavenRepoUsername;
-	}
-
-	public void setMavenRepoUsername(String mavenRepoUsername) {
-		this.mavenRepoUsername = mavenRepoUsername;
-	}
-
-	public String getMavenRepoBaseUrl() {
-		return mavenRepoBaseUrl;
-	}
-
-	public void setMavenRepoBaseUrl(
-			String mavenRepoBaseUrl) {
-		this.mavenRepoBaseUrl = mavenRepoBaseUrl;
-	}
-
-	public String getMavenRepoName() {
-		return mavenRepoName;
-	}
-
-	public void setMavenRepoName(String mavenRepoName) {
-		this.mavenRepoName = mavenRepoName;
-	}
 
 }

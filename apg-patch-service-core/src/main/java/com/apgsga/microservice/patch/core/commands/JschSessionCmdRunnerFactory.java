@@ -39,8 +39,7 @@ public class JschSessionCmdRunnerFactory implements CommandRunnerFactory {
 		java.util.Properties config = new java.util.Properties();
 		config.put("StrictHostKeyChecking", "no");
 		session.setConfig(config);
-		final CommandRunner jschSession = new JschCommandRunner(session);
-		return jschSession;
+		return new JschCommandRunner(session);
 	}
 
 }

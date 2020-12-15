@@ -35,28 +35,29 @@ public interface PatchService {
 	/**
 	 * List all Maven Artifacts 
 	 * @return list of Maven Arifacts
-	 * @param serviceName
+	 * @param serviceName the Name of the Service for which the Artifacts are listed
 	 */
     List<MavenArtifact> listMavenArtifacts(String serviceName);
 	/**
 	 * List all changed 
-	 * @param searchString
+	 * @param searchString is contained in Filename
 	 * @return List of changed DbObjects 
 	 */
-    List<DbObject> listAllObjectsChangedForDbModule(String patchNummber, String searchString);
+    List<DbObject> listAllObjectsChangedForDbModule(String patchNumber, String searchString);
 
 	/**
 	 * List all SQL Resource for module name matching searchString
-	 * @param patchNumber
-	 * @param searchString
+	 * @param patchNumber of the Patch
+	 * @param searchString  is contained in Filename
 	 * @return List of DbObjects
 	 */
     List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString);
 
 	/**
 	 * List all SQL Resource for module name matching searchString. Temporary checkout will be done in a folder specific for the given username
-	 * @param patchNumber
-	 * @param searchString
+	 * @param patchNumber of the Patch
+	 * @param searchString  is contained in Filename
+	 * @param username the User, who has commited the changes
 	 * @return List of DbObjects
 	 */
     List<DbObject> listAllObjectsForDbModule(String patchNumber, String searchString, String username);
@@ -86,7 +87,7 @@ public interface PatchService {
 	
 	/**
 	 * Log all steps done for a patch
-	 * @param logDetails
+	 * @param logDetails the Log Details of a Patchlog
 	 */
     void log(String patchNumber, PatchLogDetails logDetails);
 

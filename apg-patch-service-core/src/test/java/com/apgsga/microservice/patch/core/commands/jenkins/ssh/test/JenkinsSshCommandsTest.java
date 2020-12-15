@@ -40,7 +40,7 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
         ProcessBuilderCmdRunnerFactory runnerFactory = new ProcessBuilderCmdRunnerFactory();
         CommandRunner runner = runnerFactory.create();
         List<String> result = runner.run(jenkinsSshCommand);
-        Assert.assertTrue("Returned message should contain SUCCESS",result.stream().anyMatch(c -> {return c.contains("SUCCESS");}));
+        Assert.assertTrue("Returned message should contain SUCCESS",result.stream().anyMatch(c -> c.contains("SUCCESS")));
     }
 
     @Test
@@ -51,7 +51,7 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
         ProcessBuilderCmdRunnerFactory runnerFactory = new ProcessBuilderCmdRunnerFactory();
         CommandRunner runner = runnerFactory.create();
         List<String> result = runner.run(jenkinsSshCommand);
-        Assert.assertTrue("Returned message should contain SUCCESS",result.stream().anyMatch(c -> {return c.contains("SUCCESS");}));
+        Assert.assertTrue("Returned message should contain SUCCESS",result.stream().anyMatch(c -> c.contains("SUCCESS")));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
         ProcessBuilderCmdRunnerFactory runnerFactory = new ProcessBuilderCmdRunnerFactory();
         CommandRunner runner = runnerFactory.create();
         List<String> result = runner.run(jenkinsSshCommand);
-        Assert.assertTrue("Returned message should contain SUCCESS",result.stream().anyMatch(c -> {return c.contains("Started " + JOB_NAME_WITHOUT_FILE_PARAM + " #");}));
+        Assert.assertTrue("Returned message should contain SUCCESS",result.stream().anyMatch(c -> c.contains("Started " + JOB_NAME_WITHOUT_FILE_PARAM + " #")));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
         ProcessBuilderCmdRunnerFactory runnerFactory = new ProcessBuilderCmdRunnerFactory();
         CommandRunner runner = runnerFactory.create();
         List<String> result = runner.run(jenkinsSshCommand);
-        Assert.assertTrue("Returned message should contain SUCCESS",result.stream().anyMatch(c -> {return c.contains("Started " + JOB_NAME_WITHOUT_FILE_PARAM + " #");}));
+        Assert.assertTrue("Returned message should contain SUCCESS",result.stream().anyMatch(c -> c.contains("Started " + JOB_NAME_WITHOUT_FILE_PARAM + " #")));
     }
 
     @Test
@@ -82,9 +82,7 @@ public class JenkinsSshCommandsTest extends JenkinsCliBaseTest {
         ProcessBuilderCmdRunnerFactory runnerFactory = new ProcessBuilderCmdRunnerFactory();
         CommandRunner runner = runnerFactory.create();
         List<String> result = runner.run(jenkinsSshCommand);
-        result.forEach(s -> {
-            System.out.println(s);
-        });
+        result.forEach(System.out::println);
         System.out.println("DONE");
     }
 }

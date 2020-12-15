@@ -15,7 +15,6 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
@@ -27,7 +26,6 @@ import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.resolution.ArtifactRequest;
-import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.transfer.ArtifactNotFoundException;
 import org.slf4j.Logger;
@@ -85,6 +83,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void init() {
         final ResourceLoader rl = new FileSystemResourceLoader();
         localRepoResource = rl.getResource(localRepo);
@@ -202,8 +201,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
      * List, java.lang.String)
      */
     @Override
-    public List<MavenArtifact> getAllDependencies(String serviceVersion)
-            throws ArtifactResolutionException {
+    public List<MavenArtifact> getAllDependencies(String serviceVersion) {
         return getAllDependencies(serviceVersion, SearchCondition.APPLICATION);
     }
 
@@ -244,7 +242,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
 
     private boolean filter(List<MavenArtifact> templateList, MavenArtifact art) {
-        return templateList.stream().filter(o -> o.getArtifactId().equals(art.getArtifactId()) &&  o.getGroupId().equals(art.getGroupId())).findFirst().isPresent();
+        return templateList.stream().anyMatch(o -> o.getArtifactId().equals(art.getArtifactId()) &&  o.getGroupId().equals(art.getGroupId()));
     }
 
 
@@ -270,6 +268,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private static void normalizeVersion(MavenArtifact artifact, String version, Properties properties) {
         String key = version.substring(2, version.length() - 1);
         String value = properties.getProperty(key);

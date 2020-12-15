@@ -9,7 +9,7 @@ public interface PatchRdbms {
 
     /**
      * notify the DB that a task has been correctly done for a patch
-     * @param params
+     * @param params with witch are notified
      */
     void notify(NotificationParameters params);
 

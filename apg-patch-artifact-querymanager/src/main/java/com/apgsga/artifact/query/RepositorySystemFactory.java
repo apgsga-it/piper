@@ -11,20 +11,20 @@ import com.apgsga.artifact.query.impl.RepositorySystemFactoryImpl;
 
 public interface RepositorySystemFactory {
 	
-	public static RepositorySystemFactory create(String baseUrl, String repoName, String user, String userPwd) {
+	static RepositorySystemFactory create(String baseUrl, String repoName, String user, String userPwd) {
 		return new RepositorySystemFactoryImpl(user,baseUrl,repoName,userPwd);
 	}
 	
-	public static RepositorySystemFactory create(String baseUrl, String repoName, String user, String encryptedPassword, String decryptKey) {
+	static RepositorySystemFactory create(String baseUrl, String repoName, String user, String encryptedPassword, String decryptKey) {
 		BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
 		textEncryptor.setPassword(decryptKey == null || decryptKey.isEmpty() ? "apgdevops" : decryptKey);
 		String decryptedPwd = textEncryptor.decrypt(encryptedPassword);
 		return create(baseUrl,repoName,user,decryptedPwd);
 	}
 	
-	public List<RemoteRepository> newRepositories();
+	List<RemoteRepository> newRepositories();
 	
-	public RepositorySystem newRepositorySystem();
+	RepositorySystem newRepositorySystem();
 	
-	public DefaultRepositorySystemSession newRepositorySystemSession(RepositorySystem system, String localRepoPath);
+	DefaultRepositorySystemSession newRepositorySystemSession(RepositorySystem system, String localRepoPath);
 }

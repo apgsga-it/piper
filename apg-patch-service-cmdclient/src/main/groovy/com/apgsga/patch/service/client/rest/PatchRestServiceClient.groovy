@@ -14,25 +14,25 @@ import org.springframework.web.client.RestTemplate
 class PatchRestServiceClient implements PatchOpService {
 
 
-	private String baseUrl;
+	private String baseUrl
 
-	private RestTemplate restTemplate;
+	private RestTemplate restTemplate
 
 
-	public PatchRestServiceClient(def baseUrl) {
-		this.baseUrl = baseUrl;
-		this.restTemplate = new RestTemplate();
+	PatchRestServiceClient(def baseUrl) {
+		this.baseUrl = baseUrl
+		this.restTemplate = new RestTemplate()
 		restTemplate.setErrorHandler(new PatchCliExceptionHandler())
 	}
 
 
 	def getRestBaseUri() {
-		"http://" + baseUrl + "/patch/private";
+		"http://" + baseUrl + "/patch/private"
 	}
 
 	@Override
-	public void cleanLocalMavenRepo() {
-		restTemplate.postForLocation(getRestBaseUri() + "/cleanLocalMavenRepo", null);
+	void cleanLocalMavenRepo() {
+		restTemplate.postForLocation(getRestBaseUri() + "/cleanLocalMavenRepo", null)
 	}
 
 	@Override
@@ -47,13 +47,13 @@ class PatchRestServiceClient implements PatchOpService {
 
 	@Override
 	void copyPatchFiles(Map params) {
-		restTemplate.postForLocation(getRestBaseUri() + "/copyPatchFiles", params);
+		restTemplate.postForLocation(getRestBaseUri() + "/copyPatchFiles", params)
 	}
 
 
-	public void save(File patchFile, Class<Patch> clx) {
+	void save(File patchFile, Class<Patch> clx) {
 		println "File ${patchFile} to be uploaded"
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper()
 		def patchData = mapper.readValue(patchFile, clx)
 		save(patchData)
 	}
@@ -68,16 +68,17 @@ class PatchRestServiceClient implements PatchOpService {
 		restTemplate.postForLocation(getRestBaseUri() + "/setup", setupParams)
 	}
 
-	@Override
-	public Patch save(Patch patch) {
-		restTemplate.postForLocation(getRestBaseUri() + "/save", patch);
+    @SuppressWarnings('GroovyMissingReturnStatement')
+    @Override
+    Patch save(Patch patch) {
+		restTemplate.postForLocation(getRestBaseUri() + "/save", patch)
 		println patch.toString() + " Saved Patch."
 	}
 
 	@Override
 	void savePatchLog(String patchNumber, PatchLogDetails patchLogDetails) {
-		restTemplate.postForLocation(getRestBaseUri() + "/savePatchLog/${patchNumber}", patchLogDetails);
-		println "Saved PatchLog for " + patchNumber;
+		restTemplate.postForLocation(getRestBaseUri() + "/savePatchLog/${patchNumber}", patchLogDetails)
+		println "Saved PatchLog for " + patchNumber
 	}
 
 	@Override
@@ -88,7 +89,7 @@ class PatchRestServiceClient implements PatchOpService {
 
 	@Override
 	List<String> patchIdsForStatus(String statusCode) {
-		return restTemplate.getForObject(getRestBaseUri() + "/patchIdsForStatus/{status}", String[].class, [status:statusCode]);
+		return restTemplate.getForObject(getRestBaseUri() + "/patchIdsForStatus/{status}", String[].class, [status:statusCode])
 	}
 
 }

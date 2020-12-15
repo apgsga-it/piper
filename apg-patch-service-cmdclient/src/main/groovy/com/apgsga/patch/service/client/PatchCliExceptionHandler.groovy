@@ -11,7 +11,7 @@ import com.apgsga.microservice.patch.api.PatchErrorMessage
 
 class PatchCliExceptionHandler implements ResponseErrorHandler {
 
-	private static List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
+	private static List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>()
 	
 	static {
 		messageConverters.add(new MappingJackson2HttpMessageConverter())
@@ -19,18 +19,19 @@ class PatchCliExceptionHandler implements ResponseErrorHandler {
 
 	@Override
 	boolean hasError(ClientHttpResponse response) throws IOException {
-		return hasError(response.getStatusCode());
+		return hasError(response.getStatusCode())
 	}
 
-	protected boolean hasError(HttpStatus statusCode) {
-		return (statusCode.is4xxClientError() || statusCode.is5xxServerError());
+	protected  static boolean hasError(HttpStatus statusCode) {
+		return (statusCode.is4xxClientError() || statusCode.is5xxServerError())
 	}
 
-	@Override
-	void handleError(ClientHttpResponse response) throws IOException {
+    @SuppressWarnings('GroovyUncheckedAssignmentOfMemberOfRawType')
+    @Override
+    void handleError(ClientHttpResponse response) throws IOException {
 		HttpMessageConverterExtractor<PatchErrorMessage> errorMessageExtractor =
-				new HttpMessageConverterExtractor(PatchErrorMessage.class, messageConverters);
-		PatchErrorMessage errorObject = errorMessageExtractor.extractData(response);
-		throw new PatchClientServerException(errorObject);
+				new HttpMessageConverterExtractor(PatchErrorMessage.class, messageConverters)
+		PatchErrorMessage errorObject = errorMessageExtractor.extractData(response)
+		throw new PatchClientServerException(errorObject)
 	}
 }

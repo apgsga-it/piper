@@ -29,23 +29,9 @@ public class PatchServiceExceptionHandler extends ResponseEntityExceptionHandler
 		return error(ex, status); 
 	}
 
-	@ExceptionHandler(PatchServiceRuntimeException.class)
-	public ResponseEntity<Object> patchServiceRuntimeException(final PatchServiceRuntimeException e) {
-		return error(e);
-	}
-
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<Object> assertionException(final IllegalArgumentException e) {
 		return error(e, HttpStatus.CONFLICT);
-	}
-	
-	@ExceptionHandler({ Exception.class })
-	public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
-	   return error(ex,HttpStatus.INTERNAL_SERVER_ERROR); 
-	}
-	
-	private ResponseEntity<Object> error(final PatchServiceRuntimeException exception) {
-		return error(exception, exception.getHttpStatusCode()); 
 	}
 
 	private ResponseEntity<Object> error(final Exception exception, final HttpStatus httpStatus) {

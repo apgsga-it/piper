@@ -1,12 +1,9 @@
 package com.apgsga.microservice.patch.client;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Predicate;
-
 import com.apgsga.microservice.patch.api.*;
+import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
+import com.apgsga.microservice.patch.core.impl.persistence.PatchPersistenceImpl;
+import com.apgsga.microservice.patch.server.MicroPatchServer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,9 +23,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.FileCopyUtils;
 
-import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
-import com.apgsga.microservice.patch.server.MicroPatchServer;
-import com.apgsga.microservice.patch.core.impl.persistence.PatchPersistenceImpl;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
@@ -90,20 +88,14 @@ public class MicroServicePatchClientArtefactQueryTests {
 		Assert.assertNotNull(result);
 		List<MavenArtifact> mavenArtefacts = patchClient.listMavenArtifacts(result.getService("It21Ui").getServiceName());
 		Assert.assertTrue(mavenArtefacts.size() > 0);
-		Assert.assertTrue(mavenArtefacts.stream().allMatch(new Predicate<MavenArtifact>() {
-
-			@Override
-			public boolean test(MavenArtifact t) {
-				return t.getGroupId().startsWith("com.apgsga") || t.getGroupId().startsWith("com.affichage");
-			}
-		}));
+		Assert.assertTrue(mavenArtefacts.stream().allMatch(t -> t.getGroupId().startsWith("com.apgsga") || t.getGroupId().startsWith("com.affichage")));
 	}
 	
 	@Test
 	public void testFindPatchLog() {
 		PatchLog pl = patchClient.findPatchLogById("5401");
 		Assert.assertNotNull(pl);
-		Assert.assertTrue(pl.getLogDetails().size() == 1);
+		Assert.assertEquals(1, pl.getLogDetails().size());
 	}
 
 	@Test
@@ -121,20 +113,8 @@ public class MicroServicePatchClientArtefactQueryTests {
 		Assert.assertNotNull(result);
 		List<MavenArtifact> mavenArtefacts = patchClient.listMavenArtifacts(result.getService("It21Ui").getServiceName(), SearchCondition.ALL);
 		Assert.assertTrue(mavenArtefacts.size() > 0);
-		Assert.assertTrue(mavenArtefacts.stream().anyMatch(new Predicate<MavenArtifact>() {
-
-			@Override
-			public boolean test(MavenArtifact t) {
-				return t.getGroupId().startsWith("com.apgsga") || t.getGroupId().startsWith("com.affichage");
-			}
-		}));
-		Assert.assertTrue(mavenArtefacts.stream().anyMatch(new Predicate<MavenArtifact>() {
-
-			@Override
-			public boolean test(MavenArtifact t) {
-				return !t.getGroupId().startsWith("com.apgsga") &&  !t.getGroupId().startsWith("com.affichage");
-			}
-		}));
+		Assert.assertTrue(mavenArtefacts.stream().anyMatch(t -> t.getGroupId().startsWith("com.apgsga") || t.getGroupId().startsWith("com.affichage")));
+		Assert.assertTrue(mavenArtefacts.stream().anyMatch(t -> !t.getGroupId().startsWith("com.apgsga") &&  !t.getGroupId().startsWith("com.affichage")));
 	}
 
 }

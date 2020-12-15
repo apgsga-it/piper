@@ -13,31 +13,36 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 @Profile("live")
 @Component("jenkinsPipelinePreprocessor")
 public class JenkinsPipelinePreprocessor {
 
+    @SuppressWarnings("unused")
     protected static final Log LOGGER = LogFactory.getLog(JenkinsPipelinePreprocessor.class.getName());
 
 
     public static final String ENTWICKLUNG_STAGE = "entwicklung";
 
+    @SuppressWarnings("unused")
     @Autowired
     @Qualifier("patchPersistence")
     private PatchPersistence backend;
 
+    @SuppressWarnings("unused")
     @Autowired
     private ArtifactManager am;
 
+    @SuppressWarnings("unused")
     @Autowired
     private ArtifactDependencyResolver dependencyResolver;
 
 
     public String retrieveStagesTargetAsCSV() {
-        String stagesAsCSV = "";
+        StringBuilder stagesAsCSV = new StringBuilder();
         for (StageMapping sm : backend.stageMappings().getStageMappings()) {
             if (!sm.getName().equalsIgnoreCase(ENTWICKLUNG_STAGE)) {
-                stagesAsCSV += sm.getName() + ",";
+                stagesAsCSV.append(sm.getName()).append(",");
             }
         }
         return stagesAsCSV.substring(0, stagesAsCSV.length() - 1);
@@ -45,7 +50,7 @@ public class JenkinsPipelinePreprocessor {
 
     /**
      * Patch is automated with ServiceMetaData, Dependency Level and Module Name for further processing in the Pipeline
-     * @param bp
+     * @param bp Parameters for the Jenkins Pipelines
      */
     public void preProcessBuildPipeline(BuildParameter bp) {
         Patch patch = backend.findById(bp.getPatchNumber());
@@ -60,7 +65,7 @@ public class JenkinsPipelinePreprocessor {
             }
             services.add(service.toBuilder().serviceMetaData(serviceMetaData).build());
         }
-        backend.savePatch(patch.toBuilder().build());
+        backend.savePatch(patch.toBuilder().services(services).build());
 
     }
 

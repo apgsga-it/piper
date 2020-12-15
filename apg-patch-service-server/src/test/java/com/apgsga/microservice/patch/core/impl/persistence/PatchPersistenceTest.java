@@ -220,7 +220,7 @@ public class PatchPersistenceTest {
 		final ServicesMetaData servicesMetaData = ServicesMetaData.builder().servicesMetaData(com.google.common.collect.Lists.newArrayList(serviciceMetaData)).build();
 		repo.saveServicesMetaData(servicesMetaData);
 		List<Package> pkgs = repo.packagesFor(Service.builder().serviceName("xyzservice").build());
-		assertTrue(pkgs.size() == 1);
+        assertEquals(1, pkgs.size());
 		assertEquals("packagerForXyzservice",pkgs.iterator().next().getPackagerName());
 	}
 }

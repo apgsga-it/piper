@@ -11,7 +11,7 @@ import com.google.common.collect.Lists;
 public class IntegrationTestVcsMockCmds {
 
 	@Test
-	public void testCreatePatchBranch() throws Exception {
+	public void testCreatePatchBranch() {
 		CommandRunner runner = new LoggingMockSshRunnerFactory().create();
 		runner.preProcess();
 		Command cmd = PatchSshCommand.createCreatePatchBranchCmd("someBranch" + RandomUtils.nextInt(), "HEAD", "-d /home/che/local/cvs ",
@@ -21,7 +21,7 @@ public class IntegrationTestVcsMockCmds {
 	}
 	
 	@Test
-	public void testCreatePatchTag() throws Exception {
+	public void testCreatePatchTag() {
 		CommandRunner runner = new LoggingMockSshRunnerFactory().create();
 		runner.preProcess();
 		Command cmd = PatchSshCommand.createTagPatchModulesCmd("someTag" + RandomUtils.nextInt(), "HEAD", "-d /home/che/local/cvs ",
@@ -31,7 +31,7 @@ public class IntegrationTestVcsMockCmds {
 	}
 	
 	@Test
-	public void testDiff() throws Exception {
+	public void testDiff() {
 		CommandRunner runner = new LoggingMockSshRunnerFactory().create();
 		runner.preProcess();
 		Command cmd = PatchSshCommand.createDiffPatchModulesCmd("testBranch", "HEAD", "-d /home/che/local/cvs ",

@@ -21,7 +21,7 @@ public abstract class CommandBaseImpl implements Command {
         } else {
             processBuilderParm = getParameterAsArray();
         }
-        LOGGER.info("ProcessBuilder Parameters: " + Arrays.toString(processBuilderParm).toString());
+        LOGGER.info("ProcessBuilder Parameters: " + Arrays.toString(processBuilderParm));
         return processBuilderParm;
     }
 

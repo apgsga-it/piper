@@ -39,8 +39,8 @@ public class ProcessBuilderCmdRunner implements CommandRunner {
 
 	public static class StreamGobbler extends Thread {
 
-		List<String> output = Lists.newArrayList();
-		InputStream is;
+		final List<String> output = Lists.newArrayList();
+		final InputStream is;
 
 		public StreamGobbler(InputStream is) {
 			this.is = is;
@@ -51,7 +51,7 @@ public class ProcessBuilderCmdRunner implements CommandRunner {
 			try {
 				InputStreamReader isr = new InputStreamReader(is);
 				BufferedReader br = new BufferedReader(isr);
-				String line = null;
+				String line;
 				while ((line = br.readLine()) != null) {
 					LOGGER.info(line);
 					output.add(line);

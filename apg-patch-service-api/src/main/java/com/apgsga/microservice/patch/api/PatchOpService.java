@@ -6,9 +6,9 @@ import java.util.Map;
 
 public interface PatchOpService {
 
-		/**
-		 * TODO (jhe,2.12) Verfiy API Dependencies
-		 * extends PatchRdbms {
+		/*
+		  TODO (jhe,2.12) Verfiy API Dependencies
+		  extends PatchRdbms {
 		 */
 
 	/**

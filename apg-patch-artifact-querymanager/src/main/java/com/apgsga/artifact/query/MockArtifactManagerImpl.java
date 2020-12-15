@@ -1,15 +1,8 @@
 package com.apgsga.artifact.query;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import org.eclipse.aether.resolution.ArtifactResolutionException;
-import org.eclipse.aether.resolution.DependencyResolutionException;
 
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.SearchCondition;
@@ -17,14 +10,12 @@ import com.apgsga.microservice.patch.api.SearchCondition;
 public class MockArtifactManagerImpl implements ArtifactManager {
 
 	@Override
-	public List<MavenArtifact> getAllDependencies(String serviceVersion)
-			throws IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException {
+	public List<MavenArtifact> getAllDependencies(String serviceVersion) {
 		return Collections.emptyList();
 	}
 
 	@Override
-	public List<MavenArtifact> getAllDependencies(String serviceVersion, SearchCondition searchFilter)
-			throws IOException, XmlPullParserException, DependencyResolutionException, ArtifactResolutionException {
+	public List<MavenArtifact> getAllDependencies(String serviceVersion, SearchCondition searchFilter) {
 		return Collections.emptyList();
 
 	}

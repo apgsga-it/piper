@@ -1,12 +1,133 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="EntryPointsManager">
+    <entry_points version="2.0">
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.client.MicroServicePatchClientArtefactQueryTests repo" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.client.MicroServicePatchClientTest repo" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.core.config.MicroServicePatchConfig patchRdbms" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.client.MicroservicePatchClient LOGGER" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.client.MicroservicePatchClient START_INSTALL_PIPELINE" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.server.MicroServicePatchController LOGGER" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.server.MicroServicePatchController patchService" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.core.MicroServicePatchServerExceptionTests patchService" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.core.MicroServicePatchServerExceptionTests repo" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.core.MicroServicePatchServerTest patchService" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.core.MicroServicePatchServerTest repo" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.server.PatchOpServiceController patchRdbms" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.server.PatchOpServiceController patchService" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.server.PatchOpServiceController repo" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.patch.db.integration.impl.PatchRdbmsImpl jdbcTemplate" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean am" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean jenkinsClient" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean sshCommandRunnerFactory" />
+      <entry_point TYPE="field" FQNAME="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean threadExecutor" />
+    </entry_points>
     <list size="4">
       <item index="0" class="java.lang.String" itemvalue="org.springframework.beans.factory.annotation.Value" />
       <item index="1" class="java.lang.String" itemvalue="org.springframework.context.annotation.Bean" />
       <item index="2" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.ControllerAdvice" />
       <item index="3" class="java.lang.String" itemvalue="org.springframework.web.bind.annotation.RestController" />
     </list>
+    <pattern value="com.apgsga.microservice.patch.api.PatchOpService" method="build" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchOpService" method="cleanLocalMavenRepo" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchOpService" method="notify" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchOpService" method="patchIdsForStatus" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchOpService" method="save" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchOpService" method="savePatchLog" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchOpService" method="setup" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchOpService" method="startInstallPipeline" />
+    <pattern value="com.apgsga.microservice.patch.api.AssembleAndDeployParameters" />
+    <pattern value="com.apgsga.microservice.patch.api.AssembleAndDeployParameters" method="getErrorNotification" />
+    <pattern value="com.apgsga.microservice.patch.api.AssembleAndDeployParameters" method="getGradlePackagerProjectAsVscPath" />
+    <pattern value="com.apgsga.microservice.patch.api.AssembleAndDeployParameters" method="getSuccessNotification" />
+    <pattern value="com.apgsga.microservice.patch.core.commands.patch.vcs.ExportModulesInFolderCmd" method="getFirstPart" />
+    <pattern value="com.apgsga.microservice.patch.client.MicroservicePatchClient" />
+    <pattern value="com.apgsga.microservice.patch.server.MicroServicePatchController" method="listMavenArtifacts" />
+    <pattern value="com.apgsga.microservice.patch.server.MicroServicePatchController" />
+    <pattern value="com.apgsga.microservice.patch.core.MicroServicePatchServerExceptionTests" />
+    <pattern value="com.apgsga.microservice.patch.core.MicroServicePatchServerTest" />
+    <pattern value="com.apgsga.microservice.patch.core.MicroServicePatchServerTest" method="testStartInstallPipeline" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchOpService" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchOpService" method="startAssembleAndDeployPipeline" />
+    <pattern value="com.apgsga.microservice.patch.server.PatchOpServiceController" method="build" />
+    <pattern value="com.apgsga.microservice.patch.server.PatchOpServiceController" method="cleanLocalMavenRepo" />
+    <pattern value="com.apgsga.microservice.patch.server.PatchOpServiceController" method="copyPatchFiles" />
+    <pattern value="com.apgsga.microservice.patch.server.PatchOpServiceController" />
+    <pattern value="com.apgsga.microservice.patch.server.PatchOpServiceController" method="save" />
+    <pattern value="com.apgsga.microservice.patch.server.PatchOpServiceController" method="setup" />
+    <pattern value="com.apgsga.microservice.patch.server.PatchOpServiceController" method="startInstallPipeline" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchPersistence" method="findAllPatchIds" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchPersistence" method="listAllFiles" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchPersistence" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchService" method="findById" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchService" method="findByIds" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchService" method="findPatchLogById" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchService" method="findWithObjectName" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchService" method="listAllObjectsChangedForDbModule" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchService" method="listAllObjectsForDbModule" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchService" method="listDbModules" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchService" method="listMavenArtifacts" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchService" method="listOnDemandTargets" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchService" method="listServiceData" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchService" method="log" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchService" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchService" method="remove" />
+    <pattern value="com.apgsga.microservice.patch.api.PatchService" method="save" />
+    <pattern value="com.apgsga.microservice.patch.server.PatchServiceExceptionHandler" method="assertionException" />
+    <pattern value="com.apgsga.microservice.patch.core.commands.patch.vcs.RmTmpCheckoutFolder" method="getCommand" />
+    <pattern value="com.apgsga.microservice.patch.core.commands.patch.vcs.RmTmpCheckoutFolder" method="noSystemCheck" />
+    <pattern value="com.apgsga.microservice.patch.core.commands.patch.vcs.RmTmpCheckoutFolder" />
+    <pattern value="com.apgsga.microservice.patch.core.commands.patch.vcs.RmTmpCheckoutFolder" method="RmTmpCheckoutFolder" />
+    <pattern value="com.apgsga.microservice.patch.api.ServiceInstallation" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="build" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="cleanLocalMavenRepo" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="copyPatchFiles" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="findById" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="findPatchLogById" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="findWithObjectName" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="listAllObjectsChangedForDbModule" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="listOnDemandTargets" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="log" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="notify" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="patchIdsForStatus" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="remove" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="save" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="savePatchLog" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="setup" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="SimplePatchContainerBean" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="startAssembleAndDeployPipeline" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="startInstallPipeline" />
+    <pattern value="com.apgsga.microservice.patch.api.StageMapping" />
+    <pattern value="com.apgsga.microservice.patch.api.TargetInstance" />
+    <pattern value="com.apgsga.microservice.patch.client.MicroservicePatchClient" method="listAllObjectsChangedForDbModule" />
+    <pattern value="com.apgsga.microservice.patch.client.MicroservicePatchClient" method="listAllObjectsForDbModule" />
+    <pattern value="com.apgsga.microservice.patch.client.MicroservicePatchClient" method="listDbModules" />
+    <pattern value="com.apgsga.microservice.patch.client.MicroservicePatchClient" method="listServiceData" />
+    <pattern value="com.apgsga.microservice.patch.server.MicroServicePatchController" method="findById" />
+    <pattern value="com.apgsga.microservice.patch.server.MicroServicePatchController" method="findByIds" />
+    <pattern value="com.apgsga.microservice.patch.server.MicroServicePatchController" method="findPatchLogById" />
+    <pattern value="com.apgsga.microservice.patch.server.MicroServicePatchController" method="findWithObjectName" />
+    <pattern value="com.apgsga.microservice.patch.server.MicroServicePatchController" method="listAllObjectsChangedForDbModule" />
+    <pattern value="com.apgsga.microservice.patch.server.MicroServicePatchController" method="listAllObjectsForDbModule" />
+    <pattern value="com.apgsga.microservice.patch.server.MicroServicePatchController" method="listDbModules" />
+    <pattern value="com.apgsga.microservice.patch.server.MicroServicePatchController" method="listOnDemandTargets" />
+    <pattern value="com.apgsga.microservice.patch.server.MicroServicePatchController" method="listServiceData" />
+    <pattern value="com.apgsga.microservice.patch.server.MicroServicePatchController" method="log" />
+    <pattern value="com.apgsga.microservice.patch.server.MicroServicePatchController" method="remove" />
+    <pattern value="com.apgsga.microservice.patch.server.MicroServicePatchController" method="save" />
+    <pattern value="com.apgsga.microservice.patch.server.PatchOpServiceController" method="findAllPatchIds" />
+    <pattern value="com.apgsga.microservice.patch.server.PatchOpServiceController" method="listAllFiles" />
+    <pattern value="com.apgsga.microservice.patch.server.PatchOpServiceController" method="startAssembleAndDeployPipeline" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.persistence.PatchPersistenceImpl" method="findAllPatchIds" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.persistence.PatchPersistenceImpl" method="listAllFiles" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.persistence.PatchPersistenceImpl" />
+    <pattern value="com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand" method="PatchSshCommand" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="findByIds" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="listAllObjectsForDbModule" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="listDbModules" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="listMavenArtifacts" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" method="listServiceData" />
+    <pattern value="com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean" />
     <writeAnnotations>
       <writeAnnotation name="org.springframework.beans.factory.annotation.Value" />
     </writeAnnotations>

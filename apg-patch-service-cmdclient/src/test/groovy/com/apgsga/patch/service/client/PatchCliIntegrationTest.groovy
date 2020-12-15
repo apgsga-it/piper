@@ -51,15 +51,15 @@ class PatchCliIntegrationTest extends Specification {
 		println System.getProperties()
 
 		try {
-			final ResourceLoader rl = new FileSystemResourceLoader();
-			Resource testResources = rl.getResource("src/test/resources");
-			File metaInfoPersistFolder = new File(metaInfoDbLocation);
-			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/ServicesMetaData.json"), new File(metaInfoPersistFolder, "ServicesMetaData.json"));
-			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/OnDemandTargets.json"), new File(metaInfoPersistFolder, "OnDemandTargets.json"));
-			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/StageMappings.json"), new File(metaInfoPersistFolder, "StageMappings.json"));
-			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/TargetInstances.json"), new File(metaInfoPersistFolder, "TargetInstances.json"));
+			final ResourceLoader rl = new FileSystemResourceLoader()
+			Resource testResources = rl.getResource("src/test/resources")
+			File metaInfoPersistFolder = new File(metaInfoDbLocation)
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/ServicesMetaData.json"), new File(metaInfoPersistFolder, "ServicesMetaData.json"))
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/OnDemandTargets.json"), new File(metaInfoPersistFolder, "OnDemandTargets.json"))
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/StageMappings.json"), new File(metaInfoPersistFolder, "StageMappings.json"))
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/TargetInstances.json"), new File(metaInfoPersistFolder, "TargetInstances.json"))
 		} catch (IOException e) {
-			Assert.fail("Unable to copy JSON test files into testDb folder");
+			Assert.fail("Unable to copy JSON test files into testDb folder",e)
 		}
 	}
 
@@ -91,7 +91,7 @@ class PatchCliIntegrationTest extends Specification {
 			def dbFile = new File("${dbLocation}/Patch5401.json")
 			def sourceFile = new File("src/test/resources/Patch5401.json")
 			ObjectMapper mapper = new ObjectMapper()
-			mapper.readValue(sourceFile,Patch.class).equals(mapper.readValue(dbFile,Patch.class))
+			mapper.readValue(sourceFile, Patch.class) == mapper.readValue(dbFile, Patch.class)
 		cleanup:
 			repo.clean()
 	}
@@ -107,7 +107,7 @@ class PatchCliIntegrationTest extends Specification {
 			result != null
 			result.returnCode == 0
 			def dbFile = new File("${dbLocation}/Patch5401.json")
-			mapper.readValue(sourceFile,Patch.class).equals(mapper.readValue(dbFile,Patch.class))
+			mapper.readValue(sourceFile, Patch.class) == mapper.readValue(dbFile, Patch.class)
 		when:
 			def dbFileForChange = new File("${dbLocation}/Patch5401.json")
 			Patch patchFromDb = mapper.readValue(dbFileForChange,Patch.class)
@@ -119,7 +119,7 @@ class PatchCliIntegrationTest extends Specification {
 			result.returnCode == 0
 			def dbFile2 = new File("${dbLocation}/Patch5401.json")
 			Patch patchFromDb2 = mapper.readValue(dbFile2,Patch.class)
-			patchFromDb2.developerBranch.equals("thisIsDeveloperBranch")
+			patchFromDb2.developerBranch == "thisIsDeveloperBranch"
 		cleanup:
 			repo.clean()
 	}
@@ -237,24 +237,6 @@ class PatchCliIntegrationTest extends Specification {
 	}
 
 
-	// JHE (19.08.2020) : Ignoring this one because not guaranteed that Patches still exist
-	@Ignore
-	@Requires({PatchCliIntegrationTest.dbAvailable()})
-	def "Patch Cli correctly copies Patch JSON Files"() {
-		String destFolderPath = "src/test/resources/destFolderForPatch"
-		when:
-			new File(destFolderPath).mkdirs()
-			def patchcli = PatchCli.create()
-			patchcli.process(["-sa", "src/test/resources/Patch6201.json"])
-			patchcli.process(["-sa", "src/test/resources/Patch6202.json"])
-			def result = patchcli.process(["-cpf","Anwendertest,${System.getProperty('java.io.tmpdir')}"])
-		then:
-			println result
-		cleanup:
-			new File(destFolderPath).deleteDir()
-
-	}
-
 	// Preconditions for Tests used via Spock @Require
 	static def dbConnection() {
 		Properties pr = loadProperties()
@@ -272,7 +254,7 @@ class PatchCliIntegrationTest extends Specification {
 		try {
 			dbConnection()
 			return true
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 			return false
 		}
 	}
@@ -283,7 +265,7 @@ class PatchCliIntegrationTest extends Specification {
 			def sql = 'select status from  cm_patch_f where id = :patchNumber'
 			def result = db.firstRow(sql, [patchNumber:id])
 			return result != null
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 			return false
 		}
 	}

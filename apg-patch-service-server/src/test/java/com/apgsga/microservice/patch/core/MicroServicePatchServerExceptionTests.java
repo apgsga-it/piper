@@ -188,7 +188,7 @@ public class MicroServicePatchServerExceptionTests {
 		try {
 			Patch p = Patch.builder().patchNumber("2222").build();
 			patchService.save(p);
-			Assert.assertTrue("Patch 2222 hasn't been saved correctly",patchService.findById("2222") != null);
+            Assert.assertNotNull("Patch 2222 hasn't been saved correctly", patchService.findById("2222"));
 			BuildParameter bp = BuildParameter.builder().patchNumber("2222").stageName("dummy").successNotification("success").errorNotification("error").build();
 			patchService.build(bp);
 			fail("A runtime exception was expected");

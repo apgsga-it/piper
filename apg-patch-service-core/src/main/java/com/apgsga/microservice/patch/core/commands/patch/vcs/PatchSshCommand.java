@@ -10,8 +10,6 @@ import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.google.common.collect.Lists;
-
 public abstract class PatchSshCommand extends CommandBaseImpl {
 	
 	protected static final Log LOGGER = LogFactory.getLog(PatchSshCommand.class.getName());
@@ -23,18 +21,6 @@ public abstract class PatchSshCommand extends CommandBaseImpl {
 	public static Command createCreatePatchBranchCmd(String patchBranch, String prodBranch, String additionalOptions,
 													 List<String> modules) {
 		return new CreatePatchBranchCmd(patchBranch, prodBranch, additionalOptions, modules);
-	}
-
-	public static Command createDiffPatchModulesCmd(String patchBranch, String prodBranch, List<String> modules) {
-		return new DiffPatchModulesCmd(patchBranch, prodBranch, modules);
-	}
-
-	public static Command createDiffPatchModulesCmd(String patchBranch, String prodBranch, String module) {
-		return new DiffPatchModulesCmd(patchBranch, prodBranch, Lists.newArrayList(module));
-	}
-	
-	public static Command createDiffPatchModulesCmd(String patchBranch, String prodBranch, String additionalOptions, String module) {
-		return new DiffPatchModulesCmd(patchBranch, prodBranch,additionalOptions, Lists.newArrayList(module));
 	}
 	
 	public static Command createDiffPatchModulesCmd(String patchBranch, String prodBranch, String additionalOptions, List<String> modules) {
@@ -50,10 +36,6 @@ public abstract class PatchSshCommand extends CommandBaseImpl {
 												   List<String> modules) {
 		return new TagPatchModulesCmd(patchBranch, prodBranch, additionalOptions, modules);
 	}
-	
-	public static Command createSilentCoCvsModuleCmd(String cvsBranch, List<String> modules, String lastPart) {
-		return new SilentCOCvsModuleCmd(cvsBranch, modules, lastPart);
-	}
 
 	public static Command createCoCvsModuleToDirectoryCmd(String patchBranch, String prodBranch, List<String> modules, String additionalOptions) {
 		return new ExportModulesInFolderCmd(prodBranch,patchBranch,modules,additionalOptions);
@@ -65,9 +47,9 @@ public abstract class PatchSshCommand extends CommandBaseImpl {
 
 	protected String patchTag;
 
-	protected String prodBranch;
+	protected final String prodBranch;
 
-	protected List<String> modules;
+	protected final List<String> modules;
 
 	protected String additionalOptions = null;
 
@@ -103,10 +85,11 @@ public abstract class PatchSshCommand extends CommandBaseImpl {
 		} else {
 			processBuilderParm = getParameterAsArray();
 		}
-		LOGGER.info("ProcessBuilder Parameters: " + Arrays.toString(processBuilderParm).toString()); 
+		LOGGER.info("ProcessBuilder Parameters: " + Arrays.toString(processBuilderParm));
 		return processBuilderParm; 
 	}
 
+	@SuppressWarnings("SuspiciousToArrayCall")
 	@Override
 	protected String getParameterSpaceSeperated() {
 		String[] processParm = Stream.concat(Arrays.stream(getFirstPart()), Arrays.stream(modules.toArray()))
@@ -121,6 +104,7 @@ public abstract class PatchSshCommand extends CommandBaseImpl {
 		return parameter;
 	}
 
+	@SuppressWarnings("SuspiciousToArrayCall")
 	@Override
 	protected String[] getParameterAsArray() {
 		String[] parameter = Stream.concat(Arrays.stream(getFirstPart()), Arrays.stream(modules.toArray()))
@@ -132,8 +116,7 @@ public abstract class PatchSshCommand extends CommandBaseImpl {
 		
 		// TODO (che, 4.4.2018) : either via bash or path 
 		// TODO (che, 4.4.2018) : cvs Root either in Enviroment or Configuration
-		String[] processBuilderParm = Stream.concat(Arrays.stream(new String[] { "/usr/bin/cvs", "-d", "/var/local/cvs/root" }), Arrays.stream(parameter)).toArray(String[]::new);
-		return processBuilderParm;
+		return Stream.concat(Arrays.stream(new String[] { "/usr/bin/cvs", "-d", "/var/local/cvs/root" }), Arrays.stream(parameter)).toArray(String[]::new);
 	}
 
 	@Override

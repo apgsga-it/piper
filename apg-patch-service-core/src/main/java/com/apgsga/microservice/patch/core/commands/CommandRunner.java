@@ -4,8 +4,8 @@ import java.util.List;
 
 public interface CommandRunner {
 	
-	public void preProcess(); 
-	public List<String> run(Command cmd);
-	public void postProcess(); 
+	void preProcess();
+	List<String> run(Command cmd);
+	void postProcess();
 
 }
