@@ -31,8 +31,7 @@ public class MockArtifactManagerImpl implements ArtifactManager {
 
 
 	@Override
-	public String getArtifactName(String groupId, String artifactId, String version)
-			throws DependencyResolutionException, ArtifactResolutionException, IOException, XmlPullParserException {
+	public String getArtifactName(String groupId, String artifactId, String version) {
 		return artifactId;
 	}
 

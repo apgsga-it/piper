@@ -2,14 +2,15 @@ package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.apgsga.microservice.patch.api.BuildParameter;
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
-import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileSystemResourceLoader;
@@ -64,16 +65,17 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	@Autowired
 	private TaskExecutor threadExecutor;
+
+	@Autowired
+	private JenkinsPipelinePreprocessor preprocessor;
+
+	@Autowired
 	private CommandRunner cmdRunner;
 
-	public JenkinsClientImpl() {
-		ProcessBuilderCmdRunnerFactory runnerFactory = new ProcessBuilderCmdRunnerFactory();
-		cmdRunner = runnerFactory.create();
-	}
 
 	@Override
 	public void createPatchPipelines(Patch patch) {
-		threadExecutor.execute(TaskCreatePatchPipeline.create(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, patch));
+		threadExecutor.execute(TaskCreatePatchPipeline.create(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, preprocessor, patch));
 	}
 
 	@Override
@@ -81,8 +83,10 @@ public class JenkinsClientImpl implements JenkinsClient {
 		startBuildPipeline(buildParameters);
 	}
 
+	// TODO (che,jhe 9.12.20) : This should be probably also in a background Thread
 	private void startBuildPipeline(BuildParameter bp) {
 		try {
+			preprocessor.preProcessBuildPipeline(bp);
 			String patchName = PATCH_CONS + bp.getPatchNumber();
 			String jobName = patchName + "_build_" + bp.getStageName();
 			final ResourceLoader rl = new FileSystemResourceLoader();
@@ -91,7 +95,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 			Map<String,String> fileParams = Maps.newHashMap();
 			fileParams.put("patchFile.json",patchFile.getAbsolutePath());
 			Map<String,String> jobParameters = Maps.newHashMap();
-			jobParameters.put("TARGET",bp.getTarget());
+			jobParameters.put("TARGET",preprocessor.retrieveTargetForStageName(bp.getStageName()));
 			jobParameters.put("STAGE",bp.getStageName());
 			jobParameters.put("SUCCESS_NOTIFICATION",bp.getSuccessNotification());
 			jobParameters.put("ERROR_NOTIFICATION", bp.getErrorNotification());
@@ -127,4 +131,6 @@ public class JenkinsClientImpl implements JenkinsClient {
 		JenkinsSshCommand cmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, "GenericPipelineJobBuilder", parameters);
 		cmdRunner.run(cmd);
 	}
+
+
 }

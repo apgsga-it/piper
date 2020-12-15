@@ -1,10 +1,10 @@
 package com.apgsga.patch.service.client
 
 import com.apgsga.microservice.patch.api.BuildParameter
+import com.apgsga.microservice.patch.api.NotificationParameters
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.PatchLogDetails
 import com.apgsga.microservice.patch.api.SetupParameter
-import com.apgsga.patch.db.integration.impl.NotifyDbParameters
 import com.apgsga.patch.service.client.rest.PatchRestServiceClient
 import com.google.common.collect.Maps
 import org.codehaus.groovy.runtime.StackTraceUtils
@@ -218,7 +218,7 @@ class PatchCli {
 		cmdResult.stage = stage
 		cmdResult.successNotification = successNotification
 		cmdResult.errorNotification = errorNotification
-		BuildParameter bp = BuildParameter.create().patchNumber(patchNumber).stageName(stage).errorNotification(errorNotification).successNotification(successNotification)
+		BuildParameter bp = BuildParameter.builder().patchNumber(patchNumber).stageName(stage).errorNotification(errorNotification).successNotification(successNotification).build()
 		patchClient.build(bp)
 		return cmdResult
 	}
@@ -231,7 +231,7 @@ class PatchCli {
 		cmdResult.patchNumber = patchNumber
 		cmdResult.successNotification = successNotification
 		cmdResult.errorNotification = errorNotification
-		SetupParameter sp = SetupParameter.create().patchNumber(patchNumber).successNotification(successNotification).errorNotification(errorNotification)
+		SetupParameter sp = SetupParameter.builder().patchNumber(patchNumber).successNotification(successNotification).errorNotification(errorNotification).build()
 		patchClient.setup(sp)
 		return cmdResult
 	}
@@ -246,8 +246,13 @@ class PatchCli {
 		cmdResult.stage = stage
 		cmdResult.successNotification = successNotification
 		cmdResult.errorNotification = errorNotification
-		NotifyDbParameters params = NotifyDbParameters.create(patchNumber).stage(stage).successNotification(successNotification).errorNotification(errorNotification)
-		patchClient.notifyDb(params)
+		def builder = NotificationParameters.builder()
+		builder = builder.patchNumber(patchNumber)
+		builder = builder.stage(stage)
+		builder = builder.successNotification(successNotification)
+		builder = builder.errorNotification(errorNotification)
+		NotificationParameters params = builder.build()
+		patchClient.notify(params)
 		return cmdResult
 	}
 
@@ -263,11 +268,12 @@ class PatchCli {
 		def target = options.logs[1]
 		def step = options.logs[2]
 		def text = options.logs[3]
-		PatchLogDetails pld = new PatchLogDetails()
-		pld.setTarget(target)
-		pld.setPatchPipelineTask(step)
-		pld.setLogText(text)
-		pld.setDateTime(new Date())
+		def pldBuilder = PatchLogDetails.builder()
+		pldBuilder.target(target)
+		pldBuilder.patchPipelineTask(step)
+		pldBuilder.logText(text)
+		pldBuilder.datetime(new Date())
+		def pld = pldBuilder.build()
 		println "Logging patch activity for patch number ${patchNumber} with following info : target=${target},step=${step},text=${text}"
 		patchClient.savePatchLog(patchNumber,pld)
 	}

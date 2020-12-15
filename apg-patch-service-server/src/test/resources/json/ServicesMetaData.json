@@ -1,21 +1,55 @@
 {
-	"className": "com.apgsga.microservice.patch.api.ServicesMetaData",
 	"servicesMetaData": [
 		{
-			"className": "com.apgsga.microservice.patch.api.ServiceMetaData",
 			"serviceName": "It21Ui",
+			"bomCoordinates": {
+				"artifactId": "dm-bom",
+				"groupId": "com.affichage.common.maven",
+				"name": "_dm_bom",
+				"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
+				"dependencyLevel": 0
+			},
 			"microServiceBranch": "it21_release_9_1_0_admin_uimig",
 			"baseVersionNumber": "9.1.0",
 			"revisionMnemoPart": "ADMIN-UIMIG",
-			"packagerName": "packagerForIt21"
+			"packages": [
+				{
+					"packagerName": "it21ui-package",
+					"starterCoordinates": [
+						"someappgroupId:artifactId",
+						"anotherappgroupId:anotherartifactId"
+					]
+				},
+				{
+					"packagerName": "it21jadas-package",
+					"starterCoordinates": [
+						"someappgroupId:artifactId",
+						"anotherappgroupId:anotherartifactId"
+					]
+				}
+			]
 		},
 		{
-			"className": "com.apgsga.microservice.patch.api.ServiceMetaData",
-			"serviceName": "SomeOtherService",
-			"microServiceBranch": "it21_release_9_1_0_some_tag",
+			"serviceName": "SomeOther",
+			"bomCoordinates": {
+				"artifactId": "other-dm-bom",
+				"groupId": "com.affichage.common.maven",
+				"name": "_dm_bom",
+				"version": "1.1.0.WHATEVER-SNAPSHOT",
+				"dependencyLevel": 0
+			},
+			"microServiceBranch": "it21_release_9_1_0_admin_uimig",
 			"baseVersionNumber": "9.1.0",
-			"revisionMnemoPart": "SOME-TAG",
-			"packagerName": "packagerForSomeOtherService"
+			"revisionMnemoPart": "ADMIN-UIMIG",
+			"packages": [
+				{
+					"packagerName": "otherpackage",
+					"starterCoordinates": [
+						"someappgroupId:artifactId",
+						"anotherappgroupId:anotherartifactId"
+					]
+				}
+			]
 		}
 	]
 }

@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class TargetInstances {
 
-    private List<TargetInstance> targetInstances;
+    List<TargetInstance> targetInstances;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class TargetInstancesBuilder {}

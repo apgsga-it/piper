@@ -4,16 +4,12 @@ import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.artifact.query.RepositorySystemFactory;
 import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.api.PatchSystemMetaInfoPersistence;
-import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
-import com.apgsga.microservice.patch.core.commands.JschSessionCmdRunnerFactory;
-import com.apgsga.microservice.patch.core.commands.LoggingMockSshRunnerFactory;
-import com.apgsga.microservice.patch.core.commands.ProcessBuilderCmdRunnerFactory;
+import com.apgsga.microservice.patch.core.commands.*;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
-import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClientImpl;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsMockClient;
-import com.apgsga.microservice.patch.core.impl.persistence.FilePatchSystemMetaInfoPersistence;
-import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
+import com.apgsga.microservice.patch.core.impl.persistence.PatchPersistenceImpl;
+import com.apgsga.patch.db.integration.api.PatchRdbms;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,9 +40,6 @@ public class MicroServicePatchConfig {
 	@Value("${json.db.work.location:work}")
 	private String workDirLocation;
 
-	@Value("${json.meta.info.db.work.location:metaInfoWork}")
-	private String metaInfoWorkDirLocation;
-
 	@Value("${maven.localrepo.location}")
 	public String localRepo;
 
@@ -71,23 +64,21 @@ public class MicroServicePatchConfig {
 	@Value("${mavenrepo.user.decryptpwd.key:}")
 	private String mavenRepoUserDecryptKey;
 
+	@Autowired
+	private PatchRdbms patchRdbms;
+
 	@Bean(name = "patchPersistence")
 	public PatchPersistence patchFilebasePersistence() throws IOException {
 		final ResourceLoader rl = new FileSystemResourceLoader();
-		Resource dbStorabe = rl.getResource(dbLocation);
+		Resource dbStorageResource = rl.getResource(dbLocation);
 		Resource workDir = rl.getResource(workDirLocation);
-		final PatchPersistence per = new FilebasedPatchPersistence(dbStorabe, workDir);
-		return per;
+		if (metaInfoDbLocation != null && !metaInfoDbLocation.equals(dbLocation)) {
+			Resource metaDirResource = rl.getResource(metaInfoDbLocation);
+			return new PatchPersistenceImpl(dbStorageResource, metaDirResource, workDir,patchRdbms);
+		}
+		return new PatchPersistenceImpl(dbStorageResource, workDir,patchRdbms);
 	}
-	
-	@Bean(name = "patchMetaInfoPersistence")
-	public PatchSystemMetaInfoPersistence patchSystemMetaInfoPersistence() throws IOException {
-		final ResourceLoader rl = new FileSystemResourceLoader();
-		Resource metaInfoDbStorage = rl.getResource(metaInfoDbLocation);
-		Resource metaInfoWorkdir = rl.getResource(metaInfoWorkDirLocation);
-		final PatchSystemMetaInfoPersistence metaInfoPer = new FilePatchSystemMetaInfoPersistence(metaInfoDbStorage,metaInfoWorkdir);
-		return metaInfoPer;
-	}
+
 
 	@Bean(name = "dependencyResolver")
 	@Profile("live")
@@ -156,4 +147,12 @@ public class MicroServicePatchConfig {
 		executor.initialize();
 		return executor;
 	}
+
+	@Bean(name = "commandRunner")
+	public CommandRunner commandRunner() {
+		ProcessBuilderCmdRunnerFactory runnerFactory = new ProcessBuilderCmdRunnerFactory();
+		return runnerFactory.create();
+	}
+
+
 }

@@ -12,8 +12,8 @@ import java.util.List;
 @Builder
 public class TargetInstance {
 
-    private String name;
-    private List<ServiceMetaData> services;
+    String name;
+    List<ServiceMetaData> services;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class TargetInstanceBuilder {}

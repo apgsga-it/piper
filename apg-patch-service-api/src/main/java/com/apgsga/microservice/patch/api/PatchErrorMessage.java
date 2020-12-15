@@ -9,11 +9,11 @@ import lombok.*;
 @Builder
 public class PatchErrorMessage {
 
-	private String timestamp;
-	private String errorKey;
-	private String errorText;
-	private String causeExceptionMsg;
-	private String stackTrace;
+	String timestamp;
+	String errorKey;
+	String errorText;
+	String causeExceptionMsg;
+	String stackTrace;
 
 	@JsonPOJOBuilder(withPrefix = "")
 	public static class PatchErrorMessageBuilder {}

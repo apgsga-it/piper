@@ -11,8 +11,8 @@ import java.util.List;
 @Builder
 public class OnDemandTargets {
 
-    private List<String> onDemandTargets;
+    List<String> onDemandTargets;
 
     @JsonPOJOBuilder(withPrefix = "")
-    static class OnDemandTargetsBuilder {}
+    public static class OnDemandTargetsBuilder {}
 }

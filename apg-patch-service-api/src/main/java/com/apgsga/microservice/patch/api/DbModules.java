@@ -13,9 +13,9 @@ import java.util.List;
 public class DbModules {
 
 	@lombok.Builder.Default
-	private List<String> dbModules = Lists.newArrayList();
+	List<String> dbModules = Lists.newArrayList();
 
 	@JsonPOJOBuilder(withPrefix = "")
-	static class DbModulesBuilder {}
+	public static class DbModulesBuilder {}
 
 }

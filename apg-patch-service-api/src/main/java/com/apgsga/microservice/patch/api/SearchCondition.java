@@ -15,12 +15,12 @@ public enum SearchCondition {
 
 	SearchCondition(String enumName) {
 		this.enumName = enumName;
-		Holder.ENUMMAP.put(enumName, this);
+		Holder.ENUM_MAP.put(enumName, this);
 	}
 
 	@JsonCreator
 	public static SearchCondition forValue(String value) {
-		return Holder.ENUMMAP.get(StringUtils.lowerCase(value));
+		return Holder.ENUM_MAP.get(StringUtils.lowerCase(value));
 	}
 
 	@JsonValue
@@ -29,7 +29,7 @@ public enum SearchCondition {
 	}
 
 	private static class Holder {
-		static Map<String, SearchCondition> ENUMMAP = Maps.newHashMap();
+		static Map<String, SearchCondition> ENUM_MAP = Maps.newHashMap();
 	}
 
 }

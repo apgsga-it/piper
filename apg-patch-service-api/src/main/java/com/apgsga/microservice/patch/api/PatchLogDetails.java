@@ -11,10 +11,10 @@ import java.util.Date;
 @Builder
 public class PatchLogDetails  {
 
-	private Date datetime;
-	private String target;
-	private String patchPipelineTask;
-	private String logText;
+	Date datetime;
+	String target;
+	String patchPipelineTask;
+	String logText;
 
 	@JsonPOJOBuilder(withPrefix = "")
 	public static class PatchLogDetailsBuilder {}

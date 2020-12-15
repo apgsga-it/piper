@@ -1,10 +1,7 @@
 package com.apgsga.microservice.patch.core.impl;
 
-import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.*;
-import com.apgsga.microservice.patch.api.Package;
-import com.apgsga.microservice.patch.core.commands.Command;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
@@ -12,7 +9,7 @@ import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.apgsga.patch.db.integration.api.PatchRdbms;
-import com.apgsga.patch.db.integration.impl.NotifyDbParameters;
+import com.apgsga.microservice.patch.api.NotificationParameters;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FilenameUtils;
@@ -42,17 +39,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private PatchPersistence repo;
 
 	@Autowired
-	@Qualifier("patchMetaInfoPersistence")
-	private PatchSystemMetaInfoPersistence metaInfoRepo;
-
-	@Autowired
 	private JenkinsClient jenkinsClient;
 
 	@Autowired
 	private ArtifactManager am;
-
-	@Autowired
-	private ArtifactDependencyResolver dependecyResolver;
 
 	@Autowired
 	private CommandRunnerFactory sshCommandRunnerFactory;
@@ -60,18 +50,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Autowired
 	private TaskExecutor threadExecutor;
 
-	@Autowired
-	@Qualifier("patchRdbms")
-	private PatchRdbms patchRdbms;
-
 	public SimplePatchContainerBean() {
 		super();
 	}
 
-	public SimplePatchContainerBean(PatchPersistence repo, PatchSystemMetaInfoPersistence metaInfoRepo) {
+	public SimplePatchContainerBean(PatchPersistence repo) {
 		super();
 		this.repo = repo;
-		this.metaInfoRepo = metaInfoRepo;
 	}
 
 	@Override
@@ -84,7 +69,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public List<MavenArtifact> listMavenArtifacts(String serviceName, SearchCondition filter) {
-		ServiceMetaData data = repo.findServiceByName(serviceName);
+		ServiceMetaData data = repo.getServiceMetaDataByName(serviceName);
 		List<MavenArtifact> mavenArtFromStarterList;
 		try {
 			mavenArtFromStarterList = am.getAllDependencies(
@@ -152,40 +137,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	private void preProcessSave(Patch patch) {
 		if (!repo.patchExists(patch.getPatchNumber())) {
-			patch.setStagesMapping(metaInfoRepo.stageMappings().getStageMappings());
 			createBranchForDbModules(patch);
 			jenkinsClient.createPatchPipelines(patch);
 		}
-		// TODO (MULTISERVICE_CM , 9.4) : Needs to be verified
-		for (Service service : patch.getServices()) {
-			service.getMavenArtifactsToBuild().stream().filter(art -> Strings.isNullOrEmpty(art.getName()))
-					.forEach(art -> addModuleName(art, service.getMicroServiceBranch()));
-			addPackagerNames(service);
-		}
-	}
 
-	private void addPackagerNames(Service service) {
-		List<Package> packages = metaInfoRepo.packagesFor(service);
-		service.setPackagerName(packages);
-	}
-
-	private MavenArtifact addModuleName(MavenArtifact art, String cvsBranch) {
-		try {
-			String artifactName = am.getArtifactName(art.getGroupId(), art.getArtifactId(), art.getVersion());
-
-			List<MavenArtifact> wrongNames = getArtifactNameError(Lists.newArrayList(art), cvsBranch);
-			if (!wrongNames.isEmpty()) {
-				throw ExceptionFactory.createPatchServiceRuntimeException(
-						"SimplePatchContainerBean.addModuleName.validation.error", new Object[] { art.toString() });
-			}
-
-			art.setName(artifactName);
-		} catch (Exception e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"SimplePatchContainerBean.addModuleName.exception",
-					new Object[]{e.getMessage(), art.toString(), cvsBranch}, e);
-		}
-		return art;
 	}
 
 	@Override
@@ -209,7 +164,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public List<String> listOnDemandTargets() {
-		OnDemandTargets onDemandTargets = metaInfoRepo.onDemandTargets();
+		OnDemandTargets onDemandTargets = getRepo().onDemandTargets();
 		return onDemandTargets.getOnDemandTargets();
 	}
 
@@ -233,10 +188,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 						.filter(s -> s.startsWith("Index: "))
 						.map(s -> s.substring(7)).collect(Collectors.toList());
 				files.stream().forEach(file -> {
-					DbObject dbObject = new DbObject();
-					dbObject.setModuleName(dbModule);
-					dbObject.setFileName(FilenameUtils.getName(file));
-					dbObject.setFilePath(FilenameUtils.getPath(file));
+					DbObject dbObject = DbObject.builder()
+							.fileName(dbModule)
+							.fileName(FilenameUtils.getName(file))
+							.filePath(FilenameUtils.getPath(file)).build();
 					dbObjects.add(dbObject);
 				});
 
@@ -284,10 +239,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					//		 We rely on the output given back from the CVS command, might not be the most robust solution :( ... but so far ok for a function which is not crucial.
 					int startIndex = r.indexOf("U ")+"U ".length();
 					String pathToResourceName = r.substring(startIndex, r.length()).trim().replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "");
-					DbObject dbObject = new DbObject();
-					dbObject.setModuleName(dbModule);
-					dbObject.setFileName(FilenameUtils.getName(pathToResourceName));
-					dbObject.setFilePath(dbModule + "/" + FilenameUtils.getPath(pathToResourceName.replaceFirst(tempSubFolderName,"")));
+					DbObject dbObject = DbObject.builder()
+							.fileName(dbModule)
+							.fileName(FilenameUtils.getName(pathToResourceName))
+							.filePath(FilenameUtils.getPath(dbModule + "/" + FilenameUtils.getPath(pathToResourceName.replaceFirst(tempSubFolderName,""))))
+							.build();
 					dbObjects.add(dbObject);
 				});
 
@@ -303,9 +259,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		LOGGER.info("Build patch " + bp.getPatchNumber() + " for stage " + bp.getStageName() + " with successNotification=" + bp.getSuccessNotification() + " and errorNotification=" + bp.getErrorNotification());
 		Patch patch = repo.findById(bp.getPatchNumber());
 		Asserts.notNull(patch,"SimplePatchContainerBean.build.patch.exists.assert", new Object[] {bp.getPatchNumber()});
-		String target = metaInfoRepo.targetFor(bp.getStageName());
+		String target = repo.targetFor(bp.getStageName());
 		Asserts.notNullOrEmpty(target,"SimplePatchContainerBean.build.target.notnull", new Object[]{bp.getPatchNumber()});
-		bp.target(target);
 		jenkinsClient.startProdBuildPatchPipeline(bp);
 	}
 
@@ -314,53 +269,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		LOGGER.info("Setup started for Patch " + sp.getPatchNumber() + " with successNotification=" + sp.getSuccessNotification() + " and errorNotification=" + sp.getErrorNotification());
 		Patch patch = repo.findById(sp.getPatchNumber());
 		Asserts.notNull(patch, "SimplePatchContainerBean.patch.exists.assert",new Object[] { sp.getPatchNumber()});
-		createAndSaveTagForPatch(patch);
 		CommandRunner jschSession = getJschSessionFactory().create();
-		PatchSetupTask.create(jschSession, patch, dependecyResolver,
-				jenkinsClient, repo, patchRdbms, sp).run();
+		PatchSetupTask.create(jschSession, patch, repo, sp).run();
 	}
 
-	private void createAndSaveTagForPatch(Patch patch) {
-		patch.incrementTagNr();
-		Integer tagNr = patch.getTagNr();
-		String patchBranch = patch.getDbPatchBranch();
-		patch.setPatchTag(patchBranch + "_" + tagNr.toString());
-		repo.savePatch(patch);
-	}
-
-	private List<MavenArtifact> getArtifactNameError(List<MavenArtifact> mavenArtifacts, String cvsBranch) {
-
-		CommandRunner cmdRunner = getJschSessionFactory().create();
-		cmdRunner.preProcess();
-		List<MavenArtifact> artifactWihInvalidNames = Lists.newArrayList();
-
-		for (MavenArtifact ma : mavenArtifacts) {
-			try {
-				String artifactName = am.getArtifactName(ma.getGroupId(), ma.getArtifactId(), ma.getVersion());
-				ma.setName(artifactName);
-
-				if (artifactName == null) {
-					artifactWihInvalidNames.add(ma);
-				} else {
-					Command silentCoCmd = PatchSshCommand.createSilentCoCvsModuleCmd(cvsBranch,
-							Lists.newArrayList(artifactName), "&>/dev/null ; echo $?");
-					List<String> cvsResults = cmdRunner.run(silentCoCmd);
-					// JHE: SilentCOCvsModuleCmd returns 0 when all OK, 1
-					// instead...
-					if (cvsResults.size() != 1 || cvsResults.get(0).equals("1")) {
-						artifactWihInvalidNames.add(ma);
-					}
-				}
-			} catch (Exception e) {
-				throw ExceptionFactory.createPatchServiceRuntimeException(
-						"SimplePatchContainerBean.getArtifactNameError.exception",
-						new Object[] { e.getMessage(), ma.toString() }, e);
-			}
-		}
-
-		cmdRunner.postProcess();
-		return artifactWihInvalidNames;
-	}
 
 	@Override
 	public void cleanLocalMavenRepo() {
@@ -368,36 +280,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	}
 
-	public ArtifactDependencyResolver getDependecyResolver() {
-		return dependecyResolver;
-	}
-
 	public PatchPersistence getRepo() {
 		return repo;
 	}
 
-	public PatchSystemMetaInfoPersistence getMetaInfoRepo() {
-		return metaInfoRepo;
-	}
-
-	protected void setRepo(PatchPersistence repo) {
-		this.repo = repo;
-	}
-
-	public JenkinsClient getJenkinsClient() {
-		return jenkinsClient;
-	}
-
-	protected void setJenkinsClient(JenkinsClient jenkinsClient) {
-		this.jenkinsClient = jenkinsClient;
-	}
-
 	public CommandRunnerFactory getJschSessionFactory() {
 		return sshCommandRunnerFactory;
-	}
-
-	public TaskExecutor getThreadExecutor() {
-		return threadExecutor;
 	}
 
 	@Override
@@ -412,28 +300,21 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public void copyPatchFiles(Map<String,String> params) {
 
 		//TODO JHE (18.11.2020) : empty for now as this is a deprecated method which will probably be deleted
-		/*
-		int statusCode = metaInfoRepo.findStatus(params.get("status"));
-		List<String> patchIds = patchRdbms.patchIdsForStatus(String.valueOf(statusCode));
-		List<Patch> patchesToCopy = findByIds(patchIds);
-		ObjectMapper mapper = new ObjectMapper();
-		patchesToCopy.forEach(p -> {
-			File destFile = new File(params.get("destFolder") + "/Patch" + p.getPatchNummer() + ".json");
-			try {
-				mapper.writeValue(destFile,p);
-			} catch (IOException e) {
-				throw ExceptionFactory.createPatchServiceRuntimeException(
-						"SimplePatchContainerBean.copyPatchFile.exception",
-						new Object[] { e.getMessage(), destFile }, e);
-			}
-		});
+	}
 
-		 */
+	@Override
+	public List<String> patchIdsForStatus(String statusCode) {
+		return this.repo.patchIdsForStatus(statusCode);
+	}
+
+	@Override
+	public void notify(NotificationParameters params) {
+		this.repo.notify(params);
 	}
 
 	private boolean containsObject(String patchNumber, String objectName) {
 		Patch patch = findById(patchNumber);
-		for(MavenArtifact ma : patch.getMavenArtifacts()) {
+		for(MavenArtifact ma : patch.retrieveAllArtifactsToPatch()) {
 			if(ma.getArtifactId()!= null && ma.getArtifactId().toUpperCase().contains(objectName.toUpperCase()))
 				return true;
 		}
@@ -455,16 +336,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public void startInstallPipeline(String target) {
 		// TOOO (JHE, CHE: 13.10) And String parameter as Json according to Pipeline Requirements
 		jenkinsClient.startInstallPipeline(target,  "");
-	}
-
-	@Override
-	public void notifyDb(NotifyDbParameters params) {
-		patchRdbms.notifyDb(params);
-	}
-
-	@Override
-	public List<String> patchIdsForStatus(String statusCode) {
-		return patchRdbms.patchIdsForStatus(statusCode);
 	}
 
 

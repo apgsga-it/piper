@@ -6,11 +6,12 @@ import com.google.common.collect.Lists;
 import lombok.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @JsonDeserialize(builder = Patch.PatchBuilder.class)
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class Patch {
 
     private static final String PROD_BRANCH_DEFAULT = "prod";
@@ -33,14 +34,29 @@ public class Patch {
     List<Service> services = Lists.newArrayList();
 
 
-    // TODO (MULTISERVICE_CM , 9.4) : This is here for backward compatibility and must go away
+    // TODO (MULTI_SERVICE_CM , 9.4) : This is here for backward compatibility and must go away
     public List<MavenArtifact> retrieveAllArtifactsToPatch() {
         return services.stream()
                 .flatMap(coll -> coll.getArtifactsToPatch().stream())
                 .collect(Collectors.toList());
     }
 
+    public List<String> retrieveDbObjectsAsVcsPath() {
+        return dbObjects.stream().map(DbObject::asFullPath).collect(Collectors.toList());
+    }
+
+    public Service getService(String serviceName) {
+        Optional<Service> result = services
+                .stream()
+                .filter(s -> s.getServiceName().equals(serviceName)).findAny();
+        if (result.isPresent()) {
+            return result.get();
+        }
+        return null;
+    }
+
+
     @JsonPOJOBuilder(withPrefix = "")
-    static class PatchBuilder {
+    public static class PatchBuilder {
     }
 }

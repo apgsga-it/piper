@@ -1,8 +1,11 @@
 package com.apgsga.microservice.patch.core.impl.persistence;
 
 import com.apgsga.microservice.patch.api.*;
+import com.apgsga.microservice.patch.api.Package;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.apgsga.patch.db.integration.api.PatchRdbms;
+import com.apgsga.patch.db.integration.impl.PatchRdbmsImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
@@ -16,7 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FilebasedPatchPersistence extends AbstractFilebasedPersistence implements PatchPersistence {
+public class PatchPersistenceImpl implements PatchPersistence {
 
 	private static final String JSON = ".json";
 
@@ -28,21 +31,62 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 
 	private static final String DB_MODULES_JSON = "DbModules.json";
 
-	protected static final Log LOGGER = LogFactory.getLog(FilebasedPatchPersistence.class.getName());
+	private static final String ON_DEMAND_TARGETS_DATA_JSON = "OnDemandTargets.json";
 
-	public FilebasedPatchPersistence(Resource storagePath, Resource workDir) throws IOException {
+	private static final String STAGE_MAPPINGS_DATA_JSON = "StageMappings.json";
+
+	private static final String TARGET_INSTANCES_DATA_JSON = "TargetInstances.json";
+
+	private static final String SERVICES_METADATA_DATA_JSON = "ServicesMetaData.json";
+
+	protected static final Log LOGGER = LogFactory.getLog(PatchPersistenceImpl.class.getName());
+
+	private FilebasedPersistence patchPersistence;
+	private FilebasedPersistence systemMetaDataPersistence;
+	private PatchRdbms patchRdbms;
+
+	public PatchPersistenceImpl(Resource storagePath, Resource workDir) throws IOException {
 		super();
-		this.storagePath = storagePath;
-		this.tempStoragePath = workDir;
-		init();
+		this.patchPersistence = FilebasedPersistenceImpl.create(storagePath, workDir);
+		this.systemMetaDataPersistence = FilebasedPersistenceImpl.create(storagePath, workDir);
+		this.patchRdbms = new PatchRdbmsImpl();
+		this.patchPersistence.init();
+		this.systemMetaDataPersistence.init();
+	}
+
+	public PatchPersistenceImpl(Resource storagePath, Resource workDir,PatchRdbms patchRdbms) throws IOException {
+		super();
+		this.patchPersistence = FilebasedPersistenceImpl.create(storagePath, workDir);
+		this.systemMetaDataPersistence = FilebasedPersistenceImpl.create(storagePath, workDir);
+		this.patchRdbms = patchRdbms;
+		this.patchPersistence.init();
+		this.systemMetaDataPersistence.init();
+	}
+
+	public PatchPersistenceImpl(Resource storagePath, Resource storagePathMeta, Resource workDir) throws IOException {
+		super();
+		this.patchPersistence = FilebasedPersistenceImpl.create(storagePath, workDir);
+		this.systemMetaDataPersistence = FilebasedPersistenceImpl.create(storagePathMeta, workDir);
+		this.patchRdbms = new PatchRdbmsImpl();;
+		this.patchPersistence.init();
+		this.systemMetaDataPersistence.init();
+	}
+
+	public PatchPersistenceImpl(Resource storagePath, Resource storagePathMeta, Resource workDir, PatchRdbms patchRdbms) throws IOException {
+		super();
+		this.patchPersistence = FilebasedPersistenceImpl.create(storagePath, workDir);
+		this.systemMetaDataPersistence = FilebasedPersistenceImpl.create(storagePathMeta, workDir);
+		this.patchRdbms = patchRdbms;
+		this.patchPersistence.init();
+		this.systemMetaDataPersistence.init();
 	}
 
 	@Override
 	public synchronized Patch findById(String patchNumber) {
 		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.findById.patchnumber.notnullorempty.assert",new Object[] {});
 		try {
-			File patchFile = createFile(PATCH + patchNumber + JSON);
-			return findFile(patchFile, Patch.class);
+			File patchFile = patchPersistence.createFile(PATCH + patchNumber + JSON);
+			return patchPersistence.findFile(patchFile, Patch.class);
 		}catch(Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.findById.exception",
 				new Object[] { e.getMessage(), patchNumber}, e);
@@ -53,8 +97,8 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 	public synchronized PatchLog findPatchLogById(String patchNumber) {
 		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.findById.patchlognumber.notnullorempty.assert", new Object[] {});
 		try {
-			File patchFile = createFile(PATCH_LOG + patchNumber + JSON);
-			return findFile(patchFile, PatchLog.class);
+			File patchFile = patchPersistence.createFile(PATCH_LOG + patchNumber + JSON);
+			return patchPersistence.findFile(patchFile, PatchLog.class);
 		}catch(Exception e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.findById.exception",
 				new Object[] { e.getMessage(), patchNumber}, e);
@@ -66,7 +110,7 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.patchExists.patchnumber.notnullorempty.assert",
 				new Object[] {});
 		try {
-			File patchFile = createFile(PATCH + patchNumber + JSON);
+			File patchFile = patchPersistence.createFile(PATCH + patchNumber + JSON);
 			return patchFile.exists();
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.patchExists.exception",
@@ -78,7 +122,7 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 	@Override
 	public List<String> findAllPatchIds() {
 		try {
-			File[] files = storagePath.getFile().listFiles(file -> file.getName().startsWith(PATCH));
+			File[] files = patchPersistence.getStoragePath().getFile().listFiles(file -> file.getName().startsWith(PATCH));
 			final List<String> collect = Lists.newArrayList(files).stream().map(f -> FilenameUtils.getBaseName(f.getName()).substring(5))
 					.collect(Collectors.toList());
 			return collect;
@@ -94,7 +138,7 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 		Asserts.notNull(patch, "FilebasedPatchPersistence.save.patchobject.notnull.assert", new Object[] {});
 		Asserts.notNullOrEmpty(patch.getPatchNumber(),
 				"FilebasedPatchPersistence.save.patchnumber.notnullorempty.assert", new Object[] { patch.toString() });
-		writeToFile(patch, PATCH + patch.getPatchNumber() + JSON, this);
+		patchPersistence.writeToFile(patch, PATCH + patch.getPatchNumber() + JSON);
 	}
 	
 	@Override
@@ -102,18 +146,17 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 		Asserts.notNull(logDetails,"FilebasedPatchPersistence.save.patchlog.null.loginfo",new Object[] {});
 		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.save.patchlognumber.notnullorempty.assert", new Object[] {patchNumber});
 		PatchLog patchLog = findPatchLogById(patchNumber);
+		PatchLog patchLogToWrite;
 		if(patchLog == null) {
-			patchLog = createPatchLog(patchNumber);
+			patchLogToWrite = PatchLog.builder().patchNumber(patchNumber).logDetails(Lists.newArrayList(logDetails)).build();
+		} else {
+			List<PatchLogDetails> logDetailsList = patchLog.getLogDetails();
+			logDetailsList.add(logDetails);
+			patchLogToWrite = patchLog.toBuilder().logDetails(logDetailsList).build();
 		}
-		patchLog.addLog(logDetails);
-		writeToFile(patchLog, PATCH_LOG + patchLog.getPatchNumber() + JSON, this);
+		patchPersistence.writeToFile(patchLogToWrite, PATCH_LOG + patchLogToWrite.getPatchNumber() + JSON);
 	}
 
-	private PatchLog createPatchLog(String patchNumber) {
-		PatchLog pl = new PatchLog();
-		pl.setPatchNumber(patchNumber);
-		return pl;
-	}
 
 	// TODO (che, 8.5) Do we want remove also "Atomic"
 	@Override
@@ -126,7 +169,7 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 				new Object[] { patch.toString() });
 		try {
 			LOGGER.info("Deleting patch: " + patch.toString());
-			File patchFile = createFile(PATCH + patch.getPatchNumber() + JSON);
+			File patchFile = patchPersistence.createFile(PATCH + patch.getPatchNumber() + JSON);
 			LOGGER.info("Deleting patch: " + patch.toString() + ", result: " + patchFile.delete());
 
 		} catch (IOException e) {
@@ -137,13 +180,13 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 
 	@Override
 	public void saveServicesMetaData(ServicesMetaData serviceData) {
-		writeToFile(serviceData, SERVICE_META_DATA_JSON, this);
+		systemMetaDataPersistence.writeToFile(serviceData, SERVICE_META_DATA_JSON);
 	}
 
 	@Override
 	public ServicesMetaData getServicesMetaData() {
 		try {
-			File serviceMetaDataFile = createFile(SERVICE_META_DATA_JSON);
+			File serviceMetaDataFile = systemMetaDataPersistence.createFile(SERVICE_META_DATA_JSON);
 			if (!serviceMetaDataFile.exists()) {
 				return null;
 			}
@@ -158,13 +201,13 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 
 	@Override
 	public void saveDbModules(DbModules dbModules) {
-		writeToFile(dbModules, DB_MODULES_JSON, this);
+		patchPersistence.writeToFile(dbModules, DB_MODULES_JSON);
 	}
 
 	@Override
 	public DbModules getDbModules() {
 		try {
-			File dbModulesFile = createFile(DB_MODULES_JSON);
+			File dbModulesFile = patchPersistence.createFile(DB_MODULES_JSON);
 			if (!dbModulesFile.exists()) {
 				return null;
 			}
@@ -180,7 +223,7 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 	@Override
 	public List<String> listAllFiles() {
 		try {
-			File[] listFiles = storagePath.getFile().listFiles();
+			File[] listFiles = patchPersistence.getStoragePath().getFile().listFiles();
 			final List<String> collect = Lists.newArrayList(listFiles).stream().map(File::getName).collect(Collectors.toList());
 			return collect;
 		} catch (IOException e) {
@@ -192,7 +235,7 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 	@Override
 	public List<String> listFiles(String prefix) {
 		try {
-			File[] listFiles = storagePath.getFile().listFiles();
+			File[] listFiles = patchPersistence.getStoragePath().getFile().listFiles();
 			return Lists.newArrayList(listFiles).stream().filter(f -> f.getName().startsWith(prefix))
 					.map(File::getName).collect(Collectors.toList());
 		} catch (IOException e) {
@@ -204,7 +247,7 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 	@Override
 	public void clean() {
 		try {
-			File parentDir = storagePath.getFile();
+			File parentDir = patchPersistence.getStoragePath().getFile();
 			FileUtils.cleanDirectory(parentDir);
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.clean.exception",
@@ -214,11 +257,91 @@ public class FilebasedPatchPersistence extends AbstractFilebasedPersistence impl
 	}
 
 	@Override
-	public ServiceMetaData findServiceByName(String serviceName) {
+	public ServiceMetaData getServiceMetaDataByName(String serviceName) {
 		List<ServiceMetaData> services = getServicesMetaData().getServicesMetaData();
 		List<ServiceMetaData> result = services.stream().filter(p -> p.getServiceName().equals(serviceName))
 				.collect(Collectors.toList());
 		Asserts.isTrue(result.size() == 1, "FilebasedPatchPersistence.findServiceByName.exception", new Object[] {});
 		return result.get(0);
+	}
+
+	@Override
+	public OnDemandTargets onDemandTargets() {
+		try {
+			File onDemandTargetFile = systemMetaDataPersistence.createFile(ON_DEMAND_TARGETS_DATA_JSON);
+			if (!onDemandTargetFile.exists()) {
+				return null;
+			}
+			ObjectMapper mapper = new ObjectMapper();
+			OnDemandTargets result = mapper.readValue(onDemandTargetFile, OnDemandTargets.class);
+			return result;
+		} catch (IOException e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"FilebasedPatchPersistence.onDemandTargets.exception", new Object[] { e.getMessage() }, e);
+		}
+	}
+
+	@Override
+	public StageMappings stageMappings() {
+		try {
+			File stageMappingFile = systemMetaDataPersistence.createFile(STAGE_MAPPINGS_DATA_JSON);
+			if (!stageMappingFile.exists()) {
+				return null;
+			}
+			ObjectMapper mapper = new ObjectMapper();
+			StageMappings result = mapper.readValue(stageMappingFile, StageMappings.class);
+			return result;
+		} catch (IOException e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"FilebasedPatchPersistence.stageMapping.exception", new Object[] { e.getMessage() }, e);
+		}
+	}
+
+	@Override
+	public TargetInstances targetInstances() {
+		try {
+			File targetInstanceFile = systemMetaDataPersistence.createFile(TARGET_INSTANCES_DATA_JSON);
+			if (!targetInstanceFile.exists()) {
+				return null;
+			}
+			ObjectMapper mapper = new ObjectMapper();
+			TargetInstances result = mapper.readValue(targetInstanceFile, TargetInstances.class);
+			return result;
+		} catch (IOException e) {
+			throw ExceptionFactory.createPatchServiceRuntimeException(
+					"FilebasedPatchPersistence.targetInstance.exception", new Object[] { e.getMessage() }, e);
+		}
+	}
+
+
+	@Override
+	public List<Package> packagesFor(Service service) {
+		for(ServiceMetaData smd : getServicesMetaData().getServicesMetaData()) {
+			if(smd.getServiceName().equals(service.getServiceName())) {
+				return smd.getPackages();
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public String targetFor(String stageName) {
+		StageMappings sms = stageMappings();
+		for(StageMapping sm : sms.getStageMappings()) {
+			if(sm.getName().equalsIgnoreCase(stageName)) {
+				return sm.getTarget();
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public List<String> patchIdsForStatus(String statusCode) {
+		return patchRdbms.patchIdsForStatus(statusCode);
+	}
+
+	@Override
+	public void notify(NotificationParameters params) {
+		patchRdbms.notify(params);
 	}
 }

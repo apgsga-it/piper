@@ -12,12 +12,12 @@ import java.util.List;
 @Builder
 public class ServiceMetaData {
 
-	private String serviceName;
-	private MavenArtifact bomCoordinates;
-	private String microServiceBranch;
-	private String baseVersionNumber;
-	private String revisionMnemoPart;
-	private List<Package> packages;
+	String serviceName;
+	MavenArtifact bomCoordinates;
+	String microServiceBranch;
+	String baseVersionNumber;
+	String revisionMnemoPart;
+	List<Package> packages;
 
 	@JsonPOJOBuilder(withPrefix = "")
 	public static class ServiceMetaDataBuilder {}

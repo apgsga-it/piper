@@ -10,13 +10,12 @@ import lombok.*;
 @Builder
 public class BuildParameter {
 
-    private String patchNumber;
-    private String stageName;
-    private String target;
-    private String successNotification;
-    private String errorNotification;
+    String patchNumber;
+    String stageName;
+    String successNotification;
+    String errorNotification;
 
 
     @JsonPOJOBuilder(withPrefix = "")
-    static class BuildParameterBuilder {}
+    public static class BuildParameterBuilder {}
 }

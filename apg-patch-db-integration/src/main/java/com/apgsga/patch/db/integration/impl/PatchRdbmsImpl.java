@@ -1,5 +1,6 @@
 package com.apgsga.patch.db.integration.impl;
 
+import com.apgsga.microservice.patch.api.NotificationParameters;
 import com.apgsga.patch.db.integration.api.PatchRdbms;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,7 +27,7 @@ public class PatchRdbmsImpl implements PatchRdbms {
     private boolean isRunningWithDbIntegration;
 
     @Override
-    public void notifyDb(NotifyDbParameters params) {
+    public void notify(NotificationParameters params) {
         if(isRunningWithDbIntegration) {
             LOGGER.info("Notifying DB for : " + params.toString());
             SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName(params.PATCH_NOTIFICATION_PROCEDURE_NAME);

@@ -30,8 +30,8 @@ class PatchDataTests extends Specification  {
                 )).build()
         )).build();
         def om = new ObjectMapper()
-        File output = new File("build/test.json")
-        def jsonStr = om.writeValue(output, patch)
+        File output = new File("build/PatchTest.json")
+        om.writeValue(output, patch)
 
         when:
         def result = om.readValue(output,Patch.class)

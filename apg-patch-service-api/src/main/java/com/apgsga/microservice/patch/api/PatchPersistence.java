@@ -24,13 +24,27 @@ public interface PatchPersistence {
 
 	void saveServicesMetaData(ServicesMetaData serviceData);
 
-	ServicesMetaData getServicesMetaData();
+	ServiceMetaData getServiceMetaDataByName(String serviceName);
 
-	ServiceMetaData findServiceByName(String serviceName);
+	ServicesMetaData getServicesMetaData();
 	
 	List<String> listAllFiles();
 	
 	List<String> listFiles(String prefix);
+
+	OnDemandTargets onDemandTargets();
+
+	StageMappings stageMappings();
+
+	TargetInstances targetInstances();
+
+	List<Package> packagesFor(Service service);
+
+	String targetFor(String stageName);
+
+	List<String> patchIdsForStatus(String statusCode);
+
+	void notify(NotificationParameters params);
 
 	void clean();
 

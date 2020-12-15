@@ -111,9 +111,9 @@ class PatchCliIntegrationTest extends Specification {
 		when:
 			def dbFileForChange = new File("${dbLocation}/Patch5401.json")
 			Patch patchFromDb = mapper.readValue(dbFileForChange,Patch.class)
-			patchFromDb.setDeveloperBranch("thisIsDeveloperBranch")
-			mapper.writeValue(new File(System.getProperty("java.io.tmpdir"),"Patch5401.json"),patchFromDb)
-			def result2 = client.process(["-sa", "${System.getProperty("java.io.tmpdir")}/Patch5401.json"])
+			def updatedPatch = patchFromDb.toBuilder().developerBranch("thisIsDeveloperBranch").build()
+			mapper.writeValue(new File(System.getProperty("java.io.tmpdir"),"Patch5401.json"),updatedPatch)
+			result = client.process(["-sa", "${System.getProperty("java.io.tmpdir")}/Patch5401.json"])
 		then:
 			result != null
 			result.returnCode == 0
@@ -124,7 +124,7 @@ class PatchCliIntegrationTest extends Specification {
 			repo.clean()
 	}
 
-	def "Patch Cli Log Patch activity in PatchLog file "() {
+	def "Patch Cli Log Patch activity in PatchLog file"() {
 		setup:
 			def client = PatchCli.create()
 		when:
@@ -147,8 +147,8 @@ class PatchCliIntegrationTest extends Specification {
 			ObjectMapper patchLogMapper = new ObjectMapper()
 			def pl = patchLogMapper.readValue(patchLogFile,PatchLog.class)
 			assert pl.logDetails.size() == 1
-		cleanup:
-			repo.clean()
+		//cleanup:
+		//	repo.clean()
 	}
 
 	def "Patch Cli start startAssembleAndDeployPipeline" () {

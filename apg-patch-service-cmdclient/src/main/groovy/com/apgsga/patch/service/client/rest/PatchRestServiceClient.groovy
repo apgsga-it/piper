@@ -1,15 +1,8 @@
 package com.apgsga.patch.service.client.rest
 
-import com.apgsga.microservice.patch.api.BuildParameter
-import com.apgsga.microservice.patch.api.Patch
-import com.apgsga.microservice.patch.api.PatchLogDetails
-import com.apgsga.microservice.patch.api.PatchOpService
-import com.apgsga.microservice.patch.api.SetupParameter
-import com.apgsga.patch.db.integration.impl.NotifyDbParameters
+import com.apgsga.microservice.patch.api.*
 import com.apgsga.patch.service.client.PatchCliExceptionHandler
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.springframework.http.client.ClientHttpResponse
-import org.springframework.web.client.ResponseErrorHandler
 import org.springframework.web.client.RestTemplate
 
 class PatchRestServiceClient implements PatchOpService {
@@ -82,8 +75,8 @@ class PatchRestServiceClient implements PatchOpService {
 	}
 
 	@Override
-	void notifyDb(NotifyDbParameters params) {
-		restTemplate.postForLocation(getRestBaseUri() + "/notifyDb", params)
+	void notify(NotificationParameters params) {
+		restTemplate.postForLocation(getRestBaseUri() + "/notify", params)
 		println "DB Notified with following params: " + params.toString()
 	}
 
@@ -92,24 +85,4 @@ class PatchRestServiceClient implements PatchOpService {
 		return restTemplate.getForObject(getRestBaseUri() + "/patchIdsForStatus/{status}", String[].class, [status:statusCode]);
 	}
 
-
-	class PatchServiceErrorHandler implements ResponseErrorHandler {
-
-
-
-		public PatchServiceErrorHandler() {
-		}
-
-		@Override
-		public boolean hasError(ClientHttpResponse response) throws IOException {
-
-			return false;
-		}
-
-		@Override
-		public void handleError(ClientHttpResponse response) throws IOException {
-			System.err.println "Recieved Error from Server with Http Code: ${response.getStatusText()}"
-			System.err.println "Error output : " + response.body.getText("UTF-8")
-		}
-	}
 }

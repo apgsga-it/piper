@@ -1,8 +1,9 @@
 package com.apgsga.microservice.patch.server;
 
+import com.apgsga.microservice.patch.api.Package;
 import com.apgsga.microservice.patch.api.*;
-import com.apgsga.patch.db.integration.impl.NotifyDbParameters;
-import org.apache.commons.lang.NotImplementedException;
+import com.apgsga.patch.db.integration.api.PatchRdbms;
+import com.apgsga.microservice.patch.api.NotificationParameters;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@Autowired
 	@Qualifier("ServerBean")
 	private PatchOpService patchService;
+
+	@Autowired
+	private PatchRdbms patchRdbms;
 
 	@RequestMapping(value = "/findById/{id}", method = RequestMethod.GET)
 	@ResponseBody
@@ -105,6 +109,12 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 
 	}
 
+	@Override
+	public ServiceMetaData getServiceMetaDataByName(String serviceName) {
+		// TODO (che, 9.12)
+		return null;
+	}
+
 	@RequestMapping(value = "/getServicesMetaData", method = RequestMethod.GET)
 	@ResponseBody
 	@Override
@@ -144,8 +154,33 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	}
 
 	@Override
-	public ServiceMetaData findServiceByName(String serviceName) {
-		throw new NotImplementedException();
+	public OnDemandTargets onDemandTargets() {
+		// TODO (che, 9.12)
+		return null;
+	}
+
+	@Override
+	public StageMappings stageMappings() {
+		// TODO (che, 9.12)
+		return null;
+	}
+
+	@Override
+	public TargetInstances targetInstances() {
+		// TODO (che, 9.12)
+		return null;
+	}
+
+	@Override
+	public List<Package> packagesFor(Service service) {
+		// TODO (che, 9.12)
+		return null;
+	}
+
+	@Override
+	public String targetFor(String stageName) {
+		// TODO (che, 9.12)
+		return null;
 	}
 
 	@Override
@@ -183,17 +218,18 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		patchService.copyPatchFiles(params);
 	}
 
-	@RequestMapping(value = "/notifyDb", method = RequestMethod.POST)
+	@RequestMapping(value = "/notify", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	@Override
-	public void notifyDb(@RequestBody NotifyDbParameters params) {
-		patchService.notifyDb(params);
+	public void notify(@RequestBody NotificationParameters params) {
+		patchRdbms.notify(params);
 	}
 
 	@RequestMapping(value = "/patchIdsForStatus/{status}")
 	@ResponseBody
-	@Override
 	public List<String> patchIdsForStatus(@PathVariable("status") String statusCode) {
-		return patchService.patchIdsForStatus(statusCode);
+		return patchRdbms.patchIdsForStatus(statusCode);
 	}
+
+
+
 }

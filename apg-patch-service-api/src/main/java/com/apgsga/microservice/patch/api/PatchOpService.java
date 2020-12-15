@@ -1,6 +1,7 @@
 package com.apgsga.microservice.patch.api;
 
 
+import java.util.List;
 import java.util.Map;
 
 public interface PatchOpService {
@@ -31,7 +32,8 @@ public interface PatchOpService {
 
 	/**
 	 * Save patch information in a PatchLog<patchNumber>.log file
-	 * @param logDetails
+	 * @param patchNumber  the Patch number
+	 * @param logDetails Details of a Log
 	 */
 	void savePatchLog(String patchNumber, PatchLogDetails logDetails);
 
@@ -60,6 +62,10 @@ public interface PatchOpService {
 	//TODO JHE (18.11.2020): will probably be removed, but I want to wait until implemenation of assembleAndDeploy to be 100% sure
 	@Deprecated
 	void copyPatchFiles(Map<String,String> params);
+
+	List<String> patchIdsForStatus(String statusCode);
+
+	void notify(NotificationParameters params);
 
 
 }

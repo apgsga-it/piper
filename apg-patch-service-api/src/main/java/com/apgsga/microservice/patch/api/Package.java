@@ -10,10 +10,10 @@ import java.util.List;
 @Value
 @Builder
 public class Package {
-    private String packagerName;
-    private List<String> starterCoordinates;
+    String packagerName;
+    List<String> starterCoordinates;
 
 
     @JsonPOJOBuilder(withPrefix = "")
-    static class PackageBuilder {}
+    public static class PackageBuilder {}
 }

@@ -34,9 +34,10 @@ class PatchServiceServiceMetaDataTests extends Specification {
     def "Json Marshalling of ServicesMetaData"() {
         given:
         def om = new ObjectMapper()
-        def jsonStr = om.writeValueAsString(servicesMetaData)
+        def file = new File("build/TestServiceMetaData.json")
+        om.writeValue(file, servicesMetaData)
         when:
-        def result = om.readValue(jsonStr,ServicesMetaData.class)
+        def result = om.readValue(file,ServicesMetaData.class)
         then:
         result == servicesMetaData
     }

@@ -95,15 +95,17 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 		LOGGER.info("Resolving Dependencies");
 		List<MavenArtWithDependencies> resolveDependenciesInternal = resolveDependenciesInternal(artifacts); 
 		LOGGER.info("Analysing Dependency Level");
-		analyseAndSetDependencyLevel(resolveDependenciesInternal); 
+		analyseAndAddDependencyLevel(resolveDependenciesInternal);
 	}
 
-	private void analyseAndSetDependencyLevel(List<MavenArtWithDependencies> resolveDependenciesInternal) {
+	private void analyseAndAddDependencyLevel(List<MavenArtWithDependencies> resolveDependenciesInternal) {
 		for (MavenArtWithDependencies resolvedDep : resolveDependenciesInternal) {
+			List<MavenArtifact> dependencyLevels = Lists.newArrayList();
 			List<MavenArtifact> dependencies = resolvedDep.getDependencies();
 			for (MavenArtifact dependency : dependencies) {
 				dependency.augmentDependencyLevel();
 			}
+			resolvedDep.setDependencies(dependencyLevels);
 		}
 	}
 

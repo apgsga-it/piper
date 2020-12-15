@@ -8,7 +8,6 @@ public class MockDependencyResolverImpl implements ArtifactDependencyResolver {
 
 	@Override
 	public void resolveDependencies(List<MavenArtifact> artifacts) {
-
 	}
 
 }

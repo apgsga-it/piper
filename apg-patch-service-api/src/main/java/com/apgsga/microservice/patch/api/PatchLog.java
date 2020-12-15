@@ -8,7 +8,7 @@ import java.util.List;
 
 @JsonDeserialize(builder = PatchLog.PatchLogBuilder.class)
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class PatchLog {
 
 	private String patchNumber;
