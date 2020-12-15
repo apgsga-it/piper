@@ -54,8 +54,8 @@ public class PatchServiceExceptionHandler extends ResponseEntityExceptionHandler
 		Throwable cause = exception.getCause();
 		final String causeMsg = cause != null ? cause.getMessage() : "<This Exception is Root Cause>";
 		String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-		PatchErrorMessage errorMsg = new PatchErrorMessage(timeStamp, errorKey,errorText, causeMsg,
-				ExceptionUtils.getFullStackTrace(exception));
+		PatchErrorMessage errorMsg = PatchErrorMessage.builder().timestamp(timeStamp).errorKey(errorKey).errorText(errorText).causeExceptionMsg(causeMsg).stackTrace(
+				ExceptionUtils.getFullStackTrace(exception)).build();
 		LOGGER.warn(errorMsg.toString());
 		return new ResponseEntity<>(errorMsg, httpStatus);
 	}

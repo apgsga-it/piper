@@ -18,7 +18,7 @@ class PatchCliExceptionHandler implements ResponseErrorHandler {
 	}
 
 	@Override
-	public boolean hasError(ClientHttpResponse response) throws IOException {
+	boolean hasError(ClientHttpResponse response) throws IOException {
 		return hasError(response.getStatusCode());
 	}
 
@@ -27,7 +27,7 @@ class PatchCliExceptionHandler implements ResponseErrorHandler {
 	}
 
 	@Override
-	public void handleError(ClientHttpResponse response) throws IOException {
+	void handleError(ClientHttpResponse response) throws IOException {
 		HttpMessageConverterExtractor<PatchErrorMessage> errorMessageExtractor =
 				new HttpMessageConverterExtractor(PatchErrorMessage.class, messageConverters);
 		PatchErrorMessage errorObject = errorMessageExtractor.extractData(response);

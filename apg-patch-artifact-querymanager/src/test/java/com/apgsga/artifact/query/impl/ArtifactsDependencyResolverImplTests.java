@@ -1,6 +1,7 @@
 package com.apgsga.artifact.query.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -61,7 +62,7 @@ public class ArtifactsDependencyResolverImplTests {
 	@Test
 	public void testSingleArtifact() {
 		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory);
-		MavenArtifact mavenArtifactBean = new MavenArtifact("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactBean = MavenArtifact.builder().artifactId("gp-ui").groupId("com.affichage.it21.gp").version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build();
 		List<MavenArtWithDependencies> result = depResolver.resolveDependenciesInternal(Lists.newArrayList(mavenArtifactBean));
 		assert(result.size() == 1);
 		MavenArtWithDependencies mavenArt = result.get(0);
@@ -72,8 +73,8 @@ public class ArtifactsDependencyResolverImplTests {
 	@Test
 	public void testTwoArtifacts() {
 		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory);
-		MavenArtifact mavenArtifactGpUi = new MavenArtifact("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
-		MavenArtifact mavenArtifactGpDao = new MavenArtifact("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactGpUi = MavenArtifact.builder().artifactId("gp-ui").groupId("com.affichage.it21.gp").version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build();
+		MavenArtifact mavenArtifactGpDao = MavenArtifact.builder().artifactId("gp-dao").groupId("com.affichage.it21.gp").version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build();
 		List<MavenArtWithDependencies> result = depResolver.resolveDependenciesInternal(Lists.newArrayList(mavenArtifactGpUi,mavenArtifactGpDao));
 		assert(result.size() == 2);
 		MavenArtWithDependencies mavenArtGpUi = result.get(0);
@@ -90,9 +91,9 @@ public class ArtifactsDependencyResolverImplTests {
 	@Test
 	public void testMoreArtifactsNestedDependencies() {
 		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory);
-		MavenArtifact mavenArtifactGpUi = new MavenArtifact("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
-		MavenArtifact mavenArtifactGpDao = new MavenArtifact("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
-		MavenArtifact mavenArtifactFakturaDao = new MavenArtifact("faktura-dao","com.affichage.it21.vk","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactGpUi = MavenArtifact.builder().artifactId("gp-ui").groupId("com.affichage.it21.gp").version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build();
+		MavenArtifact mavenArtifactGpDao = MavenArtifact.builder().artifactId("gp-dao").groupId("com.affichage.it21.gp").version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build();
+		MavenArtifact mavenArtifactFakturaDao = MavenArtifact.builder().artifactId("faktura-dao").groupId("com.affichage.it21.vk").version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build();
 		ArrayList<MavenArtifact> artefacts = Lists.newArrayList(mavenArtifactGpUi,mavenArtifactGpDao,mavenArtifactFakturaDao);
 		List<MavenArtWithDependencies> result = depResolver.resolveDependenciesInternal(artefacts);
 		assert(result.size() == 3);
@@ -114,8 +115,8 @@ public class ArtifactsDependencyResolverImplTests {
 	@Test
 	public void testTwoArtifactsWithDependencyLevel() {
 		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory);
-		MavenArtifact mavenArtifactGpUi = new MavenArtifact("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
-		MavenArtifact mavenArtifactGpDao = new MavenArtifact("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactGpUi =  MavenArtifact.builder().artifactId("gp-ui").groupId("com.affichage.it21.gp").version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build();
+		MavenArtifact mavenArtifactGpDao = MavenArtifact.builder().artifactId("gp-dao").groupId("com.affichage.it21.gp").version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build();
 		ArrayList<MavenArtifact> artefacts = Lists.newArrayList(mavenArtifactGpUi,mavenArtifactGpDao);
 		depResolver.resolveDependencies(artefacts);
 		artefacts.sort(Comparator.comparing(MavenArtifact::getDependencyLevel).reversed());
@@ -127,9 +128,9 @@ public class ArtifactsDependencyResolverImplTests {
 	@Test
 	public void testMoreArtifactsNestedDependenciesWithDependencyLevel() {
 		ArtifactsDependencyResolverImpl depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory);
-		MavenArtifact mavenArtifactGpUi = new MavenArtifact("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
-		MavenArtifact mavenArtifactGpDao = new MavenArtifact("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT");
-		MavenArtifact mavenArtifactFakturaDao = new MavenArtifact("faktura-dao","com.affichage.it21.vk","9.1.0.ADMIN-UIMIG-SNAPSHOT");
+		MavenArtifact mavenArtifactGpUi = MavenArtifact.builder().artifactId("gp-ui").groupId("com.affichage.it21.gp").version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build();
+		MavenArtifact mavenArtifactGpDao = MavenArtifact.builder().artifactId("gp-dao").groupId("com.affichage.it21.gp").version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build();
+		MavenArtifact mavenArtifactFakturaDao = MavenArtifact.builder().artifactId("faktura-dao").groupId("com.affichage.it21.vk").version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build();
 		ArrayList<MavenArtifact> artefacts = Lists.newArrayList(mavenArtifactGpUi,mavenArtifactGpDao,mavenArtifactFakturaDao);
 		depResolver.resolveDependencies(artefacts);
 		artefacts.sort(Comparator.comparing(MavenArtifact::getDependencyLevel).reversed());
@@ -148,7 +149,7 @@ public class ArtifactsDependencyResolverImplTests {
 		File patchFile = new File("src/test/resources/Patch5731.json");
 		ObjectMapper mapper = new ObjectMapper();
 		Patch patchData = mapper.readValue(patchFile, Patch.class);
-		List<MavenArtifact> artefacts = patchData.getMavenArtifacts();
+		List<MavenArtifact> artefacts = patchData.retrieveAllArtifactsToPatch();
 		depResolver.resolveDependencies(artefacts);
 		artefacts.sort(Comparator.comparing(MavenArtifact::getDependencyLevel).reversed());
 		artefacts.forEach(a -> System.out.println("Dependency Level: " + a.getDependencyLevel() + " for Artefact : " + a.toString()));

@@ -1,42 +1,37 @@
 [
-	{
-		"artifactId": "dao-persistence",
-		"groupId": "com.affichage",
-		"name": null,
-		"version": "",
-		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-		"dependencyLevel": 0
-	},
-	{
-		"artifactId": "qcel.xtext",
-		"groupId": "com.affichage",
-		"name": null,
-		"version": "",
-		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-		"dependencyLevel": 0
-	},
-	{
-		"artifactId": "java-dao-service",
-		"groupId": "com.affichage.persistence",
-		"name": null,
-		"version": "",
-		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-		"dependencyLevel": 0
-	},
-	{
-		"groupId": "com.affichage.datetime",
-		"artifactId": "datetime-utils",
-		"name": null,
-		"version": "",
-		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-		"dependencyLevel": 0
-	},
-	{
-		"groupId": "com.affichage.persistence.java.service",
-		"artifactId": "tests-javaservices",
-		"name": null,
-		"version": "",
-		"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-		"dependencyLevel": 0
-	}
+  {
+    "artifactId": "dao-persistence",
+    "groupId": "com.affichage",
+    "name": null,
+    "version": "",
+    "dependencyLevel": 0
+  },
+  {
+    "artifactId": "qcel.xtext",
+    "groupId": "com.affichage",
+    "name": null,
+    "version": "",
+    "dependencyLevel": 0
+  },
+  {
+    "artifactId": "java-dao-service",
+    "groupId": "com.affichage.persistence",
+    "name": null,
+    "version": "",
+    "dependencyLevel": 0
+  },
+  {
+    "groupId": "com.affichage.datetime",
+    "artifactId": "datetime-utils",
+    "name": null,
+    "version": "",
+    "dependencyLevel": 0
+  },
+  {
+    "groupId": "com.affichage.persistence.java.service",
+    "artifactId": "tests-javaservices",
+    "name": null,
+    "version": "",
+    "dependencyLevel": 0
+  }
 ]

@@ -10,6 +10,7 @@ import org.apache.commons.transaction.util.CommonsLoggingLogger;
 import org.apache.commons.transaction.util.LoggerFacade;
 
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import org.springframework.core.io.Resource;
 
 /**
  * "Simple" File Write Manager Attempts to implement a "Atomic" File write:
@@ -28,25 +29,26 @@ import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
  */
 public class AtomicFileWriteManager {
 
-	public static AtomicFileWriteManager create(AbstractFilebasedPersistence fileBasedPersistance) {
-		return new AtomicFileWriteManager(fileBasedPersistance);
+	public static AtomicFileWriteManager create(Resource storagePath, Resource tempStoragePath) {
+		return new AtomicFileWriteManager(storagePath,tempStoragePath);
 	}
 
 	protected static final Log LOGGER = LogFactory.getLog(AtomicFileWriteManager.class.getName());
 	private LoggerFacade loggerFacade = new CommonsLoggingLogger(LOGGER);
 
-	private AbstractFilebasedPersistence fileBasedPersistenance;
+	private Resource storagePath;
+	private Resource tempStoragePath;
 
-	private AtomicFileWriteManager(AbstractFilebasedPersistence fileBasedPersistenance) {
-		super();
-		this.fileBasedPersistenance = fileBasedPersistenance;
+	public AtomicFileWriteManager(Resource storagePath, Resource tempStoragePath) {
+		this.storagePath = storagePath;
+		this.tempStoragePath = tempStoragePath;
 	}
 
 	public void write(String outputString, String fileName) {
 		try {
 			LOGGER.info("Atomic write of: " + outputString + " to File: " + fileName);
-			String targetPath = fileBasedPersistenance.getStoragePath().getFile().getAbsolutePath();
-			String workDir = fileBasedPersistenance.getTempStoragePath().getFile().getAbsolutePath();
+			String targetPath = storagePath.getFile().getAbsolutePath();
+			String workDir = tempStoragePath.getFile().getAbsolutePath();
 			FileResourceManager frm = new FileResourceManager(targetPath, workDir, false, loggerFacade, true);
 			frm.start();
 			LOGGER.info("Resource Manager started with target Dir: " + targetPath + ", and work Dir: " + workDir);

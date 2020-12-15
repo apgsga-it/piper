@@ -43,15 +43,27 @@ class ArtifactsDependencyResolverTests extends Specification {
 	def "Collect Artefacts by Dependencylevel"() {
 		setup:
 		def depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory)
-		def mavenArtifactGpUi = new MavenArtifact("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT")
-		def mavenArtifactGpDao = new MavenArtifact("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT")
-		def mavenArtifactFakturaDao = new MavenArtifact("faktura-dao","com.affichage.it21.vk","9.1.0.ADMIN-UIMIG-SNAPSHOT")
+		def mavenArtifactGpUi = MavenArtifact.builder()
+				.artifactId("gp-ui")
+				.groupId("com.affichage.it21.gp")
+				.version("9.1.0.ADMIN-UIMIG-SNAPSHOT")
+				.build()
+		def mavenArtifactGpDao = MavenArtifact.builder()
+				.artifactId("gp-dao")
+				.groupId("com.affichage.it21.gp")
+				.version("9.1.0.ADMIN-UIMIG-SNAPSHOT")
+				.build()
+		def mavenArtifactFakturaDao = MavenArtifact.builder()
+				.artifactId("faktura-dao")
+				.groupId("com.affichage.it21.vk")
+				.version("9.1.0.ADMIN-UIMIG-SNAPSHOT")
+				.build()
 		def artefacts = Lists.newArrayList(mavenArtifactGpUi,mavenArtifactGpDao,mavenArtifactFakturaDao)
 		when:
 		depResolver.resolveDependencies(artefacts)
 		artefacts.sort new OrderBy([{it.dependencyLevel}])
 		artefacts.reverse()
-		artefacts.each { 
+		artefacts.each {
 			println "Dependency Level: ${it.dependencyLevel} for Artefact: ${it.toString()}"
 		}		
 		def splitLists = artefacts.groupBy {
@@ -71,9 +83,21 @@ class ArtifactsDependencyResolverTests extends Specification {
 	def "Collect and Process Artefacts by Dependencylevel"() {
 		setup:
 		def depResolver = new ArtifactsDependencyResolverImpl("target/maverepo", systemFactory)
-		def mavenArtifactGpUi = new MavenArtifact("gp-ui","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT")
-		def mavenArtifactGpDao = new MavenArtifact("gp-dao","com.affichage.it21.gp","9.1.0.ADMIN-UIMIG-SNAPSHOT")
-		def mavenArtifactFakturaDao = new MavenArtifact("faktura-dao","com.affichage.it21.vk","9.1.0.ADMIN-UIMIG-SNAPSHOT")
+		def mavenArtifactGpUi = MavenArtifact.builder()
+				.artifactId("gp-ui")
+				.groupId("com.affichage.it21.gp")
+				.version("9.1.0.ADMIN-UIMIG-SNAPSHOT")
+				.build()
+		def mavenArtifactGpDao = MavenArtifact.builder()
+				.artifactId("gp-dao")
+				.groupId("com.affichage.it21.gp")
+				.version("9.1.0.ADMIN-UIMIG-SNAPSHOT")
+				.build()
+		def mavenArtifactFakturaDao = MavenArtifact.builder()
+				.artifactId("faktura-dao")
+				.groupId("com.affichage.it21.vk")
+				.version("9.1.0.ADMIN-UIMIG-SNAPSHOT")
+				.build()
 		def artefacts = Lists.newArrayList(mavenArtifactGpUi,mavenArtifactGpDao,mavenArtifactFakturaDao)
 		when:
 		depResolver.resolveDependencies(artefacts)

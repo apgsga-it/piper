@@ -9,6 +9,7 @@ jar {
 }
 
 dependencies {
+    compile project(':apg-patch-service-api')
     compile group: 'org.codehaus.groovy' , name: 'groovy-all'
     compile group: 'org.springframework', name: 'spring-context'
     compile group: 'commons-io', name: 'commons-io', version: '2.7'

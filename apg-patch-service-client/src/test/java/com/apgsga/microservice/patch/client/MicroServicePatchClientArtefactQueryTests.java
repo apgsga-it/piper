@@ -28,7 +28,7 @@ import org.springframework.util.FileCopyUtils;
 
 import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
-import com.apgsga.microservice.patch.core.impl.persistence.FilebasedPatchPersistence;
+import com.apgsga.microservice.patch.core.impl.persistence.PatchPersistenceImpl;
 
 @RunWith(SpringRunner.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
@@ -59,7 +59,7 @@ public class MicroServicePatchClientArtefactQueryTests {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource testResources = rl.getResource("src/test/resources/json");
 		Resource workDir = rl.getResource(dbWorkLocation);
-		final PatchPersistence per = new FilebasedPatchPersistence(testResources, workDir);
+		final PatchPersistence per = new PatchPersistenceImpl(testResources, workDir);
 		Patch testPatch5401 = per.findById("5401");
 		Patch testPatch5402 = per.findById("5402");
 		repo.clean();
@@ -75,12 +75,12 @@ public class MicroServicePatchClientArtefactQueryTests {
 		repo.savePatch(testPatch5401);
 		repo.savePatch(testPatch5402);
 
-		PatchLogDetails pld = new PatchLogDetails();
-		pld.setTarget("dev-jhe");
-		pld.setPatchPipelineTask("Build");
-		pld.setLogText("Done");
-		pld.setDateTime(new Date());
-
+		PatchLogDetails pld = PatchLogDetails.builder()
+				.target("dev-jhe")
+				.patchPipelineTask("Build")
+				.logText("Done")
+				.datetime(new Date())
+				.build();
 		repo.savePatchLog("5401",pld);
 	}
 
@@ -112,13 +112,7 @@ public class MicroServicePatchClientArtefactQueryTests {
 		Assert.assertNotNull(result);
 		List<MavenArtifact> mavenArtefacts = patchClient.listMavenArtifacts(result.getService("It21Ui").getServiceName(), SearchCondition.APPLICATION);
 		Assert.assertTrue(mavenArtefacts.size() > 0);
-		Assert.assertTrue(mavenArtefacts.stream().allMatch(new Predicate<MavenArtifact>() {
-
-			@Override
-			public boolean test(MavenArtifact t) {
-				return t.getGroupId().startsWith("com.apgsga") || t.getGroupId().startsWith("com.affichage");
-			}
-		}));
+		Assert.assertTrue(mavenArtefacts.stream().allMatch(t -> t.getGroupId().startsWith("com.apgsga") || t.getGroupId().startsWith("com.affichage")));
 	}
 	
 	@Test

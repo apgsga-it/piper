@@ -114,7 +114,7 @@ public class MicroServicePatchServerExceptionTests {
 	
 	@Test
 	public void testSaveEmptyWithOutId() {
-		Patch patch = new Patch();
+		Patch patch = Patch.builder().build();
 		try {
 			patchService.save(patch);
 			fail();
@@ -137,7 +137,7 @@ public class MicroServicePatchServerExceptionTests {
 	
 	@Test
 	public void testRemoveEmptyWithOutId() {
-		Patch patch = new Patch();
+		Patch patch =  Patch.builder().build();
 		try {
 			patchService.remove(patch);
 			fail();
@@ -149,8 +149,7 @@ public class MicroServicePatchServerExceptionTests {
 	
 	@Test
 	public void testRemoveDoesnotExist() {
-		Patch patch = new Patch();
-		patch.setPatchNummer("XXXX");
+		Patch patch =  Patch.builder().patchNumber("XXXX").build();
 		try {
 			patchService.remove(patch);
 			fail();
@@ -174,7 +173,7 @@ public class MicroServicePatchServerExceptionTests {
 	@Test
 	public void testBuildPatchForInvalidPatchNumber() {
 		try {
-			BuildParameter bp = BuildParameter.create().patchNumber("xxxx").stageName("dev-informatiktest").successNotification("success").errorNotification("error");
+			BuildParameter bp = BuildParameter.builder().patchNumber("xxxx").stageName("dev-informatiktest").successNotification("success").errorNotification("error").build();
 			patchService.build(bp);
 			fail("A runtime exception was expected");
 		}
@@ -187,11 +186,10 @@ public class MicroServicePatchServerExceptionTests {
 	@Test
 	public void testBuildPatchForNullTarget() {
 		try {
-			Patch p = new Patch();
-			p.setPatchNummer("2222");
+			Patch p = Patch.builder().patchNumber("2222").build();
 			patchService.save(p);
 			Assert.assertTrue("Patch 2222 hasn't been saved correctly",patchService.findById("2222") != null);
-			BuildParameter bp = BuildParameter.create().patchNumber("2222").stageName("dummy").successNotification("success").errorNotification("error");
+			BuildParameter bp = BuildParameter.builder().patchNumber("2222").stageName("dummy").successNotification("success").errorNotification("error").build();
 			patchService.build(bp);
 			fail("A runtime exception was expected");
 		}

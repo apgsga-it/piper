@@ -1,5 +1,5 @@
 apply plugin: 'groovy'
-description = 'Apg Patch Maven Artifact Querymanager'
+description = 'Apg Patch Maven Artifact Query Manager'
 jar {
 	baseName = 'apg-patch-artifact-querymanager'
 }
@@ -28,6 +28,8 @@ dependencies {
 	compile group: 'commons-io', name: 'commons-io'
 	compile group: 'commons-lang', name: 'commons-lang'
 	compile group: 'org.jasypt', name: 'jasypt'
+	compile group: 'com.google.guava', name: 'guava'
+	compile group: 'org.springframework', name: 'spring-core'
 	testCompile group: 'junit', name: 'junit'
 	testCompile group: 'commons-collections', name: 'commons-collections'
 	testCompile group: 'org.springframework', name: 'spring-test'

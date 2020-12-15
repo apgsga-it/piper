@@ -23,6 +23,10 @@ public class MavenArtWithDependencies {
 		return dependencies;
 	}
 
+	public void setDependencies(List<MavenArtifact> dependencies) {
+		this.dependencies = dependencies;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

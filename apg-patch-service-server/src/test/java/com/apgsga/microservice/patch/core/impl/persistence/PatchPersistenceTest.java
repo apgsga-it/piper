@@ -1,6 +1,8 @@
 package com.apgsga.microservice.patch.core.impl.persistence;
 
 import com.apgsga.microservice.patch.api.*;
+import com.apgsga.microservice.patch.api.Package;
+import com.apgsga.patch.db.integration.impl.PatchRdbmsMockImpl;
 import org.assertj.core.util.Lists;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,11 +26,9 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource(properties = { "dblocation=db", "dbworkdir=work" })
-public class FilebasedPersistenceTest {
+public class PatchPersistenceTest {
 
 	private PatchPersistence repo;
-
-	private PatchSystemMetaInfoPersistence patchSystemInfoRepo;
 
 	@Value("${dblocation}")
 	private String dbLocation;
@@ -42,10 +42,9 @@ public class FilebasedPersistenceTest {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource db = rl.getResource(dbLocation);
 		Resource workDir = rl.getResource(dbWorkLocation);
-		repo = new FilebasedPatchPersistence(db, workDir);
-		patchSystemInfoRepo = new FilePatchSystemMetaInfoPersistence(db,workDir);
+		repo = new PatchPersistenceImpl(db, workDir ,new PatchRdbmsMockImpl());
 		Resource testResources = rl.getResource("src/test/resources/json");
-		final PatchPersistence per = new FilebasedPatchPersistence(testResources, workDir);
+		final PatchPersistence per = new PatchPersistenceImpl(testResources, workDir, new PatchRdbmsMockImpl());
 		Patch testPatch5401 = per.findById("5401");
 		Patch testPatch5402 = per.findById("5402");
 		repo.clean();
@@ -68,7 +67,7 @@ public class FilebasedPersistenceTest {
 	public void testFindById() {
 		Patch result = repo.findById("5401");
 		assertNotNull(result);
-		assertEquals("5401", result.getPatchNummer());
+		assertEquals("5401", result.getPatchNumber());
 	}
 
 	@Test
@@ -85,17 +84,15 @@ public class FilebasedPersistenceTest {
 	public void testUpdate() {
 		Patch result = repo.findById("5402");
 		assertNotNull(result);
-		Service service = Service.create().serviceName("It21Ui").baseVersionNumber("XXXX");
-		result.addServices(service);
-		List<DbObject> dbOList = Lists.newArrayList();
-		dbOList.add(new DbObject("FileName1", "FilePath1"));
-		result.setDbObjects(dbOList);
-		repo.savePatch(result);
-		Patch upDatedresult = repo.findById("5402");
-		assertNotNull(upDatedresult);
-		service = upDatedresult.getService("It21Ui");
-		assertEquals("XXXX", service.getBaseVersionNumber());
-		List<DbObject> dbObjects = upDatedresult.getDbObjects();
+		Patch patchToSave = result.toBuilder()
+				.services(Lists.newArrayList(Service.builder().serviceName("It21Ui").build()))
+				.dbObjects(Lists.newArrayList(DbObject.builder().fileName("FileName1").filePath("FilePath1").build())).build();
+		repo.savePatch(patchToSave);
+		Patch updated = repo.findById("5402");
+		assertNotNull(updated);
+		Service service = updated.getService("It21Ui");
+		assertNotNull(service);
+		List<DbObject> dbObjects = updated.getDbObjects();
 		assertEquals(1, dbObjects.size());
 		DbObject dbObject = dbObjects.get(0);
 		assertEquals("FileName1", dbObject.getFileName());
@@ -105,14 +102,14 @@ public class FilebasedPersistenceTest {
 
 	@Test
 	public void testFindServiceByName() {
-		assertNotNull(repo.findServiceByName("It21Ui"));
-		assertNotNull(repo.findServiceByName("SomeOtherService"));
+		assertNotNull(repo.getServiceMetaDataByName("It21Ui"));
+		assertNotNull(repo.getServiceMetaDataByName("SomeOtherService"));
 	}
 
 	@Test
 	public void testSaveModules() {
 		List<String> dbModulesList = Lists.newArrayList("testdbmodule", "testdbAnotherdbModule");
-		DbModules intialLoad = new DbModules(dbModulesList);
+		DbModules intialLoad = DbModules.builder().dbModules(dbModulesList).build();
 		repo.saveDbModules(intialLoad);
 		DbModules dbModules = repo.getDbModules();
 		List<String> dbModulesRead = dbModules.getDbModules();
@@ -124,33 +121,31 @@ public class FilebasedPersistenceTest {
 
 	@Test
 	public void testServicesMetaData() {
-		List<ServiceMetaData> serviceList = Lists.newArrayList();
-		MavenArtifact it21UiStarter = new MavenArtifact();
-		it21UiStarter.setArtifactId("it21ui-app-starter");
-		it21UiStarter.setGroupId("com.apgsga.it21.ui.mdt");
-		it21UiStarter.setName("it21ui-app-starter");
-
-		MavenArtifact jadasStarter = new MavenArtifact();
-		jadasStarter.setArtifactId("jadas-app-starter");
-		jadasStarter.setGroupId("com.apgsga.it21.ui.mdt");
-		jadasStarter.setName("jadas-app-starter");
-
-		final ServiceMetaData it21Ui = new ServiceMetaData("It21Ui", "it21_release_9_1_0_admin_uimig", "9.1.0",
-				"ADMIN-UIMIG", "it21UiPackager");
-		serviceList.add(it21Ui);
-		final ServiceMetaData someOtherService = new ServiceMetaData("SomeOtherService",
-				"it21_release_9_1_0_some_tag", "9.1.0", "SOME-TAG", "someOtherServicePackager");
-		serviceList.add(someOtherService);
-		final ServicesMetaData data = new ServicesMetaData();
-		data.setServicesMetaData(serviceList);
-		repo.saveServicesMetaData(data);
+		final MavenArtifact bomData = MavenArtifact.builder()
+				.artifactId("bomArtifactid")
+				.groupId("bomGroupid")
+				.name("whatevername")
+				.build();
+		final Package pkgData = Package.builder()
+				.packagerName("jadasPackager")
+				.starterCoordinates(com.google.common.collect.Lists.newArrayList("com.apgsga.it21.ui.mdt:it21ui-app-starter", "com.apgsga.it21.ui.mdt:jadas-app-starter"))
+				.build();
+		final ServiceMetaData serviciceMetaData = ServiceMetaData.builder()
+				.bomCoordinates(bomData)
+				.baseVersionNumber("aBaseVersionNumber")
+				.microServiceBranch("it21_release_9_1_0_admin_uimig")
+				.packages(com.google.common.collect.Lists.newArrayList(pkgData))
+				.revisionMnemoPart("ADMIN-UIMIG")
+				.serviceName("jadasserver").build();
+		final ServicesMetaData servicesMetaData = ServicesMetaData.builder().servicesMetaData(com.google.common.collect.Lists.newArrayList(serviciceMetaData)).build();
+		repo.saveServicesMetaData(servicesMetaData);
 		ServicesMetaData serviceData = repo.getServicesMetaData();
-		assertEquals(data, serviceData);
+		assertEquals(servicesMetaData, serviceData);
 	}
 
 	@Test
 	public void testLoadOnDemandTargets() {
-		OnDemandTargets onDemandTargets = patchSystemInfoRepo.onDemandTargets();
+		OnDemandTargets onDemandTargets = repo.onDemandTargets();
 		assertEquals(4,onDemandTargets.getOnDemandTargets().size());
 		assertTrue(onDemandTargets.getOnDemandTargets().contains("DEV-CHEI212"));
 		assertTrue(onDemandTargets.getOnDemandTargets().contains("DEV-CHEI211"));
@@ -160,7 +155,7 @@ public class FilebasedPersistenceTest {
 
 	@Test
 	public void testLoadStageMappings() {
-		StageMappings stageMappings = patchSystemInfoRepo.stageMappings();
+		StageMappings stageMappings = repo.stageMappings();
 		assertEquals(4,stageMappings.getStageMappings().size());
 		for(StageMapping stageMapping : stageMappings.getStageMappings()) {
 			// JHE : Just test two, not even sure it makes sense to load a complete file
@@ -175,14 +170,14 @@ public class FilebasedPersistenceTest {
 
 	@Test
 	public void testLoadTargetInstances() {
-		TargetInstances targetInstances = patchSystemInfoRepo.targetInstances();
+		TargetInstances targetInstances = repo.targetInstances();
 		assertEquals(4,targetInstances.getTargetInstances().size());
 		for(TargetInstance targetInstance : targetInstances.getTargetInstances()) {
 			// JHE : Just test two, not even sure it makes sense to load a complete file
 			if(targetInstance.getName().equals("DEV-CHPI211")) {
 				assertEquals(5,targetInstance.getServices().size());
 				List<String> devChpi211ServiceNames = Stream.of("it21-db","ds-db","digiflex","jadas","it21_ui").collect(Collectors.toList());
-				for(ServiceMetaData serviceMetaData : targetInstance.getServices()) {
+				for(ServiceInstallation serviceMetaData : targetInstance.getServices()) {
 					assertTrue(devChpi211ServiceNames.contains(serviceMetaData.getServiceName()));
 				}
 			}
@@ -190,7 +185,7 @@ public class FilebasedPersistenceTest {
 				assertEquals(2,targetInstance.getServices().size());
 				List<String> devChqi211ServiceNames = Stream.of("it21-db","it21_ui").collect(Collectors.toList());
 				List<String> devChqi211NoServiceNames = Stream.of("ds-db","digiflex","jadas").collect(Collectors.toList());
-				for(ServiceMetaData serviceMetaData : targetInstance.getServices()) {
+				for(ServiceInstallation serviceMetaData : targetInstance.getServices()) {
 					assertTrue(devChqi211ServiceNames.contains(serviceMetaData.getServiceName()));
 					assertFalse(devChqi211NoServiceNames.contains(serviceMetaData.getServiceName()));
 				}
@@ -200,15 +195,32 @@ public class FilebasedPersistenceTest {
 
 	@Test
 	public void testTargetFor() {
-		String target = patchSystemInfoRepo.targetFor("Informatiktest");
+		String target = repo.targetFor("Informatiktest");
 		assertEquals("DEV-CHEI211", target);
 	}
 
 	@Test
 	public void testPackagernameFor() {
-		Service s = new Service();
-		s.setServiceName("It21Ui");
-		String packagerName = patchSystemInfoRepo.packagerNameFor(s);
-		assertEquals("packagerForIt21",packagerName);
+		final MavenArtifact bomData = MavenArtifact.builder()
+				.artifactId("anotherBomId")
+				.groupId("anotherbomGroupid")
+				.name("anotherwhatevername")
+				.build();
+		final Package pkgData = Package.builder()
+				.packagerName("packagerForXyzservice")
+				.starterCoordinates(com.google.common.collect.Lists.newArrayList("com.apgsga.it21.ui.mdt:it21ui-app-starter", "com.apgsga.it21.ui.mdt:jadas-app-starter"))
+				.build();
+		final ServiceMetaData serviciceMetaData = ServiceMetaData.builder()
+				.bomCoordinates(bomData)
+				.baseVersionNumber("aBaseVersionNumber")
+				.microServiceBranch("it21_release_9_1_0_admin_uimig")
+				.packages(com.google.common.collect.Lists.newArrayList(pkgData))
+				.revisionMnemoPart("ADMIN-UIMIG")
+				.serviceName("xyzservice").build();
+		final ServicesMetaData servicesMetaData = ServicesMetaData.builder().servicesMetaData(com.google.common.collect.Lists.newArrayList(serviciceMetaData)).build();
+		repo.saveServicesMetaData(servicesMetaData);
+		List<Package> pkgs = repo.packagesFor(Service.builder().serviceName("xyzservice").build());
+		assertTrue(pkgs.size() == 1);
+		assertEquals("packagerForXyzservice",pkgs.iterator().next().getPackagerName());
 	}
 }

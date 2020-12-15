@@ -34,7 +34,7 @@ public interface ArtifactManager {
 
 	List<MavenArtifact> getAllDependencies(String serviceVersion, SearchCondition searchFilter) throws IOException, XmlPullParserException, DependencyResolutionException,ArtifactResolutionException;
 
-	String getArtifactName(String groupId, String artifactId, String version) throws Exception;
+	String getArtifactName(String groupId, String artifactId, String version);
 	
 	void cleanLocalMavenRepo();
 	

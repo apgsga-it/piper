@@ -1,16 +1,18 @@
 package com.apgsga.microservice.patch.api;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.*;
 import java.util.List;
 
+
+@JsonDeserialize(builder = OnDemandTargets.OnDemandTargetsBuilder.class)
+@Value
+@Builder
 public class OnDemandTargets {
 
-    private List<String> onDemandTargets;
+    List<String> onDemandTargets;
 
-    public List<String> getOnDemandTargets() {
-        return onDemandTargets;
-    }
-
-    public void setOnDemandTargets(List<String> onDemandTargets) {
-        this.onDemandTargets = onDemandTargets;
-    }
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class OnDemandTargetsBuilder {}
 }

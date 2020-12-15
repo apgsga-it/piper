@@ -18,6 +18,12 @@ public class Asserts {
 			throw ExceptionFactory.createPatchServiceRuntimeException(key, variables);
 		}
 	}
+
+	public static void isTrue(Boolean expression, String message) {
+		if (!expression) {
+			throw ExceptionFactory.createPatchServiceRuntimeException(message);
+		}
+	}
 	
 	public static void isFalse(Boolean expression, String key, Object[] variables) {
 		if (expression) {
