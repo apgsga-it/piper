@@ -261,7 +261,7 @@ public class PatchPersistenceImpl implements PatchPersistence {
 		List<ServiceMetaData> services = getServicesMetaData().getServicesMetaData();
 		List<ServiceMetaData> result = services.stream().filter(p -> p.getServiceName().equals(serviceName))
 				.collect(Collectors.toList());
-		Asserts.isTrue(result.size() == 1, "FilebasedPatchPersistence.findServiceByName.exception", new Object[] {});
+		Asserts.isTrue(result.size() == 1, "Service Metadata Size not 1");
 		return result.get(0);
 	}
 

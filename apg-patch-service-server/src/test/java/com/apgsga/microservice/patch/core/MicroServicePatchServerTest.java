@@ -264,10 +264,10 @@ public class MicroServicePatchServerTest {
 										.version("1.0")
 										.name("test-ma1").build(),
 								MavenArtifact.builder()
-										.artifactId("test-ma2")
+										.artifactId("test-ma3")
 										.groupId("com.apgsga")
 										.version("1.0")
-										.name("test-ma2").build()
+										.name("test-ma3").build()
 						)).build()))
 				.dbObjects(Lists.newArrayList( DbObject.builder()
 						.fileName("test-db1")
@@ -284,10 +284,11 @@ public class MicroServicePatchServerTest {
 										.version("1.0")
 										.name("test-ma3").build(),
 								MavenArtifact.builder()
-										.artifactId("test-ma4")
+										.artifactId("test-ma2")
 										.groupId("com.apgsga")
 										.version("1.0")
-										.name("test-ma4").build()
+										.name("test-ma2").build()
+
 						)).build()))
 				.dbObjects(Lists.newArrayList( DbObject.builder()
 						.fileName("test-db2")

@@ -177,7 +177,7 @@ public class PatchPersistenceTest {
 			if(targetInstance.getName().equals("DEV-CHPI211")) {
 				assertEquals(5,targetInstance.getServices().size());
 				List<String> devChpi211ServiceNames = Stream.of("it21-db","ds-db","digiflex","jadas","it21_ui").collect(Collectors.toList());
-				for(ServiceMetaData serviceMetaData : targetInstance.getServices()) {
+				for(ServiceInstallation serviceMetaData : targetInstance.getServices()) {
 					assertTrue(devChpi211ServiceNames.contains(serviceMetaData.getServiceName()));
 				}
 			}
@@ -185,7 +185,7 @@ public class PatchPersistenceTest {
 				assertEquals(2,targetInstance.getServices().size());
 				List<String> devChqi211ServiceNames = Stream.of("it21-db","it21_ui").collect(Collectors.toList());
 				List<String> devChqi211NoServiceNames = Stream.of("ds-db","digiflex","jadas").collect(Collectors.toList());
-				for(ServiceMetaData serviceMetaData : targetInstance.getServices()) {
+				for(ServiceInstallation serviceMetaData : targetInstance.getServices()) {
 					assertTrue(devChqi211ServiceNames.contains(serviceMetaData.getServiceName()));
 					assertFalse(devChqi211NoServiceNames.contains(serviceMetaData.getServiceName()));
 				}
@@ -221,6 +221,6 @@ public class PatchPersistenceTest {
 		repo.saveServicesMetaData(servicesMetaData);
 		List<Package> pkgs = repo.packagesFor(Service.builder().serviceName("xyzservice").build());
 		assertTrue(pkgs.size() == 1);
-		assertEquals("packagerForIt21",pkgs.iterator().next().getPackagerName());
+		assertEquals("packagerForXyzservice",pkgs.iterator().next().getPackagerName());
 	}
 }

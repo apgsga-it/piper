@@ -9,6 +9,11 @@ public class ExceptionFactory {
 		return new PatchServiceRuntimeException(key,ErrorMessages.getErrorMsg(key, variables));
 	}
 
+	public static PatchServiceRuntimeException createPatchServiceRuntimeException(String errorMessage) {
+		return new PatchServiceRuntimeException(errorMessage);
+	}
+
+
 	public static PatchServiceRuntimeException createPatchServiceRuntimeException(String key, Object[] variables,
 			Throwable cause) {
 		return new PatchServiceRuntimeException(key,ErrorMessages.getErrorMsg(key, variables), cause);

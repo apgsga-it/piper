@@ -13,7 +13,7 @@ import java.util.List;
 public class TargetInstance {
 
     String name;
-    List<ServiceMetaData> services;
+    List<ServiceInstallation> services;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class TargetInstanceBuilder {}

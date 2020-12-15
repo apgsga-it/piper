@@ -30,7 +30,7 @@
 			]
 		},
 		{
-			"serviceName": "SomeOther",
+			"serviceName": "SomeOtherService",
 			"bomCoordinates": {
 				"artifactId": "other-dm-bom",
 				"groupId": "com.affichage.common.maven",
