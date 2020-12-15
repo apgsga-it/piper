@@ -4,9 +4,11 @@ import com.google.common.collect.Sets;
 
 import java.util.Set;
 
+// TODO (jhe, 15.12 ) :  move to Lombok and only API Object's
 public class AssembleAndDeployParameters {
 
     private Set<String> patches = Sets.newHashSet();
+    // TODO (jhe, 15.12) I don't think below should be part of the api
     private Set<String> gradlePackagerProjectAsVscPath = Sets.newHashSet();
     private String target;
     private String successNotification;
