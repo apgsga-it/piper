@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.maven.model.Dependency;
@@ -115,7 +116,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
         } catch (IOException | XmlPullParserException e) {
             LOGGER.error("Error Loading Bom Model", e);
             LOGGER.error(ExceptionUtils.getFullStackTrace(e));
-            throw new RuntimeException(String.format("Bom couldn't be parsed %s", bomCoordinates.toString()), e);
+            throw ExceptionFactory.create("Bom couldn't be parsed %s",e, bomCoordinates.toString());
         } finally {
             if (fileReader != null) {
                 try {
@@ -143,17 +144,10 @@ public class ArtifactManagerImpl implements ArtifactManager {
                 LOGGER.warn("Artifact not found", cause);
                 return null;
             }
-            throw new RuntimeException(String.format("Exception Loading pom: %s",bomCoord.toBuilder()), e);
+            throw ExceptionFactory.create("Exception Loading pom: %s",e,bomCoord.toString());
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.apgsga.artifact.query.impl.ArtifactManagerI#getArtifacts(java.util.
-     * List, java.lang.String)
-     */
     @Override
     public List<MavenArtifact> getAllDependencies(MavenArtifact bom) {
         return getAllDependencies(bom, SearchCondition.APPLICATION);
@@ -187,7 +181,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
                     List<MavenArtifact> templateList = Arrays.asList(template);
                     return artifacts.stream().filter(art -> filter(templateList,art)).collect(Collectors.toList());
                 } catch (IOException e) {
-                    throw new RuntimeException("ArtifactManagerImpl.getArtifactsWithVersionFromBom.exception", e);
+                    throw ExceptionFactory.create("Exception Loading pom:  %s with searchFilter: %s",e,bomCoordinates.toString(), searchFilter.toString());
                 }
             }
             return Collections.emptyList();
