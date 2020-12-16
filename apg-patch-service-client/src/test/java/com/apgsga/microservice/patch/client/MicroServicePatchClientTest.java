@@ -3,7 +3,6 @@ package com.apgsga.microservice.patch.client;
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.api.Package;
 import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
-import com.apgsga.microservice.patch.core.impl.persistence.PatchPersistenceImpl;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.google.common.collect.Lists;
 import org.junit.Before;
@@ -59,7 +58,7 @@ public class MicroServicePatchClientTest {
     private String localPort;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         patchClient = new MicroservicePatchClient("localhost:" + localPort);
         final ResourceLoader rl = new FileSystemResourceLoader();
         Resource testResources = rl.getResource("src/test/resources/json");
@@ -131,7 +130,11 @@ public class MicroServicePatchClientTest {
         try {
             patchClient.save(patch);
             fail();
-        } catch (Throwable e) {
+
+        } catch (AssertionError e){
+            throw e;
+        }
+        catch (Throwable e) {
             // TODO Detail , Exception Handling
             // Ok
         }
@@ -207,53 +210,6 @@ public class MicroServicePatchClientTest {
         patchClient.save(p2);
         assertNotNull(patchClient.findById("p1"));
         assertNotNull(patchClient.findById("p2"));
-        List<Service> services = Lists.newArrayList(Service.builder()
-                .serviceName("It21Ui")
-                .artifactsToPatch(Lists.newArrayList(MavenArtifact.builder()
-                                .artifactId("test-ma1")
-                                .groupId("com.apgsga")
-                                .version("1.0")
-                                .name("test-ma1").build(),
-                        MavenArtifact.builder()
-                                .artifactId("test-ma2")
-                                .groupId("com.apgsga")
-                                .version("1.0")
-                                .name("test-ma2").build(),
-                        MavenArtifact.builder()
-                                .artifactId("test-ma3")
-                                .groupId("com.apgsga")
-                                .version("1.0")
-                                .name("test-ma3").build()
-                )).build(),
-                Service.builder()
-                        .serviceName("SomeOtherApp")
-                        .artifactsToPatch(Lists.newArrayList(MavenArtifact.builder()
-                                        .artifactId("test-ma4")
-                                        .groupId("com.apgsga")
-                                        .version("1.0")
-                                        .name("test-ma4").build(),
-                                MavenArtifact.builder()
-                                        .artifactId("test-ma5")
-                                        .groupId("com.apgsga")
-                                        .version("1.0")
-                                        .name("test-ma5").build(),
-                                MavenArtifact.builder()
-                                        .artifactId("test-ma6")
-                                        .groupId("com.apgsga")
-                                        .version("1.0")
-                                        .name("test-ma6").build()
-                        )).build()
-        );
-        List<DbObject> dbObjects = Lists.newArrayList(  DbObject.builder()
-                        .fileName("test-db1")
-                        .filePath("com.apgsga.ch/sql/db/test-db1")
-                        .moduleName("test-db1")
-                        .build(),
-                DbObject.builder()
-                        .fileName("test-db2")
-                        .filePath("com.apgsga.ch/sql/db/test-db2")
-                        .moduleName("test-db2")
-                        .build());
         Patch p1Updated = p1.toBuilder()
                     .services(Lists.newArrayList(Service.builder()
                         .serviceName("It21Ui")
@@ -296,13 +252,13 @@ public class MicroServicePatchClientTest {
                 .build();
         patchClient.save(p1Updated);
         patchClient.save(p2Updated);
-        assertTrue(patchClient.findById("p1").retrieveAllArtifactsToPatch().size() == 2);
-        assertTrue(patchClient.findById("p2").retrieveAllArtifactsToPatch().size() == 2);
-        assertTrue(patchClient.findWithObjectName("ma1").size() == 1);
-        assertTrue(patchClient.findWithObjectName("ma2").size() == 1);
-        assertTrue(patchClient.findWithObjectName("ma3").size() == 2);
-        assertTrue(patchClient.findWithObjectName("wrongName").size() == 0);
-        assertTrue(patchClient.findWithObjectName("test-db2").size() == 1);
+        assertEquals(2, patchClient.findById("p1").retrieveAllArtifactsToPatch().size());
+        assertEquals(2, patchClient.findById("p2").retrieveAllArtifactsToPatch().size());
+        assertEquals(1, patchClient.findWithObjectName("ma1").size());
+        assertEquals(1, patchClient.findWithObjectName("ma2").size());
+        assertEquals(2, patchClient.findWithObjectName("ma3").size());
+        assertEquals(0, patchClient.findWithObjectName("wrongName").size());
+        assertEquals(1, patchClient.findWithObjectName("test-db2").size());
     }
 
     @Test

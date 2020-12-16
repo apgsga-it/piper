@@ -3,21 +3,21 @@ package com.apgsga.microservice.patch.core.commands.jenkins.ssh;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
 
-    private String jobName;
+    private final String jobName;
 
     private Map<String,String> jobParameters;
 
     private Map<String,String> fileParams = Maps.newHashMap();
 
-    private boolean waitForJobToBeFinish;
+    private final boolean waitForJobToBeFinish;
 
-    private boolean waitForJobToStart;
+    private final boolean waitForJobToStart;
 
     public JenkinsSshBuildJobCmd(String jenkinsHost, String jenkinsSshPort, String jenkinsSshUser, String jobName, boolean waitForJobToStart, boolean waitForJobToBeFinish) {
         super(jenkinsHost, jenkinsSshPort, jenkinsSshUser);
@@ -48,10 +48,12 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
         return fileParams != null && !fileParams.isEmpty();
     }
 
-    @Override
     protected String getFileParameterName() {
         if(hasFileParam()) {
-            return fileParams.keySet().stream().findFirst().get();
+            final Optional<String> first = fileParams.keySet().stream().findFirst();
+            if (first.isPresent()) {
+                return first.get();
+            }
         }
         return null;
     }
@@ -72,19 +74,19 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
 
         if(hasFileParam()) {
             List<String> tmpCmd = Lists.newArrayList();
-            String catCmd = "cat " + getFileParameterValue() + " | ssh -l " + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost + " build " + jobName + " -p " + getFileParameterName() + "=";
+            StringBuilder catCmd = new StringBuilder("cat " + getFileParameterValue() + " | ssh -l " + jenkinsSshUser + " -p " + jenkinsSshPort + " " + jenkinsHost + " build " + jobName + " -p " + getFileParameterName() + "=");
             if (jobParameters != null && !jobParameters.isEmpty()) {
                 for (String key : jobParameters.keySet()) {
-                    catCmd += " -p " + key + "=" + jobParameters.get(key);
+                    catCmd.append(" -p ").append(key).append("=").append(jobParameters.get(key));
                 }
             }
             tmpCmd.add("/bin/sh");
             tmpCmd.add("-c");
-            tmpCmd.add(catCmd);
+            tmpCmd.add(catCmd.toString());
 
             //TODO JHE (01.10.2020): eventually add -w and -f options, but not sure that would work
 
-            return tmpCmd.stream().toArray(String[]::new);
+            return tmpCmd.toArray(new String[0]);
         }
         else {
 
@@ -107,7 +109,7 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
                 cmd.add("-w");
             }
 
-            return cmd.stream().toArray(String[]::new);
+            return cmd.toArray(new String[0]);
 
 
         }

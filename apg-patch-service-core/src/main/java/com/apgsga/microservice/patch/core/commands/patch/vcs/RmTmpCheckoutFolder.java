@@ -4,7 +4,7 @@ import com.apgsga.microservice.patch.core.commands.Command;
 
 public class RmTmpCheckoutFolder implements Command {
 
-    private String folderToBeDeleted;
+    private final String folderToBeDeleted;
 
     public RmTmpCheckoutFolder(String coFolder) {
         this.folderToBeDeleted = coFolder;

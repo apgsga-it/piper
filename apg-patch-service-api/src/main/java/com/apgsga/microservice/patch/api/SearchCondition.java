@@ -29,7 +29,7 @@ public enum SearchCondition {
 	}
 
 	private static class Holder {
-		static Map<String, SearchCondition> ENUM_MAP = Maps.newHashMap();
+		static final Map<String, SearchCondition> ENUM_MAP = Maps.newHashMap();
 	}
 
 }

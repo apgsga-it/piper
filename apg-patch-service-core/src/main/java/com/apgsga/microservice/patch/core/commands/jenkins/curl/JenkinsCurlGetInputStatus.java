@@ -6,7 +6,7 @@ import java.util.List;
 
 public class JenkinsCurlGetInputStatus extends JenkinsCurlCommand {
 
-    private String jobName;
+    private final String jobName;
 
     public JenkinsCurlGetInputStatus(String jenkinsUrl, String jenkinsUserName, String jenkinsUserPwd, String jobName) {
         super(jenkinsUrl,jenkinsUserName,jenkinsUserPwd);
@@ -17,6 +17,6 @@ public class JenkinsCurlGetInputStatus extends JenkinsCurlCommand {
     protected String[] getCurlCmd() {
         List<String> cmd = Lists.newArrayList();
         cmd.add(JENKINS_URL + "/job/" + jobName + "/wfapi/runs");
-        return cmd.stream().toArray(String[]::new);
+        return cmd.toArray(new String[0]);
     }
 }

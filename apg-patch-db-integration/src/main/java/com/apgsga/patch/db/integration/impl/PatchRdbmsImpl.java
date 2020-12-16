@@ -30,7 +30,7 @@ public class PatchRdbmsImpl implements PatchRdbms {
     public void notify(NotificationParameters params) {
         if(isRunningWithDbIntegration) {
             LOGGER.info("Notifying DB for : " + params.toString());
-            SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName(params.PATCH_NOTIFICATION_PROCEDURE_NAME);
+            SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName(NotificationParameters.PATCH_NOTIFICATION_PROCEDURE_NAME);
             SqlParameterSource in = new MapSqlParameterSource(params.getAllParameters());
             Map<String, Object> simpleJdbcCallResult = simpleJdbcCall.execute(in);
             LOGGER.info("Notify DB Result = " + simpleJdbcCallResult);
@@ -44,7 +44,6 @@ public class PatchRdbmsImpl implements PatchRdbms {
     @Deprecated // TODO JHE (18.11.2020): Not 100% sure yet, but this will most probably be removed
     public List<String> patchIdsForStatus(String statusCode) {
         String sql = "SELECT id FROM cm_patch_f p INNER JOIN cm_patch_status_f s ON p.status = s.pat_status WHERE s.pat_status = " + statusCode ;
-        List<String> rows = jdbcTemplate.queryForList(sql,String.class);
-        return rows;
+        return jdbcTemplate.queryForList(sql,String.class);
     }
 }

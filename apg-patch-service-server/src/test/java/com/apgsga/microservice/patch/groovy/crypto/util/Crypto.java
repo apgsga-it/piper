@@ -6,7 +6,7 @@ import org.jasypt.util.text.BasicTextEncryptor;
 
 public class Crypto {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
 		System.out.println("encrypt key:");
 		String encryptKey = scanner.next();

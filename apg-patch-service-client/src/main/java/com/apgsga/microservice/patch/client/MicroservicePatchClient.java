@@ -42,13 +42,11 @@ public class MicroservicePatchClient implements PatchService {
 	
 	private static final String FIND_WITH_OBJECT_NAME = "/findWithObjectName";
 
-	private static final String COPY_PATCH_FILE = "/copyPatchFiles";
-
 	protected static Log LOGGER = LogFactory.getLog(MicroservicePatchClient.class.getName());
 
-	private String baseUrl;
+	private final String baseUrl;
 
-	private RestTemplate restTemplate;
+	private final RestTemplate restTemplate;
 
 	public MicroservicePatchClient(String baseUrl, RestTemplate restTemplate) {
 		super();
@@ -58,22 +56,6 @@ public class MicroservicePatchClient implements PatchService {
 
 	public MicroservicePatchClient(String baseUrl) {
 		this(baseUrl, new RestTemplate());
-	}
-
-	public String getBaseUrl() {
-		return baseUrl;
-	}
-
-	public void setBaseUrl(String baseUrl) {
-		this.baseUrl = baseUrl;
-	}
-
-	public RestTemplate getRestTemplate() {
-		return restTemplate;
-	}
-
-	public void setRestTemplate(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
 	}
 
 	private String getRestBaseUri() {

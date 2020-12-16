@@ -3,7 +3,6 @@ package com.apgsga.microservice.patch.core.impl;
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
-import com.apgsga.microservice.patch.api.NotificationParameters;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -32,7 +31,7 @@ public class PatchSetupTask implements Runnable {
     public void run() {
         try {
             Integer lastTagNr = patch.getTagNr();
-            Integer nextTagNr = lastTagNr++;
+            Integer nextTagNr = lastTagNr + 1;
             String patchBranch = patch.getDbPatchBranch();
             String nextPatchTag = patchBranch + "_" + nextTagNr.toString();
             LOGGER.info("Patch Setup Task started for patch " + patch.getPatchNumber());

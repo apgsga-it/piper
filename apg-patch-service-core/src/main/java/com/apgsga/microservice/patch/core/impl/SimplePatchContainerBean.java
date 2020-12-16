@@ -4,27 +4,18 @@ import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
-import com.apgsga.microservice.patch.core.commands.JschSessionCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.exceptions.Asserts;
-import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
-import com.apgsga.patch.db.integration.api.PatchRdbms;
-import com.apgsga.microservice.patch.api.NotificationParameters;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import org.eclipse.aether.resolution.ArtifactResolutionException;
-import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -72,14 +63,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public List<MavenArtifact> listMavenArtifacts(String serviceName, SearchCondition filter) {
 		ServiceMetaData data = repo.getServiceMetaDataByName(serviceName);
 		List<MavenArtifact> mavenArtFromStarterList;
-		try {
-			mavenArtFromStarterList = am.getAllDependencies(
-					data.getBaseVersionNumber() + "." + data.getRevisionMnemoPart() + "-SNAPSHOT", filter);
-		} catch (DependencyResolutionException | ArtifactResolutionException | IOException | XmlPullParserException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"SimplePatchContainerBean.listMavenArtifacts.exception",
-					new Object[] { e.getMessage(), serviceName.toString() }, e);
-		}
+		mavenArtFromStarterList = am.getAllDependencies(
+				data.getBaseVersionNumber() + "." + data.getRevisionMnemoPart() + "-SNAPSHOT", filter);
 
 		return mavenArtFromStarterList;
 	}
@@ -171,35 +156,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public List<DbObject> listAllObjectsChangedForDbModule(String patchId, String searchString) {
-		Patch patch = findById(patchId);
-		Asserts.notNull(patch, "SimplePatchContainerBean.listAllObjectsChangedForDbModule.patch.exists.assert",
-				new Object[] { patchId });
-		DbModules dbModules = repo.getDbModules();
-		if (dbModules == null) {
-			return Lists.newArrayList();
-		}
-		final CommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
-		sshCommandRunner.preProcess();
-		List<DbObject> dbObjects = Lists.newArrayList();
-		for (String dbModule : dbModules.getDbModules()) {
-			if (Strings.isNullOrEmpty(dbModule) || dbModule.contains(searchString)) {
-				List<String> result = sshCommandRunner.run(PatchSshCommand
-						.createDiffPatchModulesCmd(patch.getDbPatchBranch(), patch.getProdBranch(), dbModule));
-				List<String> files = result.stream()
-						.filter(s -> s.startsWith("Index: "))
-						.map(s -> s.substring(7)).collect(Collectors.toList());
-				files.stream().forEach(file -> {
-					DbObject dbObject = DbObject.builder()
-							.fileName(dbModule)
-							.fileName(FilenameUtils.getName(file))
-							.filePath(FilenameUtils.getPath(file)).build();
-					dbObjects.add(dbObject);
-				});
-
-			}
-		}
-		sshCommandRunner.postProcess();
-		return dbObjects;
+		LOGGER.info("Searching all DB Objects with searchString" + searchString);
+		return doListAllSqlObjectsForDbModule(patchId, searchString, searchString);
 	}
 
 	@Override
@@ -239,7 +197,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					// JHE : In production, cvs is on a separated server, therefore we can't checkout, and parse the local result ...
 					//		 We rely on the output given back from the CVS command, might not be the most robust solution :( ... but so far ok for a function which is not crucial.
 					int startIndex = r.indexOf("U ")+"U ".length();
-					String pathToResourceName = r.substring(startIndex, r.length()).trim().replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "");
+					String pathToResourceName = r.substring(startIndex).trim().replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "");
 					DbObject dbObject = DbObject.builder()
 							.fileName(dbModule)
 							.fileName(FilenameUtils.getName(pathToResourceName))
@@ -248,7 +206,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					dbObjects.add(dbObject);
 				});
 
-				List<String> rmResult = sshCommandRunner.run(PatchSshCommand.createRmTmpCheckoutFolder(coFolder));
+				sshCommandRunner.run(PatchSshCommand.createRmTmpCheckoutFolder(coFolder));
 			}
 		}
 		sshCommandRunner.postProcess();

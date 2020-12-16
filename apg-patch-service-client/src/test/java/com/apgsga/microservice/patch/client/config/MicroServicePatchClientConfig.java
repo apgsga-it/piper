@@ -10,8 +10,7 @@ public class MicroServicePatchClientConfig {
 
 	@Bean
 	public MessageSource messageSource() {
-		MessageSource messageSource = new ReloadableResourceBundleMessageSource();
-		return messageSource;
+		return new ReloadableResourceBundleMessageSource();
 	}
 
 }

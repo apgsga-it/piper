@@ -11,8 +11,8 @@ import java.util.List;
 @Builder(toBuilder = true)
 public class PatchLog {
 
-	private String patchNumber;
-	private List<PatchLogDetails> logDetails;
+	String patchNumber;
+	List<PatchLogDetails> logDetails;
 
 	@JsonPOJOBuilder(withPrefix = "")
 	public static class PatchLogBuilder {}

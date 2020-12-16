@@ -15,15 +15,16 @@ public class FilebasedPersistenceImpl implements FilebasedPersistence {
         return new FilebasedPersistenceImpl(storagePath,tempStoragePath);
     }
 
-    protected Resource storagePath;
+    protected final Resource storagePath;
 
-    protected Resource tempStoragePath;
+    protected final Resource tempStoragePath;
 
     public FilebasedPersistenceImpl(Resource storagePath, Resource tempStoragePath)  {
         this.storagePath = storagePath;
         this.tempStoragePath = tempStoragePath;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void init() throws IOException {
         if (!storagePath.exists()) {
             storagePath.getFile().mkdir();
@@ -36,8 +37,7 @@ public class FilebasedPersistenceImpl implements FilebasedPersistence {
 
     public File createFile(String fileName) throws IOException {
         File parentDir = storagePath.getFile();
-        File revisions = new File(parentDir, fileName);
-        return revisions;
+        return new File(parentDir, fileName);
     }
 
     public <T> T findFile(File f, Class<T> clazz) throws IOException {
@@ -45,8 +45,7 @@ public class FilebasedPersistenceImpl implements FilebasedPersistence {
             return null;
         }
         ObjectMapper mapper = new ObjectMapper();
-        T patchData = mapper.readValue(f, clazz);
-        return patchData;
+        return mapper.readValue(f, clazz);
     }
 
     public synchronized <T> void writeToFile(T object, String filename) {

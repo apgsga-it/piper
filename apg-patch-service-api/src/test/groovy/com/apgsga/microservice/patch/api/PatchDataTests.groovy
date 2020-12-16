@@ -28,7 +28,7 @@ class PatchDataTests extends Specification  {
                         MavenArtifact.builder().artifactId("someId").groupId("grpId").version("1.0").build(),
                         MavenArtifact.builder().artifactId("anotherId").groupId("anotherGrpId").version("1.1").build()
                 )).build()
-        )).build();
+        )).build()
         def om = new ObjectMapper()
         File output = new File("build/PatchTest.json")
         om.writeValue(output, patch)

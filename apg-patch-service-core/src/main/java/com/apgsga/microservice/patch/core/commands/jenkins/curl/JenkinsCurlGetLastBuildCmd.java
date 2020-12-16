@@ -6,7 +6,7 @@ import java.util.List;
 
 public class JenkinsCurlGetLastBuildCmd extends JenkinsCurlCommand {
 
-    private String jobName;
+    private final String jobName;
 
     public JenkinsCurlGetLastBuildCmd(String jenkinsUrl, String jenkinsUserName, String jenkinsUserPwd, String jobName) {
         super(jenkinsUrl,jenkinsUserName,jenkinsUserPwd);
@@ -17,6 +17,6 @@ public class JenkinsCurlGetLastBuildCmd extends JenkinsCurlCommand {
     protected String[] getCurlCmd() {
         List<String> cmd = Lists.newArrayList();
         cmd.add(JENKINS_URL + "/job/" + jobName + "/api/json");
-        return cmd.stream().toArray(String[]::new);
+        return cmd.toArray(new String[0]);
     }
 }

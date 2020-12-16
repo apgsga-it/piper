@@ -27,7 +27,7 @@ public class PatchPersistenceImpl implements PatchPersistence {
 	
 	private static final String PATCH_LOG = "PatchLog";
 
-	private static final String SERVICE_META_DATA_JSON = "ServicesMetaData.json";
+	private static final String SERVICES_META_DATA_JSON = "ServicesMetaData.json";
 
 	private static final String DB_MODULES_JSON = "DbModules.json";
 
@@ -37,13 +37,11 @@ public class PatchPersistenceImpl implements PatchPersistence {
 
 	private static final String TARGET_INSTANCES_DATA_JSON = "TargetInstances.json";
 
-	private static final String SERVICES_METADATA_DATA_JSON = "ServicesMetaData.json";
-
 	protected static final Log LOGGER = LogFactory.getLog(PatchPersistenceImpl.class.getName());
 
-	private FilebasedPersistence patchPersistence;
-	private FilebasedPersistence systemMetaDataPersistence;
-	private PatchRdbms patchRdbms;
+	private final FilebasedPersistence patchPersistence;
+	private final FilebasedPersistence systemMetaDataPersistence;
+	private final PatchRdbms patchRdbms;
 
 	public PatchPersistenceImpl(Resource storagePath, Resource workDir) throws IOException {
 		super();
@@ -59,15 +57,6 @@ public class PatchPersistenceImpl implements PatchPersistence {
 		this.patchPersistence = FilebasedPersistenceImpl.create(storagePath, workDir);
 		this.systemMetaDataPersistence = FilebasedPersistenceImpl.create(storagePath, workDir);
 		this.patchRdbms = patchRdbms;
-		this.patchPersistence.init();
-		this.systemMetaDataPersistence.init();
-	}
-
-	public PatchPersistenceImpl(Resource storagePath, Resource storagePathMeta, Resource workDir) throws IOException {
-		super();
-		this.patchPersistence = FilebasedPersistenceImpl.create(storagePath, workDir);
-		this.systemMetaDataPersistence = FilebasedPersistenceImpl.create(storagePathMeta, workDir);
-		this.patchRdbms = new PatchRdbmsImpl();;
 		this.patchPersistence.init();
 		this.systemMetaDataPersistence.init();
 	}
@@ -119,13 +108,13 @@ public class PatchPersistenceImpl implements PatchPersistence {
 
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	@Override
 	public List<String> findAllPatchIds() {
 		try {
 			File[] files = patchPersistence.getStoragePath().getFile().listFiles(file -> file.getName().startsWith(PATCH));
-			final List<String> collect = Lists.newArrayList(files).stream().map(f -> FilenameUtils.getBaseName(f.getName()).substring(5))
+			return Lists.newArrayList(files).stream().map(f -> FilenameUtils.getBaseName(f.getName()).substring(5))
 					.collect(Collectors.toList());
-			return collect;
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"FilebasedPatchPersistence.findAllPatchIds.exception", new Object[] { e.getMessage() }, e);
@@ -180,19 +169,18 @@ public class PatchPersistenceImpl implements PatchPersistence {
 
 	@Override
 	public void saveServicesMetaData(ServicesMetaData serviceData) {
-		systemMetaDataPersistence.writeToFile(serviceData, SERVICE_META_DATA_JSON);
+		systemMetaDataPersistence.writeToFile(serviceData, SERVICES_META_DATA_JSON);
 	}
 
 	@Override
 	public ServicesMetaData getServicesMetaData() {
 		try {
-			File serviceMetaDataFile = systemMetaDataPersistence.createFile(SERVICE_META_DATA_JSON);
+			File serviceMetaDataFile = systemMetaDataPersistence.createFile(SERVICES_META_DATA_JSON);
 			if (!serviceMetaDataFile.exists()) {
 				return null;
 			}
 			ObjectMapper mapper = new ObjectMapper();
-			ServicesMetaData result = mapper.readValue(serviceMetaDataFile, ServicesMetaData.class);
-			return result;
+			return mapper.readValue(serviceMetaDataFile, ServicesMetaData.class);
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"FilebasedPatchPersistence.getServicesMetaData.exception", new Object[] { e.getMessage() }, e);
@@ -212,32 +200,32 @@ public class PatchPersistenceImpl implements PatchPersistence {
 				return null;
 			}
 			ObjectMapper mapper = new ObjectMapper();
-			DbModules result = mapper.readValue(dbModulesFile, DbModules.class);
-			return result;
+			return mapper.readValue(dbModulesFile, DbModules.class);
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"FilebasedPatchPersistence.getDbModules.exception", new Object[] { e.getMessage() }, e);
 		}
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	@Override
 	public List<String> listAllFiles() {
 		try {
 			File[] listFiles = patchPersistence.getStoragePath().getFile().listFiles();
-			final List<String> collect = Lists.newArrayList(listFiles).stream().map(File::getName).collect(Collectors.toList());
-			return collect;
+			return Lists.newArrayList(listFiles).stream().map(File::getName).collect(Collectors.toList());
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"FilebasedPatchPersistence.listAllFiles.exception", new Object[] { e.getMessage() }, e);
 		}
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	@Override
 	public List<String> listFiles(String prefix) {
 		try {
 			File[] listFiles = patchPersistence.getStoragePath().getFile().listFiles();
-			return Lists.newArrayList(listFiles).stream().filter(f -> f.getName().startsWith(prefix))
-					.map(File::getName).collect(Collectors.toList());
+			return Lists.newArrayList(listFiles).stream().map(File::getName)
+					.filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.listFiles.exception",
 					new Object[] { e.getMessage(), prefix }, e);
@@ -273,8 +261,7 @@ public class PatchPersistenceImpl implements PatchPersistence {
 				return null;
 			}
 			ObjectMapper mapper = new ObjectMapper();
-			OnDemandTargets result = mapper.readValue(onDemandTargetFile, OnDemandTargets.class);
-			return result;
+			return mapper.readValue(onDemandTargetFile, OnDemandTargets.class);
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"FilebasedPatchPersistence.onDemandTargets.exception", new Object[] { e.getMessage() }, e);
@@ -289,8 +276,7 @@ public class PatchPersistenceImpl implements PatchPersistence {
 				return null;
 			}
 			ObjectMapper mapper = new ObjectMapper();
-			StageMappings result = mapper.readValue(stageMappingFile, StageMappings.class);
-			return result;
+			return mapper.readValue(stageMappingFile, StageMappings.class);
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"FilebasedPatchPersistence.stageMapping.exception", new Object[] { e.getMessage() }, e);
@@ -305,8 +291,7 @@ public class PatchPersistenceImpl implements PatchPersistence {
 				return null;
 			}
 			ObjectMapper mapper = new ObjectMapper();
-			TargetInstances result = mapper.readValue(targetInstanceFile, TargetInstances.class);
-			return result;
+			return mapper.readValue(targetInstanceFile, TargetInstances.class);
 		} catch (IOException e) {
 			throw ExceptionFactory.createPatchServiceRuntimeException(
 					"FilebasedPatchPersistence.targetInstance.exception", new Object[] { e.getMessage() }, e);

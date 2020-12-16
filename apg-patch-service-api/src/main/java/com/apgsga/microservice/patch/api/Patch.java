@@ -49,10 +49,7 @@ public class Patch {
         Optional<Service> result = services
                 .stream()
                 .filter(s -> s.getServiceName().equals(serviceName)).findAny();
-        if (result.isPresent()) {
-            return result.get();
-        }
-        return null;
+        return result.orElse(null);
     }
 
 

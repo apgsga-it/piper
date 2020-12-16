@@ -2,8 +2,8 @@ package com.apgsga.microservice.patch.core.commands;
 
 public interface Command {
 
-	public String[] getCommand();
+	String[] getCommand();
 	
-	public void noSystemCheck(boolean noChecnk); 
+	void noSystemCheck(boolean noChecnk);
 
 }

@@ -6,7 +6,7 @@ import com.apgsga.microservice.patch.api.MavenArtifact;
 
 public class MavenArtWithDependencies {
 
-	private MavenArtifact artifact;
+	private final MavenArtifact artifact;
 	private List<MavenArtifact> dependencies;
 
 	public MavenArtWithDependencies(MavenArtifact artifact, List<MavenArtifact> dependencies) {
@@ -52,12 +52,8 @@ public class MavenArtWithDependencies {
 			return false;
 		}
 		if (dependencies == null) {
-			if (other.dependencies != null)
-				return false;
-		} else if (!dependencies.equals(other.dependencies)) {
-			return false;
-		}
-		return true;
+			return other.dependencies == null;
+		} else return dependencies.equals(other.dependencies);
 	}
 
 	@Override

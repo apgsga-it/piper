@@ -3,7 +3,6 @@ package com.apgsga.microservice.patch.server;
 import com.apgsga.microservice.patch.api.Package;
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.patch.db.integration.api.PatchRdbms;
-import com.apgsga.microservice.patch.api.NotificationParameters;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -298,7 +298,7 @@ class PatchCli {
 		patchClient.startInstallPipeline(target)
 	}
 
-	def copyPatchFile(PatchRestServiceClient patchClient, def status, def destFolder) throws Exception {
+	static def copyPatchFile(PatchRestServiceClient patchClient, def status, def destFolder) throws Exception {
 		Map params = Maps.newHashMap()
 		params.put("status",status)
 		params.put("destFolder",destFolder)
@@ -306,7 +306,7 @@ class PatchCli {
 	}
 
 
-	private def fetchPiperUrl(def options) {
+	private static def fetchPiperUrl(def options) {
 		if(options.purls && options.purls.size() == 1) {
 			return options.purls[0]
 		}

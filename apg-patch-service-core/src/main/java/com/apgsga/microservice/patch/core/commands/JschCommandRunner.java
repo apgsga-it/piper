@@ -15,9 +15,6 @@ import com.jcraft.jsch.Session;
 
 /**
  * @author che
- * @deprecated consider to use https://github.com/northern-bites/ganymed-ssh2
- *             resp https://www.cleondris.com/opensource/ssh2/ Reason: Error
- *             Handling is not very good
  */
 public class JschCommandRunner implements CommandRunner {
 
@@ -39,7 +36,7 @@ public class JschCommandRunner implements CommandRunner {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "BusyWait"})
 	public List<String> run(Command vcsCmd) {
 		String command = String.join(" ", vcsCmd.getCommand());
 		LOGGER.info("Executing: " + command);
@@ -62,7 +59,7 @@ public class JschCommandRunner implements CommandRunner {
 				}
 				try {
 					Thread.sleep(1000);
-				} catch (Exception ee) {
+				} catch (Exception ignored) {
 				}
 			}
 			// TODO (che, 31.5) : is this enough? or should we be more restrictive here? 
@@ -74,7 +71,7 @@ public class JschCommandRunner implements CommandRunner {
 			throw ExceptionFactory.createPatchServiceRuntimeException("JschCommandRunner.run.exception",
 					new Object[] { e.getMessage(), command }, e);
 		}
-		resultLines.stream().forEach(l -> LOGGER.info(l));
+		resultLines.forEach(LOGGER::info);
 		LOGGER.info("Done: " + command);
 		return resultLines;
 	}

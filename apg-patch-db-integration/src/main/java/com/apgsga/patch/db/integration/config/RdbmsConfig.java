@@ -32,8 +32,7 @@ public class RdbmsConfig {
 
     @Bean
     public JdbcTemplate jdbcTemplate() {
-        JdbcTemplate jt = new JdbcTemplate(dataSource());
-        return jt;
+        return new JdbcTemplate(dataSource());
     }
 
 }

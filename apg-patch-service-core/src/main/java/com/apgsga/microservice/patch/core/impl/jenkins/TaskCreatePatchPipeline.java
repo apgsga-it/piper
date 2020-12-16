@@ -19,15 +19,15 @@ public class TaskCreatePatchPipeline implements Runnable {
 		return new TaskCreatePatchPipeline(jenkinsHost,jenkinsSshPort,jenkinsSshUser,repo, patch);
 	}
 
-	private Patch patch;
+	private final Patch patch;
 
-	private String jenkinsHost;
+	private final String jenkinsHost;
 
-	private String jenkinsSshPort;
+	private final String jenkinsSshPort;
 
-	private String jenkinsSshUser;
+	private final String jenkinsSshUser;
 
-	private JenkinsPipelinePreprocessor preprocessor;
+	private final JenkinsPipelinePreprocessor preprocessor;
 
 	private TaskCreatePatchPipeline(String jenkinsHost, String jenkinsSshPort, String jenkinsSshUser,JenkinsPipelinePreprocessor preprocessor,  Patch patch) {
 		super();
@@ -47,9 +47,7 @@ public class TaskCreatePatchPipeline implements Runnable {
 			JenkinsSshCommand buildJobCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForCompleteCmd(jenkinsHost, jenkinsSshPort, jenkinsSshUser, "PatchJobBuilder", jobParm);
 			ProcessBuilderCmdRunnerFactory factory = new ProcessBuilderCmdRunnerFactory();
 			List<String> result = factory.create().run(buildJobCmd);
-			if (!result.stream().anyMatch(c -> {
-				return c.contains("SUCCESS");
-			})) {
+			if (result.stream().noneMatch(c -> c.contains("SUCCESS"))) {
 				LOGGER.error("PatchBuilder failed: " + result);
 				throw ExceptionFactory.createPatchServiceRuntimeException(
 						"JenkinsPatchClientImpl.createPatchPipelines.error",

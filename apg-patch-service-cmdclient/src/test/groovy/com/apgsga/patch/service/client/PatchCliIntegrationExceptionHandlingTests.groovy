@@ -36,15 +36,15 @@ class PatchCliIntegrationExceptionHandlingTests extends Specification {
 		System.properties['spring_profiles_active'] = 'default'
 		System.properties['piper.host.default.url'] = 'localhost:9020'
 		try {
-			final ResourceLoader rl = new FileSystemResourceLoader();
-			Resource testResources = rl.getResource("src/test/resources");
-			File metaInfoPersistFolder = new File(metaInfoDbLocation);
-			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/ServicesMetaData.json"), new File(metaInfoPersistFolder, "ServicesMetaData.json"));
-			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/OnDemandTargets.json"), new File(metaInfoPersistFolder, "OnDemandTargets.json"));
-			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/StageMappings.json"), new File(metaInfoPersistFolder, "StageMappings.json"));
-			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/TargetInstances.json"), new File(metaInfoPersistFolder, "TargetInstances.json"));
+			final ResourceLoader rl = new FileSystemResourceLoader()
+			Resource testResources = rl.getResource("src/test/resources")
+			File metaInfoPersistFolder = new File(metaInfoDbLocation)
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/ServicesMetaData.json"), new File(metaInfoPersistFolder, "ServicesMetaData.json"))
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/OnDemandTargets.json"), new File(metaInfoPersistFolder, "OnDemandTargets.json"))
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/StageMappings.json"), new File(metaInfoPersistFolder, "StageMappings.json"))
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/TargetInstances.json"), new File(metaInfoPersistFolder, "TargetInstances.json"))
 		} catch (IOException e) {
-			Assert.fail("Unable to copy JSON test files into testDb folder");
+			Assert.fail("Unable to copy JSON test files into testDb folder",e)
 		}
 	}
 

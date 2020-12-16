@@ -6,13 +6,13 @@ import java.util.List;
 
 public class JenkinsCurlSubmitPipelineInput extends JenkinsCurlCommand {
 
-    private String jobName;
+    private final String jobName;
 
-    private String jobExecutionNumber;
+    private final String jobExecutionNumber;
 
-    private String action;
+    private final String action;
 
-    private String inputId;
+    private final String inputId;
 
     public JenkinsCurlSubmitPipelineInput(String jenkinsUrl, String jenkinsUserName, String jenkinsUserPwd, String jobName, String jobExecutionNumber, String inputId, String action) {
         super(jenkinsUrl,jenkinsUserName,jenkinsUserPwd);
@@ -28,6 +28,6 @@ public class JenkinsCurlSubmitPipelineInput extends JenkinsCurlCommand {
         cmd.add("-X");
         cmd.add("POST");
         cmd.add(JENKINS_URL + "/job/" + jobName + "/" + jobExecutionNumber + "/input/" + inputId + "/" + action);
-        return cmd.stream().toArray(String[]::new);
+        return cmd.toArray(new String[0]);
     }
 }

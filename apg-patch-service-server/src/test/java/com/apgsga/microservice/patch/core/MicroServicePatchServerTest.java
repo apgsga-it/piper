@@ -6,12 +6,10 @@ import com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +30,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -101,7 +98,7 @@ public class MicroServicePatchServerTest {
 		patchService.log(patch.getPatchNumber(),pld);
 		PatchLog result = patchService.findPatchLogById(patchNumber);
 		assertNotNull(result);
-		assertTrue(result.getLogDetails().size() == 1);
+        assertEquals(1, result.getLogDetails().size());
 	}
 	
 	@Test
@@ -115,13 +112,13 @@ public class MicroServicePatchServerTest {
 		patchService.log(p.getPatchNumber(),pld);
 		PatchLog result = patchService.findPatchLogById(patchNumber);
 		assertNotNull(result);
-		assertTrue(result.getLogDetails().size() == 1);
+        assertEquals(1, result.getLogDetails().size());
 		patchService.save(p);
 		patchService.log(p.getPatchNumber(),pld2);
 		patchService.save(p);
 		patchService.log(p.getPatchNumber(),pld3);
 		result = patchService.findPatchLogById(patchNumber);
-		assertTrue(result.getLogDetails().size() == 3);
+        assertEquals(3, result.getLogDetails().size());
 	}
 
 	@Test
@@ -208,53 +205,6 @@ public class MicroServicePatchServerTest {
 		patchService.save(p2);
 		assertNotNull(patchService.findById("p1"));
 		assertNotNull(patchService.findById("p2"));
-		List<Service> services = Lists.newArrayList(Service.builder()
-						.serviceName("It21Ui")
-						.artifactsToPatch(Lists.newArrayList(MavenArtifact.builder()
-										.artifactId("test-ma1")
-										.groupId("com.apgsga")
-										.version("1.0")
-										.name("test-ma1").build(),
-								MavenArtifact.builder()
-										.artifactId("test-ma2")
-										.groupId("com.apgsga")
-										.version("1.0")
-										.name("test-ma2").build(),
-								MavenArtifact.builder()
-										.artifactId("test-ma3")
-										.groupId("com.apgsga")
-										.version("1.0")
-										.name("test-ma3").build()
-						)).build(),
-				Service.builder()
-						.serviceName("SomeOtherApp")
-						.artifactsToPatch(Lists.newArrayList(MavenArtifact.builder()
-										.artifactId("test-ma4")
-										.groupId("com.apgsga")
-										.version("1.0")
-										.name("test-ma4").build(),
-								MavenArtifact.builder()
-										.artifactId("test-ma5")
-										.groupId("com.apgsga")
-										.version("1.0")
-										.name("test-ma5").build(),
-								MavenArtifact.builder()
-										.artifactId("test-ma6")
-										.groupId("com.apgsga")
-										.version("1.0")
-										.name("test-ma6").build()
-						)).build()
-		);
-		List<DbObject> dbObjects = Lists.newArrayList(  DbObject.builder()
-						.fileName("test-db1")
-						.filePath("com.apgsga.ch/sql/db/test-db1")
-						.moduleName("test-db1")
-						.build(),
-				DbObject.builder()
-						.fileName("test-db2")
-						.filePath("com.apgsga.ch/sql/db/test-db2")
-						.moduleName("test-db2")
-						.build());
 		Patch p1Updated = p1.toBuilder()
 				.services(Lists.newArrayList(Service.builder()
 						.serviceName("It21Ui")
@@ -298,13 +248,13 @@ public class MicroServicePatchServerTest {
 				.build();
 		patchService.save(p1Updated);
 		patchService.save(p2Updated);
-		assertTrue(patchService.findById("p1").retrieveAllArtifactsToPatch().size() == 2);
-		assertTrue(patchService.findById("p2").retrieveAllArtifactsToPatch().size() == 2);
-		assertTrue(patchService.findWithObjectName("ma1").size() == 1);
-		assertTrue(patchService.findWithObjectName("ma2").size() == 1);
-		assertTrue(patchService.findWithObjectName("ma3").size() == 2);
-		assertTrue(patchService.findWithObjectName("wrongName").size() == 0);
-		assertTrue(patchService.findWithObjectName("test-db2").size() == 1);
+        assertEquals(2, patchService.findById("p1").retrieveAllArtifactsToPatch().size());
+        assertEquals(2, patchService.findById("p2").retrieveAllArtifactsToPatch().size());
+        assertEquals(1, patchService.findWithObjectName("ma1").size());
+        assertEquals(1, patchService.findWithObjectName("ma2").size());
+        assertEquals(2, patchService.findWithObjectName("ma3").size());
+        assertEquals(0, patchService.findWithObjectName("wrongName").size());
+        assertEquals(1, patchService.findWithObjectName("test-db2").size());
 	}
 
 	@Test
@@ -341,7 +291,6 @@ public class MicroServicePatchServerTest {
 
 	@Test
 	public void testStartInstallPipeline() {
-		Map<String,String> params = Maps.newHashMap();
 		String target = "chei212";
 		patchService.startInstallPipeline(target);
 	}

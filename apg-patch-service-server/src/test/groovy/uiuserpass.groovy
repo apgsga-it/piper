@@ -15,9 +15,9 @@ class User {
 
 class Crypt {
 	static void encryptAndStore(User user) {
-		BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-		textEncryptor.setPassword("test");
-		def encrypted =  textEncryptor.encrypt(user.pw);
+		BasicTextEncryptor textEncryptor = new BasicTextEncryptor()
+		textEncryptor.setPassword("test")
+		def encrypted =  textEncryptor.encrypt(user.pw)
 		def config = new ConfigSlurper().parse(new File('src/main/jenkins/client/config.groovy').toURI().toURL())
 		config.put("pw",encrypted)
 		config.put("userId", user.userId)
@@ -27,8 +27,8 @@ class Crypt {
 	}
 	
 	static String decrypt(String input) {
-		BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-		textEncryptor.setPassword("test");
+		BasicTextEncryptor textEncryptor = new BasicTextEncryptor()
+		textEncryptor.setPassword("test")
 		return textEncryptor.decrypt(input)
 	}
 }
@@ -68,7 +68,7 @@ swingBuilder.edt {
 
 		panel(constraints: BorderLayout.SOUTH) {
 			button text: 'Save', actionPerformed: { Crypt.encryptAndStore(user) }
-			button text: 'Exit', actionPerformed: { 	dispose(); }
+			button text: 'Exit', actionPerformed: { 	dispose() }
 			
 		}
 

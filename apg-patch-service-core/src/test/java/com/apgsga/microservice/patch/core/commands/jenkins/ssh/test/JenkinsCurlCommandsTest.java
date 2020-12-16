@@ -16,6 +16,7 @@ import java.util.Map;
 @Ignore
 public class JenkinsCurlCommandsTest extends JenkinsCliBaseTest {
 
+    @SuppressWarnings("rawtypes")
     @Test
     public void testJenkinsCurlGetLastBuildNumber() {
         JenkinsCurlCommand jenkinsCurlCmd = JenkinsCurlCommand.createJenkinsCurlGetLastBuildCmd(JENKINS_URL,JENKINS_SSH_USER,JENKINS_USER_TOKEN,JOB_NAME_WITHOUT_FILE_PARAM);
@@ -25,9 +26,10 @@ public class JenkinsCurlCommandsTest extends JenkinsCliBaseTest {
         JsonSlurper js = new JsonSlurper();
         Map parsedData = (Map) js.parse(new ByteArrayInputStream(result.get(0).getBytes()));
         Map lastBuild = (Map) parsedData.get("lastBuild");
-        Assert.isTrue(Integer.valueOf(String.valueOf(lastBuild.get("number"))) > 0,"Last Build number couldn not be corrrectly retrieved");
+        Assert.isTrue(Integer.parseInt(String.valueOf(lastBuild.get("number"))) > 0,"Last Build number couldn not be corrrectly retrieved");
     }
 
+    @SuppressWarnings("rawtypes")
     @Test
     public void testLastJenkinsJobWasSuccessful() {
         JenkinsCurlCommand jenkinsCurlCmd = JenkinsCurlCommand.createJenkinsCurlGetLastBuildCmd(JENKINS_URL,JENKINS_SSH_USER,JENKINS_USER_TOKEN,JOB_NAME_WITHOUT_FILE_PARAM);
@@ -37,12 +39,13 @@ public class JenkinsCurlCommandsTest extends JenkinsCliBaseTest {
         JsonSlurper js = new JsonSlurper();
         Map parsedData = (Map) js.parse(new ByteArrayInputStream(result.get(0).getBytes()));
         Map lastBuild = (Map) parsedData.get("lastBuild");
-        Integer lastBuildNumber = Integer.valueOf(String.valueOf(lastBuild.get("number")));
+        int lastBuildNumber = Integer.parseInt(String.valueOf(lastBuild.get("number")));
         Map lastSuccessfulBuild = (Map) parsedData.get("lastSuccessfulBuild");
-        Integer lastSuccessfulBuildNumber = Integer.valueOf(String.valueOf(lastSuccessfulBuild.get("number")));
+        int lastSuccessfulBuildNumber = Integer.parseInt(String.valueOf(lastSuccessfulBuild.get("number")));
         Assert.isTrue(lastBuildNumber == lastSuccessfulBuildNumber, "Last Build was not successful");
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     public void testIsJobWaitingOnInput() {
         JenkinsCurlCommand jenkinsCurlCommand = JenkinsCurlCommand.createJenkinsCurlGetJobInputStatus(JENKINS_URL,JENKINS_SSH_USER,JENKINS_USER_TOKEN,"PipelineWithInputStep");
@@ -51,7 +54,7 @@ public class JenkinsCurlCommandsTest extends JenkinsCliBaseTest {
         List<String> result = runner.run(jenkinsCurlCommand);
         JsonSlurper js = new JsonSlurper();
         ArrayList<Map> parsedData = (ArrayList<Map>) js.parse(new ByteArrayInputStream(result.get(0).getBytes()));
-        Map lastBuiltState = (Map) parsedData.get(0);
+        Map lastBuiltState = parsedData.get(0);
         System.out.println("Last Build status = " + lastBuiltState.get("status"));
         System.out.println("DONE");
     }

@@ -46,6 +46,7 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 
 	private final List<RemoteRepository> repos;
 
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	private void init(String localRepo) {
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource resource = rl.getResource(localRepo);

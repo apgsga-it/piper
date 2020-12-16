@@ -12,7 +12,7 @@ public class IntegrationTestVcsLocalCmds {
 
 	@Ignore("TODO make preconditions = cvs setup automatic")
 	@Test
-	public void testCreatePatchBranch() throws Exception {
+	public void testCreatePatchBranch() {
 		RandomUtils.nextInt(); 
 		CommandRunner runner = new ProcessBuilderCmdRunnerFactory().create();
 		runner.run(PatchSshCommand.createCreatePatchBranchCmd("someBranch" + RandomUtils.nextInt(), "HEAD", "-d /home/che/local/cvs ",
@@ -21,7 +21,7 @@ public class IntegrationTestVcsLocalCmds {
 	
 	@Ignore("TODO make preconditions = cvs setup automatic")
 	@Test
-	public void testCreatePatchTag() throws Exception {
+	public void testCreatePatchTag() {
 		CommandRunner runner = new ProcessBuilderCmdRunnerFactory().create();
 		runner.run(PatchSshCommand.createTagPatchModulesCmd("someTag" + RandomUtils.nextInt(), "HEAD", "-d /home/che/local/cvs ",
 				Lists.newArrayList("module1", "module2")));
@@ -29,7 +29,7 @@ public class IntegrationTestVcsLocalCmds {
 	
 	@Ignore("TODO make preconditions = cvs setup automatic")
 	@Test
-	public void testDiff() throws Exception {
+	public void testDiff() {
 		CommandRunner runner = new ProcessBuilderCmdRunnerFactory().create();
 		runner.run(PatchSshCommand.createDiffPatchModulesCmd("testBranch", "HEAD", "-d /home/che/local/cvs ",
 				Lists.newArrayList("module1", "module2")));

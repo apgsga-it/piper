@@ -20,7 +20,7 @@ public interface ArtifactDependencyResolver {
 	}
 	
 	/**
-	 * @param artifacts
+	 * @param artifacts List of Artifacts to resolve their dependencies
 	 */
 	void resolveDependencies(List<MavenArtifact> artifacts);
 
