@@ -82,33 +82,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	@Override
 	public void startProdBuildPatchPipeline(BuildParameter buildParameters) {
-		startBuildPipeline(buildParameters);
-	}
-
-	// TODO (che,jhe 9.12.20) : This should be probably also in a background Thread
-	private void startBuildPipeline(BuildParameter bp) {
-		try {
-			preprocessor.preProcessBuildPipeline(bp);
-			String patchName = PATCH_CONS + bp.getPatchNumber();
-			String jobName = patchName + "_build_" + bp.getStageName();
-			final ResourceLoader rl = new FileSystemResourceLoader();
-			Resource rDbLocation = rl.getResource(dbLocation);
-			File patchFile = new File(rDbLocation.getFile(), patchName + JSON_CONS);
-			Map<String,String> fileParams = Maps.newHashMap();
-			fileParams.put("patchFile.json",patchFile.getAbsolutePath());
-			Map<String,String> jobParameters = Maps.newHashMap();
-			jobParameters.put("TARGET",preprocessor.retrieveTargetForStageName(bp.getStageName()));
-			jobParameters.put("STAGE",bp.getStageName());
-			jobParameters.put("SUCCESS_NOTIFICATION",bp.getSuccessNotification());
-			jobParameters.put("ERROR_NOTIFICATION", bp.getErrorNotification());
-			LOGGER.info("JobParameters passed to " + jobName + " Pipeline :" + jobParameters.toString());
-			JenkinsSshCommand buildPipelineCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForStartCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName, jobParameters, fileParams);
-			List<String> result = cmdRunner.run(buildPipelineCmd);
-			LOGGER.info("Result of Pipeline Job " + jobName + ", : " + result.toString());
-		} catch (Exception e) {
-			throw ExceptionFactory.create("Exception: <%s> while starting the Jenkins Build Pipeline Job for Patch:  %s ",e,
-					 e.getMessage(), bp.getPatchNumber() );
-		}
+		threadExecutor.execute(TaskStartBuildPipeline.create(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,preprocessor,dbLocation,cmdRunner,buildParameters));
 	}
 
 	@Override

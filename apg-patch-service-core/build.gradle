@@ -1,5 +1,6 @@
 plugins {
   	id 'groovy'
+	id "io.freefair.lombok" version "5.3.0"
 }
 apply plugin: 'groovy'
 
@@ -10,22 +11,23 @@ jar {
 }
 
 dependencies {
-	compile project(':apg-patch-service-api')
-	compile project(':apg-patch-artifact-querymanager')
-	compile project(':apg-patch-db-integration')
-	compile group: 'de.codecentric', name: 'spring-boot-admin-starter-client'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
-	compile group: 'com.jcraft', name: 'jsch'
-	compile group: 'org.jasypt', name: 'jasypt'
-	compile group: 'commons-io', name: 'commons-io'
-	compile group: 'ch.qos.logback', name: 'logback-classic'
-	compile group: 'commons-lang', name: 'commons-lang'
-	compile group: 'org.slf4j', name: 'slf4j-api'
-	compile group: 'com.google.guava', name: 'guava'
-	compile group: 'commons-transaction', name: 'commons-transaction'
-	compile group: 'javax.transaction', name: 'jta'
+	implementation project(':apg-patch-service-api')
+	implementation project(':apg-patch-artifact-querymanager')
+	implementation project(':apg-patch-db-integration')
+	implementation group: 'de.codecentric', name: 'spring-boot-admin-starter-client'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
+	implementation group: 'com.jcraft', name: 'jsch'
+	implementation group: 'org.jasypt', name: 'jasypt'
+	implementation group: 'commons-io', name: 'commons-io'
+	implementation group: 'ch.qos.logback', name: 'logback-classic'
+	implementation group: 'commons-lang', name: 'commons-lang'
+	implementation group: 'org.slf4j', name: 'slf4j-api'
+	implementation group: 'com.google.guava', name: 'guava'
+	implementation group: 'commons-transaction', name: 'commons-transaction'
+	implementation group: 'javax.transaction', name: 'jta'
+	implementation 'org.projectlombok:lombok:1.16.18'
 	testCompile group: 'org.springframework', name: 'spring-test'
 	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'	
 	testCompile group: 'org.codehaus.groovy' , name: 'groovy-all'

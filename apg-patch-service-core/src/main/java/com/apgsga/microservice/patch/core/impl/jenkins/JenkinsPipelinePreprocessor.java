@@ -73,4 +73,8 @@ public class JenkinsPipelinePreprocessor {
     public String retrieveTargetForStageName(String stageName) {
         return backend.targetFor(stageName);
     }
+
+    public Patch retrievePatch(String patchNumber) {
+        return backend.findById(patchNumber);
+    }
 }
