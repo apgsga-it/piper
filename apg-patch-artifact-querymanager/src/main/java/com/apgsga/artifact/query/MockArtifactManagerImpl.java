@@ -9,12 +9,12 @@ import com.apgsga.microservice.patch.api.SearchCondition;
 public class MockArtifactManagerImpl implements ArtifactManager {
 
 	@Override
-	public List<MavenArtifact> getAllDependencies(MavenArtifact bom) {
+	public List<MavenArtifact> listDependenciesInBom(MavenArtifact bom) {
 		return Collections.emptyList();
 	}
 
 	@Override
-	public List<MavenArtifact> getAllDependencies(MavenArtifact bom, SearchCondition searchFilter) {
+	public List<MavenArtifact> listDependenciesInBom(MavenArtifact bom, SearchCondition searchFilter) {
 		return Collections.emptyList();
 
 	}

@@ -63,7 +63,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Override
 	public List<MavenArtifact> listMavenArtifacts(String serviceName, SearchCondition filter) {
 		ServiceMetaData data = repo.getServiceMetaDataByName(serviceName);
-		return am.getAllDependencies(data.getBomCoordinates(), filter);
+		return am.listDependenciesInBom(data.getBomCoordinates(), filter);
 	}
 
 	@Override

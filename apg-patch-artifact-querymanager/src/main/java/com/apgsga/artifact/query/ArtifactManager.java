@@ -18,9 +18,9 @@ public interface ArtifactManager {
 		return new MockArtifactManagerImpl();
 	}
 
-	List<MavenArtifact> getAllDependencies(MavenArtifact bom);
+	List<MavenArtifact> listDependenciesInBom(MavenArtifact bom);
 
-	List<MavenArtifact> getAllDependencies(MavenArtifact bom, SearchCondition searchFilter);
+	List<MavenArtifact> listDependenciesInBom(MavenArtifact bom, SearchCondition searchFilter);
 
 	String getArtifactName(String groupId, String artifactId, String version);
 	

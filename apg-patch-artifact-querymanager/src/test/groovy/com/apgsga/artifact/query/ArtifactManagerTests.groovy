@@ -6,7 +6,6 @@ import com.apgsga.test.config.TestConfig
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.FileSystemResourceLoader
-import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
@@ -43,7 +42,7 @@ class ArtifactManagerTests extends Specification {
 				.version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build()
 		def artifactManager = ArtifactManager.create("target/maverepo", systemFactory)
 		when:
-		def results = artifactManager.getAllDependencies(bomCoordinates)
+		def results = artifactManager.listDependenciesInBom(bomCoordinates)
 		def nonApgResults = results.findAll{ (!it.groupId.startsWith("com.apgsga") && ! it.groupId.startsWith("com.affichage"))}
 		then:
 		assert results.size() > 0
@@ -60,7 +59,7 @@ class ArtifactManagerTests extends Specification {
 				.version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build()
 		def artifactManager = ArtifactManager.create("target/maverepo", systemFactory)
 		when:
-		def results = artifactManager.getAllDependencies(bomCoordinates,SearchCondition.ALL)
+		def results = artifactManager.listDependenciesInBom(bomCoordinates,SearchCondition.ALL)
 		println results.size()
 		def nonApplicationResults = results.findAll{ (!it.groupId.startsWith("com.apgsga") && ! it.groupId.startsWith("com.affichage"))}
 		def applicationResults = results.findAll{ (it.groupId.startsWith("com.apgsga") ||  it.groupId.startsWith("com.affichage"))}
@@ -78,7 +77,7 @@ class ArtifactManagerTests extends Specification {
 				.version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build()
 		def artifactManager = ArtifactManager.create("target/maverepo", systemFactory)
 		when:
-		def results = artifactManager.getAllDependencies(bomCoordinates,SearchCondition.IT21UI)
+		def results = artifactManager.listDependenciesInBom(bomCoordinates,SearchCondition.IT21UI)
 		ObjectMapper mapper = new ObjectMapper()
 		def expectedTemplate = mapper.readValue(new File("src/test/resources/templateIt21Ui.json"),MavenArtifact[].class)
 		then:
@@ -94,7 +93,7 @@ class ArtifactManagerTests extends Specification {
 				.version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build()
 		def artifactManager = ArtifactManager.create("target/maverepo", systemFactory)
 		when:
-		def results = artifactManager.getAllDependencies(bomCoordinates,SearchCondition.PERSISTENT).toSorted()
+		def results = artifactManager.listDependenciesInBom(bomCoordinates,SearchCondition.PERSISTENT).toSorted()
 		ObjectMapper mapper = new ObjectMapper()
 		def expectedTemplate = Arrays.asList(mapper.readValue(new File("src/test/resources/templatePersistence.json"),MavenArtifact[].class)).toSorted()
 		then:
@@ -110,7 +109,7 @@ class ArtifactManagerTests extends Specification {
 				.version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build()
 		def artifactManager = ArtifactManager.create("target/maverepo", systemFactory)
 		when:
-		def results = artifactManager.getAllDependencies(bomCoordinates,SearchCondition.FORMS2JAVA).toSorted()
+		def results = artifactManager.listDependenciesInBom(bomCoordinates,SearchCondition.FORMS2JAVA).toSorted()
 		ObjectMapper mapper = new ObjectMapper()
 		def expectedTemplate = Arrays.asList(mapper.readValue(new File("src/test/resources/templateForms2Java.json"),MavenArtifact[].class)).toSorted()
 		then:
@@ -126,7 +125,7 @@ class ArtifactManagerTests extends Specification {
 				.version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build()
 		def artifactManager = ArtifactManager.create("target/maverepo", systemFactory)
 		when:
-		def results = artifactManager.getAllDependencies(bomCoordinates,SearchCondition.APPLICATION)
+		def results = artifactManager.listDependenciesInBom(bomCoordinates,SearchCondition.APPLICATION)
 		def nonApgResults = results.findAll{ (!it.groupId.startsWith("com.apgsga") && ! it.groupId.startsWith("com.affichage"))}
 		then:
 		assert results.size() > 0
@@ -141,7 +140,7 @@ class ArtifactManagerTests extends Specification {
 				.version("9.1.0.ADMIN-UIMIG-SNAPSHOT").build()
 		def artifactManager = ArtifactManager.create("target/maverepo", systemFactory)
 		when:
-		def results = artifactManager.getAllDependencies(bomCoordinates,SearchCondition.APPLICATION)
+		def results = artifactManager.listDependenciesInBom(bomCoordinates,SearchCondition.APPLICATION)
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		def localRepo = rl.getResource("target/maverepo").getFile();
 		def numberOfFilesBefore = localRepo.listFiles().length

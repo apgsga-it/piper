@@ -149,12 +149,12 @@ public class ArtifactManagerImpl implements ArtifactManager {
     }
 
     @Override
-    public List<MavenArtifact> getAllDependencies(MavenArtifact bom) {
-        return getAllDependencies(bom, SearchCondition.APPLICATION);
+    public List<MavenArtifact> listDependenciesInBom(MavenArtifact bom) {
+        return listDependenciesInBom(bom, SearchCondition.APPLICATION);
     }
 
     @Override
-    public List<MavenArtifact> getAllDependencies(MavenArtifact bomCoordinates, SearchCondition searchFilter) {
+    public List<MavenArtifact> listDependenciesInBom(MavenArtifact bomCoordinates, SearchCondition searchFilter) {
         return getArtifactsWithVersionFromBom(bomCoordinates, searchFilter);
     }
 
