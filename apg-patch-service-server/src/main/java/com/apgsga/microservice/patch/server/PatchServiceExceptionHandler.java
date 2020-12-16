@@ -16,7 +16,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.apgsga.microservice.patch.api.PatchErrorMessage;
-import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 
 @ControllerAdvice
 public class PatchServiceExceptionHandler extends ResponseEntityExceptionHandler {
@@ -35,12 +34,11 @@ public class PatchServiceExceptionHandler extends ResponseEntityExceptionHandler
 	}
 
 	private ResponseEntity<Object> error(final Exception exception, final HttpStatus httpStatus) {
-		final String errorKey = exception.getClass().isAssignableFrom(PatchServiceRuntimeException.class) ? ((PatchServiceRuntimeException) exception).getMessageKey() : "";
 		final String errorText = Optional.of(exception.getMessage()).orElse(exception.getClass().getSimpleName());
 		Throwable cause = exception.getCause();
 		final String causeMsg = cause != null ? cause.getMessage() : "<This Exception is Root Cause>";
 		String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-		PatchErrorMessage errorMsg = PatchErrorMessage.builder().timestamp(timeStamp).errorKey(errorKey).errorText(errorText).causeExceptionMsg(causeMsg).stackTrace(
+		PatchErrorMessage errorMsg = PatchErrorMessage.builder().timestamp(timeStamp).errorText(errorText).causeExceptionMsg(causeMsg).stackTrace(
 				ExceptionUtils.getFullStackTrace(exception)).build();
 		LOGGER.warn(errorMsg.toString());
 		return new ResponseEntity<>(errorMsg, httpStatus);

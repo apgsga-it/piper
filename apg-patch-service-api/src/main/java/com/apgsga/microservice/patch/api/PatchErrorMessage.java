@@ -10,7 +10,6 @@ import lombok.*;
 public class PatchErrorMessage {
 
 	String timestamp;
-	String errorKey;
 	String errorText;
 	String causeExceptionMsg;
 	String stackTrace;

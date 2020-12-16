@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 @Component("ServerBean")
 public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
@@ -80,13 +81,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public Patch findById(String patchNummer) {
-		return repo.findById(patchNummer);
+	public Patch findById(String patchNumber) {
+		return repo.findById(patchNumber);
 	}
 	
 	@Override
-	public PatchLog findPatchLogById(String patchNummer) {
-		return repo.findPatchLogById(patchNummer);
+	public PatchLog findPatchLogById(String patchNumber) {
+		return repo.findPatchLogById(patchNumber);
 	}
 
 	@Override
@@ -101,9 +102,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public Patch save(Patch patch) {
-		Asserts.notNull(patch, "SimplePatchContainerBean.save.patchobject.notnull.assert", new Object[] {});
+		Asserts.notNull(patch, "Patch object null for save");
 		Asserts.notNullOrEmpty(patch.getPatchNumber(),
-				"SimplePatchContainerBean.save.patchnumber.notnullorempty.assert", new Object[] { patch.toString() });
+				"Patch number  null or empty for save");
 		preProcessSave(patch);
 		repo.savePatch(patch);
 		return patch;
@@ -116,8 +117,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public void log(String patchNumber, PatchLogDetails logDetails) {
-		Asserts.notNullOrEmpty(patchNumber, "SimplePatchContainerBean.log.patchnumber.isnullorempty", new Object[] {});
-		Asserts.notNull(repo.findById(patchNumber), "SimplePatchContainerBean.log.patch.not.exist", new Object[] {patchNumber});
+		Asserts.notNull(logDetails, "PatchLogDetails object null for log");
+		Asserts.notNull(patchNumber, "PatchNumber null for log");
+		Asserts.notNull(repo.findById(patchNumber), "Patch %s object does not exist for log", patchNumber);
 		repo.savePatchLog(patchNumber, logDetails);
 	}
 
@@ -176,8 +178,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	private List<DbObject> doListAllSqlObjectsForDbModule(String patchNumber, String searchString, String suffixForCoFolder) {
 		Patch patch = findById(patchNumber);
-		Asserts.notNull(patch, "SimplePatchContainerBean.listAllObjectsChangedForDbModule.patch.exists.assert",
-				new Object[] { patchNumber });
+		Asserts.notNull(patch, "Patch %s does not exist for doListAllSqlObjectsForDbModule", patchNumber);
 		DbModules dbModules = repo.getDbModules();
 		if (dbModules == null) {
 			return Lists.newArrayList();
@@ -217,9 +218,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public void build(BuildParameter bp) {
 		LOGGER.info("Build patch " + bp.getPatchNumber() + " for stage " + bp.getStageName() + " with successNotification=" + bp.getSuccessNotification() + " and errorNotification=" + bp.getErrorNotification());
 		Patch patch = repo.findById(bp.getPatchNumber());
-		Asserts.notNull(patch,"SimplePatchContainerBean.build.patch.exists.assert", new Object[] {bp.getPatchNumber()});
+		Asserts.notNull(patch,"Patch %s does not exist for build", bp.getPatchNumber());
 		String target = repo.targetFor(bp.getStageName());
-		Asserts.notNullOrEmpty(target,"SimplePatchContainerBean.build.target.notnull", new Object[]{bp.getPatchNumber()});
+		Asserts.notNullOrEmpty(target,"Target %s does not exist for build of Patch %s", bp.getStageName(), bp.getPatchNumber());
 		jenkinsClient.startProdBuildPatchPipeline(bp);
 	}
 
@@ -227,7 +228,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public void setup(SetupParameter sp) {
 		LOGGER.info("Setup started for Patch " + sp.getPatchNumber() + " with successNotification=" + sp.getSuccessNotification() + " and errorNotification=" + sp.getErrorNotification());
 		Patch patch = repo.findById(sp.getPatchNumber());
-		Asserts.notNull(patch, "SimplePatchContainerBean.patch.exists.assert",new Object[] { sp.getPatchNumber()});
+		Asserts.notNull(patch,"Patch %s does not exist for setup",  sp.getPatchNumber());
 		CommandRunner jschSession = getJschSessionFactory().create();
 		PatchSetupTask.create(jschSession, patch, repo, sp).run();
 	}
@@ -291,7 +292,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		if(!parameters.getPatches().isEmpty()) {
 			parameters.getPatches().forEach(patchNumber -> {
 				Patch p = findById(patchNumber);
-				Asserts.notNull(p,"SimplePatchContainerBean.startAssembleAndDeployPipeline.patch.isnull", new Object[]{patchNumber});
+				Asserts.notNull(p,"Patch %s does not exist for Assembly and Deploy with parameters %s", patchNumber, parameters.toString());
 				p.getServices().forEach(service -> {
 					// TODO (JHE, 15.12) : Move this whole transformation into JenkinsPipelinePreprocessor
 					//TODO (JHE, 15.12) : Address the Multi Packager Scenario
@@ -308,7 +309,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public void startInstallPipeline(String target) {
-		// TOOO (JHE, CHE: 13.10) And String parameter as Json according to Pipeline Requirements
+		// TODO (JHE, CHE: 13.10) And String parameter as Json according to Pipeline Requirements
 		jenkinsClient.startInstallPipeline(target,  "");
 	}
 

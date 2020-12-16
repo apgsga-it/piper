@@ -59,8 +59,8 @@ public abstract class JenkinsSshCommand extends CommandBaseImpl {
     @Override
     public String[] getCommand() {
         if(hasFileParam() && SystemUtils.IS_OS_WINDOWS) {
-            throw ExceptionFactory.createPatchServiceRuntimeException(
-                    "JenkinsSshCommand.startJobWithFileParam.windows.error", new Object[] {});
+            throw ExceptionFactory.create(
+                    "Starting a Jenkins Job with a file parameter is nut supported under Windows.");
         }
         String[] processBuilderParm;
         if (SystemUtils.IS_OS_WINDOWS && !noSystemCheck) {

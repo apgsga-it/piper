@@ -74,7 +74,6 @@ public class MicroServicePatchServerExceptionTests {
 			fail();
 		} catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("FilebasedPatchPersistence.findById.patchnumber.notnullorempty.assert", e.getMessageKey());
 		}
 	}
 	
@@ -86,7 +85,6 @@ public class MicroServicePatchServerExceptionTests {
 			fail();
 		} catch(PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("FilebasedPatchPersistence.findById.patchlognumber.notnullorempty.assert", e.getMessageKey());
 		}
 	}
 	
@@ -97,7 +95,6 @@ public class MicroServicePatchServerExceptionTests {
 			fail();
 		} catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("SimplePatchContainerBean.save.patchobject.notnull.assert", e.getMessageKey());
 		}
 	}
 	
@@ -108,7 +105,6 @@ public class MicroServicePatchServerExceptionTests {
 			fail();
 		} catch(PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("SimplePatchContainerBean.log.patchnumber.isnullorempty", e.getMessageKey());
 		}
 	}
 	
@@ -120,7 +116,6 @@ public class MicroServicePatchServerExceptionTests {
 			fail();
 		} catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("SimplePatchContainerBean.save.patchnumber.notnullorempty.assert", e.getMessageKey());
 		}
 	}
 	
@@ -131,7 +126,6 @@ public class MicroServicePatchServerExceptionTests {
 			fail();
 		} catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("FilebasedPatchPersistence.remove.patchobject.notnull.assert", e.getMessageKey());
 		}
 	}
 	
@@ -143,7 +137,6 @@ public class MicroServicePatchServerExceptionTests {
 			fail();
 		} catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("FilebasedPatchPersistence.remove.patchnumber.notnullorempty.assert", e.getMessageKey());
 		}
 	}
 	
@@ -155,7 +148,6 @@ public class MicroServicePatchServerExceptionTests {
 			fail();
 		} catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("FilebasedPatchPersistence.remove.patch.exists.assert", e.getMessageKey());
 		}
 	}
 	
@@ -166,7 +158,6 @@ public class MicroServicePatchServerExceptionTests {
 			fail("Expected Runtime Exception");
 		} catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("SimplePatchContainerBean.listAllObjectsChangedForDbModule.patch.exists.assert", e.getMessageKey());
 		}
 	}
 
@@ -179,7 +170,6 @@ public class MicroServicePatchServerExceptionTests {
 		}
 		catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("SimplePatchContainerBean.build.patch.exists.assert",e.getMessageKey());
 		}
 	}
 
@@ -195,7 +185,6 @@ public class MicroServicePatchServerExceptionTests {
 		}
 		catch (PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			Assert.assertEquals("SimplePatchContainerBean.build.target.notnull",e.getMessageKey());
 		}
 	}
 }
