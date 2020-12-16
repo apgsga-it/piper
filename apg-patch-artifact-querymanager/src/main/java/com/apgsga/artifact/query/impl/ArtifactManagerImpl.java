@@ -45,10 +45,6 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ArtifactManagerImpl.class);
 
-    private static final String DEFAULT_BOM_GROUP_ID = "com.affichage.common.maven";
-
-    private static final String DEFAULT_BOM_ARTIFACT_ID = "dm-bom";
-
     private static final Map<SearchCondition, String> templateMap = Maps.newConcurrentMap();
 
     static {
@@ -63,38 +59,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
     private final RepositorySystemSession session;
 
-    private String bomGroupId = DEFAULT_BOM_GROUP_ID;
-
-    private String bomArtefactId = DEFAULT_BOM_ARTIFACT_ID;
-
     private final String localRepo;
-
-    private Resource localRepoResource;
-
-    public ArtifactManagerImpl(String localRepo, String bomGroupId, String bomArtefactId, RepositorySystemFactory systemFactory) {
-        super();
-        this.localRepo = localRepo;
-        init();
-        this.systemFactory = systemFactory;
-        this.system = systemFactory.newRepositorySystem();
-        this.session = systemFactory.newRepositorySystemSession(system, localRepo);
-        this.bomGroupId = bomGroupId;
-        this.bomArtefactId = bomArtefactId;
-
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void init() {
-        final ResourceLoader rl = new FileSystemResourceLoader();
-        localRepoResource = rl.getResource(localRepo);
-        if (!localRepoResource.exists()) {
-            try {
-                localRepoResource.getFile().mkdir();
-            } catch (IOException e) {
-                throw new RuntimeException("Could not create Local Maven Repo upon initialization", e);
-            }
-        }
-    }
 
     public ArtifactManagerImpl(String localRepo, RepositorySystemFactory systemFactory) {
         super();
@@ -137,21 +102,10 @@ public class ArtifactManagerImpl implements ArtifactManager {
         }
     }
 
-    @Override
-    public File getMavenLocalRepo() {
-        try {
-            return localRepoResource.getFile();
-        } catch (IOException e) {
-            LOGGER.error("Directory fetched", e);
-            LOGGER.error(ExceptionUtils.getFullStackTrace(e));
-            throw new RuntimeException("Exception while retrieving Local Maven Repo", e);
-        }
-    }
 
-
-    private Model loadBomModel(String bomGroupId, String bomArtefactId, String version) {
-        org.eclipse.aether.artifact.Artifact bom = load(bomGroupId, bomArtefactId, version);
-        Preconditions.checkNotNull(bom, String.format("Bom with artifactId: %s, groupId: %s and version %s couldn't be loaded", bomArtefactId, bomGroupId, version));
+    private Model loadPomModel(MavenArtifact bomCoordinates) {
+        org.eclipse.aether.artifact.Artifact bom = load(bomCoordinates);
+        Preconditions.checkNotNull(bom, String.format("Bom couldn't be loaded %s", bomCoordinates.toString()));
         FileReader fileReader = null;
         try {
             MavenXpp3Reader mavenReader = new MavenXpp3Reader();
@@ -161,7 +115,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
         } catch (IOException | XmlPullParserException e) {
             LOGGER.error("Error Loading Bom Model", e);
             LOGGER.error(ExceptionUtils.getFullStackTrace(e));
-            throw new RuntimeException(String.format("Bom with artifactId: %s, groupId: %s and version %s couldn't be parsed", bomArtefactId, bomGroupId, version), e);
+            throw new RuntimeException(String.format("Bom couldn't be parsed %s", bomCoordinates.toString()), e);
         } finally {
             if (fileReader != null) {
                 try {
@@ -174,8 +128,8 @@ public class ArtifactManagerImpl implements ArtifactManager {
         }
     }
 
-    private Artifact load(String groupId, String artifactId, String version) {
-        Artifact artifact = new DefaultArtifact(groupId, artifactId, "pom", version);
+    private Artifact load(MavenArtifact bomCoord) {
+        Artifact artifact = new DefaultArtifact(bomCoord.getGroupId(), bomCoord.getArtifactId(), "pom", bomCoord.getVersion());
         ArtifactRequest artifactRequest = new ArtifactRequest();
         artifactRequest.setArtifact(artifact);
         artifactRequest.setRepositories(this.systemFactory.newRepositories());
@@ -189,7 +143,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
                 LOGGER.warn("Artifact not found", cause);
                 return null;
             }
-            throw new RuntimeException(String.format("Exception Loading pom with : artifactId: %s, groupId: %s and version %s couldn't be loaded", artifactId, groupId, version), e);
+            throw new RuntimeException(String.format("Exception Loading pom: %s",bomCoord.toBuilder()), e);
         }
     }
 
@@ -201,17 +155,17 @@ public class ArtifactManagerImpl implements ArtifactManager {
      * List, java.lang.String)
      */
     @Override
-    public List<MavenArtifact> getAllDependencies(String serviceVersion) {
-        return getAllDependencies(serviceVersion, SearchCondition.APPLICATION);
+    public List<MavenArtifact> getAllDependencies(MavenArtifact bom) {
+        return getAllDependencies(bom, SearchCondition.APPLICATION);
     }
 
     @Override
-    public List<MavenArtifact> getAllDependencies(String serviceVersion, SearchCondition searchFilter) {
-        return getArtifactsWithVersionFromBom(serviceVersion, searchFilter);
+    public List<MavenArtifact> getAllDependencies(MavenArtifact bomCoordinates, SearchCondition searchFilter) {
+        return getArtifactsWithVersionFromBom(bomCoordinates, searchFilter);
     }
 
-    private List<MavenArtifact> getArtifactsWithVersionFromBom(String bomVersion, SearchCondition searchFilter) {
-        Model model = loadBomModel(bomGroupId, bomArtefactId, bomVersion);
+    private List<MavenArtifact> getArtifactsWithVersionFromBom(MavenArtifact bomCoordinates, SearchCondition searchFilter) {
+        Model model = loadPomModel(bomCoordinates);
         final List<MavenArtifact> artifacts = getArtifacts(model);
         Properties properties = model.getProperties();
         normalizeVersions(artifacts, properties);
@@ -285,7 +239,7 @@ public class ArtifactManagerImpl implements ArtifactManager {
 
     @Override
     public String getArtifactName(String groupId, String artifactId, String version) {
-        Model model = loadBomModel(groupId, artifactId, version);
+        Model model = loadPomModel(MavenArtifact.builder().artifactId(artifactId).groupId(groupId).version(version).build());
         return model.getName();
     }
 
