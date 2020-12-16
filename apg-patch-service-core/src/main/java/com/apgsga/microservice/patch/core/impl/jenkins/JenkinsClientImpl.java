@@ -106,8 +106,8 @@ public class JenkinsClientImpl implements JenkinsClient {
 			List<String> result = cmdRunner.run(buildPipelineCmd);
 			LOGGER.info("Result of Pipeline Job " + jobName + ", : " + result.toString());
 		} catch (Exception e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startPipeline.exception",
-					new Object[] { e.getMessage(), bp.getPatchNumber() }, e);
+			throw ExceptionFactory.create("Exception: <%s> while starting the Jenkins Build Pipeline Job for Patch:  %s ",e,
+					 e.getMessage(), bp.getPatchNumber() );
 		}
 	}
 
@@ -117,8 +117,8 @@ public class JenkinsClientImpl implements JenkinsClient {
 		try {
 			startGenericPipelineJobBuilder("assembleAndDeploy", jenkinsPipelineAssembleScript, parameters.getTarget(), om.writeValueAsString(parameters));
 		} catch (JsonProcessingException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("JenkinsPatchClientImpl.startAssembleAndDeployPipeline.exception",
-					new Object[] {e.getMessage(),parameters.toString()},e);
+			throw ExceptionFactory.create("Exception: <%s> while starting the Jenkins Assemble and Deploy Pipeline Job for Patch:  %s ", e,
+					e.getMessage(),parameters.toString());
 		}
 	}
 

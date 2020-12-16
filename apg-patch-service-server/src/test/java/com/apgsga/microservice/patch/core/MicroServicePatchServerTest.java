@@ -85,7 +85,6 @@ public class MicroServicePatchServerTest {
 			fail();
 		} catch(PatchServiceRuntimeException e) {
 			LOGGER.info(e.toString());
-			assertEquals("SimplePatchContainerBean.log.patch.not.exist", e.getMessageKey());
 		}
 	}
 	

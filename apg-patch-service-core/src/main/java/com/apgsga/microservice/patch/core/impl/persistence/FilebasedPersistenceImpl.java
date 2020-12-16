@@ -54,8 +54,8 @@ public class FilebasedPersistenceImpl implements FilebasedPersistence {
         try {
             jsonRequestString = mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.writeToFile.exception",
-                    new Object[] { e.getMessage(), filename }, e);
+            throw ExceptionFactory.create("Persistence Exception : <%s>  on Json Conversation before writing to file %s", e,
+                    e.getMessage(), filename);
         }
         AtomicFileWriteManager.create(storagePath, tempStoragePath).write(jsonRequestString, filename);
 

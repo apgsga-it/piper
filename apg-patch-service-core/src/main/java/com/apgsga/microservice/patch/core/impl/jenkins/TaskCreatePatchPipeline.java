@@ -49,15 +49,14 @@ public class TaskCreatePatchPipeline implements Runnable {
 			List<String> result = factory.create().run(buildJobCmd);
 			if (result.stream().noneMatch(c -> c.contains("SUCCESS"))) {
 				LOGGER.error("PatchBuilder failed: " + result);
-				throw ExceptionFactory.createPatchServiceRuntimeException(
-						"JenkinsPatchClientImpl.createPatchPipelines.error",
-						new Object[]{patch.toString(), result});
+				throw ExceptionFactory.create(
+						"Creating the Patch Pipelines in Jenkins failed for Patch %s with %s ", patch.toString(), result);
 			}
 		}
 		catch (AssertionError | Exception e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"JenkinsPatchClientImpl.createPatchPipelines.exception",
-					new Object[]{e.getMessage(), patch.toString()}, e);
+			throw ExceptionFactory.create(
+					"Exception: <%s> while starting the Jenkins Pipeline Creation Job for Patch: %s ",e,
+					e.getMessage(), patch.toString());
 		}
 
 

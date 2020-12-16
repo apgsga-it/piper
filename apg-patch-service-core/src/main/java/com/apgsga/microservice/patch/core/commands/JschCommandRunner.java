@@ -31,8 +31,8 @@ public class JschCommandRunner implements CommandRunner {
 		try {
 			session.connect();
 		} catch (JSchException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("JschCommandRunner.preProcess.exception",
-					new Object[] { e.getMessage(), session.getHost()}, e);
+			throw ExceptionFactory.create("Exception : <%s>  Jsch connecting to host: %s",e,
+					 e.getMessage(), session.getHost());
 		}
 	}
 
@@ -68,8 +68,8 @@ public class JschCommandRunner implements CommandRunner {
 			}
 			channel.disconnect();
 		} catch (Exception e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("JschCommandRunner.run.exception",
-					new Object[] { e.getMessage(), command }, e);
+			throw ExceptionFactory.create("Exception : <%s>  running remote ssh command %s",e,
+					 e.getMessage(), command);
 		}
 		resultLines.forEach(LOGGER::info);
 		LOGGER.info("Done: " + command);

@@ -72,38 +72,37 @@ public class PatchPersistenceImpl implements PatchPersistence {
 
 	@Override
 	public synchronized Patch findById(String patchNumber) {
-		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.findById.patchnumber.notnullorempty.assert",new Object[] {});
+		Asserts.notNullOrEmpty(patchNumber, "Patch Number is null or empty for findById");
 		try {
 			File patchFile = patchPersistence.createFile(PATCH + patchNumber + JSON);
 			return patchPersistence.findFile(patchFile, Patch.class);
 		}catch(Exception e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.findById.exception",
-				new Object[] { e.getMessage(), patchNumber}, e);
+			throw ExceptionFactory.create("Persistence Exception  : <%s> for findById for Patchnumber: %s",e,
+				 e.getMessage(), patchNumber);
 		}
 	}
 	
 	@Override
 	public synchronized PatchLog findPatchLogById(String patchNumber) {
-		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.findById.patchlognumber.notnullorempty.assert", new Object[] {});
+		Asserts.notNullOrEmpty(patchNumber, "Patch Number is null or empty for findPatchLogById");
 		try {
 			File patchFile = patchPersistence.createFile(PATCH_LOG + patchNumber + JSON);
 			return patchPersistence.findFile(patchFile, PatchLog.class);
 		}catch(Exception e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.findById.exception",
-				new Object[] { e.getMessage(), patchNumber}, e);
+			throw ExceptionFactory.create("Persistence Exception  : <%s> for findPatchLogById for Patchnumber: %s",e,
+					e.getMessage(), patchNumber);
 		}
 	}
 	
 	@Override
 	public synchronized Boolean patchExists(String patchNumber) {
-		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.patchExists.patchnumber.notnullorempty.assert",
-				new Object[] {});
+		Asserts.notNullOrEmpty(patchNumber, "Patch Number is null or empty for patchExists");
 		try {
 			File patchFile = patchPersistence.createFile(PATCH + patchNumber + JSON);
 			return patchFile.exists();
 		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.patchExists.exception",
-					new Object[] { e.getMessage(), patchNumber }, e);
+			throw ExceptionFactory.create("Persistence Exception  : <%s> for patchExists for Patchnumber: %s",e,
+					e.getMessage(), patchNumber);
 		}
 
 	}
@@ -116,24 +115,23 @@ public class PatchPersistenceImpl implements PatchPersistence {
 			return Lists.newArrayList(files).stream().map(f -> FilenameUtils.getBaseName(f.getName()).substring(5))
 					.collect(Collectors.toList());
 		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"FilebasedPatchPersistence.findAllPatchIds.exception", new Object[] { e.getMessage() }, e);
+			throw ExceptionFactory.create("Persistence Exception  : <%s> for findAllPatchIds",e,
+					e.getMessage());
 		}
 
 	}
 
 	@Override
 	public synchronized void savePatch(Patch patch) {
-		Asserts.notNull(patch, "FilebasedPatchPersistence.save.patchobject.notnull.assert", new Object[] {});
-		Asserts.notNullOrEmpty(patch.getPatchNumber(),
-				"FilebasedPatchPersistence.save.patchnumber.notnullorempty.assert", new Object[] { patch.toString() });
+		Asserts.notNull(patch, "Patch object null for save");
+		Asserts.notNullOrEmpty(patch.getPatchNumber(), "Patch Number is null or empty for savePatch");
 		patchPersistence.writeToFile(patch, PATCH + patch.getPatchNumber() + JSON);
 	}
 	
 	@Override
 	public void savePatchLog(String patchNumber, PatchLogDetails logDetails) {
-		Asserts.notNull(logDetails,"FilebasedPatchPersistence.save.patchlog.null.loginfo",new Object[] {});
-		Asserts.notNullOrEmpty(patchNumber, "FilebasedPatchPersistence.save.patchlognumber.notnullorempty.assert", new Object[] {patchNumber});
+		Asserts.notNull(logDetails, "PatchLogDetails object null for savePatchLog");
+		Asserts.notNullOrEmpty(patchNumber, "Patch number null or empty for savePatchLog of Patch");
 		PatchLog patchLog = findPatchLogById(patchNumber);
 		PatchLog patchLogToWrite;
 		if(patchLog == null) {
@@ -150,20 +148,17 @@ public class PatchPersistenceImpl implements PatchPersistence {
 	// TODO (che, 8.5) Do we want remove also "Atomic"
 	@Override
 	public synchronized void removePatch(Patch patch) {
-		Asserts.notNull(patch, "FilebasedPatchPersistence.remove.patchobject.notnull.assert", new Object[] {});
-		Asserts.notNullOrEmpty(patch.getPatchNumber(),
-				"FilebasedPatchPersistence.remove.patchnumber.notnullorempty.assert",
-				new Object[] { patch.toString() });
-		Asserts.isTrue((patchExists(patch.getPatchNumber())), "FilebasedPatchPersistence.remove.patch.exists.assert",
-				new Object[] { patch.toString() });
+		Asserts.notNull(patch, "Patch object null for remove of Patch");
+		Asserts.notNullOrEmpty(patch.getPatchNumber(), "Patch number null or empty for removePatch of Patch");
+		Asserts.isTrue((patchExists(patch.getPatchNumber())), "Patch  %s to be removed doesn't exist",patch.getPatchNumber());
 		try {
 			LOGGER.info("Deleting patch: " + patch.toString());
 			File patchFile = patchPersistence.createFile(PATCH + patch.getPatchNumber() + JSON);
 			LOGGER.info("Deleting patch: " + patch.toString() + ", result: " + patchFile.delete());
 
 		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.removePatch.exception",
-					new Object[] { e.getMessage(), patch.toString() }, e);
+			throw ExceptionFactory.create("Persistance Exception  : <%s> for removePatch",e,
+					e.getMessage());
 		}
 	}
 
@@ -182,8 +177,8 @@ public class PatchPersistenceImpl implements PatchPersistence {
 			ObjectMapper mapper = new ObjectMapper();
 			return mapper.readValue(serviceMetaDataFile, ServicesMetaData.class);
 		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"FilebasedPatchPersistence.getServicesMetaData.exception", new Object[] { e.getMessage() }, e);
+			throw ExceptionFactory.create("Persistance Exception  : <%s> for getServicesMetaData",e,
+					e.getMessage());
 		}
 	}
 
@@ -202,8 +197,8 @@ public class PatchPersistenceImpl implements PatchPersistence {
 			ObjectMapper mapper = new ObjectMapper();
 			return mapper.readValue(dbModulesFile, DbModules.class);
 		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"FilebasedPatchPersistence.getDbModules.exception", new Object[] { e.getMessage() }, e);
+			throw ExceptionFactory.create("Persistance Exception  : <%s> for getDbModules",e,
+					e.getMessage());
 		}
 	}
 
@@ -214,8 +209,8 @@ public class PatchPersistenceImpl implements PatchPersistence {
 			File[] listFiles = patchPersistence.getStoragePath().getFile().listFiles();
 			return Lists.newArrayList(listFiles).stream().map(File::getName).collect(Collectors.toList());
 		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"FilebasedPatchPersistence.listAllFiles.exception", new Object[] { e.getMessage() }, e);
+			throw ExceptionFactory.create("Persistance Exception  : <%s> for listAllFiles",e,
+					e.getMessage());
 		}
 	}
 
@@ -227,8 +222,8 @@ public class PatchPersistenceImpl implements PatchPersistence {
 			return Lists.newArrayList(listFiles).stream().map(File::getName)
 					.filter(s -> s.startsWith(prefix)).collect(Collectors.toList());
 		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.listFiles.exception",
-					new Object[] { e.getMessage(), prefix }, e);
+			throw ExceptionFactory.create("Persistance Exception  : <%s> for listFiles with Prefix: %s",e,
+					e.getMessage(),  prefix);
 		}
 	}
 
@@ -238,8 +233,8 @@ public class PatchPersistenceImpl implements PatchPersistence {
 			File parentDir = patchPersistence.getStoragePath().getFile();
 			FileUtils.cleanDirectory(parentDir);
 		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException("FilebasedPatchPersistence.clean.exception",
-					new Object[] { e.getMessage() }, e);
+			throw ExceptionFactory.create("Persistance Exception  : <%s> for clean",e,
+					e.getMessage());
 		}
 
 	}
@@ -249,7 +244,7 @@ public class PatchPersistenceImpl implements PatchPersistence {
 		List<ServiceMetaData> services = getServicesMetaData().getServicesMetaData();
 		List<ServiceMetaData> result = services.stream().filter(p -> p.getServiceName().equals(serviceName))
 				.collect(Collectors.toList());
-		Asserts.isTrue(result.size() == 1, "Service Metadata Size not 1");
+		Asserts.isTrue(result.size() == 1, "No Service Metadata for <%s>",serviceName);
 		return result.get(0);
 	}
 
@@ -263,8 +258,8 @@ public class PatchPersistenceImpl implements PatchPersistence {
 			ObjectMapper mapper = new ObjectMapper();
 			return mapper.readValue(onDemandTargetFile, OnDemandTargets.class);
 		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"FilebasedPatchPersistence.onDemandTargets.exception", new Object[] { e.getMessage() }, e);
+			throw ExceptionFactory.create("Persistance Exception  : <%s> for onDemandTargets",e,
+					e.getMessage());
 		}
 	}
 
@@ -278,8 +273,8 @@ public class PatchPersistenceImpl implements PatchPersistence {
 			ObjectMapper mapper = new ObjectMapper();
 			return mapper.readValue(stageMappingFile, StageMappings.class);
 		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"FilebasedPatchPersistence.stageMapping.exception", new Object[] { e.getMessage() }, e);
+			throw ExceptionFactory.create("Persistance Exception  : <%s> for stageMappings",e,
+					e.getMessage());
 		}
 	}
 
@@ -293,8 +288,8 @@ public class PatchPersistenceImpl implements PatchPersistence {
 			ObjectMapper mapper = new ObjectMapper();
 			return mapper.readValue(targetInstanceFile, TargetInstances.class);
 		} catch (IOException e) {
-			throw ExceptionFactory.createPatchServiceRuntimeException(
-					"FilebasedPatchPersistence.targetInstance.exception", new Object[] { e.getMessage() }, e);
+			throw ExceptionFactory.create("Persistance Exception  : <%s> for targetInstances",e,
+					e.getMessage());
 		}
 	}
 
