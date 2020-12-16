@@ -25,6 +25,7 @@ public class MavenArtifact {
     String name;
     @Getter
     String version;
+    @SuppressWarnings("UnusedAssignment")
     @Getter
     @lombok.Builder.Default
     Integer dependencyLevel = 0;

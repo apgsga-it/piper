@@ -71,7 +71,7 @@ public interface PatchService {
 	
 	/**
 	 * Retrieves a PatchLog by Id
-	 * @param patchNummer
+	 * @param patchNummer which Identifies the Patch
 	 * @return a PatchLog Object
 	 */
     PatchLog findPatchLogById(String patchNummer);
