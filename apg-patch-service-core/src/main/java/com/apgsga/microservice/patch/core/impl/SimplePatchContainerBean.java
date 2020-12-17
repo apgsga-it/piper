@@ -1,5 +1,6 @@
 package com.apgsga.microservice.patch.core.impl;
 
+import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
@@ -42,6 +43,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Autowired
 	private TaskExecutor threadExecutor;
+
+	@Autowired
+	private ArtifactDependencyResolver dependencyResolver;
 
 	public SimplePatchContainerBean() {
 		super();
@@ -226,7 +230,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		Patch patch = repo.findById(sp.getPatchNumber());
 		Asserts.notNull(patch,"Patch %s does not exist for setup",  sp.getPatchNumber());
 		CommandRunner jschSession = getJschSessionFactory().create();
-		PatchSetupTask.create(jschSession, patch, repo, sp).run();
+		PatchSetupTask.create(jschSession, patch, repo, sp, am, dependencyResolver).run();
 	}
 
 

@@ -73,10 +73,8 @@ public class TaskStartBuildPipeline implements Runnable {
     @Override
     public void run() {
             LOGGER.info("TaskStartBuildPipeline running for following buildParameter: " + buildParameters.toString());
-            preprocessor.preProcessBuildPipeline(buildParameters);
             String patchName = PATCH_CONS + buildParameters.getPatchNumber();
             String jobName = patchName + "_build_" + buildParameters.getStageName();
-            final ResourceLoader rl = new FileSystemResourceLoader();
             Map<String,String> jobParameters = Maps.newHashMap();
             jobParameters.put("PARAMETERS",pipelineBuildParameterAsJson());
             LOGGER.info("JobParameters passed to " + jobName + " Pipeline :" + jobParameters.toString());

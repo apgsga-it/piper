@@ -304,7 +304,24 @@ public class MicroServicePatchServerTest {
 		assertTrue(onDemandTargets.contains("DEV-JHE"));
 	}
 
-
-
-
+	@Test
+	public void testPatchServiceSetup() {
+		Service service = Service.builder()
+				.serviceName("SomeOtherService")
+				.build();
+		List<Service> services = Lists.newArrayList(service);
+		Patch p = Patch.builder()
+				.patchNumber("8000")
+				.services(services)
+				.build();
+		patchService.save(p);
+		SetupParameter sp = SetupParameter.builder()
+				.patchNumber("8000")
+				.successNotification("success")
+				.errorNotification("error")
+				.build();
+		patchService.setup(sp);
+		Patch updatedPatch = patchService.findById("8000");
+		Assert.assertTrue("ServiceMetadata has not been added", updatedPatch.getServices().get(0).getServiceMetaData() != null);
+	}
 }
