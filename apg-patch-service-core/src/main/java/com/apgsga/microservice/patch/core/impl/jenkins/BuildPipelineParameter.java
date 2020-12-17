@@ -1,7 +1,6 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.apgsga.microservice.patch.api.DbObject;
-import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Service;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -9,10 +8,10 @@ import lombok.*;
 
 import java.util.List;
 
-@JsonDeserialize(builder = PipelineBuildParameter.BuildParameterBuilder.class)
+@JsonDeserialize(builder = BuildPipelineParameter.BuildParameterBuilder.class)
 @Builder
 @Value
-public class PipelineBuildParameter {
+public class BuildPipelineParameter {
 
     String patchNumber;
     String stageName;

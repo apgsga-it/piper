@@ -10,8 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.core.io.FileSystemResourceLoader;
-import org.springframework.core.io.ResourceLoader;
 
 import java.util.List;
 import java.util.Map;
@@ -48,7 +46,7 @@ public class TaskStartBuildPipeline implements Runnable {
     private String pipelineBuildParameterAsJson() {
         try {
             Patch patch = preprocessor.retrievePatch(buildParameters.getPatchNumber());
-            PipelineBuildParameter pipelineBuildParameter = PipelineBuildParameter.builder()
+            BuildPipelineParameter buildPipelineParameter = BuildPipelineParameter.builder()
                     .patchNumber(buildParameters.getPatchNumber())
                     .stageName(buildParameters.getStageName())
                     .successNotification(buildParameters.getSuccessNotification())
@@ -62,9 +60,9 @@ public class TaskStartBuildPipeline implements Runnable {
                     .services(patch.getServices())
                     .target(preprocessor.retrieveTargetForStageName(buildParameters.getStageName()))
                     .build();
-            LOGGER.info("PipelineBuildParameter has been created with following info : " + pipelineBuildParameter.toString());
+            LOGGER.info("PipelineBuildParameter has been created with following info : " + buildPipelineParameter.toString());
             ObjectMapper om = new ObjectMapper();
-            return om.writeValueAsString(pipelineBuildParameter).replace("\"","\\\"");
+            return om.writeValueAsString(buildPipelineParameter).replace("\"","\\\"");
         } catch (JsonProcessingException e) {
             throw ExceptionFactory.create("Exception : Create Json PARAMETERS for Patch <%s> and Stage <%s>",buildParameters.getPatchNumber(),buildParameters.getStageName());
         }
