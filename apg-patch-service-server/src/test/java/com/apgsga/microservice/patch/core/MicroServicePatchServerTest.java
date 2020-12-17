@@ -6,6 +6,7 @@ import com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
@@ -262,13 +263,12 @@ public class MicroServicePatchServerTest {
 		Patch p2 = Patch.builder().patchNumber("5402").build();
 		patchService.save(p);
 		patchService.save(p2);
-		AssembleAndDeployParameters params = AssembleAndDeployParameters.create()
+		AssembleAndDeployParameters params = AssembleAndDeployParameters.builder()
 											.target("DEV-JHE")
 											.errorNotification("error")
 											.successNotification("success")
-											.addPatchNumber("5401")
-											.addPatchNumber("5402")
-											.addGradlePackageProjectAsVcsPath("testPkg");
+											.patchNumbers(Sets.newHashSet("5401","5402"))
+											.build();
 		patchService.startAssembleAndDeployPipeline(params);
 	}
 
@@ -278,13 +278,12 @@ public class MicroServicePatchServerTest {
 		Patch p2 = Patch.builder().patchNumber("5402").build();
 		patchService.save(p);
 		patchService.save(p2);
-		AssembleAndDeployParameters params = AssembleAndDeployParameters.create()
+		AssembleAndDeployParameters params = AssembleAndDeployParameters.builder()
 					.target("DEV-JHE")
 					.errorNotification("error")
 					.successNotification("success")
-					.addPatchNumber("5401")
-					.addPatchNumber("5402")
-					.addGradlePackageProjectAsVcsPath("testPkg");
+					.patchNumbers(Sets.newHashSet("5401","5402"))
+					.build();
 		patchService.startAssembleAndDeployPipeline(params);
 	}
 

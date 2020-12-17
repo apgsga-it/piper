@@ -14,14 +14,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.FileSystemResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unused")
@@ -87,9 +82,16 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	@Override
 	public void startAssembleAndDeployPipeline(AssembleAndDeployParameters parameters) {
-		ObjectMapper om = new ObjectMapper();
 		try {
-			startGenericPipelineJobBuilder("assembleAndDeploy", jenkinsPipelineAssembleScript, parameters.getTarget(), om.writeValueAsString(parameters));
+			AssembleAndDeployPipelineParameter pipelineParameters = AssembleAndDeployPipelineParameter.builder()
+					.patchNumbers(parameters.getPatchNumbers())
+					.errorNotification(parameters.getErrorNotification())
+					.successNotification(parameters.getSuccessNotification())
+					.target(parameters.getTarget())
+					.gradlePackagerProjectAsVscPath(preprocessor.retrievePackagerProjectAsVscPathFor(parameters.getPatchNumbers()))
+					.build();
+			ObjectMapper om = new ObjectMapper();
+			startGenericPipelineJobBuilder("assembleAndDeploy", jenkinsPipelineAssembleScript, pipelineParameters.getTarget(), om.writeValueAsString(pipelineParameters).replace("\"","\\\""));
 		} catch (JsonProcessingException e) {
 			throw ExceptionFactory.create("Exception: <%s> while starting the Jenkins Assemble and Deploy Pipeline Job for Patch:  %s ", e,
 					e.getMessage(),parameters.toString());

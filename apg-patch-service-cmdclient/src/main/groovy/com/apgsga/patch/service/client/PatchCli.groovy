@@ -285,10 +285,12 @@ class PatchCli {
 		def successNotification = options.adps[2]
 		def errorNotification = options.adps[3]
 		println "Starting assembleAndDeploy pipeline for following patches ${listOfPatches} on target ${target} with successNotification=${successNotification} and errorNotification=${errorNotification}"
-		AssembleAndDeployParameters params = AssembleAndDeployParameters.create().target(target).successNotification(successNotification).errorNotification(errorNotification)
-		listOfPatches.split(";").collect().each {p ->
-			params.addPatchNumber(p)
-		}
+		AssembleAndDeployParameters params = AssembleAndDeployParameters.builder()
+				.target(target)
+				.successNotification(successNotification)
+				.errorNotification(errorNotification)
+				.patchNumbers(listOfPatches.split(";").collect().toSet())
+				.build()
 		patchClient.startAssembleAndDeployPipeline(params)
 	}
 

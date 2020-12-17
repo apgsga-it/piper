@@ -3,12 +3,15 @@ package com.apgsga.microservice.patch.core.impl.jenkins;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.api.PatchPersistence;
 import com.apgsga.microservice.patch.api.StageMapping;
+import com.google.common.collect.Sets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
 
 @SuppressWarnings("unused")
 @Profile("live")
@@ -42,5 +45,17 @@ public class JenkinsPipelinePreprocessor {
 
     public Patch retrievePatch(String patchNumber) {
         return backend.findById(patchNumber);
+    }
+
+    public Set<String> retrievePackagerProjectAsVscPathFor(Set<String> patchNumbers) {
+        Set<String> packagers = Sets.newHashSet();
+        patchNumbers.forEach(number -> {
+            backend.findById(number).getServices().forEach(service -> {
+                backend.packagesFor(service).forEach(aPackage -> {
+                    packagers.add(aPackage.getPackagerName());
+                });
+            });
+        });
+        return packagers;
     }
 }
