@@ -1,6 +1,7 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.apgsga.microservice.patch.api.DbObject;
+import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Service;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -19,7 +20,8 @@ public class PipelineBuildParameter {
     String errorNotification;
     String target;
     String patchTag;
-    List<String> dbObjectAsVcsPath;
+    String developerBranch;
+    List<String> dbObjectsAsVcsPath;
     String dbPatchBranch;
     List<DbObject> dbObjects;
     List<String> dockerServices;
