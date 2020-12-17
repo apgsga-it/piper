@@ -1,6 +1,5 @@
 package com.apgsga.artifact.query;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,12 +9,12 @@ import com.apgsga.microservice.patch.api.SearchCondition;
 public class MockArtifactManagerImpl implements ArtifactManager {
 
 	@Override
-	public List<MavenArtifact> getAllDependencies(String serviceVersion) {
+	public List<MavenArtifact> listDependenciesInBom(MavenArtifact bom) {
 		return Collections.emptyList();
 	}
 
 	@Override
-	public List<MavenArtifact> getAllDependencies(String serviceVersion, SearchCondition searchFilter) {
+	public List<MavenArtifact> listDependenciesInBom(MavenArtifact bom, SearchCondition searchFilter) {
 		return Collections.emptyList();
 
 	}
@@ -31,10 +30,6 @@ public class MockArtifactManagerImpl implements ArtifactManager {
 		// Nothing
 	}
 
-	@Override
-	public File getMavenLocalRepo() {
-		return null;
-	}
 	
 	
 

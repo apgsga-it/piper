@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -54,7 +55,8 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 			try {
 				resource.getFile().mkdir();
 			} catch (IOException e) {
-				throw new RuntimeException("ArtifactsDependencyResolverImpl.init.exception",e);			}
+				throw ExceptionFactory.create("Exception getting Local Maven Repo: %s",e,localRepo);
+			}
 		}
 	}
 
@@ -86,7 +88,7 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 		    Thread.currentThread().interrupt();
 		} catch (ExecutionException e) {
 			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
-			throw new RuntimeException(e);
+			throw ExceptionFactory.create("Exception resolving Dependency Levels",e);
 		}
 		return resolvedDependencies;
 	}
@@ -128,7 +130,7 @@ public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolv
 
 		} catch (DependencyResolutionException e) {
 			LOGGER.error(ExceptionUtils.getFullStackTrace(e));
-			throw new RuntimeException(e);		
+			throw ExceptionFactory.create("Exception resolving Dependency Levels",e);
 		}
 
 	}
