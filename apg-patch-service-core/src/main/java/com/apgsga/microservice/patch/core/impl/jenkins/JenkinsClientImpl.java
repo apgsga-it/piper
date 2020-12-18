@@ -88,10 +88,12 @@ public class JenkinsClientImpl implements JenkinsClient {
 					.errorNotification(parameters.getErrorNotification())
 					.successNotification(parameters.getSuccessNotification())
 					.target(parameters.getTarget())
-					.gradlePackagerProjectAsVscPath(preprocessor.retrievePackagerProjectAsVscPathFor(parameters.getPatchNumbers()))
+					.packagers(preprocessor.retrievePackagerProjectAsVscPathFor(parameters.getPatchNumbers(),parameters.getTarget()))
 					.build();
 			ObjectMapper om = new ObjectMapper();
-			startGenericPipelineJobBuilder("assembleAndDeploy", jenkinsPipelineAssembleScript, pipelineParameters.getTarget(), om.writeValueAsString(pipelineParameters).replace("\"","\\\""));
+			String pipelineParametersAsJson = om.writeValueAsString(pipelineParameters).replace("\"", "\\\"");
+			LOGGER.info("An assemble and deploy Pipeline will be triggered with following parameters : " + pipelineParametersAsJson);
+			startGenericPipelineJobBuilder("assembleAndDeploy", jenkinsPipelineAssembleScript, pipelineParameters.getTarget(), pipelineParametersAsJson);
 		} catch (JsonProcessingException e) {
 			throw ExceptionFactory.create("Exception: <%s> while starting the Jenkins Assemble and Deploy Pipeline Job for Patch:  %s ", e,
 					e.getMessage(),parameters.toString());

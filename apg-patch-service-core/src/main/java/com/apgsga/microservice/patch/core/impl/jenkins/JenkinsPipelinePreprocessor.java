@@ -1,9 +1,9 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
-import com.apgsga.microservice.patch.api.Patch;
-import com.apgsga.microservice.patch.api.PatchPersistence;
-import com.apgsga.microservice.patch.api.StageMapping;
-import com.google.common.collect.Sets;
+import com.apgsga.microservice.patch.api.*;
+import com.apgsga.microservice.patch.api.Package;
+import com.apgsga.microservice.patch.exceptions.Asserts;
+import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -47,15 +48,40 @@ public class JenkinsPipelinePreprocessor {
         return backend.findById(patchNumber);
     }
 
-    public Set<String> retrievePackagerProjectAsVscPathFor(Set<String> patchNumbers) {
-        Set<String> packagers = Sets.newHashSet();
+    public List<AssembleAndDeployPipelineParameter.PackagerInfo> retrievePackagerProjectAsVscPathFor(Set<String> patchNumbers,String target) {
+        List<AssembleAndDeployPipelineParameter.PackagerInfo> packagers = Lists.newArrayList();
         patchNumbers.forEach(number -> {
             backend.findById(number).getServices().forEach(service -> {
                 backend.packagesFor(service).forEach(aPackage -> {
-                    packagers.add(aPackage.getPackagerName());
+                    if(!packagerInList(packagers,aPackage)) {
+                        packagers.add(new AssembleAndDeployPipelineParameter.PackagerInfo(aPackage.getPackagerName()
+                                ,retrieveTargetHostFor(service, target)
+                                ,retrieveBaseVersionFor(service)
+                                ,retrieveVcsBranchFor(service)));
+                    }
                 });
             });
         });
         return packagers;
+    }
+
+    private String retrieveVcsBranchFor(Service service) {
+        return  backend.getServiceMetaDataByName(service.getServiceName()).getMicroServiceBranch();
+    }
+
+    private boolean packagerInList(List<AssembleAndDeployPipelineParameter.PackagerInfo> packagers, Package aPackage) {
+        return packagers.stream().anyMatch(p -> p.name.equals(aPackage.getPackagerName()));
+    }
+
+    public String retrieveBaseVersionFor(Service service) {
+        String baseVersionNumber = backend.getServiceMetaDataByName(service.getServiceName()).getBaseVersionNumber();
+        String mnemoPart = backend.getServiceMetaDataByName(service.getServiceName()).getRevisionMnemoPart();
+        return baseVersionNumber + "-" + mnemoPart;
+    }
+
+    public String retrieveTargetHostFor(Service service, String target) {
+        TargetInstance targetInstance = backend.targetInstances().getTargetInstances().stream().filter(ti -> ti.getName().toUpperCase().equals(target.toUpperCase())).findFirst().get();
+        Asserts.notNullOrEmpty("No targetInstance has been found for %s",target);
+        return targetInstance.getServices().stream().filter(s -> s.getServiceName().toUpperCase().equals(service.getServiceName().toUpperCase())).findFirst().get().getInstallationHost();
     }
 }

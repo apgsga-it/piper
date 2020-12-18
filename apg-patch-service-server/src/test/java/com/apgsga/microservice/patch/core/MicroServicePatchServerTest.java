@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
@@ -322,5 +323,19 @@ public class MicroServicePatchServerTest {
 		patchService.setup(sp);
 		Patch updatedPatch = patchService.findById("8000");
 		Assert.assertTrue("ServiceMetadata has not been added", updatedPatch.getServices().get(0).getServiceMetaData() != null);
+	}
+
+	@Test
+	// JHE : Test mainly done in order to test the syntax with Streams expression
+	public void testRetrieveASpecificTargetInstance() {
+
+		String searchedTarget = "DEV-CHEI211";
+		String searchedService = "digiflex";
+
+		TargetInstance targetInstance = patchService.getRepo().targetInstances().getTargetInstances().stream().filter(ti -> ti.getName().equals(searchedTarget)).findFirst().get();
+
+		Assert.assertNotNull(targetInstance);
+		Assert.assertEquals(targetInstance.getName(),searchedTarget);
+		Assert.assertEquals("dev-digiflex-e.apgsga.ch",targetInstance.getServices().stream().filter(s -> s.getServiceName().equals(searchedService)).findFirst().get().getInstallationHost());
 	}
 }
