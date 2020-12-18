@@ -47,6 +47,10 @@ public abstract class JenkinsSshCommand extends CommandBaseImpl {
         return new JenkinsSshBuildJobCmd(jenkinsHost,jenkinsSshPort,jenkinsSshUser,jobName,true,false);
     }
 
+    public static JenkinsSshCommand createJenkinsSshBuildJobAndWaitForStartCmd(String jenkinsHost, String jenkinsSshPort, String jenkinsSshUser, String jobName, Map<String,String> parameters) {
+        return new JenkinsSshBuildJobCmd(jenkinsHost,jenkinsSshPort,jenkinsSshUser,jobName,parameters,null ,true,false);
+    }
+
     public static JenkinsSshCommand createJenkinsSshBuildJobAndWaitForCompleteCmd(String jenkinsHost, String jenkinsSshPort, String jenkinsSshUser, String jobName, Map<String,String> jobParameters) {
         return new JenkinsSshBuildJobCmd(jenkinsHost,jenkinsSshPort,jenkinsSshUser,jobName,jobParameters,null,false,true);
     }

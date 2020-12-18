@@ -49,10 +49,9 @@ public interface PatchOpService {
 	void startAssembleAndDeployPipeline(AssembleAndDeployParameters parameters);
 
 	/**
-	 * Starts the corresponding "install" pipeline
-	 * @param target target for which will assemble and deploy (chei211,chti211,etc...)
+	 * Dynamically create an install Pipeline, and start it
 	 */
-	void startInstallPipeline(String target);
+	void startInstallPipeline(InstallParameters parameters);
 
 	/**
 	 * Copies JSON Patch files to a destination folder

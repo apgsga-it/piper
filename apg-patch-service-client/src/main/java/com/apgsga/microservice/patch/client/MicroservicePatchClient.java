@@ -18,8 +18,6 @@ public class MicroservicePatchClient implements PatchService {
 	
 	private static final String FIND_PATCH_LOG_BY_ID = "/findPatchLogById/{id}";
 
-	private static final String START_INSTALL_PIPELINE = "/startInstallationForTarget";
-
 	private static final String SAVE = "/save";
 	
 	private static final String LIST_DBMODULES = "/listDbModules";

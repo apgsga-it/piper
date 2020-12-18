@@ -2,6 +2,7 @@ package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.apgsga.microservice.patch.api.AssembleAndDeployParameters;
 import com.apgsga.microservice.patch.api.BuildParameter;
+import com.apgsga.microservice.patch.api.InstallParameters;
 import com.apgsga.microservice.patch.api.Patch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,8 +31,8 @@ public class JenkinsMockClient implements JenkinsClient {
 	}
 
 	@Override
-	public void startInstallPipeline(String target, String parameter) {
-		LOGGER.info("startInstallPipeline for target=" + target);
+	public void startInstallPipeline(InstallParameters parameters) {
+		LOGGER.info("startInstallPipeline for target=" + parameters.toString());
 	}
 
 

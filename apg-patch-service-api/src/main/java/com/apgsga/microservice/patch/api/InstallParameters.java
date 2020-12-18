@@ -8,10 +8,10 @@ import lombok.Value;
 
 import java.util.Set;
 
-@JsonDeserialize(builder = AssembleAndDeployParameters.AssembleAndDeployParametersBuilder.class)
+@JsonDeserialize(builder = InstallParameters.InstallParametersBuilder.class)
 @Value
 @Builder
-public class AssembleAndDeployParameters {
+public class InstallParameters {
 
     @Builder.Default
     Set<String> patchNumbers = Sets.newHashSet();
@@ -20,5 +20,5 @@ public class AssembleAndDeployParameters {
     String errorNotification;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class AssembleAndDeployParametersBuilder {}
+    public static class InstallParametersBuilder {}
 }

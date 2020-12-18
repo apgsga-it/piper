@@ -6,6 +6,7 @@ import com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
@@ -30,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
@@ -262,13 +264,12 @@ public class MicroServicePatchServerTest {
 		Patch p2 = Patch.builder().patchNumber("5402").build();
 		patchService.save(p);
 		patchService.save(p2);
-		AssembleAndDeployParameters params = AssembleAndDeployParameters.create()
+		AssembleAndDeployParameters params = AssembleAndDeployParameters.builder()
 											.target("DEV-JHE")
 											.errorNotification("error")
 											.successNotification("success")
-											.addPatchNumber("5401")
-											.addPatchNumber("5402")
-											.addGradlePackageProjectAsVcsPath("testPkg");
+											.patchNumbers(Sets.newHashSet("5401","5402"))
+											.build();
 		patchService.startAssembleAndDeployPipeline(params);
 	}
 
@@ -278,20 +279,24 @@ public class MicroServicePatchServerTest {
 		Patch p2 = Patch.builder().patchNumber("5402").build();
 		patchService.save(p);
 		patchService.save(p2);
-		AssembleAndDeployParameters params = AssembleAndDeployParameters.create()
+		AssembleAndDeployParameters params = AssembleAndDeployParameters.builder()
 					.target("DEV-JHE")
 					.errorNotification("error")
 					.successNotification("success")
-					.addPatchNumber("5401")
-					.addPatchNumber("5402")
-					.addGradlePackageProjectAsVcsPath("testPkg");
+					.patchNumbers(Sets.newHashSet("5401","5402"))
+					.build();
 		patchService.startAssembleAndDeployPipeline(params);
 	}
 
 	@Test
 	public void testStartInstallPipeline() {
-		String target = "chei212";
-		patchService.startInstallPipeline(target);
+		InstallParameters params = InstallParameters.builder()
+				.target("dev-jhe")
+				.patchNumbers(Sets.newHashSet("5401"))
+				.successNotification("success")
+				.errorNotification("error")
+				.build();
+		patchService.startInstallPipeline(params);
 	}
 
 	@Test
@@ -304,7 +309,38 @@ public class MicroServicePatchServerTest {
 		assertTrue(onDemandTargets.contains("DEV-JHE"));
 	}
 
+	@Test
+	public void testPatchServiceSetup() {
+		Service service = Service.builder()
+				.serviceName("SomeOtherService")
+				.build();
+		List<Service> services = Lists.newArrayList(service);
+		Patch p = Patch.builder()
+				.patchNumber("8000")
+				.services(services)
+				.build();
+		patchService.save(p);
+		SetupParameter sp = SetupParameter.builder()
+				.patchNumber("8000")
+				.successNotification("success")
+				.errorNotification("error")
+				.build();
+		patchService.setup(sp);
+		Patch updatedPatch = patchService.findById("8000");
+		Assert.assertTrue("ServiceMetadata has not been added", updatedPatch.getServices().get(0).getServiceMetaData() != null);
+	}
 
+	@Test
+	// JHE : Test mainly done in order to test the syntax with Streams expression
+	public void testRetrieveASpecificTargetInstance() {
 
+		String searchedTarget = "DEV-CHEI211";
+		String searchedService = "digiflex";
 
+		TargetInstance targetInstance = patchService.getRepo().targetInstances().getTargetInstances().stream().filter(ti -> ti.getName().equals(searchedTarget)).findFirst().get();
+
+		Assert.assertNotNull(targetInstance);
+		Assert.assertEquals(targetInstance.getName(),searchedTarget);
+		Assert.assertEquals("dev-digiflex-e.apgsga.ch",targetInstance.getServices().stream().filter(s -> s.getServiceName().equals(searchedService)).findFirst().get().getInstallationHost());
+	}
 }

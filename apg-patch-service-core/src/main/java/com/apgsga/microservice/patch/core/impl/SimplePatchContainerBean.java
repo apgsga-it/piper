@@ -1,5 +1,6 @@
 package com.apgsga.microservice.patch.core.impl;
 
+import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
@@ -42,6 +43,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Autowired
 	private TaskExecutor threadExecutor;
+
+	@Autowired
+	private ArtifactDependencyResolver dependencyResolver;
 
 	public SimplePatchContainerBean() {
 		super();
@@ -226,7 +230,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		Patch patch = repo.findById(sp.getPatchNumber());
 		Asserts.notNull(patch,"Patch %s does not exist for setup",  sp.getPatchNumber());
 		CommandRunner jschSession = getJschSessionFactory().create();
-		PatchSetupTask.create(jschSession, patch, repo, sp).run();
+		PatchSetupTask.create(jschSession, patch, repo, sp, am, dependencyResolver).run();
 	}
 
 
@@ -284,29 +288,27 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public void startAssembleAndDeployPipeline(AssembleAndDeployParameters parameters) {
-		LOGGER.info("assembleAndDeploy parameters will be completed based on following: " + parameters.toString());
-		if(!parameters.getPatches().isEmpty()) {
-			parameters.getPatches().forEach(patchNumber -> {
-				Patch p = findById(patchNumber);
-				Asserts.notNull(p,"Patch %s does not exist for Assembly and Deploy with parameters %s", patchNumber, parameters.toString());
-				p.getServices().forEach(service -> {
-					// TODO (JHE, 15.12) : Move this whole transformation into JenkinsPipelinePreprocessor
-					//TODO (JHE, 15.12) : Address the Multi Packager Scenario
-					//TODO (JHE, 15.12) : Below just a quick fix , that it compiles
-					parameters.addGradlePackageProjectAsVcsPath(repo.getServiceMetaDataByName(service.getServiceName()).getPackages().get(0).getPackagerName());
-				});
-			});
+		LOGGER.info("Starting assemble and deploy Pipeline with following parameter: " + parameters.toString());
+		if(!parameters.getPatchNumbers().isEmpty()) {
 			jenkinsClient.startAssembleAndDeployPipeline(parameters);
 		}
 		else {
 			LOGGER.warn("An assembleAndDeploy Pipeline job was requested without any Patch in the list. Parameters were: " + parameters.toString());
+			LOGGER.warn("No assembleAndDeploy Pipeline will be started !");
 		}
 	}
 
 	@Override
-	public void startInstallPipeline(String target) {
-		// TODO (JHE, CHE: 13.10) And String parameter as Json according to Pipeline Requirements
-		jenkinsClient.startInstallPipeline(target,  "");
+	public void startInstallPipeline(InstallParameters parameters) {
+		LOGGER.info("Starting an install Pipeline with following parameter: " + parameters.toString());
+		if(!parameters.getPatchNumbers().isEmpty()) {
+			jenkinsClient.startInstallPipeline(parameters);
+		}
+		else {
+			LOGGER.warn("An install Pipeline job was requested without any Patch in the list. Parameters were: " + parameters.toString());
+			LOGGER.warn("No install Pipeline will be started !");
+		}
+
 	}
 
 
