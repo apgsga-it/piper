@@ -84,4 +84,15 @@ public class JenkinsPipelinePreprocessor {
         Asserts.notNullOrEmpty("No targetInstance has been found for %s",target);
         return targetInstance.getServices().stream().filter(s -> s.getServiceName().toUpperCase().equals(service.getServiceName().toUpperCase())).findFirst().get().getInstallationHost();
     }
+
+    public List<String> retrieveDbZipNames(Set<String> patchNumbers, String target) {
+        List<String> dbZipNames = Lists.newArrayList();
+        patchNumbers.forEach(patchNumber -> {
+            Patch patch = backend.findById(patchNumber);
+            if(!patch.getDbObjects().isEmpty()) {
+                dbZipNames.add(patch.getDbPatchBranch() + "_" + target.toUpperCase() + ".zip");
+            }
+        });
+        return dbZipNames;
+    }
 }

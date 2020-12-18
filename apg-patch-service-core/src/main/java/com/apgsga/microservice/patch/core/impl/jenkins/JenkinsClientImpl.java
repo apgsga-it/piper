@@ -89,6 +89,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 					.successNotification(parameters.getSuccessNotification())
 					.target(parameters.getTarget())
 					.packagers(preprocessor.retrievePackagerProjectAsVscPathFor(parameters.getPatchNumbers(),parameters.getTarget()))
+					.dbZipNames(preprocessor.retrieveDbZipNames(parameters.getPatchNumbers(),parameters.getTarget()))
 					.build();
 			ObjectMapper om = new ObjectMapper();
 			String pipelineParametersAsJson = om.writeValueAsString(pipelineParameters).replace("\"", "\\\"");

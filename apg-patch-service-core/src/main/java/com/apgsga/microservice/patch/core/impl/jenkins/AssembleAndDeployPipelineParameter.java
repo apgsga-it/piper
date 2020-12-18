@@ -18,6 +18,7 @@ public class AssembleAndDeployPipelineParameter {
     String successNotification;
     String errorNotification;
     List<PackagerInfo> packagers;
+    List<String> dbZipNames;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class AssembleAndDeployParameterBuilder {}
