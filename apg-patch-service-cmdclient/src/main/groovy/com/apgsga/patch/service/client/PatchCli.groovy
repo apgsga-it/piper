@@ -2,6 +2,7 @@ package com.apgsga.patch.service.client
 
 import com.apgsga.microservice.patch.api.AssembleAndDeployParameters
 import com.apgsga.microservice.patch.api.BuildParameter
+import com.apgsga.microservice.patch.api.InstallParameters
 import com.apgsga.microservice.patch.api.NotificationParameters
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.PatchLogDetails
@@ -99,7 +100,7 @@ class PatchCli {
 			log longOpt: 'log', args:4, valueSeparator: ",", argName: 'patchNumber,target,step,text', 'Log a patch steps for a patch', required: false
 			adp longOpt: 'assembleDeployPipeline', args:4, valueSeparator: ",", argName: 'listOfPatches,target,successNotification,errorNotification', "starts an assembleAndDeploy pipeline. First parameters is a list seprated with ';'", required: false
 			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "statusCode,destFolder", 'Copy patch files for a given status into the destfolder', required: false
-			i longOpt: 'install', args:1, argName: 'target', "starts an install pipeline for the given target", required: false
+			i longOpt: 'install', args:4, valueSeparator: ",", argName: 'listOfPatches,target,successNotification,errorNotification', "starts an install pipeline for the given target. First parameters is a list seprated with ';'", required: false
 			setup longOpt: 'setup', args:3, valueSeparator: ",", argName: 'patchNumber,successNotification,errorNotification', 'Starts setup for a patch, required before beeing ready to build', required: false
 			notifydb longOpt: 'notifdb', args:4, valueSeparator: ",", argName: "patchNumber,stage,successNotification,errorNotification", 'Notify the DB that a Job has been done successfully', required: false
 		}
@@ -172,8 +173,8 @@ class PatchCli {
 			}
 		}
 		if (options.i) {
-			if(options.is.size() != 1) {
-				println "target parameter is required."
+			if(options.is.size() != 4) {
+				println "Following parameters are required: <listOfPatch>,<target>,<successNotification>,<errorNotification>"
 				error = true
 			}
 		}
@@ -295,9 +296,18 @@ class PatchCli {
 	}
 
 	static def installPipeline(def patchClient, def options) {
-		def target = options.is[0]
-		println "Starting install pipeline for ${target}"
-		patchClient.startInstallPipeline(target)
+		def listOfPatches = options.is[0]
+		def target = options.is[1]
+		def successNotification = options.is[2]
+		def errorNotification = options.is[3]
+		println "Starting install pipeline for following patches ${listOfPatches} on target ${target} with successNotification=${successNotification} and errorNotification=${errorNotification}"
+		InstallParameters params = InstallParameters.builder()
+					.target(target)
+					.successNotification(successNotification)
+					.errorNotification(errorNotification)
+				    .patchNumbers(listOfPatches.split(";").collect().toSet())
+				    .build()
+		patchClient.startInstallPipeline(params)
 	}
 
 	static def copyPatchFile(PatchRestServiceClient patchClient, def status, def destFolder) throws Exception {

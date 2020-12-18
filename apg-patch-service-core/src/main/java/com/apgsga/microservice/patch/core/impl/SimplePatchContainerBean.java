@@ -299,9 +299,16 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public void startInstallPipeline(String target) {
-		// TODO (JHE, CHE: 13.10) And String parameter as Json according to Pipeline Requirements
-		jenkinsClient.startInstallPipeline(target,  "");
+	public void startInstallPipeline(InstallParameters parameters) {
+		LOGGER.info("Starting an install Pipeline with following parameter: " + parameters.toString());
+		if(!parameters.getPatchNumbers().isEmpty()) {
+			jenkinsClient.startInstallPipeline(parameters);
+		}
+		else {
+			LOGGER.warn("An install Pipeline job was requested without any Patch in the list. Parameters were: " + parameters.toString());
+			LOGGER.warn("No install Pipeline will be started !");
+		}
+
 	}
 
 

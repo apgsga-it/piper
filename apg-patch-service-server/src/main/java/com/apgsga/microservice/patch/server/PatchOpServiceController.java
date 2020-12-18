@@ -205,8 +205,8 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	@RequestMapping(value = "/startInstallPipeline", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	@Override
-	public void startInstallPipeline(@RequestBody String target) {
-		patchService.startInstallPipeline(target);
+	public void startInstallPipeline(@RequestBody InstallParameters parameters) {
+		patchService.startInstallPipeline(parameters);
 	}
 
 

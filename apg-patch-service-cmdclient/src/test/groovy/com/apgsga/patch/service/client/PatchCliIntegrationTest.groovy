@@ -170,7 +170,7 @@ class PatchCliIntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-i", "chei212"])
+			def result = client.process(["-i", "5401;5402,dev-jhe,success,error"])
 		then:
 			result.returnCode == 0
 			result.results != null

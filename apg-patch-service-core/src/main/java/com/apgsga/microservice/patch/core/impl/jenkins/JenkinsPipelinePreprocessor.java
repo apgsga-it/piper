@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -48,29 +49,8 @@ public class JenkinsPipelinePreprocessor {
         return backend.findById(patchNumber);
     }
 
-    public List<AssembleAndDeployPipelineParameter.PackagerInfo> retrievePackagerProjectAsVscPathFor(Set<String> patchNumbers,String target) {
-        List<AssembleAndDeployPipelineParameter.PackagerInfo> packagers = Lists.newArrayList();
-        patchNumbers.forEach(number -> {
-            backend.findById(number).getServices().forEach(service -> {
-                backend.packagesFor(service).forEach(aPackage -> {
-                    if(!packagerInList(packagers,aPackage)) {
-                        packagers.add(new AssembleAndDeployPipelineParameter.PackagerInfo(aPackage.getPackagerName()
-                                ,retrieveTargetHostFor(service, target)
-                                ,retrieveBaseVersionFor(service)
-                                ,retrieveVcsBranchFor(service)));
-                    }
-                });
-            });
-        });
-        return packagers;
-    }
-
-    private String retrieveVcsBranchFor(Service service) {
+    public String retrieveVcsBranchFor(Service service) {
         return  backend.getServiceMetaDataByName(service.getServiceName()).getMicroServiceBranch();
-    }
-
-    private boolean packagerInList(List<AssembleAndDeployPipelineParameter.PackagerInfo> packagers, Package aPackage) {
-        return packagers.stream().anyMatch(p -> p.name.equals(aPackage.getPackagerName()));
     }
 
     public String retrieveBaseVersionFor(Service service) {
@@ -94,5 +74,9 @@ public class JenkinsPipelinePreprocessor {
             }
         });
         return dbZipNames;
+    }
+
+    public List<Package> packagesFor(Service service) {
+        return backend.packagesFor(service);
     }
 }

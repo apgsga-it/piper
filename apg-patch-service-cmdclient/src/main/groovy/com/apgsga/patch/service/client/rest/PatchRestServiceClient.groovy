@@ -2,6 +2,7 @@ package com.apgsga.patch.service.client.rest
 
 import com.apgsga.microservice.patch.api.AssembleAndDeployParameters
 import com.apgsga.microservice.patch.api.BuildParameter
+import com.apgsga.microservice.patch.api.InstallParameters
 import com.apgsga.microservice.patch.api.NotificationParameters
 import com.apgsga.microservice.patch.api.Patch
 import com.apgsga.microservice.patch.api.PatchLogDetails
@@ -41,8 +42,8 @@ class PatchRestServiceClient implements PatchOpService {
 	}
 
 	@Override
-	void startInstallPipeline(String target) {
-		restTemplate.postForLocation(getRestBaseUri() + "/startInstallPipeline", target)
+	void startInstallPipeline(InstallParameters parameters) {
+		restTemplate.postForLocation(getRestBaseUri() + "/startInstallPipeline", parameters)
 	}
 
 	@Override

@@ -290,8 +290,13 @@ public class MicroServicePatchServerTest {
 
 	@Test
 	public void testStartInstallPipeline() {
-		String target = "chei212";
-		patchService.startInstallPipeline(target);
+		InstallParameters params = InstallParameters.builder()
+				.target("dev-jhe")
+				.patchNumbers(Sets.newHashSet("5401"))
+				.successNotification("success")
+				.errorNotification("error")
+				.build();
+		patchService.startInstallPipeline(params);
 	}
 
 	@Test
