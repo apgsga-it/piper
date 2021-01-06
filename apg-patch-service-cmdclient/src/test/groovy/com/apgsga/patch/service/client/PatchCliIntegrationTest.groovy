@@ -20,14 +20,12 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import org.springframework.util.FileCopyUtils
-import spock.lang.Ignore
-import spock.lang.Requires
 import spock.lang.Specification
 
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = [MicroPatchServer.class])
 @TestPropertySource(locations = ["classpath:config/server-test.properties"])
-@ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
+@ActiveProfiles("test,mock,mockMavenRepo,patchOMock")
 class PatchCliIntegrationTest extends Specification {
 
 	@Value('${json.db.location}')

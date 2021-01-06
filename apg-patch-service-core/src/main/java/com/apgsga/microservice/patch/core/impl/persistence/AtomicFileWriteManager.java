@@ -1,16 +1,15 @@
 package com.apgsga.microservice.patch.core.impl.persistence;
 
-import java.io.OutputStream;
-
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.transaction.file.FileResourceManager;
 import org.apache.commons.transaction.util.CommonsLoggingLogger;
 import org.apache.commons.transaction.util.LoggerFacade;
-
-import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import org.springframework.core.io.Resource;
+
+import java.io.OutputStream;
 
 /**
  * "Simple" File Write Manager Attempts to implement a "Atomic" File write:

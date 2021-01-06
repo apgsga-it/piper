@@ -3,7 +3,6 @@ package com.apgsga.microservice.patch.core.impl.jenkins;
 import com.apgsga.microservice.patch.api.AssembleAndDeployParameters;
 import com.apgsga.microservice.patch.api.BuildParameter;
 import com.apgsga.microservice.patch.api.InstallParameters;
-import com.apgsga.microservice.patch.api.Package;
 import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;

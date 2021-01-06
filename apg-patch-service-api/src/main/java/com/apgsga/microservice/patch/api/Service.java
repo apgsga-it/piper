@@ -3,7 +3,8 @@ package com.apgsga.microservice.patch.api;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.google.common.collect.Lists;
-import lombok.*;
+import lombok.Builder;
+import lombok.Value;
 
 import java.util.List;
 import java.util.stream.Collectors;

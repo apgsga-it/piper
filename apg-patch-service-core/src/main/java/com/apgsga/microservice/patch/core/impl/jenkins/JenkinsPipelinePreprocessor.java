@@ -1,7 +1,7 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
-import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.api.Package;
+import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("unused")

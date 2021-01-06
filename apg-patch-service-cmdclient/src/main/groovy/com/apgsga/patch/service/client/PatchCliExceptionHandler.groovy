@@ -1,13 +1,12 @@
 package com.apgsga.patch.service.client
 
+import com.apgsga.microservice.patch.api.PatchErrorMessage
 import org.springframework.http.HttpStatus
 import org.springframework.http.client.ClientHttpResponse
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.web.client.HttpMessageConverterExtractor
 import org.springframework.web.client.ResponseErrorHandler
-
-import com.apgsga.microservice.patch.api.PatchErrorMessage
 
 class PatchCliExceptionHandler implements ResponseErrorHandler {
 

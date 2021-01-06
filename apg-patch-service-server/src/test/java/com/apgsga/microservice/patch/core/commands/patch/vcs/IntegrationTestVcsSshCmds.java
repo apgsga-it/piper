@@ -1,13 +1,12 @@
 package com.apgsga.microservice.patch.core.commands.patch.vcs;
 
-import com.apgsga.microservice.patch.core.commands.JschSessionCmdRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.Command;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
+import com.apgsga.microservice.patch.core.commands.JschSessionCmdRunnerFactory;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.math.RandomUtils;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import com.google.common.collect.Lists;
 
 public class IntegrationTestVcsSshCmds {
 

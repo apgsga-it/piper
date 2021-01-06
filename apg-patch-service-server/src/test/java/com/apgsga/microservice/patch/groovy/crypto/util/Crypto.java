@@ -1,8 +1,8 @@
 package com.apgsga.microservice.patch.groovy.crypto.util;
 
-import java.util.Scanner;
-
 import org.jasypt.util.text.BasicTextEncryptor;
+
+import java.util.Scanner;
 
 public class Crypto {
 

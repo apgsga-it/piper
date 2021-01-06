@@ -1,13 +1,6 @@
 package com.apgsga.patch.service.client.rest
 
-import com.apgsga.microservice.patch.api.AssembleAndDeployParameters
-import com.apgsga.microservice.patch.api.BuildParameter
-import com.apgsga.microservice.patch.api.InstallParameters
-import com.apgsga.microservice.patch.api.NotificationParameters
-import com.apgsga.microservice.patch.api.Patch
-import com.apgsga.microservice.patch.api.PatchLogDetails
-import com.apgsga.microservice.patch.api.PatchOpService
-import com.apgsga.microservice.patch.api.SetupParameter
+import com.apgsga.microservice.patch.api.*
 import com.apgsga.patch.service.client.PatchCliExceptionHandler
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.web.client.RestTemplate

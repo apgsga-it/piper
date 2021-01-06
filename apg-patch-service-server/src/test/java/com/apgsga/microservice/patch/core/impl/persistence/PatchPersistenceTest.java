@@ -1,7 +1,7 @@
 package com.apgsga.microservice.patch.core.impl.persistence;
 
-import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.api.Package;
+import com.apgsga.microservice.patch.api.*;
 import com.apgsga.patch.db.integration.impl.PatchRdbmsMockImpl;
 import org.assertj.core.util.Lists;
 import org.junit.Assert;

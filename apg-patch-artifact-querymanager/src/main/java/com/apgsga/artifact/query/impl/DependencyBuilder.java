@@ -1,13 +1,12 @@
 package com.apgsga.artifact.query.impl;
 
-import java.util.List;
-
+import com.apgsga.microservice.patch.api.MavenArtifact;
+import com.google.common.collect.Lists;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.graph.DependencyVisitor;
 
-import com.apgsga.microservice.patch.api.MavenArtifact;
-import com.google.common.collect.Lists;
+import java.util.List;
 
 public class DependencyBuilder implements DependencyVisitor {
 

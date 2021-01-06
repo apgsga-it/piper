@@ -35,7 +35,7 @@ import static org.junit.Assert.fail;
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @TestPropertySource(locations = "application-test.properties")
 @SpringBootTest(classes = MicroPatchServer.class)
-@ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
+@ActiveProfiles("test,mock,mockMavenRepo,patchOMock")
 public class MicroServicePatchServerExceptionTests {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());
