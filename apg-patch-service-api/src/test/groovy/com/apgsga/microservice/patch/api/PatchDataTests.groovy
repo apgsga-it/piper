@@ -3,7 +3,6 @@ package com.apgsga.microservice.patch.api
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.collect.Lists
 import spock.lang.Specification
-import sun.security.util.ManifestEntryVerifier
 
 class PatchDataTests extends Specification  {
     def "Json Marshalling of Patch"() {

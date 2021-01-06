@@ -1,10 +1,8 @@
 package com.apgsga.patch.service.client
 
-import com.apgsga.microservice.patch.api.PatchPersistence
+
 import com.apgsga.microservice.patch.server.MicroPatchServer
 import org.junit.Assert
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
@@ -21,7 +19,7 @@ import spock.lang.Specification
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, classes = [MicroPatchServer.class ])
 @TestPropertySource(locations = ["classpath:config/server-test.properties"])
-@ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
+@ActiveProfiles("test,mock,mockMavenRepo,patchOMock")
 class PatchCliIntegrationExceptionHandlingTests extends Specification {
 
 	@Value('${json.meta.info.db.location}')

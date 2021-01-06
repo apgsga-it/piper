@@ -1,8 +1,8 @@
 package com.apgsga.artifact.query.impl;
 
-import java.util.List;
-
 import com.apgsga.microservice.patch.api.MavenArtifact;
+
+import java.util.List;
 
 public class MavenArtWithDependencies {
 

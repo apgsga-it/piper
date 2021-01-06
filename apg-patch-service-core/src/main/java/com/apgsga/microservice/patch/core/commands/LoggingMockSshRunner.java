@@ -1,11 +1,10 @@
 package com.apgsga.microservice.patch.core.commands;
 
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.google.common.collect.Lists;
+import java.util.List;
 
 public class LoggingMockSshRunner implements CommandRunner {
 	

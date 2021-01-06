@@ -1,8 +1,7 @@
 package com.apgsga.artifact.query.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.apgsga.artifact.query.RepositorySystemFactory;
+import com.google.common.collect.Lists;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
@@ -17,8 +16,8 @@ import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.eclipse.aether.util.repository.AuthenticationBuilder;
 
-import com.apgsga.artifact.query.RepositorySystemFactory;
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class RepositorySystemFactoryImpl implements RepositorySystemFactory {

@@ -1,19 +1,16 @@
 package com.apgsga.artifact.query
 
-
-import java.util.function.Function
-
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.test.context.ContextConfiguration
-
 import com.apgsga.artifact.query.impl.ArtifactsDependencyResolverImpl
 import com.apgsga.microservice.patch.api.MavenArtifact
 import com.apgsga.test.config.TestConfig
 import com.google.common.collect.Lists
-import static java.util.stream.Collectors.groupingBy
-
-
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
+
+import java.util.function.Function
+
+import static java.util.stream.Collectors.groupingBy
 
 @ContextConfiguration(classes = TestConfig.class)
 class ArtifactsDependencyResolverTests extends Specification {

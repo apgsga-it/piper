@@ -1,9 +1,9 @@
 package com.apgsga.artifact.query;
 
-import java.util.List;
-
 import com.apgsga.artifact.query.impl.ArtifactsDependencyResolverImpl;
 import com.apgsga.microservice.patch.api.MavenArtifact;
+
+import java.util.List;
 
 /**
  * @author chhex

@@ -1,12 +1,6 @@
 package com.apgsga.patch.service.client
 
-import com.apgsga.microservice.patch.api.AssembleAndDeployParameters
-import com.apgsga.microservice.patch.api.BuildParameter
-import com.apgsga.microservice.patch.api.InstallParameters
-import com.apgsga.microservice.patch.api.NotificationParameters
-import com.apgsga.microservice.patch.api.Patch
-import com.apgsga.microservice.patch.api.PatchLogDetails
-import com.apgsga.microservice.patch.api.SetupParameter
+import com.apgsga.microservice.patch.api.*
 import com.apgsga.patch.service.client.rest.PatchRestServiceClient
 import com.google.common.collect.Maps
 import org.codehaus.groovy.runtime.StackTraceUtils

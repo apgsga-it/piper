@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 import java.util.List;
 
-@Profile("rdbmsMock")
+@Profile("patchOMock")
 @Component("patchRdbms")
 public class PatchRdbmsMockImpl implements PatchRdbms {
 

@@ -1,9 +1,8 @@
-
-import groovy.swing.SwingBuilder
 import groovy.beans.Bindable
-import static javax.swing.JFrame.EXIT_ON_CLOSE
-import java.awt.*
+import groovy.swing.SwingBuilder
 import org.jasypt.util.text.BasicTextEncryptor
+
+import java.awt.*
 
 @Bindable
 class User {

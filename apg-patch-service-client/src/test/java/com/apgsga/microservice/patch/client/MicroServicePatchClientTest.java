@@ -1,8 +1,7 @@
 package com.apgsga.microservice.patch.client;
 
-import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.api.Package;
-import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
+import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import com.google.common.collect.Lists;
 import org.junit.Before;
@@ -32,10 +31,9 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = {MicroPatchServer.class,
-        MicroServicePatchClientConfig.class})
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = {MicroPatchServer.class})
 @TestPropertySource(locations = "application-test.properties")
-@ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
+@ActiveProfiles("test,mock,mockMavenRepo,patchOMock")
 public class MicroServicePatchClientTest {
 
 

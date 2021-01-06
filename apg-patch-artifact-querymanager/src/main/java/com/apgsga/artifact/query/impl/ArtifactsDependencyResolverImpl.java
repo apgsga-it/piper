@@ -1,15 +1,10 @@
 package com.apgsga.artifact.query.impl;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
+import com.apgsga.artifact.query.ArtifactDependencyResolver;
+import com.apgsga.artifact.query.RepositorySystemFactory;
+import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -28,10 +23,10 @@ import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
-import com.apgsga.artifact.query.ArtifactDependencyResolver;
-import com.apgsga.artifact.query.RepositorySystemFactory;
-import com.apgsga.microservice.patch.api.MavenArtifact;
-import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class ArtifactsDependencyResolverImpl implements ArtifactDependencyResolver {
 

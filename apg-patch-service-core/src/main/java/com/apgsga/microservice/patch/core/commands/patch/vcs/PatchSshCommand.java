@@ -1,14 +1,14 @@
 package com.apgsga.microservice.patch.core.commands.patch.vcs;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
-
 import com.apgsga.microservice.patch.core.commands.Command;
 import com.apgsga.microservice.patch.core.commands.CommandBaseImpl;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 public abstract class PatchSshCommand extends CommandBaseImpl {
 	

@@ -1,7 +1,7 @@
 package com.apgsga.microservice.patch.core;
 
-import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.api.Package;
+import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.core.impl.SimplePatchContainerBean;
 import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
@@ -39,7 +38,7 @@ import static org.junit.Assert.*;
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @TestPropertySource(locations = "application-test.properties")
 @SpringBootTest(classes = MicroPatchServer.class)
-@ActiveProfiles("test,mock,mockMavenRepo,groovyactions")
+@ActiveProfiles("test,mock,mockMavenRepo,patchOMock")
 public class MicroServicePatchServerTest {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());

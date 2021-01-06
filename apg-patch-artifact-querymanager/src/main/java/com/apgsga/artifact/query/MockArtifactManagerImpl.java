@@ -1,10 +1,10 @@
 package com.apgsga.artifact.query;
 
-import java.util.Collections;
-import java.util.List;
-
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.SearchCondition;
+
+import java.util.Collections;
+import java.util.List;
 
 public class MockArtifactManagerImpl implements ArtifactManager {
 

@@ -1,7 +1,6 @@
 package com.apgsga.microservice.patch.client;
 
 import com.apgsga.microservice.patch.api.*;
-import com.apgsga.microservice.patch.client.config.MicroServicePatchClientConfig;
 import com.apgsga.microservice.patch.core.impl.persistence.PatchPersistenceImpl;
 import com.apgsga.microservice.patch.server.MicroPatchServer;
 import org.junit.Assert;
@@ -30,10 +29,9 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = { MicroPatchServer.class,
-		MicroServicePatchClientConfig.class })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = { MicroPatchServer.class })
 @TestPropertySource(locations = "application-test.properties")
-@ActiveProfiles("test,mock,mavenRepo,groovyactions")
+@ActiveProfiles("test,mock,mavenRepo,patchOMock")
 public class MicroServicePatchClientArtefactQueryTests {
 
 	private MicroservicePatchClient patchClient;

@@ -1,13 +1,12 @@
 package com.apgsga.artifact.query;
 
-import java.util.List;
-
+import com.apgsga.artifact.query.impl.RepositorySystemFactoryImpl;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.jasypt.util.text.BasicTextEncryptor;
 
-import com.apgsga.artifact.query.impl.RepositorySystemFactoryImpl;
+import java.util.List;
 
 public interface RepositorySystemFactory {
 	
