@@ -1,19 +1,25 @@
 {
-	"className": "com.apgsga.microservice.patch.api.ServicesMetaData",
-	"servicesMetaData": [
-		{
-			"className": "com.apgsga.microservice.patch.api.ServiceMetaData",
-			"serviceName": "It21Ui",
-			"microServiceBranch": "it21_release_9_1_0_admin_uimig",
-			"baseVersionNumber": "9.1.0",
-			"revisionMnemoPart": "ADMIN-UIMIG"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.ServiceMetaData",
-			"serviceName": "SomeOtherService",
-			"microServiceBranch": "it21_release_9_1_0_some_tag",
-			"baseVersionNumber": "9.1.0",
-			"revisionMnemoPart": "SOME-TAG"
-		}
-	]
+  "servicesMetaData": [
+    {
+      "serviceName": "testapp-service",
+      "bomCoordinates": {
+        "artifactId": "dm-bom",
+        "groupId": "com.apgsga.testapp",
+        "name": "apg-gradle-plugins-testsmodules/testapp/testapp-bom",
+        "version": null,
+        "dependencyLevel": 0
+      },
+      "microServiceBranch": "HEAD",
+      "baseVersionNumber": "1.0.0",
+      "revisionMnemoPart": "DEV-ADMIN-UIMIG",
+      "packages": [
+        {
+          "packagerName": "apg-gradle-plugins-testsmodules/testapp/testapp-pkg",
+          "starterCoordinates": [
+            "com.apgsga.testapp:testapp-service"
+          ]
+        }
+      ]
+    }
+  ]
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig authType="PASSWORD" host="centpatch" id="0667154b-d071-4ad6-b62a-821bafd79e59" port="22" nameFormat="DESCRIPTIVE" username="apg-patch-service-server" />
+      <sshConfig authType="OPEN_SSH" host="centpatch" id="92a64d0f-ed2a-42e0-a2a1-3c60613ba5fe" port="22" customName="che@centpatch:22" nameFormat="CUSTOM" username="che">
+        <option name="customName" value="che@centpatch:22" />
+      </sshConfig>
+    </configs>
+  </component>
+</project>

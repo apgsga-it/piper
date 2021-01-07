@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="99aea6d8-14b6-48a4-978a-ce38460da11e" name="che@centpatch" url="">
+        <fileTransfer rootFolder="/home/che" accessType="SFTP" host="centpatch" port="22" sshConfigId="92a64d0f-ed2a-42e0-a2a1-3c60613ba5fe" sshConfig="che@centpatch:22" authAgent="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="38b68dec-8c2a-46a1-abac-24360448e27a" name="apg-patch-service-server@centpatch" url="">
+        <fileTransfer rootFolder="/var/opt/apg-patch-service-server" accessType="SFTP" host="centpatch" port="22" sshConfigId="0667154b-d071-4ad6-b62a-821bafd79e59" sshConfig="apg-patch-service-server@centpatch:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" muteSftpMessages="true" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

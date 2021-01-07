@@ -35,7 +35,6 @@ public class Patch {
     List<Service> services = Lists.newArrayList();
 
 
-    // TODO (MULTI_SERVICE_CM , 9.4) : This is here for backward compatibility and must go away
     public List<MavenArtifact> retrieveAllArtifactsToPatch() {
         return services.stream()
                 .flatMap(coll -> coll.getArtifactsToPatch().stream())
