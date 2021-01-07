@@ -142,6 +142,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			LOGGER.info("Could not create CVS DB-Branch for patch " + patch.getPatchNumber() + " as no dbModules are to patch!");
 			return;
 		}
+		Asserts.notNullOrEmpty(patch.getDbPatchBranch(), "DbPatchBranch is null or empty");
+		Asserts.notNullOrEmpty(patch.getProdBranch(), "Db Prod Branch is null or empty");
 		LOGGER.info("Create CVS DB-Branch for patch " + patch.getPatchNumber());
 		final CommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
 		sshCommandRunner.preProcess();
