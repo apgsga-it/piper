@@ -64,15 +64,21 @@ class PatchCli {
 			cmdResults.returnCode = 0
 			return cmdResults
 		} catch (PatchClientServerException e) {
-			System.err.println "Server Error ccurred on ${e.errorMessage.timestamp} : ${e.errorMessage.errorText} "
+			System.err.println "Server Error ${e.errorMessage.timestamp} : ${e.errorMessage.errorText}. Check Server Log "
+			if (e.errorMessage.causeExceptionMsg?.trim()) {
+				System.err.println "Root Cause: ${e.errorMessage.causeExceptionMsg}"
+			}
+			if (e.errorMessage.getStackTrace()?.trim()) {
+				System.err.println "Stacktrace: ${e.errorMessage.stackTrace}"
+			}
 			cmdResults.results['error'] = e.errorMessage
 			return cmdResults
 		} catch (AssertionError e) {
-			System.err.println "Client Error ccurred ${e.message} "
+			System.err.println "Client Error ${e.message} "
 			cmdResults.results['error'] = e.message
 			return cmdResults
 		} catch (Exception e) {
-			System.err.println " Unhandling Exception occurred "
+			System.err.println " Unhandled Exception:  "
 			System.err.println e.toString()
 			StackTraceUtils.printSanitizedStackTrace(e,new PrintWriter(System.err))
 			cmdResults.results['error'] = e

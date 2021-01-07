@@ -1,5 +1,6 @@
 package com.apgsga.microservice.patch.core.commands;
 
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -28,12 +29,12 @@ public class JschSessionCmdRunnerFactory implements CommandRunnerFactory {
 			session = jsch.getSession(user, host, 22);
 			LOGGER.info("Got ssh Session on: " + host + " for: " + user);
 		} catch (JSchException e) {
-			throw new RuntimeException(e);
+			throw ExceptionFactory.create("Ssh connection could not be establish with %s and host %s",e, user, host);
 		}
 		try {
 			jsch.addIdentity("~/.ssh/id_rsa");
 		} catch (JSchException e) {
-			throw new RuntimeException(e);
+			throw ExceptionFactory.create("Local Ssh public key file id_rsa could not be read",e);
 		}
 		java.util.Properties config = new java.util.Properties();
 		config.put("StrictHostKeyChecking", "no");

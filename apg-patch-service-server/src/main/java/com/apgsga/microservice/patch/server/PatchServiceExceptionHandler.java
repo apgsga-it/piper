@@ -1,6 +1,7 @@
 package com.apgsga.microservice.patch.server;
 
 import com.apgsga.microservice.patch.api.PatchErrorMessage;
+import com.apgsga.microservice.patch.exceptions.PatchServiceRuntimeException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -22,10 +24,19 @@ public class PatchServiceExceptionHandler extends ResponseEntityExceptionHandler
 	protected final Log LOGGER = LogFactory.getLog(getClass());
 
 	@Override
+	@ResponseBody
 	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
 			HttpStatus status, WebRequest request) {
 		return error(ex, status); 
 	}
+
+
+	@ExceptionHandler(PatchServiceRuntimeException.class)
+	@ResponseBody
+	public ResponseEntity<Object> patchServiceRuntimeException(final PatchServiceRuntimeException e) {
+		return error(e,HttpStatus.CONFLICT);
+	}
+
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<Object> assertionException(final IllegalArgumentException e) {

@@ -3,7 +3,7 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="99aea6d8-14b6-48a4-978a-ce38460da11e" name="che@centpatch" url="">
-        <fileTransfer rootFolder="/home/che" accessType="SFTP" host="centpatch" port="22" sshConfigId="92a64d0f-ed2a-42e0-a2a1-3c60613ba5fe" sshConfig="che@centpatch:22" authAgent="true">
+        <fileTransfer accessType="SFTP" host="centpatch" port="22" sshConfigId="92a64d0f-ed2a-42e0-a2a1-3c60613ba5fe" sshConfig="che@centpatch:22" authAgent="true">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

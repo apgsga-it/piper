@@ -1,5 +1,7 @@
 package com.apgsga.microservice.patch.core.commands;
 
+import com.apgsga.microservice.patch.exceptions.Asserts;
+import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,12 +29,10 @@ public class ProcessBuilderCmdRunner implements CommandRunner {
 			int exit = p.waitFor();
 			errorGobbler.join();
 			outputGobbler.join();
-			if (exit != 0 ) {
-				throw new AssertionError(String.format("ProcessBuilder returned ExitCode %d", exit));
-			}
+			Asserts.isTrue(exit != 0 , "ProcessBuilder returned ExitCode: %d for Command: %s", exit, command.getCommand());
 			return Lists.newArrayList(outputGobbler.getOutput());
 		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException(e);
+			throw ExceptionFactory.create("ProcessBuilder failed execute Command :  %s",e, command.getCommand());
 		}
 	}
 
