@@ -138,8 +138,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	private void createBranchForDbModules(Patch patch) {
 		DbModules dbModules = repo.getDbModules();
-		if (dbModules == null) {
-			LOGGER.warn("Could not create CVS DB-Branch for patch " + patch.getPatchNumber() + " as no dbModules are define!");
+		if (dbModules == null || dbModules.getDbModules().isEmpty()) {
+			LOGGER.info("Could not create CVS DB-Branch for patch " + patch.getPatchNumber() + " as no dbModules are to patch!");
 			return;
 		}
 		LOGGER.info("Create CVS DB-Branch for patch " + patch.getPatchNumber());
