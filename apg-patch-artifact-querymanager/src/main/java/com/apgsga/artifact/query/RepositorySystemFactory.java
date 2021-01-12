@@ -9,9 +9,11 @@ import org.jasypt.util.text.BasicTextEncryptor;
 import java.util.List;
 
 public interface RepositorySystemFactory {
-	
+
+	String PROTOCOL = "https://";
+
 	static RepositorySystemFactory create(String baseUrl, String repoName, String user, String userPwd) {
-		return new RepositorySystemFactoryImpl(user,baseUrl,repoName,userPwd);
+		return new RepositorySystemFactoryImpl(user, PROTOCOL + baseUrl,repoName,userPwd);
 	}
 	
 	static RepositorySystemFactory create(String baseUrl, String repoName, String user, String encryptedPassword, String decryptKey) {
