@@ -14,6 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +47,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Autowired
 	private ArtifactDependencyResolver dependencyResolver;
+
+	@Value("${db.patch.branch.prefix:Patch_}")
+	private String DB_PATCH_BRANCH_PREFIX;
+
+	@Value("${db.prod.branch:prod}")
+	private String DB_PROD_BRANCH;
 
 	public SimplePatchContainerBean() {
 		super();
@@ -105,7 +112,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		Asserts.notNull(patch, "Patch object null for save");
 		Asserts.notNullOrEmpty(patch.getPatchNumber(),
 				"Patch number  null or empty for save");
-		preProcessSave(patch);
+		// We're working with value object, therefore we eventually get a new object, if any field's value has been updated.
+		patch = preProcessSave(patch);
 		repo.savePatch(patch);
 		return patch;
 	}
@@ -123,12 +131,13 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		repo.savePatchLog(patchNumber, logDetails);
 	}
 
-	private void preProcessSave(Patch patch) {
+	private Patch preProcessSave(Patch patch) {
 		if (!repo.patchExists(patch.getPatchNumber())) {
+			patch = patch.toBuilder().dbPatchBranch(DB_PATCH_BRANCH_PREFIX + patch.getPatchNumber()).prodBranch(DB_PROD_BRANCH).build();
 			createBranchForDbModules(patch);
 			jenkinsClient.createPatchPipelines(patch);
 		}
-
+		return patch;
 	}
 
 	@Override

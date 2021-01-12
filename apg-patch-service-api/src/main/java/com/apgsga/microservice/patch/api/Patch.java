@@ -15,12 +15,9 @@ import java.util.stream.Collectors;
 @Builder(toBuilder = true)
 public class Patch {
 
-    private static final String PROD_BRANCH_DEFAULT = "prod";
-
     String patchNumber;
     String dbPatchBranch;
-    @Builder.Default
-    String prodBranch = PROD_BRANCH_DEFAULT;
+    String prodBranch;
     @Builder.Default
     String patchTag = "";
     @Builder.Default
