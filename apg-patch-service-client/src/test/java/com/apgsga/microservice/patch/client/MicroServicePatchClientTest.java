@@ -171,17 +171,18 @@ public class MicroServicePatchClientTest {
                                 .name("somecvsmodulename2").build()
                 ))
                 .serviceMetaData(serviciceMetaData).build();
+
+        DBPatch dbPatch = DBPatch.builder().dbPatchBranch("SomePatchBranch").build();
+        dbPatch.addDbObject(DbObject.builder()
+                .fileName("FileName1")
+                .filePath("FilePath1").build());
+        dbPatch.addDbObject(DbObject.builder()
+                .fileName("FileName2")
+                .filePath("FilePath2").build());
+
         Patch patch = Patch.builder().patchNumber("SomeUnqiueNumber3")
-                .dbPatchBranch("SomePatchBranch")
                 .services(Lists.newArrayList(service))
-                .dbObjects(Lists.newArrayList(
-                        DbObject.builder()
-                                .fileName("FileName1")
-                                .filePath("FilePath1").build(),
-                        DbObject.builder()
-                                .fileName("FileName2")
-                                .filePath("FilePath2").build()
-                )).build();
+                .dbPatch(dbPatch).build();
         patchClient.save(patch);
         Patch result = patchClient.findById("SomeUnqiueNumber3");
         assertNotNull(result);
@@ -208,6 +209,14 @@ public class MicroServicePatchClientTest {
         patchClient.save(p2);
         assertNotNull(patchClient.findById("p1"));
         assertNotNull(patchClient.findById("p2"));
+
+        DBPatch dbPatch = DBPatch.builder().build();
+        dbPatch.addDbObject(DbObject.builder()
+                .fileName("test-db1")
+                .filePath("com.apgsga.ch/sql/db/test-db1")
+                .moduleName("test-db1")
+                .build());
+
         Patch p1Updated = p1.toBuilder()
                     .services(Lists.newArrayList(Service.builder()
                         .serviceName("It21Ui")
@@ -222,12 +231,16 @@ public class MicroServicePatchClientTest {
                                 .version("1.0")
                                 .name("test-ma3").build()
                         )).build()))
-                    .dbObjects(Lists.newArrayList( DbObject.builder()
-                                .fileName("test-db1")
-                                .filePath("com.apgsga.ch/sql/db/test-db1")
-                                .moduleName("test-db1")
-                                .build()))
+                    .dbPatch(dbPatch)
                 .build();
+
+        DBPatch dbPatch2 = DBPatch.builder().build();
+        dbPatch2.addDbObject(DbObject.builder()
+                .fileName("test-db2")
+                .filePath("com.apgsga.ch/sql/db/test-db2")
+                .moduleName("test-db2")
+                .build());
+
         Patch p2Updated = p2.toBuilder()
                 .services(Lists.newArrayList(Service.builder()
                         .serviceName("SomeOtherService")
@@ -242,11 +255,7 @@ public class MicroServicePatchClientTest {
                                         .version("1.0")
                                         .name("test-ma2").build()
                         )).build()))
-                .dbObjects(Lists.newArrayList( DbObject.builder()
-                        .fileName("test-db2")
-                        .filePath("com.apgsga.ch/sql/db/test-db2")
-                        .moduleName("test-db2")
-                        .build()))
+                .dbPatch(dbPatch2)
                 .build();
         patchClient.save(p1Updated);
         patchClient.save(p2Updated);

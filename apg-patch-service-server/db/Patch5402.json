@@ -1,1 +1,26 @@
-{"patchNumber":"5402","dbPatchBranch":"Patch_0900C1_5402","prodBranch":"HEAD","patchTag":"Patch_0900C1_5402_2","developerBranch":"","tagNr":2,"dbObjects":[{"fileName":"FileName1","filePath":"FilePath1","moduleName":null,"hasConflict":false}],"dockerServices":[],"services":[{"serviceName":"It21Ui","artifactsToPatch":[],"serviceMetaData":null}]}
+{
+  "patchNumber": "5402",
+  "patchTag": "Patch_0900C1_5402_2",
+  "developerBranch": "",
+  "tagNr": 2,
+  "dbPatch": {
+    "dbPatchBranch": "Patch_0900C1_5402",
+    "prodBranch": "HEAD",
+    "dbObjects": [
+      {
+        "fileName": "FileName1",
+        "filePath": "FilePath1",
+        "moduleName": null,
+        "hasConflict": false
+      }
+    ]
+  },
+  "dockerServices": [],
+  "services": [
+    {
+      "serviceName": "It21Ui",
+      "artifactsToPatch": [],
+      "serviceMetaData": null
+    }
+  ]
+}

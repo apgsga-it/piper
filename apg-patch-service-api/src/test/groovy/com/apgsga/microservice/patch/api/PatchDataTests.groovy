@@ -8,19 +8,18 @@ class PatchDataTests extends Specification  {
     def "Json Marshalling of Patch"() {
         given:
 
+        def DBPatch dbPatch = DBPatch.builder().dbPatchBranch("db_patch_branch").prodBranch("prod_branch").build()
+        dbPatch.addDbObject(DbObject.builder().
+                fileName("somefileName").
+                filePath("a/b/c").moduleName("Dboject1").build())
+        dbPatch.addDbObject(DbObject.builder().
+                fileName("anotherFile").
+                filePath("a/b/d").moduleName("Dboject2").build())
+
         def patch = Patch.builder().patchNumber("9300")
-        .dbObjects(Lists.newArrayList(
-                DbObject.builder().
-                        fileName("somefileName").
-                        filePath("a/b/c").moduleName("Dboject1").build(),
-                DbObject.builder().
-                        fileName("anotherFile").
-                        filePath("a/b/d").moduleName("Dboject2").build(),
-        ))
-        .dbPatchBranch("db_patch_branch")
+        .dbPatch(dbPatch)
         .developerBranch("developer_branch")
         .dockerServices(Lists.newArrayList("dockerService1", "dockerService2", "dockerServices3"))
-        .prodBranch("prod_branch")
         .services(Lists.newArrayList(
                 Service.builder().serviceName("aService").
                 artifactsToPatch(Lists.newArrayList(

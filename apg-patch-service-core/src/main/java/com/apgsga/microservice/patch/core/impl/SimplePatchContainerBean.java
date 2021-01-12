@@ -133,7 +133,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	private Patch preProcessSave(Patch patch) {
 		if (!repo.patchExists(patch.getPatchNumber())) {
-			patch = patch.toBuilder().dbPatchBranch(DB_PATCH_BRANCH_PREFIX + patch.getPatchNumber()).prodBranch(DB_PROD_BRANCH).build();
+			DBPatch dbPatch = DBPatch.builder().dbPatchBranch(DB_PATCH_BRANCH_PREFIX + patch.getPatchNumber()).prodBranch(DB_PROD_BRANCH).build();
+			patch = patch.toBuilder().dbPatch(dbPatch).build();
 			createBranchForDbModules(patch);
 			jenkinsClient.createPatchPipelines(patch);
 		}
@@ -151,12 +152,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			LOGGER.info("Could not create CVS DB-Branch for patch " + patch.getPatchNumber() + " as no dbModules are to patch!");
 			return;
 		}
-		Asserts.notNullOrEmpty(patch.getDbPatchBranch(), "DbPatchBranch is null or empty");
-		Asserts.notNullOrEmpty(patch.getProdBranch(), "Db Prod Branch is null or empty");
+		Asserts.notNullOrEmpty(patch.getDbPatch().getDbPatchBranch(), "DbPatchBranch is null or empty");
+		Asserts.notNullOrEmpty(patch.getDbPatch().getProdBranch(), "Db Prod Branch is null or empty");
 		LOGGER.info("Create CVS DB-Branch for patch " + patch.getPatchNumber());
 		final CommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
 		sshCommandRunner.preProcess();
-		sshCommandRunner.run(PatchSshCommand.createCreatePatchBranchCmd(patch.getDbPatchBranch(), patch.getProdBranch(),
+		sshCommandRunner.run(PatchSshCommand.createCreatePatchBranchCmd(patch.getDbPatch().getDbPatchBranch(), patch.getDbPatch().getProdBranch(),
 				dbModules.getDbModules()));
 		sshCommandRunner.postProcess();
 	}
@@ -204,7 +205,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				String coFolder = tmpDir + "/" + tempSubFolderName + suffixForCoFolder;
 				String additionalOptions = "-d " + coFolder;
 				LOGGER.info("Temporary checkout folder for listing all DB Objects will be: " + coFolder);
-				List<String> result = sshCommandRunner.run(PatchSshCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatchBranch(), patch.getProdBranch(), Lists.newArrayList(dbModule), additionalOptions));
+				List<String> result = sshCommandRunner.run(PatchSshCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatch().getDbPatchBranch(), patch.getDbPatch().getProdBranch(), Lists.newArrayList(dbModule), additionalOptions));
 				result.forEach(r -> {
 					// JHE : In production, cvs is on a separated server, therefore we can't checkout, and parse the local result ...
 					//		 We rely on the output given back from the CVS command, might not be the most robust solution :( ... but so far ok for a function which is not crucial.
@@ -289,7 +290,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 			if(ma.getArtifactId()!= null && ma.getArtifactId().toUpperCase().contains(objectName.toUpperCase()))
 				return true;
 		}
-		for(DbObject dbo : patch.getDbObjects()) {
+		for(DbObject dbo : patch.getDbPatch().getDbObjects()) {
 			if(dbo.getFileName() != null && dbo.getFileName().toUpperCase().contains(objectName.toUpperCase())) {
 				return true;
 			}

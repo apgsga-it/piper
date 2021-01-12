@@ -1,27 +1,29 @@
 {
-	"patchNumber": "5476",
-	"dbPatchBranch": "Patch_0900C1_5476",
-	"prodBranch": "HEAD",
-	"patchTag": "Patch_0900C1_5476_1",
-	"developerBranch": "developer_branch",
-	"tagNr": 1,
-	"dbObjects": [
-	],
-	"dockerServices": [
-	],
-	"services": [
-		{
-			"serviceName": "It21ui",
-			"artifactsToPatch": [
-				{
-					"artifactId": "datetime-utils",
-					"groupId": "com.affichage.datetime",
-					"name": "com.affichage.datetime.utils",
-					"version": "9.1.0.ADMIN-UIMIG-20180112.132308-89",
-					"dependencyLevel": 0
-				}
-			],
-			"serviceMetaData": null
-		}
-	]
+  "patchNumber": "5476",
+  "patchTag": "Patch_0900C1_5476_1",
+  "developerBranch": "developer_branch",
+  "tagNr": 1,
+  "dbPatch": {
+    "dbPatchBranch": "Patch_0900C1_5476",
+    "prodBranch": "HEAD",
+    "dbObjects": [
+    ]
+  },
+  "dockerServices": [
+  ],
+  "services": [
+    {
+      "serviceName": "It21ui",
+      "artifactsToPatch": [
+        {
+          "artifactId": "datetime-utils",
+          "groupId": "com.affichage.datetime",
+          "name": "com.affichage.datetime.utils",
+          "version": "9.1.0.ADMIN-UIMIG-20180112.132308-89",
+          "dependencyLevel": 0
+        }
+      ],
+      "serviceMetaData": null
+    }
+  ]
 }
