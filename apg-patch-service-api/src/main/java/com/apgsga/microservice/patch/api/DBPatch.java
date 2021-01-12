@@ -22,14 +22,6 @@ public class DBPatch {
     @Builder.Default
     List<DbObject> dbObjects = Lists.newArrayList();
 
-    public void withDbPatchBranch(String dbPatchBranch) {
-        this.dbPatchBranch = dbPatchBranch;
-    }
-
-    public void withProdBranch(String prodBranch) {
-        this.prodBranch = prodBranch;
-    }
-
     public void addDbObject(DbObject dbObject) {
         this.dbObjects.add(dbObject);
     }
