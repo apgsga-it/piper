@@ -1,0 +1,20 @@
+{
+  "stageMappings": [
+    {
+      "name": "Entwicklung",
+      "target": "DEV-CHEI212"
+    },
+    {
+      "name": "Informatiktest",
+      "target": "DEV-CHEI211"
+    },
+    {
+      "name": "Anwendertest",
+      "target": "DEV-CHTI211"
+    },
+    {
+      "name": "Produktion",
+      "target": "DEV-CHPI211"
+    }
+  ]
+}
