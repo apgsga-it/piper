@@ -1,45 +1,47 @@
 {
-	"patchNumber": "5402",
-	"dbPatchBranch": "Patch_0900C1_5401",
-	"prodBranch": "HEAD",
-	"patchTag": "Patch_0900C1_5401_1",
-	"developerBranch": "developer_branch",
-	"tagNr": 2,
-	"dbObjects": [
-		{
-			"fileName": "apgops_lib.apg_db_outage_planned.syn.sql",
-			"filePath": "testdbmodule/database/sql/",
-			"moduleName": "testdbmodule",
-			"hasConflict": false
-		},
-		{
-			"fileName": "sys.apg_install_utility.pks.cleanup.sql",
-			"filePath": "testdbmodule/database/sql/",
-			"moduleName": "testdbmodule",
-			"hasConflict": false
-		},
-		{
-			"fileName": "test.sys.apg_install_utility.pks.cleanup.sql",
-			"filePath": "testdbAnotherdbModule/database/sql/",
-			"moduleName": "testdbAnotherdbModule",
-			"hasConflict": false
-		}
-	],
-	"dockerServices": [
-	],
-	"services": [
-		{
-			"serviceName": "It21ui",
-			"artifactsToPatch": [
-				{
-					"artifactId": "zentraldispo-dao",
-					"groupId": "com.affichage.it21.vk",
-					"name": "com.affichage.it21.vk.zentraldispo.dao",
-					"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
-					"dependencyLevel": 0
-				}
-			],
-			"serviceMetaData": null
-		}
-	]
+  "patchNumber": "5402",
+  "patchTag": "Patch_0900C1_5401_1",
+  "developerBranch": "developer_branch",
+  "tagNr": 2,
+  "dbPatch": {
+    "dbPatchBranch": "Patch_0900C1_5401",
+    "prodBranch": "HEAD",
+    "dbObjects": [
+      {
+        "fileName": "apgops_lib.apg_db_outage_planned.syn.sql",
+        "filePath": "testdbmodule/database/sql/",
+        "moduleName": "testdbmodule",
+        "hasConflict": false
+      },
+      {
+        "fileName": "sys.apg_install_utility.pks.cleanup.sql",
+        "filePath": "testdbmodule/database/sql/",
+        "moduleName": "testdbmodule",
+        "hasConflict": false
+      },
+      {
+        "fileName": "test.sys.apg_install_utility.pks.cleanup.sql",
+        "filePath": "testdbAnotherdbModule/database/sql/",
+        "moduleName": "testdbAnotherdbModule",
+        "hasConflict": false
+      }
+    ]
+  },
+  "dockerServices": [
+  ],
+  "services": [
+    {
+      "serviceName": "It21ui",
+      "artifactsToPatch": [
+        {
+          "artifactId": "zentraldispo-dao",
+          "groupId": "com.affichage.it21.vk",
+          "name": "com.affichage.it21.vk.zentraldispo.dao",
+          "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
+          "dependencyLevel": 0
+        }
+      ],
+      "serviceMetaData": null
+    }
+  ]
 }
