@@ -1,10 +1,10 @@
 {
   "patchNumber": "5476",
-  "patchTag": "Patch_0900C1_5476_1",
   "developerBranch": "developer_branch",
   "tagNr": 1,
   "dbPatch": {
     "dbPatchBranch": "Patch_0900C1_5476",
+    "patchTag": "Patch_0900C1_5476_1",
     "prodBranch": "HEAD",
     "dbObjects": [
     ]

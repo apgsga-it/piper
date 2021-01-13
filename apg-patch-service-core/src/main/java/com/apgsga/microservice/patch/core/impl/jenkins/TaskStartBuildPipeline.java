@@ -25,21 +25,19 @@ public class TaskStartBuildPipeline implements Runnable {
     private final String jenkinsSshUser;
     private final JenkinsPipelinePreprocessor preprocessor;
     private final BuildParameter buildParameters;
-    private final String dbLocation;
     private final CommandRunner cmdRunner;
 
-    public static Runnable create(String jenkinsUrl, String jenkinsSshPort, String jenkinsSshUser, JenkinsPipelinePreprocessor preprocessor, String dbLocation, CommandRunner cmdRunner, BuildParameter buildParameters) {
-        return new TaskStartBuildPipeline(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,preprocessor,dbLocation,cmdRunner,buildParameters);
+    public static Runnable create(String jenkinsUrl, String jenkinsSshPort, String jenkinsSshUser, JenkinsPipelinePreprocessor preprocessor, CommandRunner cmdRunner, BuildParameter buildParameters) {
+        return new TaskStartBuildPipeline(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,preprocessor,cmdRunner,buildParameters);
     }
 
-    private TaskStartBuildPipeline(String jenkinsUrl, String jenkinsSshPort, String jenkinsSshUser, JenkinsPipelinePreprocessor preprocessor, String dbLocation,CommandRunner cmdRunner, BuildParameter buildParameters) {
+    private TaskStartBuildPipeline(String jenkinsUrl, String jenkinsSshPort, String jenkinsSshUser, JenkinsPipelinePreprocessor preprocessor,CommandRunner cmdRunner, BuildParameter buildParameters) {
         super();
         this.jenkinsUrl = jenkinsUrl;
         this.jenkinsSshPort = jenkinsSshPort;
         this.jenkinsSshUser = jenkinsSshUser;
         this.preprocessor = preprocessor;
         this.buildParameters = buildParameters;
-        this.dbLocation = dbLocation;
         this.cmdRunner = cmdRunner;
     }
 
@@ -51,9 +49,9 @@ public class TaskStartBuildPipeline implements Runnable {
                     .stageName(buildParameters.getStageName())
                     .successNotification(buildParameters.getSuccessNotification())
                     .errorNotification(buildParameters.getErrorNotification())
-                    .patchTag(patch.getPatchTag())
                     .developerBranch(patch.getDeveloperBranch())
-                    .dbObjectsAsVcsPath(patch.retrieveDbObjectsAsVcsPath())
+                    .dbObjectsAsVcsPath(patch.getDbPatch().retrieveDbObjectsAsVcsPath())
+                    .dbPatchTag(patch.getDbPatch().getPatchTag())
                     .dbObjects(patch.getDbPatch().getDbObjects())
                     .dbPatchBranch(patch.getDbPatch().getDbPatchBranch())
                     .dockerServices(patch.getDockerServices())
