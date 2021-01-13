@@ -34,8 +34,8 @@ public class Patch {
     @Getter
     List<Service> services = Lists.newArrayList();
 
-    public void withTagNr(Integer tagNr) {
-        this.tagNr = tagNr;
+    public void nextTagNr() {
+        this.tagNr = this.tagNr + 1;
     }
 
     public List<MavenArtifact> retrieveAllArtifactsToPatch() {

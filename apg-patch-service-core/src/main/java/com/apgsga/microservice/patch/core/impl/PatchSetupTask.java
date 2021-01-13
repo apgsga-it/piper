@@ -39,15 +39,13 @@ public class PatchSetupTask implements Runnable {
     public void run() {
         try {
             resolveDependencies();
-            Integer lastTagNr = patch.getTagNr();
-            Integer nextTagNr = lastTagNr + 1;
-            patch.withTagNr(nextTagNr);
+            patch.nextTagNr();
             LOGGER.info("Patch Setup Task started for patch " + patch.getPatchNumber());
             jschSession.preProcess();
             if (!patch.getDbPatch().retrieveDbObjectsAsVcsPath().isEmpty()) {
                 LOGGER.info("Creating Tag for DB Objects for patch " + patch.getPatchNumber());
                 DBPatch dbPatch = patch.getDbPatch();
-                dbPatch.withPatchTag(nextTagNr);
+                dbPatch.withPatchTag(patch.getTagNr());
                 jschSession.run(PatchSshCommand.createTagPatchModulesCmd(dbPatch.getPatchTag(), patch.getDbPatch().getDbPatchBranch(),
                         patch.getDbPatch().retrieveDbObjectsAsVcsPath()));
             }
@@ -56,7 +54,7 @@ public class PatchSetupTask implements Runnable {
                     LOGGER.info("Creating Tag for Java Artifact for patch " + patch.getPatchNumber() + " and service " + service.getServiceName());
                     ServiceMetaData serviceMetaData = repo.getServiceMetaDataByName(service.getServiceName());
                     service.withServiceMetaData(serviceMetaData);
-                    service.withPatchTag(nextTagNr);
+                    service.withPatchTag(patch.getTagNr());
                     jschSession.run(PatchSshCommand.createTagPatchModulesCmd(service.getPatchTag(), serviceMetaData.getMicroServiceBranch(),
                             service.retrieveMavenArtifactsAsVcsPath()));
                 }
