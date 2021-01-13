@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -59,9 +60,12 @@ public class JenkinsPipelinePreprocessor {
     }
 
     public String retrieveTargetHostFor(Service service, String target) {
-        TargetInstance targetInstance = backend.targetInstances().getTargetInstances().stream().filter(ti -> ti.getName().toUpperCase().equals(target.toUpperCase())).findFirst().get();
-        Asserts.notNullOrEmpty("No targetInstance has been found for %s",target);
-        return targetInstance.getServices().stream().filter(s -> s.getServiceName().toUpperCase().equals(service.getServiceName().toUpperCase())).findFirst().get().getInstallationHost();
+        Optional<TargetInstance> targetInstanceOptional = backend.targetInstances().getTargetInstances().stream().filter(ti -> ti.getName().equalsIgnoreCase(target)).findFirst();
+        Asserts.isTrue(targetInstanceOptional.isPresent(),"No targetInstance has been found for %s",target);
+        TargetInstance targetInstance = targetInstanceOptional.get();
+        Optional<ServiceInstallation> serviceInstallationOptional = targetInstance.getServices().stream().filter(s -> s.getServiceName().equalsIgnoreCase(service.getServiceName())).findFirst();
+        Asserts.isTrue(serviceInstallationOptional.isPresent(),"No Service has been found for %s",service.getServiceName());
+        return serviceInstallationOptional.get().getInstallationHost();
     }
 
     public List<String> retrieveDbZipNames(Set<String> patchNumbers, String target) {
