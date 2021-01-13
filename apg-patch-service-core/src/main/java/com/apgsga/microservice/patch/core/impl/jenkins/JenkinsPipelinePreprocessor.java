@@ -61,9 +61,11 @@ public class JenkinsPipelinePreprocessor {
 
     public String retrieveTargetHostFor(Service service, String target) {
         Optional<TargetInstance> targetInstanceOptional = backend.targetInstances().getTargetInstances().stream().filter(ti -> ti.getName().equalsIgnoreCase(target)).findFirst();
+        Asserts.notNull(targetInstanceOptional,"No targetInstance has been found for %s",target);
         Asserts.isTrue(targetInstanceOptional.isPresent(),"No targetInstance has been found for %s",target);
         TargetInstance targetInstance = targetInstanceOptional.get();
         Optional<ServiceInstallation> serviceInstallationOptional = targetInstance.getServices().stream().filter(s -> s.getServiceName().equalsIgnoreCase(service.getServiceName())).findFirst();
+        Asserts.notNull(serviceInstallationOptional,"No Service has been found for %s",service.getServiceName());
         Asserts.isTrue(serviceInstallationOptional.isPresent(),"No Service has been found for %s",service.getServiceName());
         return serviceInstallationOptional.get().getInstallationHost();
     }
