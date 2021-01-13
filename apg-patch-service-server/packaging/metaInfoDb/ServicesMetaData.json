@@ -6,7 +6,7 @@
         "artifactId": "dm-bom",
         "groupId": "com.apgsga.testapp",
         "name": "apg-gradle-plugins-testsmodules/testapp/testapp-bom",
-        "version": null,
+        "version": "1.0.0.DEV-ADMIN-UIMIG-SNAPSHOT",
         "dependencyLevel": 0
       },
       "microServiceBranch": "HEAD",

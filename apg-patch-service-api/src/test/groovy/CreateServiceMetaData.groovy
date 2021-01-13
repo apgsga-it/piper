@@ -10,6 +10,7 @@ def bomData = builder
         .artifactId("dm-bom")
         .groupId("com.apgsga.testapp")
         .name("apg-gradle-plugins-testsmodules/testapp/testapp-bom")
+         .version("1.0.0.DEV-ADMIN-UIMIG-SNAPSHOT")
         .build()
 def pkgData = Package.builder()
         .packagerName("apg-gradle-plugins-testsmodules/testapp/testapp-pkg")
