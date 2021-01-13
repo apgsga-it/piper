@@ -1,10 +1,10 @@
 {
   "patchNumber": "5401",
-  "patchTag": "Patch_0900C1_5401_1",
   "developerBranch": "developer_branch",
   "tagNr": 1,
   "dbPatch": {
     "dbPatchBranch": "Patch_0900C1_5401",
+    "patchTag": "Patch_0900C1_5401_1",
     "prodBranch": "HEAD",
     "dbObjects": [
       {
@@ -29,6 +29,7 @@
   "services": [
     {
       "serviceName": "It21Ui",
+      "patchTag": "Whateverulikke",
       "artifactsToPatch": [
         {
           "artifactId": "zentraldispo-dao",

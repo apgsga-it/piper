@@ -81,7 +81,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	@Override
 	public void startProdBuildPatchPipeline(BuildParameter buildParameters) {
-		threadExecutor.execute(TaskStartBuildPipeline.create(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,preprocessor,dbLocation,cmdRunner,buildParameters));
+		threadExecutor.execute(TaskStartBuildPipeline.create(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,preprocessor,cmdRunner,buildParameters));
 	}
 
 	@Override

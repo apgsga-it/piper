@@ -5,7 +5,6 @@ import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
-import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -39,40 +38,38 @@ public class PatchSetupTask implements Runnable {
     @Override
     public void run() {
         try {
-            Patch patchWithResDep = resolveDependencies();
-            Integer lastTagNr = patchWithResDep.getTagNr();
-            Integer nextTagNr = lastTagNr + 1;
-            String patchBranch = patchWithResDep.getDbPatch().getDbPatchBranch();
-            String nextPatchTag = patchBranch + "_" + nextTagNr.toString();
-            LOGGER.info("Patch Setup Task started for patch " + patchWithResDep.getPatchNumber());
+            resolveDependencies();
+            patch.nextTagNr();
+            LOGGER.info("Patch Setup Task started for patch " + patch.getPatchNumber());
             jschSession.preProcess();
-            if (!patchWithResDep.retrieveDbObjectsAsVcsPath().isEmpty()) {
-                LOGGER.info("Creating Tag for DB Objects for patch " + patchWithResDep.getPatchNumber());
-                jschSession.run(PatchSshCommand.createTagPatchModulesCmd(nextPatchTag, patchWithResDep.getDbPatch().getDbPatchBranch(),
-                        patchWithResDep.retrieveDbObjectsAsVcsPath()));
+            if (!patch.getDbPatch().retrieveDbObjectsAsVcsPath().isEmpty()) {
+                LOGGER.info("Creating Tag for DB Objects for patch " + patch.getPatchNumber());
+                DBPatch dbPatch = patch.getDbPatch();
+                dbPatch.withPatchTag(patch.getTagNr());
+                jschSession.run(PatchSshCommand.createTagPatchModulesCmd(dbPatch.getPatchTag(), patch.getDbPatch().getDbPatchBranch(),
+                        patch.getDbPatch().retrieveDbObjectsAsVcsPath()));
             }
-            for (Service service : patchWithResDep.getServices()) {
+            for (Service service : patch.getServices()) {
                 if (!service.retrieveMavenArtifactsAsVcsPath().isEmpty()) {
-                    LOGGER.info("Creating Tag for Java Artifact for patch " + patchWithResDep.getPatchNumber() + " and service " + service.getServiceName());
+                    LOGGER.info("Creating Tag for Java Artifact for patch " + patch.getPatchNumber() + " and service " + service.getServiceName());
                     ServiceMetaData serviceMetaData = repo.getServiceMetaDataByName(service.getServiceName());
-                    jschSession.run(PatchSshCommand.createTagPatchModulesCmd(nextPatchTag, serviceMetaData.getMicroServiceBranch(),
+                    service.withServiceMetaData(serviceMetaData);
+                    service.withPatchTag(patch.getTagNr());
+                    jschSession.run(PatchSshCommand.createTagPatchModulesCmd(service.getPatchTag(), serviceMetaData.getMicroServiceBranch(),
                             service.retrieveMavenArtifactsAsVcsPath()));
                 }
             }
             jschSession.postProcess();
-            repo.savePatch(patchWithResDep.toBuilder().patchTag(nextPatchTag).tagNr(nextTagNr).build());
-            LOGGER.info("Patch Setup Task started for patch " + patchWithResDep.getPatchNumber() + " DONE !! -> notifying db accordingly!");
-            repo.notify(NotificationParameters.builder().patchNumber(patchWithResDep.getPatchNumber()).successNotification(setupParams.getSuccessNotification()).build());
+            repo.savePatch(patch);
+            LOGGER.info("Patch Setup Task started for patch " + patch.getPatchNumber() + " DONE !! -> notifying db accordingly!");
+            repo.notify(NotificationParameters.builder().patchNumber(patch.getPatchNumber()).successNotification(setupParams.getSuccessNotification()).build());
         } catch (Exception e) {
             LOGGER.error("Patch Setup Task for patch " + patch.getPatchNumber() + " encountered an error :" + e.getMessage());
             repo.notify(NotificationParameters.builder().patchNumber(patch.getPatchNumber()).errorNotification(setupParams.getErrorNotification()).build());
         }
     }
 
-    // JHE : This has to be done here because we need the artifactName in order to correctly TAG in CVS. Also, when installing via onDemand Job, the dependencyResolver
-    //       must first be ran.
-    private Patch resolveDependencies() {
-        List<Service> services = Lists.newArrayList();
+    private void resolveDependencies() {
         for (Service service : patch.getServices()) {
             ServiceMetaData serviceMetaData = repo.getServiceMetaDataByName(service.getServiceName());
             List<MavenArtifact> artifactsToPatch = service.getArtifactsToPatch();
@@ -81,8 +78,7 @@ public class PatchSetupTask implements Runnable {
                 String artifactName = am.getArtifactName(mavenArtifact.getGroupId(), mavenArtifact.getArtifactId(), mavenArtifact.getVersion());
                 mavenArtifact.withName(artifactName);
             }
-            services.add(service.toBuilder().serviceMetaData(serviceMetaData).build());
+            service.withServiceMetaData(serviceMetaData);
         }
-        return patch.toBuilder().services(services).build();
     }
 }

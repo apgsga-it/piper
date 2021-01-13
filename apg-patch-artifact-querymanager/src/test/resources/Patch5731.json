@@ -1,11 +1,11 @@
 {
   "patchNumber": "5731",
-  "patchTag": "",
   "developerBranch": "developer_branch",
   "tagNr": 0,
   "dbPatch": {
     "dbPatchBranch": "db_patch_branch",
     "prodBranch": "prod_branch",
+    "patchTag": "",
     "dbObjects": [
       {
         "fileName": "somefileName",
@@ -29,6 +29,7 @@
   "services": [
     {
       "serviceName": "aService",
+      "patchTag": "",
       "artifactsToPatch": [
         {
           "artifactId": "dao-domainwerte",

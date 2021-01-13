@@ -1,9 +1,9 @@
 {
   "patchNumber": "5401",
-  "patchTag": "Patch_0900C1_5401_1",
   "tagNr": 1,
   "dbPatch": {
     "dbPatchBranch": "Patch_0900C1_5401",
+    "patchTag": "Patch_0900C1_5401_1",
     "prodBranch": "HEAD",
     "dbObjects": [
       {

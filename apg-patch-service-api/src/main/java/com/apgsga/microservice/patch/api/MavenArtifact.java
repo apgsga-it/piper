@@ -6,14 +6,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-/**
- * Note on usage of Lombok:
- * Ideally this would be a Value Object. But since the fields name,version and dependencyLevel are augmented after
- * initial creation and the refactoring would have been extensive. The approach with non final fields for the "mutable"
- * fields with a specific method to update -> by convention starting with "with" and
- * for all field only the @Getter Annotation seems like reasonable compromise.
- * TODO (che,jhe) : Possibly reconsider logic updating the Object.
- */
 @JsonDeserialize(builder = MavenArtifact.MavenArtifactBuilder.class)
 @Builder(toBuilder = true)
 @EqualsAndHashCode(exclude = {"name", "version", "dependencyLevel"})

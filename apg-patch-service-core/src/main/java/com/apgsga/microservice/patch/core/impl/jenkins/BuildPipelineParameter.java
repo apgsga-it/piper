@@ -23,6 +23,7 @@ public class BuildPipelineParameter {
     String developerBranch;
     List<String> dbObjectsAsVcsPath;
     String dbPatchBranch;
+    String dbPatchTag;
     List<DbObject> dbObjects;
     List<String> dockerServices;
     List<Service> services;
