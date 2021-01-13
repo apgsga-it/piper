@@ -1,42 +1,44 @@
 {
-	"patchNumber": "5401",
-	"dbPatchBranch": "Patch_0900C1_5401",
-	"prodBranch": "HEAD",
-	"patchTag": "Patch_0900C1_5401_1",
-	"developerBranch": "developer_branch",
-	"tagNr": 1,
-	"dbObjects": [
-		{
-			"fileName": "apgops_lib.apg_db_outage_planned.syn.sql",
-			"filePath": "testdbmodule/database/sql/",
-			"moduleName": "testdbmodule",
-			"hasConflict": false
-		},
-		{
-			"fileName": "sys.apg_install_utility.pks.cleanup.sql",
-			"filePath": "testdbmodule/database/sql/",
-			"moduleName": "testdbmodule",
-			"hasConflict": false
-		}
-	],
-	"dockerServices": [
-		"dockerService1",
-		"dockerService2",
-		"dockerServices3"
-	],
-	"services": [
-		{
-			"serviceName": "It21Ui",
-			"artifactsToPatch": [
-				{
-					"artifactId": "zentraldispo-dao",
-					"groupId": "com.affichage.it21.vk",
-					"name": null,
-					"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
-					"dependencyLevel": 0
-				}
-			],
-			"serviceMetaData": null
-		}
-	]
+  "patchNumber": "5401",
+  "patchTag": "Patch_0900C1_5401_1",
+  "developerBranch": "developer_branch",
+  "tagNr": 1,
+  "dbPatch": {
+    "dbPatchBranch": "Patch_0900C1_5401",
+    "prodBranch": "HEAD",
+    "dbObjects": [
+      {
+        "fileName": "apgops_lib.apg_db_outage_planned.syn.sql",
+        "filePath": "testdbmodule/database/sql/",
+        "moduleName": "testdbmodule",
+        "hasConflict": false
+      },
+      {
+        "fileName": "sys.apg_install_utility.pks.cleanup.sql",
+        "filePath": "testdbmodule/database/sql/",
+        "moduleName": "testdbmodule",
+        "hasConflict": false
+      }
+    ]
+  },
+  "dockerServices": [
+    "dockerService1",
+    "dockerService2",
+    "dockerServices3"
+  ],
+  "services": [
+    {
+      "serviceName": "It21Ui",
+      "artifactsToPatch": [
+        {
+          "artifactId": "zentraldispo-dao",
+          "groupId": "com.affichage.it21.vk",
+          "name": null,
+          "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
+          "dependencyLevel": 0
+        }
+      ],
+      "serviceMetaData": null
+    }
+  ]
 }

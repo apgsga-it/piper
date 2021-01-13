@@ -42,13 +42,13 @@ public class PatchSetupTask implements Runnable {
             Patch patchWithResDep = resolveDependencies();
             Integer lastTagNr = patchWithResDep.getTagNr();
             Integer nextTagNr = lastTagNr + 1;
-            String patchBranch = patchWithResDep.getDbPatchBranch();
+            String patchBranch = patchWithResDep.getDbPatch().getDbPatchBranch();
             String nextPatchTag = patchBranch + "_" + nextTagNr.toString();
             LOGGER.info("Patch Setup Task started for patch " + patchWithResDep.getPatchNumber());
             jschSession.preProcess();
             if (!patchWithResDep.retrieveDbObjectsAsVcsPath().isEmpty()) {
                 LOGGER.info("Creating Tag for DB Objects for patch " + patchWithResDep.getPatchNumber());
-                jschSession.run(PatchSshCommand.createTagPatchModulesCmd(nextPatchTag, patchWithResDep.getDbPatchBranch(),
+                jschSession.run(PatchSshCommand.createTagPatchModulesCmd(nextPatchTag, patchWithResDep.getDbPatch().getDbPatchBranch(),
                         patchWithResDep.retrieveDbObjectsAsVcsPath()));
             }
             for (Service service : patchWithResDep.getServices()) {

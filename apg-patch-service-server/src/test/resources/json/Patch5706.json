@@ -1,233 +1,233 @@
 {
-	"className": "com.apgsga.microservice.patch.api.Patch",
-	"patchNummer": "5706",
-	"serviceName": "It21Ui",
-	"microServiceBranch": "it21_release_9_1_0_admin_uimig",
-	"dbPatchBranch": "Patch_0900C1_5706",
-	"prodBranch": "HEAD",
-	"patchTag": "",
-	"tagNr": 0,
-	"installationTarget": null,
-	"baseVersionNumber": "9.1.0",
-	"revisionMnemoPart": "ADMIN-UIMIG",
-	"revisionNumber": null,
-	"lastRevisionNumber": null,
-	"dbObjects": [
-	],
-		"mavenArtifacts": [
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "adgis-component",
-			"groupId": "com.affichage.adgis.component",
-			"name": "com.affichage.adgis.component",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "geo-lib",
-			"groupId": "com.affichage.geo.lib",
-			"name": "com.affichage.geo.lib",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "ds-dao",
-			"groupId": "com.affichage.ibds.ds",
-			"name": "com.affichage.ibds.ds.dao",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "adgis-api-dao",
-			"groupId": "com.affichage.it21.adgis",
-			"name": "com.affichage.it21.adgis.api.dao",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "adgis-api-ui",
-			"groupId": "com.affichage.it21.adgis",
-			"name": "com.affichage.it21.adgis.api.ui",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "adgis-common-dao",
-			"groupId": "com.affichage.it21.adgis",
-			"name": "com.affichage.it21.adgis.common.dao",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "aenv-dao",
-			"groupId": "com.affichage.it21.aenv",
-			"name": "com.affichage.it21.aenv.dao",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "aenv-ui",
-			"groupId": "com.affichage.it21.aenv",
-			"name": "com.affichage.it21.aenv.ui",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "alog-dao",
-			"groupId": "com.affichage.it21.alog",
-			"name": "com.affichage.it21.alog.dao",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "alog-ui",
-			"groupId": "com.affichage.it21.alog",
-			"name": "com.affichage.it21.alog.ui",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "apmgmt-dao",
-			"groupId": "com.affichage.it21.apmgmt",
-			"name": "com.affichage.it21.apmgmt.dao",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "apmgmt-ui",
-			"groupId": "com.affichage.it21.apmgmt",
-			"name": "com.affichage.it21.apmgmt.ui",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "arep-dao",
-			"groupId": "com.affichage.it21.arep",
-			"name": "com.affichage.it21.arep.dao",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "arep-ui",
-			"groupId": "com.affichage.it21.arep",
-			"name": "com.affichage.it21.arep.ui",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "bd-dao",
-			"groupId": "com.affichage.it21.bd",
-			"name": "com.affichage.it21.bd.dao",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "bd-ui",
-			"groupId": "com.affichage.it21.bd",
-			"name": "com.affichage.it21.bd.ui",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "cm-dao",
-			"groupId": "com.affichage.it21.cm",
-			"name": "com.affichage.it21.cm.dao",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "cm-ui",
-			"groupId": "com.affichage.it21.cm",
-			"name": "com.affichage.it21.cm.ui",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "dbj-dao",
-			"groupId": "com.affichage.it21.dbj",
-			"name": "com.affichage.it21.dbj.dao",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "dbj-ui",
-			"groupId": "com.affichage.it21.dbj",
-			"name": "com.affichage.it21.dbj.ui",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "dao-domainwerte",
-			"groupId": "com.affichage",
-			"name": "com.affichage.it21.domainwerte",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "flaechen-dao",
-			"groupId": "com.affichage.it21.fm",
-			"name": "com.affichage.it21.fm.flaechen.dao",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "flaechen-ui",
-			"groupId": "com.affichage.it21.fm",
-			"name": "com.affichage.it21.fm.flaechen.ui",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "fm-proc",
-			"groupId": "com.affichage.it21.fm",
-			"name": "com.affichage.it21.fm.proc",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "fm-ui",
-			"groupId": "com.affichage.it21.fm",
-			"name": "com.affichage.it21.fm.ui",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "fotomanager",
-			"groupId": "com.affichage.it21.fotomanager",
-			"name": "com.affichage.it21.fotomanager.impl",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "gp-dao",
-			"groupId": "com.affichage.it21.gp",
-			"name": "com.affichage.it21.gp.dao",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "gp-ui",
-			"groupId": "com.affichage.it21.gp",
-			"name": "com.affichage.it21.gp.ui",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "ibus-dao",
-			"groupId": "com.affichage.it21.ibus",
-			"name": "com.affichage.it21.ibus.dao",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		},
-		{
-			"className": "com.apgsga.microservice.patch.api.MavenArtifact",
-			"artifactId": "ibus-ui",
-			"groupId": "com.affichage.it21.ibus",
-			"name": "com.affichage.it21.ibus.ui",
-			"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-		}
-	],
-	"dbObjectsAsVcsPath": [
-	],
-	"mavenArtifactsAsVcsPath": [
-	]
+  "className": "com.apgsga.microservice.patch.api.Patch",
+  "patchNummer": "5706",
+  "serviceName": "It21Ui",
+  "microServiceBranch": "it21_release_9_1_0_admin_uimig",
+  "patchTag": "",
+  "tagNr": 0,
+  "installationTarget": null,
+  "baseVersionNumber": "9.1.0",
+  "revisionMnemoPart": "ADMIN-UIMIG",
+  "revisionNumber": null,
+  "lastRevisionNumber": null,
+  "dbPatch": {
+    "dbPatchBranch": "Patch_0900C1_5706",
+    "prodBranch": "HEAD",
+    "dbObjects": [
+    ]
+  },
+  "mavenArtifacts": [
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "adgis-component",
+      "groupId": "com.affichage.adgis.component",
+      "name": "com.affichage.adgis.component",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "geo-lib",
+      "groupId": "com.affichage.geo.lib",
+      "name": "com.affichage.geo.lib",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "ds-dao",
+      "groupId": "com.affichage.ibds.ds",
+      "name": "com.affichage.ibds.ds.dao",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "adgis-api-dao",
+      "groupId": "com.affichage.it21.adgis",
+      "name": "com.affichage.it21.adgis.api.dao",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "adgis-api-ui",
+      "groupId": "com.affichage.it21.adgis",
+      "name": "com.affichage.it21.adgis.api.ui",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "adgis-common-dao",
+      "groupId": "com.affichage.it21.adgis",
+      "name": "com.affichage.it21.adgis.common.dao",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "aenv-dao",
+      "groupId": "com.affichage.it21.aenv",
+      "name": "com.affichage.it21.aenv.dao",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "aenv-ui",
+      "groupId": "com.affichage.it21.aenv",
+      "name": "com.affichage.it21.aenv.ui",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "alog-dao",
+      "groupId": "com.affichage.it21.alog",
+      "name": "com.affichage.it21.alog.dao",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "alog-ui",
+      "groupId": "com.affichage.it21.alog",
+      "name": "com.affichage.it21.alog.ui",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "apmgmt-dao",
+      "groupId": "com.affichage.it21.apmgmt",
+      "name": "com.affichage.it21.apmgmt.dao",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "apmgmt-ui",
+      "groupId": "com.affichage.it21.apmgmt",
+      "name": "com.affichage.it21.apmgmt.ui",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "arep-dao",
+      "groupId": "com.affichage.it21.arep",
+      "name": "com.affichage.it21.arep.dao",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "arep-ui",
+      "groupId": "com.affichage.it21.arep",
+      "name": "com.affichage.it21.arep.ui",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "bd-dao",
+      "groupId": "com.affichage.it21.bd",
+      "name": "com.affichage.it21.bd.dao",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "bd-ui",
+      "groupId": "com.affichage.it21.bd",
+      "name": "com.affichage.it21.bd.ui",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "cm-dao",
+      "groupId": "com.affichage.it21.cm",
+      "name": "com.affichage.it21.cm.dao",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "cm-ui",
+      "groupId": "com.affichage.it21.cm",
+      "name": "com.affichage.it21.cm.ui",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "dbj-dao",
+      "groupId": "com.affichage.it21.dbj",
+      "name": "com.affichage.it21.dbj.dao",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "dbj-ui",
+      "groupId": "com.affichage.it21.dbj",
+      "name": "com.affichage.it21.dbj.ui",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "dao-domainwerte",
+      "groupId": "com.affichage",
+      "name": "com.affichage.it21.domainwerte",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "flaechen-dao",
+      "groupId": "com.affichage.it21.fm",
+      "name": "com.affichage.it21.fm.flaechen.dao",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "flaechen-ui",
+      "groupId": "com.affichage.it21.fm",
+      "name": "com.affichage.it21.fm.flaechen.ui",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "fm-proc",
+      "groupId": "com.affichage.it21.fm",
+      "name": "com.affichage.it21.fm.proc",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "fm-ui",
+      "groupId": "com.affichage.it21.fm",
+      "name": "com.affichage.it21.fm.ui",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "fotomanager",
+      "groupId": "com.affichage.it21.fotomanager",
+      "name": "com.affichage.it21.fotomanager.impl",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "gp-dao",
+      "groupId": "com.affichage.it21.gp",
+      "name": "com.affichage.it21.gp.dao",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "gp-ui",
+      "groupId": "com.affichage.it21.gp",
+      "name": "com.affichage.it21.gp.ui",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "ibus-dao",
+      "groupId": "com.affichage.it21.ibus",
+      "name": "com.affichage.it21.ibus.dao",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    },
+    {
+      "className": "com.apgsga.microservice.patch.api.MavenArtifact",
+      "artifactId": "ibus-ui",
+      "groupId": "com.affichage.it21.ibus",
+      "name": "com.affichage.it21.ibus.ui",
+      "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+    }
+  ],
+  "mavenArtifactsAsVcsPath": [
+  ]
 }

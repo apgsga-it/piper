@@ -84,15 +84,19 @@ public class PatchPersistenceTest {
 	public void testUpdate() {
 		Patch result = repo.findById("5402");
 		assertNotNull(result);
+
+		DBPatch dbPatch = DBPatch.builder().build();
+		dbPatch.addDbObject(DbObject.builder().fileName("FileName1").filePath("FilePath1").build());
+
 		Patch patchToSave = result.toBuilder()
 				.services(Lists.newArrayList(Service.builder().serviceName("It21Ui").build()))
-				.dbObjects(Lists.newArrayList(DbObject.builder().fileName("FileName1").filePath("FilePath1").build())).build();
+				.dbPatch(dbPatch).build();
 		repo.savePatch(patchToSave);
 		Patch updated = repo.findById("5402");
 		assertNotNull(updated);
 		Service service = updated.getService("It21Ui");
 		assertNotNull(service);
-		List<DbObject> dbObjects = updated.getDbObjects();
+		List<DbObject> dbObjects = updated.getDbPatch().getDbObjects();
 		assertEquals(1, dbObjects.size());
 		DbObject dbObject = dbObjects.get(0);
 		assertEquals("FileName1", dbObject.getFileName());

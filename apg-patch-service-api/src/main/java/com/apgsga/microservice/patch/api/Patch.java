@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.google.common.collect.Lists;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.util.List;
@@ -13,22 +14,17 @@ import java.util.stream.Collectors;
 @JsonDeserialize(builder = Patch.PatchBuilder.class)
 @Value
 @Builder(toBuilder = true)
+@EqualsAndHashCode(exclude = {"patchTag","developerBranch","tagNr","dbPatch","dockerServices","services"})
 public class Patch {
 
-    private static final String PROD_BRANCH_DEFAULT = "prod";
-
     String patchNumber;
-    String dbPatchBranch;
-    @Builder.Default
-    String prodBranch = PROD_BRANCH_DEFAULT;
     @Builder.Default
     String patchTag = "";
     @Builder.Default
     String developerBranch = "";
     @Builder.Default
     Integer tagNr = 0;
-    @Builder.Default
-    List<DbObject> dbObjects = Lists.newArrayList();
+    DBPatch dbPatch;
     @Builder.Default
     List<String> dockerServices = Lists.newArrayList();
     @Builder.Default
@@ -42,7 +38,7 @@ public class Patch {
     }
 
     public List<String> retrieveDbObjectsAsVcsPath() {
-        return dbObjects.stream().map(DbObject::asFullPath).collect(Collectors.toList());
+        return dbPatch.dbObjects.stream().map(DbObject::asFullPath).collect(Collectors.toList());
     }
 
     public Service getService(String serviceName) {

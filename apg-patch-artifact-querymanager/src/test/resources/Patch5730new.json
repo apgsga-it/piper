@@ -3,8 +3,6 @@
   "patchNummer": "5731",
   "serviceName": "It21Ui",
   "microServiceBranch": "it21_release_9_1_0_admin_uimig",
-  "dbPatchBranch": "Patch_0900C1_5731",
-  "prodBranch": "HEAD",
   "patchTag": "Patch_0900C1_5731_1",
   "tagNr": 1,
   "installationTarget": null,
@@ -12,7 +10,11 @@
   "revisionMnemoPart": "ADMIN-UIMIG",
   "revisionNumber": null,
   "lastRevisionNumber": null,
-  "dbObjects": [],
+  "dbPatch": {
+    "dbPatchBranch": "Patch_0900C1_5731",
+    "prodBranch": "HEAD",
+    "dbObjects": []
+  },
   "mavenArtifacts": [
     {
       "className": "com.apgsga.microservice.patch.api.MavenArtifact",
@@ -143,7 +145,6 @@
       "dependencyLevel": 0
     }
   ],
-  "dbObjectsAsVcsPath": [],
   "mavenArtifactsAsVcsPath": [
     "com.affichage.datetime.utils",
     "com.affichage.it21.domainwerte",

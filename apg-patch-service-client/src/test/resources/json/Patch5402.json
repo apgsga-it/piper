@@ -1,33 +1,35 @@
 {
-	"patchNumber": "5402",
-	"dbPatchBranch": "Patch_0900C1_5402",
-	"prodBranch": "HEAD",
-	"patchTag": "Patch_0900C1_5402_2",
-	"tagNr": 2,
-	"dbObjects": [
-		{
-			"fileName": "FileName1",
-			"filePath": "FilePath1",
-			"moduleName": null
-		}
-	],
-	"services": [
-		{
-			"serviceName": "It21Ui",
-			"artifactsToPatch": [
-				{
-					"artifactId": "zentraldispo-dao",
-					"groupId": "com.affichage.it21.vk",
-					"name": "com.affichage.it21.vk.zentraldispo.dao",
-					"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-				},
-				{
-					"artifactId": "zentraldispo-ui",
-					"groupId": "com.affichage.it21.vk",
-					"name": "com.affichage.it21.vk.zentraldispo.ui",
-					"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
-				}
-			]
-		}
-	]
+  "patchNumber": "5402",
+  "patchTag": "Patch_0900C1_5402_2",
+  "tagNr": 2,
+  "dbPatch": {
+    "dbPatchBranch": "Patch_0900C1_5402",
+    "prodBranch": "HEAD",
+    "dbObjects": [
+      {
+        "fileName": "FileName1",
+        "filePath": "FilePath1",
+        "moduleName": null
+      }
+    ]
+  },
+  "services": [
+    {
+      "serviceName": "It21Ui",
+      "artifactsToPatch": [
+        {
+          "artifactId": "zentraldispo-dao",
+          "groupId": "com.affichage.it21.vk",
+          "name": "com.affichage.it21.vk.zentraldispo.dao",
+          "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        },
+        {
+          "artifactId": "zentraldispo-ui",
+          "groupId": "com.affichage.it21.vk",
+          "name": "com.affichage.it21.vk.zentraldispo.ui",
+          "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT"
+        }
+      ]
+    }
+  ]
 }
