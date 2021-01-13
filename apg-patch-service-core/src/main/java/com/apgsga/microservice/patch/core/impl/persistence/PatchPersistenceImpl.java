@@ -171,9 +171,7 @@ public class PatchPersistenceImpl implements PatchPersistence {
 	public ServicesMetaData getServicesMetaData() {
 		try {
 			File serviceMetaDataFile = systemMetaDataPersistence.createFile(SERVICES_META_DATA_JSON);
-			if (!serviceMetaDataFile.exists()) {
-				return null;
-			}
+			Asserts.isTrue(serviceMetaDataFile.exists(), "Metadata File %s does not exist in Storage Path %s", SERVICES_META_DATA_JSON, systemMetaDataPersistence.getStoragePath().getFilename());
 			ObjectMapper mapper = new ObjectMapper();
 			return mapper.readValue(serviceMetaDataFile, ServicesMetaData.class);
 		} catch (IOException e) {
@@ -191,9 +189,7 @@ public class PatchPersistenceImpl implements PatchPersistence {
 	public DbModules getDbModules() {
 		try {
 			File dbModulesFile = patchPersistence.createFile(DB_MODULES_JSON);
-			if (!dbModulesFile.exists()) {
-				return null;
-			}
+			Asserts.isTrue(dbModulesFile.exists(), "Metadata File %s does not exist in Storage Path %s", STAGE_MAPPINGS_DATA_JSON, patchPersistence.getStoragePath().getFilename());
 			ObjectMapper mapper = new ObjectMapper();
 			return mapper.readValue(dbModulesFile, DbModules.class);
 		} catch (IOException e) {
@@ -252,9 +248,7 @@ public class PatchPersistenceImpl implements PatchPersistence {
 	public OnDemandTargets onDemandTargets() {
 		try {
 			File onDemandTargetFile = systemMetaDataPersistence.createFile(ON_DEMAND_TARGETS_DATA_JSON);
-			if (!onDemandTargetFile.exists()) {
-				return null;
-			}
+			Asserts.isTrue(onDemandTargetFile.exists(), "Metadata File %s does not exist in Storage Path %s", ON_DEMAND_TARGETS_DATA_JSON, systemMetaDataPersistence.getStoragePath().getFilename());
 			ObjectMapper mapper = new ObjectMapper();
 			return mapper.readValue(onDemandTargetFile, OnDemandTargets.class);
 		} catch (IOException e) {
@@ -267,9 +261,7 @@ public class PatchPersistenceImpl implements PatchPersistence {
 	public StageMappings stageMappings() {
 		try {
 			File stageMappingFile = systemMetaDataPersistence.createFile(STAGE_MAPPINGS_DATA_JSON);
-			if (!stageMappingFile.exists()) {
-				return null;
-			}
+			Asserts.isTrue(stageMappingFile.exists(), "Metadata File %s does not exist in Storage Path %s", STAGE_MAPPINGS_DATA_JSON, systemMetaDataPersistence.getStoragePath().getFilename());
 			ObjectMapper mapper = new ObjectMapper();
 			return mapper.readValue(stageMappingFile, StageMappings.class);
 		} catch (IOException e) {
@@ -282,9 +274,7 @@ public class PatchPersistenceImpl implements PatchPersistence {
 	public TargetInstances targetInstances() {
 		try {
 			File targetInstanceFile = systemMetaDataPersistence.createFile(TARGET_INSTANCES_DATA_JSON);
-			if (!targetInstanceFile.exists()) {
-				return null;
-			}
+			Asserts.isTrue(targetInstanceFile.exists(), "Metadata File %s does not exist in Storage Path %s", TARGET_INSTANCES_DATA_JSON, systemMetaDataPersistence.getStoragePath().getFilename());
 			ObjectMapper mapper = new ObjectMapper();
 			return mapper.readValue(targetInstanceFile, TargetInstances.class);
 		} catch (IOException e) {
