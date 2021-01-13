@@ -46,6 +46,9 @@ public class MicroServicePatchServerTest {
 	@Value("${json.meta.info.db.location}")
 	private String metaInfoDb;
 
+	@Value("${json.db.location:target/testdb}")
+	private String dbLocation;
+
 	@Autowired
 	private SimplePatchContainerBean patchService;
 
@@ -58,14 +61,20 @@ public class MicroServicePatchServerTest {
 		repo.clean();
 		final ResourceLoader rl = new FileSystemResourceLoader();
 		Resource testResources = rl.getResource("src/test/resources/json");
+		Resource patchStorage = rl.getResource(dbLocation);
+		Resource metaStorage = rl.getResource(metaInfoDb);
+		repo.clean();
 		try {
-			File persistSt = new File(metaInfoDb);
+			File persistSt = metaStorage.getFile();
 			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/ServicesMetaData.json"), new File(persistSt, "ServicesMetaData.json"));
 			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/OnDemandTargets.json"), new File(persistSt, "OnDemandTargets.json"));
 			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/StageMappings.json"), new File(persistSt, "StageMappings.json"));
 			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/TargetInstances.json"), new File(persistSt, "TargetInstances.json"));
+			persistSt = patchStorage.getFile();
+			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/DbModules.json"), new File(persistSt, "DbModules.json"));
+
 		} catch (IOException e) {
-			Assert.fail("Unable to copy JSON test files into testDb folder");
+			fail("Unable to copy ServicesMetaData.json test file into testDb folder : " + e.getMessage());
 		}
 	}
 
