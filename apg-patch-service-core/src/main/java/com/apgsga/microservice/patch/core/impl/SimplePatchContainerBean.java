@@ -212,7 +212,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 					int startIndex = r.indexOf("U ")+"U ".length();
 					String pathToResourceName = r.substring(startIndex).trim().replaceFirst(suffixForCoFolder, "").replaceFirst(tmpDir + "/", "");
 					DbObject dbObject = DbObject.builder()
-							.fileName(dbModule)
+							.moduleName(dbModule)
 							.fileName(FilenameUtils.getName(pathToResourceName))
 							.filePath(FilenameUtils.getPath(dbModule + "/" + FilenameUtils.getPath(pathToResourceName.replaceFirst(tempSubFolderName,""))))
 							.build();
