@@ -25,8 +25,8 @@ jenkins.host=<%= $piper_jenkins_host %>
 jenkins.ssh.user=<%= $jenkins_ssh_user %>
 jenkins.ssh.port=<%= $jenkins_cli_port %>
 jenkins.pipeline.repo=<%= $jenkins_builder_pipeline_repo %>
-jenkins.pipeline.repo.branch=<%= $jenkins_install_pipeline_script_path %>
-jenkins.pipeline.repo.install.script=<%= jenkins_install_pipeline_script_path %>
+jenkins.pipeline.repo.branch=<%= $jenkins_builder_pipeline_repo_branch %>
+jenkins.pipeline.repo.install.script=<%= $jenkins_install_pipeline_script_path %>
 jenkins.pipeline.repo.assemble.script=<%= $jenkins_assemble_pipeline_script_path %>
 
 
