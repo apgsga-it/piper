@@ -295,6 +295,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 				return true;
 			}
 		}
+		for(String dockerService : patch.getDockerServices()) {
+			if(dockerService.toUpperCase().contains(objectName.toUpperCase())) {
+				return true;
+			}
+		}
 		return false;
 	}
 
