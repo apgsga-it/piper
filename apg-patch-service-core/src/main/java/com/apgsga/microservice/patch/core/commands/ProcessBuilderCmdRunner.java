@@ -29,7 +29,7 @@ public class ProcessBuilderCmdRunner implements CommandRunner {
 			int exit = p.waitFor();
 			errorGobbler.join();
 			outputGobbler.join();
-			Asserts.isTrue(exit != 0 , "ProcessBuilder returned ExitCode: %d for Command: %s", exit, command.getCommand());
+			Asserts.isTrue(exit == 0 , "ProcessBuilder returned ExitCode: %d for Command: %s", exit, command.getCommand());
 			return Lists.newArrayList(outputGobbler.getOutput());
 		} catch (IOException | InterruptedException e) {
 			throw ExceptionFactory.create("ProcessBuilder failed execute Command :  %s",e, (Object) command.getCommand());
