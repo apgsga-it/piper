@@ -8,6 +8,7 @@ import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.exceptions.Asserts;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
@@ -170,8 +171,36 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public List<DbObject> listAllObjectsChangedForDbModule(String patchId, String searchString) {
-		LOGGER.info("Searching all DB Objects with searchString" + searchString);
-		return doListAllSqlObjectsForDbModule(patchId, searchString, searchString);
+		LOGGER.info("Searching all changed DB Objects for " + patchId + " with searchString" + searchString);
+		Patch patch = findById(patchId);
+		Asserts.notNull(patch,"Patch %s does not exist for listAllObjectsChangedForDbModule", patchId);
+		DbModules dbModules = repo.getDbModules();
+		if (dbModules == null) {
+			return Lists.newArrayList();
+		}
+		final CommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
+		sshCommandRunner.preProcess();
+		List<DbObject> dbObjects = Lists.newArrayList();
+		for (String dbModule : dbModules.getDbModules()) {
+			if (Strings.isNullOrEmpty(dbModule) || dbModule.contains(searchString)) {
+				List<String> result = sshCommandRunner.run(PatchSshCommand
+						.createDiffPatchModulesCmd(patch.getDbPatch().getDbPatchBranch(), patch.getDbPatch().getProdBranch(),null, Lists.newArrayList(dbModule)));
+				List<String> files = result.stream()
+						.filter(s -> s.startsWith("Index: "))
+						.map(s -> s.substring(7)).collect(Collectors.toList());
+				files.stream().forEach(file -> {
+					DbObject dbObject = DbObject.builder()
+							                    .moduleName(dbModule)
+											    .fileName(FilenameUtils.getName(file))
+												.filePath(FilenameUtils.getPath(file))
+											    .build();
+					dbObjects.add(dbObject);
+				});
+
+			}
+		}
+		sshCommandRunner.postProcess();
+		return dbObjects;
 	}
 
 	@Override
