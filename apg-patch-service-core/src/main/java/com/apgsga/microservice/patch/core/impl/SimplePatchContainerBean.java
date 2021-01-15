@@ -173,8 +173,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	public List<DbObject> listAllObjectsChangedForDbModule(String patchId, String searchString) {
 		LOGGER.info("Searching all changed DB Objects for " + patchId + " with searchString" + searchString);
 		Patch patch = findById(patchId);
-		Asserts.notNull(patch, "SimplePatchContainerBean.listAllObjectsChangedForDbModule.patch.exists.assert",
-				new Object[] { patchId });
+		Asserts.notNull(patch,"Patch %s does not exist for listAllObjectsChangedForDbModule", patchId);
 		DbModules dbModules = repo.getDbModules();
 		if (dbModules == null) {
 			return Lists.newArrayList();
