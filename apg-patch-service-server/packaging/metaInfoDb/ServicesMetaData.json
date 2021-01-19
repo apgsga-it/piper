@@ -1,7 +1,7 @@
 {
   "servicesMetaData": [
     {
-      "serviceName": "testapp-service",
+      "serviceName": "echoservice",
       "bomCoordinates": {
         "artifactId": "dm-bom",
         "groupId": "com.apgsga.testapp",
