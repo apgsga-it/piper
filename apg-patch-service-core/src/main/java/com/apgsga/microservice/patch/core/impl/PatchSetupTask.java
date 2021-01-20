@@ -67,6 +67,7 @@ public class PatchSetupTask implements Runnable {
         } catch (Exception e) {
             LOGGER.error("Patch Setup Task for patch " + patch.getPatchNumber() + " encountered an error :" + e.getMessage());
             repo.notify(NotificationParameters.builder().patchNumber(patch.getPatchNumber()).errorNotification(setupParams.getErrorNotification()).build());
+            throw e;
         }
     }
 
