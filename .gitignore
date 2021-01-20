@@ -28,3 +28,4 @@
 .cvsignore
 */.cvsignore
 /apg-patch-service-api/lombok.config
+/apg-patch-service-core/lombok.config

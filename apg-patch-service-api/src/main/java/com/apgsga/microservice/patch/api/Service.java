@@ -26,8 +26,8 @@ public class Service {
     @Getter
     ServiceMetaData serviceMetaData;
 
-    public void withPatchTag(Integer tagNr) {
-        this.patchTag = serviceMetaData.getMicroServiceBranch() + "_" + tagNr.toString();
+    public void withPatchTag(Integer tagNr, String patchNr) {
+        this.patchTag = serviceMetaData.getMicroServiceBranch() + "_" +  patchNr + "_" + tagNr.toString();
     }
 
     public void withServiceMetaData(ServiceMetaData serviceMetaData) {

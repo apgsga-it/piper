@@ -54,7 +54,7 @@ public class PatchSetupTask implements Runnable {
                     LOGGER.info("Creating Tag for Java Artifact for patch " + patch.getPatchNumber() + " and service " + service.getServiceName());
                     ServiceMetaData serviceMetaData = repo.getServiceMetaDataByName(service.getServiceName());
                     service.withServiceMetaData(serviceMetaData);
-                    service.withPatchTag(patch.getTagNr());
+                    service.withPatchTag(patch.getTagNr(), patch.getPatchNumber());
                     jschSession.run(PatchSshCommand.createTagPatchModulesCmd(service.getPatchTag(), serviceMetaData.getMicroServiceBranch(),
                             service.retrieveMavenArtifactsAsVcsPath()));
                 }
