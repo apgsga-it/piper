@@ -5,6 +5,7 @@ import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
+import com.apgsga.microservice.patch.exceptions.Asserts;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -76,6 +77,7 @@ public class PatchSetupTask implements Runnable {
             dependencyResolver.resolveDependencies(service.getArtifactsToPatch());
             for (MavenArtifact mavenArtifact : artifactsToPatch) {
                 String artifactName = am.getArtifactName(mavenArtifact.getGroupId(), mavenArtifact.getArtifactId(), mavenArtifact.getVersion());
+                Asserts.notNull(artifactName,"Missing artifactname for mavenArtifactId: %s, groupId: %s", mavenArtifact.getGroupId(), mavenArtifact.getArtifactId());
                 mavenArtifact.withName(artifactName);
             }
             service.withServiceMetaData(serviceMetaData);
