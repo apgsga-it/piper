@@ -20,6 +20,27 @@
           ]
         }
       ]
+    },
+    {
+      "serviceName": "calctestservice",
+      "bomCoordinates": {
+        "artifactId": "testapp-dm-bom-2",
+        "groupId": "com.apgsga.testapp2",
+        "name": "apg-gradle-plugins-testsmodules-2/testapp-2/testapp-bom-2",
+        "version": "1.0.1.DEV-ADMIN-UIMIG-SNAPSHOT",
+        "dependencyLevel": 0
+      },
+      "microServiceBranch": "HEAD",
+      "baseVersionNumber": "1.0.1",
+      "revisionMnemoPart": "DEV-ADMIN-UIMIG",
+      "packages": [
+        {
+          "packagerName": "apg-gradle-plugins-testsmodules-2/testapp-2/testapp-pkg-2",
+          "starterCoordinates": [
+            "com.apgsga.testapp2:testapp-service-2"
+          ]
+        }
+      ]
     }
   ]
 }
