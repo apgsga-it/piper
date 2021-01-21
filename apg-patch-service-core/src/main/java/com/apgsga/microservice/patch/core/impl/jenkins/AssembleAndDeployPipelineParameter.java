@@ -26,13 +26,11 @@ public class AssembleAndDeployPipelineParameter {
     public static class PackagerInfo {
         public String name;
         public String targetHost;
-        public String baseVersion;
         public String vcsBranch;
 
-        public PackagerInfo(String name, String targetHost, String baseVersion, String vcsBranch) {
+        public PackagerInfo(String name, String targetHost, String vcsBranch) {
             this.name = name;
             this.targetHost = targetHost;
-            this.baseVersion = baseVersion;
             this.vcsBranch = vcsBranch;
         }
     }

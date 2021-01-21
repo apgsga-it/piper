@@ -53,12 +53,6 @@ public class JenkinsPipelinePreprocessor {
         return  backend.getServiceMetaDataByName(service.getServiceName()).getMicroServiceBranch();
     }
 
-    public String retrieveBaseVersionFor(Service service) {
-        String baseVersionNumber = backend.getServiceMetaDataByName(service.getServiceName()).getBaseVersionNumber();
-        String mnemoPart = backend.getServiceMetaDataByName(service.getServiceName()).getRevisionMnemoPart();
-        return baseVersionNumber + "-" + mnemoPart;
-    }
-
     public String retrieveTargetHostFor(Service service, String target) {
         Optional<TargetInstance> targetInstanceOptional = backend.targetInstances().getTargetInstances().stream().filter(ti -> ti.getName().equalsIgnoreCase(target)).findFirst();
         Asserts.notNull(targetInstanceOptional,"No targetInstance has been found for %s",target);
