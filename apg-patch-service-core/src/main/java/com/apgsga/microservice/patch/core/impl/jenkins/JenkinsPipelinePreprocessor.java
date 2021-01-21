@@ -53,14 +53,14 @@ public class JenkinsPipelinePreprocessor {
         return  backend.getServiceMetaDataByName(service.getServiceName()).getMicroServiceBranch();
     }
 
-    public String retrieveTargetHostFor(Service service, String target) {
+    public String retrieveTargetHostFor(Package aPackage, String target) {
         Optional<TargetInstance> targetInstanceOptional = backend.targetInstances().getTargetInstances().stream().filter(ti -> ti.getName().equalsIgnoreCase(target)).findFirst();
         Asserts.notNull(targetInstanceOptional,"No targetInstance has been found for %s",target);
         Asserts.isTrue(targetInstanceOptional.isPresent(),"No targetInstance has been found for %s",target);
         TargetInstance targetInstance = targetInstanceOptional.get();
-        Optional<ServiceInstallation> serviceInstallationOptional = targetInstance.getServices().stream().filter(s -> s.getServiceName().equalsIgnoreCase(service.getServiceName())).findFirst();
-        Asserts.notNull(serviceInstallationOptional,"No Service has been found for %s",service.getServiceName());
-        Asserts.isTrue(serviceInstallationOptional.isPresent(),"No Service has been found for %s",service.getServiceName());
+        Optional<ServiceInstallation> serviceInstallationOptional = targetInstance.getServices().stream().filter(s -> s.getServiceName().equalsIgnoreCase(aPackage.getPkgServiceName())).findFirst();
+        Asserts.notNull(serviceInstallationOptional,"No Service has been found for %s",aPackage.getPkgServiceName());
+        Asserts.isTrue(serviceInstallationOptional.isPresent(),"No Service has been found for %s",aPackage.getPkgServiceName());
         return serviceInstallationOptional.get().getInstallationHost();
     }
 

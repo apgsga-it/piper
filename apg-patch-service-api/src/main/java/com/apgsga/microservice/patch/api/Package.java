@@ -11,6 +11,7 @@ import java.util.List;
 @Value
 @Builder
 public class Package {
+    String pkgServiceName;
     String packagerName;
     List<String> starterCoordinates;
 
