@@ -2,6 +2,7 @@
   "servicesMetaData": [
     {
       "serviceName": "echoservice",
+      "revisionPkgName": "apg-gradle-plugins-testsmodules/testapp/testapp-pkg",
       "bomCoordinates": {
         "artifactId": "dm-bom",
         "groupId": "com.apgsga.testapp",
@@ -24,6 +25,7 @@
     },
     {
       "serviceName": "calctestservice",
+      "revisionPkgName": "apg-gradle-plugins-testsmodules-2/testapp-2/testapp-pkg-2",
       "bomCoordinates": {
         "artifactId": "testapp-dm-bom-2",
         "groupId": "com.apgsga.testapp2",
@@ -46,6 +48,7 @@
     },
     {
       "serviceName": "it21-test-ui",
+      "revisionPkgName": "apg-gradle-plugins-testsmodules-3/testapp-3/testapp-revision-pkg-3",
       "bomCoordinates": {
         "artifactId": "testapp-bom-3",
         "groupId": "com.apgsga.testapp",

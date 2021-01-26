@@ -14,6 +14,7 @@ import java.util.List;
 public class ServiceMetaData {
 
 	String serviceName;
+	String revisionPkgName;
 	MavenArtifact bomCoordinates;
 	String microServiceBranch;
 	String baseVersionNumber;
