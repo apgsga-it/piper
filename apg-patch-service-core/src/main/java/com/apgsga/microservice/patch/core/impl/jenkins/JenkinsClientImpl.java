@@ -123,7 +123,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 				preprocessor.packagesFor(service).forEach(aPackage -> {
 					if(!packagers.stream().anyMatch(p -> p.name.equals(aPackage.getPackagerName()))) {
 						packagers.add(new InstallPipelineParameter.PackagerInfo(aPackage.getPackagerName()
-							,preprocessor.retrieveTargetHostFor(service,target)
+							,preprocessor.retrieveTargetHostFor(aPackage,target)
 							,preprocessor.retrieveVcsBranchFor(service)));
 					}
 				});
@@ -148,7 +148,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 				preprocessor.packagesFor(service).forEach(aPackage -> {
 					if(!packagers.stream().anyMatch(p -> p.name.equals(aPackage.getPackagerName()))) {
 						packagers.add(new AssembleAndDeployPipelineParameter.PackagerInfo(aPackage.getPackagerName()
-								,preprocessor.retrieveTargetHostFor(service, target)
+								,preprocessor.retrieveTargetHostFor(aPackage, target)
 								,preprocessor.retrieveVcsBranchFor(service)));
 					}
 				});

@@ -15,6 +15,7 @@
       "packages": [
         {
           "packagerName": "apg-gradle-plugins-testsmodules/testapp/testapp-pkg",
+          "pkgServiceName": "echoservice",
           "starterCoordinates": [
             "com.apgsga.testapp:testapp-service"
           ]
@@ -36,8 +37,40 @@
       "packages": [
         {
           "packagerName": "apg-gradle-plugins-testsmodules-2/testapp-2/testapp-pkg-2",
+          "pkgServiceName": "calctestservice",
           "starterCoordinates": [
             "com.apgsga.testapp2:testapp-service-2"
+          ]
+        }
+      ]
+    },
+    {
+      "serviceName": "it21-test-ui",
+      "bomCoordinates": {
+        "artifactId": "testapp-bom-3",
+        "groupId": "com.apgsga.testapp",
+        "name": "apg-gradle-plugins-testsmodules-3/testapp-3/testapp-bom-3",
+        "version": "1.0.3.DEV-ADMIN-UIMIG-SNAPSHOT",
+        "dependencyLevel": 0
+      },
+      "microServiceBranch": "HEAD",
+      "baseVersionNumber": "1.0.3",
+      "revisionMnemoPart": "DEV-ADMIN-UIMIG",
+      "packages": [
+        {
+          "packagerName": "apg-gradle-plugins-testsmodules-3/testapp-3/testapp-ui-pkg-3",
+          "pkgServiceName": "test-ui",
+          "starterCoordinates": [
+            "com.apgsga.testapp:testapp-ui-runtime-3",
+            "moyosoft:moyocore_x64:3.0.4:@dll"
+          ]
+        },
+        {
+          "packagerName": "apg-gradle-plugins-testsmodules-3/testapp-2/testapp-jadas-pkg-3",
+          "pkgServiceName": "test-jadas",
+          "starterCoordinates": [
+            "com.apgsga.testapp:testapp-jadas-appstarter-3",
+            "com.apgsga.testapp:testapp-jadas-frameworkstarter-3"
           ]
         }
       ]
