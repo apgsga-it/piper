@@ -69,7 +69,7 @@
           ]
         },
         {
-          "packagerName": "apg-gradle-plugins-testsmodules-3/testapp-2/testapp-jadas-pkg-3",
+          "packagerName": "apg-gradle-plugins-testsmodules-3/testapp-3/testapp-jadas-pkg-3",
           "pkgServiceName": "test-jadas",
           "starterCoordinates": [
             "com.apgsga.testapp:testapp-jadas-appstarter-3",
