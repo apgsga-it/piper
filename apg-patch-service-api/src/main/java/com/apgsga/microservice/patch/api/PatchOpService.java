@@ -65,5 +65,6 @@ public interface PatchOpService {
 
 	void notify(NotificationParameters params);
 
+	void startOnDemandPipeline(OnDemandParameter parameters);
 
 }

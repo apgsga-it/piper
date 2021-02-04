@@ -1,9 +1,6 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
-import com.apgsga.microservice.patch.api.AssembleAndDeployParameters;
-import com.apgsga.microservice.patch.api.BuildParameter;
-import com.apgsga.microservice.patch.api.InstallParameters;
-import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
@@ -114,6 +111,11 @@ public class JenkinsClientImpl implements JenkinsClient {
 				pipelineParameters.getTarget(),
 				formatParameterAsJsonForPipeline(pipelineParameters));
 
+	}
+
+	@Override
+	public void startOnDemandPipeline(OnDemandParameter parameters) {
+		threadExecutor.execute(TaskStartOnDemandPipeline.create(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,preprocessor,cmdRunner,parameters));
 	}
 
 	private List<InstallPipelineParameter.PackagerInfo> retrievePackagerInfoForInstall(Set<String> patchNumbers, String target) {

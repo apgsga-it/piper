@@ -223,6 +223,13 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		patchRdbms.notify(params);
 	}
 
+	@RequestMapping(value = "/onDemand", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public void startOnDemandPipeline(@RequestBody OnDemandParameter parameters) {
+		patchService.startOnDemandPipeline(parameters);
+	}
+
 	@RequestMapping(value = "/patchIdsForStatus/{status}")
 	@ResponseBody
 	public List<String> patchIdsForStatus(@PathVariable("status") String statusCode) {
