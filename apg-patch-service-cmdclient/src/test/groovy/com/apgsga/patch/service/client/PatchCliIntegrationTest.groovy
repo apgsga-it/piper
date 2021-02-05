@@ -224,6 +224,25 @@ class PatchCliIntegrationTest extends Specification {
 			repo.clean()
 	}
 
+	def "Patch cli test start onDemandPipeline"() {
+		setup:
+			def client = PatchCli.create()
+		when:
+			def preCondResult = client.process(["-sa", "src/test/resources/Patch5401.json"])
+		then:
+			preCondResult != null
+			preCondResult.returnCode == 0
+			File patchFile = new File("${dbLocation}/Patch5401.json")
+			patchFile.exists()
+		when:
+			def result = client.process(["-od", "5401,CHEI212"])
+		then:
+			result != null
+			result.returnCode == 0
+		cleanup:
+			repo.clean()
+	}
+
 	def "Patch cli test notifydb"() {
 		setup:
 			def client = PatchCli.create()

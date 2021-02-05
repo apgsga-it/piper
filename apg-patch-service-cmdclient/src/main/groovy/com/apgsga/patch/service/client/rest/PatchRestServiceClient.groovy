@@ -82,6 +82,11 @@ class PatchRestServiceClient implements PatchOpService {
 	}
 
 	@Override
+	void startOnDemandPipeline(OnDemandParameter parameters) {
+		restTemplate.postForLocation(getRestBaseUri() + "/onDemand", parameters)
+	}
+
+	@Override
 	List<String> patchIdsForStatus(String statusCode) {
 		return restTemplate.getForObject(getRestBaseUri() + "/patchIdsForStatus/{status}", String[].class, [status:statusCode])
 	}

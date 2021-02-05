@@ -346,6 +346,17 @@ public class MicroServicePatchServerTest {
 	}
 
 	@Test
+	public void testOnDemandPipeline() {
+		Patch p = Patch.builder().patchNumber("5401").build();
+		patchService.save(p);
+		OnDemandParameter params = OnDemandParameter.builder()
+				.target("DEV-JHE")
+				.patchNumber("5401")
+				.build();
+		patchService.startOnDemandPipeline(params);
+	}
+
+	@Test
 	// JHE : Test mainly done in order to test the syntax with Streams expression
 	public void testRetrieveASpecificTargetInstance() {
 

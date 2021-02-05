@@ -18,20 +18,8 @@ public class InstallPipelineParameter {
     String target;
     String successNotification;
     String errorNotification;
-    List<InstallPipelineParameter.PackagerInfo> packagers;
+    List<PackagerInfo> packagers;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class InstallPipelineParameterBuilder {}
-
-    public static class PackagerInfo {
-        public String name;
-        public String targetHost;
-        public String vcsBranch;
-
-        public PackagerInfo(String name, String targetHost, String vcsBranch) {
-            this.name = name;
-            this.targetHost = targetHost;
-            this.vcsBranch = vcsBranch;
-        }
-    }
 }

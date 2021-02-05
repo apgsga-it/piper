@@ -333,6 +333,14 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
+	public void startOnDemandPipeline(OnDemandParameter parameters) {
+		LOGGER.info("Starting onDemand pipeline with following parameter: " + parameters.toString());
+		Asserts.notNullOrEmpty(parameters.getPatchNumber(), "patchNumber required when starting onDemand pipeline");
+		Asserts.notNullOrEmpty(parameters.getTarget(), "target required when starting onDemand pipeline");
+		jenkinsClient.startOnDemandPipeline(parameters);
+	}
+
+	@Override
 	public void startAssembleAndDeployPipeline(AssembleAndDeployParameters parameters) {
 		LOGGER.info("Starting assemble and deploy Pipeline with following parameter: " + parameters.toString());
 		if(!parameters.getPatchNumbers().isEmpty()) {

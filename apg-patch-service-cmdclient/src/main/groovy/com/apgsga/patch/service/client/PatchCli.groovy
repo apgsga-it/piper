@@ -60,6 +60,8 @@ class PatchCli {
 				cmdResults.result = doSetup(patchClient,options)
 			} else if (options.notifydb) {
 				cmdResults.result = doNotifyDb(patchClient,options)
+			} else if (options.od) {
+				cmdResults.result = onDemand(patchClient,options)
 			}
 			cmdResults.returnCode = 0
 			return cmdResults
@@ -103,6 +105,7 @@ class PatchCli {
 			i longOpt: 'install', args:4, valueSeparator: ",", argName: 'listOfPatches,target,successNotification,errorNotification', "starts an install pipeline for the given target. First parameters is a list seprated with ';'", required: false
 			setup longOpt: 'setup', args:3, valueSeparator: ",", argName: 'patchNumber,successNotification,errorNotification', 'Starts setup for a patch, required before beeing ready to build', required: false
 			notifydb longOpt: 'notifdb', args:4, valueSeparator: ",", argName: "patchNumber,stage,successNotification,errorNotification", 'Notify the DB that a Job has been done successfully', required: false
+			od longOpt: 'onDemand', args:2, valueSeparator: ",", argName: "patchNumber,target", 'Starts an onDemand pipeline for the given patch on the given target', required: false
 		}
 
 		def options = cli.parse(args)
@@ -197,6 +200,13 @@ class PatchCli {
 			}
 		}
 
+		if(options.od) {
+			if(options.ods.size() != 2) {
+				println "patchNumber and target are required when starting an onDomand job"
+				error = true
+			}
+		}
+
 		if (error) {
 			cli.usage()
 			return null
@@ -255,6 +265,17 @@ class PatchCli {
 		builder = builder.errorNotification(errorNotification)
 		NotificationParameters params = builder.build()
 		patchClient.notify(params)
+		return cmdResult
+	}
+
+	static def onDemand(def patchClient, def options) {
+		def cmdResult = new Expando()
+		def patchNumber = options.ods[0]
+		def target = options.ods[1]
+		cmdResult.patchNumber = patchNumber
+		cmdResult.target = target
+		OnDemandParameter odParam = OnDemandParameter.builder().patchNumber(patchNumber).target(target).build()
+		patchClient.startOnDemandPipeline(odParam)
 		return cmdResult
 	}
 
