@@ -104,4 +104,10 @@ public interface PatchService {
 	 */
     List<Patch> findWithObjectName(String objectName);
 
+	/**
+	 * Start an onDemand Installation Pipeline
+	 * @param patchNumber
+	 * @param target
+	 */
+	void startOnDemandInstallation(OnDemandParameter params);
 }

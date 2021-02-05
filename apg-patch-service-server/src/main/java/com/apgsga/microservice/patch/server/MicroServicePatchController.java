@@ -133,4 +133,11 @@ public class MicroServicePatchController implements PatchService {
 	public List<Patch> findWithObjectName(@RequestBody String objectName) {
 		return patchService.findWithObjectName(objectName);
 	}
+
+	@RequestMapping(value = "/onDemand", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public void startOnDemandInstallation(@RequestBody  OnDemandParameter params) {
+		patchService.startOnDemandInstallation(params);
+	}
 }
