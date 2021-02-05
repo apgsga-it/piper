@@ -40,6 +40,8 @@ public class MicroservicePatchClient implements PatchService {
 	
 	private static final String FIND_WITH_OBJECT_NAME = "/findWithObjectName";
 
+	private static final String ON_DEMAND_INSTALLATION = "/onDemand";
+
 	protected static Log LOGGER = LogFactory.getLog(MicroservicePatchClient.class.getName());
 
 	private final String baseUrl;
@@ -166,5 +168,10 @@ public class MicroservicePatchClient implements PatchService {
 	public List<Patch> findWithObjectName(String objectName) {
 		Patch[] result = restTemplate.postForEntity(getRestBaseUri() + FIND_WITH_OBJECT_NAME, objectName, Patch[].class).getBody();
 		return Lists.newArrayList(result);
+	}
+
+	@Override
+	public void startOnDemandInstallation(OnDemandParameter params) {
+		restTemplate.postForLocation(getRestBaseUri() + ON_DEMAND_INSTALLATION, params);
 	}
 }

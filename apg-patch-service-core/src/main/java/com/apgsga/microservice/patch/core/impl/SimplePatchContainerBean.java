@@ -298,6 +298,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
+	public void startOnDemandInstallation(OnDemandParameter params) {
+		this.startOnDemandPipeline(params);
+	}
+
+	@Override
 	public void copyPatchFiles(Map<String,String> params) {
 
 		//TODO JHE (18.11.2020) : empty for now as this is a deprecated method which will probably be deleted

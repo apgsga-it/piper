@@ -279,4 +279,11 @@ public class MicroServicePatchClientTest {
         assertTrue(onDemandTargets.contains("DEV-JHE"));
     }
 
+    @Test
+    public void testOnDemandInstallation() {
+        // JHE : Whaou :) .... but allows to validate that parameter are correctly passed
+        OnDemandParameter p = OnDemandParameter.builder().patchNumber("5401").target("DEV-JHE").build();
+        patchClient.startOnDemandInstallation(p);
+    }
+
 }
