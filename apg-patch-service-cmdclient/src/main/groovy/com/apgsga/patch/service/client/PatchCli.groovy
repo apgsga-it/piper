@@ -269,10 +269,14 @@ class PatchCli {
 	}
 
 	static def onDemand(def patchClient, def options) {
+		def cmdResult = new Expando()
 		def patchNumber = options.ods[0]
 		def target = options.ods[1]
+		cmdResult.patchNumber = patchNumber
+		cmdResult.target = target
 		OnDemandParameter odParam = OnDemandParameter.builder().patchNumber(patchNumber).target(target).build()
 		patchClient.startOnDemandPipeline(odParam)
+		return cmdResult
 	}
 
 	static def savePatch(def patchClient, def options) {

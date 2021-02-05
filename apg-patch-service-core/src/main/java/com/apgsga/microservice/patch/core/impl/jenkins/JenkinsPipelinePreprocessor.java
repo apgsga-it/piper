@@ -78,4 +78,21 @@ public class JenkinsPipelinePreprocessor {
     public List<Package> packagesFor(Service service) {
         return backend.packagesFor(service);
     }
+
+    public List<PackagerInfo> retrievePackagerInfoFor(Set<String> patchNumbers, String target) {
+        LOGGER.info("Retrieving packager info for target " + target + " and following patch(es) : " + patchNumbers.toString());
+        List<PackagerInfo> packagers = Lists.newArrayList();
+        patchNumbers.forEach(number -> {
+            retrievePatch(number).getServices().forEach(service -> {
+                packagesFor(service).forEach(aPackage -> {
+                    if(!packagers.stream().anyMatch(p -> p.name.equals(aPackage.getPackagerName()))) {
+                        packagers.add(new PackagerInfo(aPackage.getPackagerName()
+                            , retrieveTargetHostFor(aPackage,target)
+                            , retrieveVcsBranchFor(service)));
+                    }
+                });
+            });
+        });
+        return packagers;
+    }
 }

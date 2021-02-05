@@ -6,7 +6,6 @@ import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,9 +15,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @SuppressWarnings("unused")
 @Profile("live")
@@ -88,7 +85,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 					.errorNotification(parameters.getErrorNotification())
 					.successNotification(parameters.getSuccessNotification())
 					.target(parameters.getTarget())
-					.packagers(retrievePackagerInfoForAssembleAndDeploy(parameters.getPatchNumbers(),parameters.getTarget()))
+					.packagers(preprocessor.retrievePackagerInfoFor(parameters.getPatchNumbers(),parameters.getTarget()))
 					.dbZipNames(preprocessor.retrieveDbZipNames(parameters.getPatchNumbers(),parameters.getTarget()))
 					.build();
 		startGenericPipelineJobBuilder("assembleAndDeploy",
@@ -104,7 +101,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 				.errorNotification(parameters.getErrorNotification())
 				.successNotification(parameters.getSuccessNotification())
 				.patchNumbers(parameters.getPatchNumbers())
-				.packagers(retrievePackagerInfoForInstall(parameters.getPatchNumbers(),parameters.getTarget()))
+				.packagers(preprocessor.retrievePackagerInfoFor(parameters.getPatchNumbers(),parameters.getTarget()))
 				.build();
 		startGenericPipelineJobBuilder("install",
 				jenkinsPipelineInstallScript,
@@ -118,22 +115,6 @@ public class JenkinsClientImpl implements JenkinsClient {
 		threadExecutor.execute(TaskStartOnDemandPipeline.create(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,preprocessor,cmdRunner,parameters));
 	}
 
-	private List<InstallPipelineParameter.PackagerInfo> retrievePackagerInfoForInstall(Set<String> patchNumbers, String target) {
-		List<InstallPipelineParameter.PackagerInfo> packagers = Lists.newArrayList();
-		patchNumbers.forEach(number -> {
-			preprocessor.retrievePatch(number).getServices().forEach(service -> {
-				preprocessor.packagesFor(service).forEach(aPackage -> {
-					if(!packagers.stream().anyMatch(p -> p.name.equals(aPackage.getPackagerName()))) {
-						packagers.add(new InstallPipelineParameter.PackagerInfo(aPackage.getPackagerName()
-							,preprocessor.retrieveTargetHostFor(aPackage,target)
-							,preprocessor.retrieveVcsBranchFor(service)));
-					}
-				});
-			});
-		});
-		return packagers;
-	}
-
 	private String formatParameterAsJsonForPipeline(Object obj) {
 		try {
 			ObjectMapper om = new ObjectMapper();
@@ -141,22 +122,6 @@ public class JenkinsClientImpl implements JenkinsClient {
 		} catch (JsonProcessingException e) {
 			throw ExceptionFactory.create("Exception while trying to format a JSON String for a pipeline parameter");
 		}
-	}
-
-	private List<AssembleAndDeployPipelineParameter.PackagerInfo> retrievePackagerInfoForAssembleAndDeploy(Set<String> patchNumbers, String target) {
-		List<AssembleAndDeployPipelineParameter.PackagerInfo> packagers = Lists.newArrayList();
-		patchNumbers.forEach(number -> {
-			preprocessor.retrievePatch(number).getServices().forEach(service -> {
-				preprocessor.packagesFor(service).forEach(aPackage -> {
-					if(!packagers.stream().anyMatch(p -> p.name.equals(aPackage.getPackagerName()))) {
-						packagers.add(new AssembleAndDeployPipelineParameter.PackagerInfo(aPackage.getPackagerName()
-								,preprocessor.retrieveTargetHostFor(aPackage, target)
-								,preprocessor.retrieveVcsBranchFor(service)));
-					}
-				});
-			});
-		});
-		return packagers;
 	}
 
 	private void startGenericPipelineJobBuilder(String jobPreFix, String scriptPath, String target, String parameter) {

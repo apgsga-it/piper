@@ -5,9 +5,9 @@ import com.apgsga.microservice.patch.api.Patch;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -58,8 +58,9 @@ public class TaskStartOnDemandPipeline implements Runnable {
     private String pipelineOnDemandParameterAsJson() {
         try {
             Patch patch = preprocessor.retrievePatch(onDemandParameter.getPatchNumber());
-            OnDemandParameter onDemandPipelineParameter = OnDemandParameter.builder()
+            OnDemandPipelineParameter onDemandPipelineParameter = OnDemandPipelineParameter.builder()
                     .patchNumber(onDemandParameter.getPatchNumber())
+                    .target(onDemandParameter.getTarget())
                     .developerBranch(patch.getDeveloperBranch())
                     .dbObjectsAsVcsPath(patch.getDbPatch().retrieveDbObjectsAsVcsPath())
                     .dbPatchTag(patch.getDbPatch().getPatchTag())
@@ -67,12 +68,14 @@ public class TaskStartOnDemandPipeline implements Runnable {
                     .dbPatchBranch(patch.getDbPatch().getDbPatchBranch())
                     .dockerServices(patch.getDockerServices())
                     .services(patch.getServices())
-                    .target(onDemandParameter.getTarget())
+                    .packagers(preprocessor.retrievePackagerInfoFor(Sets.newHashSet(onDemandParameter.getPatchNumber()),onDemandParameter.getTarget()))
+                    .dbZipNames(preprocessor.retrieveDbZipNames(Sets.newHashSet(onDemandParameter.getPatchNumber()),onDemandParameter.getTarget()))
                     .build();
             LOGGER.info("onDemandPipelineParameter has been created with following info : " + onDemandPipelineParameter.toString());
             ObjectMapper om = new ObjectMapper();
             return om.writeValueAsString(onDemandPipelineParameter).replace("\"","\\\"");
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
+            LOGGER.error("Error while creating onDemandPipelineParameter : " + e.getMessage());
             throw ExceptionFactory.create("Exception : Create Json PARAMETERS for Patch <%s>",onDemandParameter.getPatchNumber());
         }
     }
