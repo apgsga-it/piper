@@ -120,14 +120,6 @@ ospackage {
 	// Local Maven Repo
 	directory("/var/opt/${project.name}/mavenrepo", 0755 )
 	
-	from("packaging/db") {
-		into "/var/opt/${project.name}/db"
-		fileType CONFIG | NOREPLACE
-		user "root"
-		permissionGroup "root"
-		fileMode 0755 
-	}
-	
 	from("src/main/groovy") {
 		into "/var/opt/${project.name}/scripts"
 		user "root"
@@ -142,8 +134,9 @@ ospackage {
 	//Log dir
 	directory("/var/opt/${project.name}/log", 0755 )
 	
-		//DB dir
+	//DB dir
 	directory("/var/opt/${project.name}/dbwork", 0755 )
+	 directory("/var/opt/${project.name}/db", 0755 )
 	
 	// Local Maven Repo
 	directory("/var/opt/${project.name}/mavenrepo", 0755 )
@@ -169,7 +162,7 @@ artifactory {
     publish {
 
         repository {
-            repoKey = "${yumRepoDevName}"   
+            repoKey = "${yumRepoDevName}"
             username = mavenRepoUser
             password = mavenRepoPwd
             ivy {
