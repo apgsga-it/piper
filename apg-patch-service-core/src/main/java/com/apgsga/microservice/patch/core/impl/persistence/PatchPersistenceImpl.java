@@ -182,14 +182,14 @@ public class PatchPersistenceImpl implements PatchPersistence {
 
 	@Override
 	public void saveDbModules(DbModules dbModules) {
-		patchPersistence.writeToFile(dbModules, DB_MODULES_JSON);
+		systemMetaDataPersistence.writeToFile(dbModules, DB_MODULES_JSON);
 	}
 
 	@Override
 	public DbModules getDbModules() {
 		try {
-			File dbModulesFile = patchPersistence.createFile(DB_MODULES_JSON);
-			Asserts.isTrue(dbModulesFile.exists(), "Metadata File %s does not exist in Storage Path %s", STAGE_MAPPINGS_DATA_JSON, patchPersistence.getStoragePath().getFilename());
+			File dbModulesFile = systemMetaDataPersistence.createFile(DB_MODULES_JSON);
+			Asserts.isTrue(dbModulesFile.exists(), "Metadata File %s does not exist in Storage Path %s", DB_MODULES_JSON, systemMetaDataPersistence.getStoragePath().getFilename());
 			ObjectMapper mapper = new ObjectMapper();
 			return mapper.readValue(dbModulesFile, DbModules.class);
 		} catch (IOException e) {
