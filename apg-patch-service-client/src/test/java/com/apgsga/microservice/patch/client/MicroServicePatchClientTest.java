@@ -69,10 +69,10 @@ public class MicroServicePatchClientTest {
             FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/OnDemandTargets.json"), new File(persistSt, "OnDemandTargets.json"));
             FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/StageMappings.json"), new File(persistSt, "StageMappings.json"));
             FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/TargetInstances.json"), new File(persistSt, "TargetInstances.json"));
+            FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/DbModules.json"), new File(persistSt, "DbModules.json"));
             persistSt = patchStorage.getFile();
             FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/Patch5401.json"), new File(persistSt, "Patch5401.json"));
             FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/Patch5402.json"), new File(persistSt, "Patch5402.json"));
-            FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/DbModules.json"), new File(persistSt, "DbModules.json"));
 
         } catch (IOException e) {
             fail("Unable to copy ServicesMetaData.json test file into testDb folder : " + e.getMessage());
