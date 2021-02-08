@@ -57,7 +57,6 @@ class PatchCliIntegrationTest extends Specification {
 			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/OnDemandTargets.json"), new File(persistSt, "OnDemandTargets.json"))
 			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/StageMappings.json"), new File(persistSt, "StageMappings.json"))
 			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/TargetInstances.json"), new File(persistSt, "TargetInstances.json"))
-			persistSt = patchStorage.getFile();
 			FileCopyUtils.copy(new File(testResources.getURI().getPath() + "/DbModules.json"), new File(persistSt, "DbModules.json"));
 		} catch (IOException e) {
 			Assert.fail("Unable to copy JSON test files into testDb folder",e)
