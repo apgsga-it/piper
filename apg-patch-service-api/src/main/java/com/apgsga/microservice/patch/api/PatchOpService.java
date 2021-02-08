@@ -67,4 +67,6 @@ public interface PatchOpService {
 
 	void startOnDemandPipeline(OnDemandParameter parameters);
 
+	void startOnClonePipeline(OnCloneParameters parameters);
+
 }

@@ -13,4 +13,6 @@ public interface JenkinsClient {
 	void startInstallPipeline(InstallParameters parameters);
 
 	void startOnDemandPipeline(OnDemandParameter parameters);
+
+	void startOnClonePipeline(OnCloneParameters parameters);
 }

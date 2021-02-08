@@ -62,6 +62,8 @@ class PatchCli {
 				cmdResults.result = doNotifyDb(patchClient,options)
 			} else if (options.od) {
 				cmdResults.result = onDemand(patchClient,options)
+			} else if (options.oc) {
+				cmdResults.result = onClone(patchClient, options)
 			}
 			cmdResults.returnCode = 0
 			return cmdResults
@@ -106,6 +108,7 @@ class PatchCli {
 			setup longOpt: 'setup', args:3, valueSeparator: ",", argName: 'patchNumber,successNotification,errorNotification', 'Starts setup for a patch, required before beeing ready to build', required: false
 			notifydb longOpt: 'notifdb', args:4, valueSeparator: ",", argName: "patchNumber,stage,successNotification,errorNotification", 'Notify the DB that a Job has been done successfully', required: false
 			od longOpt: 'onDemand', args:2, valueSeparator: ",", argName: "patchNumber,target", 'Starts an onDemand pipeline for the given patch on the given target', required: false
+			oc longOpt: 'onClone', args:3, valueSeparator: ",", argName: "listOfPatches,src,target", "Starts an onClone Pipeline for the given target, and re-assemble the list of patches", required: false
 		}
 
 		def options = cli.parse(args)
@@ -207,6 +210,13 @@ class PatchCli {
 			}
 		}
 
+		if(options.oc) {
+			if(options.ocs.size() != 3) {
+				println "listOfpatches, src and target are required when starting an onClone job"
+				error = true
+			}
+		}
+
 		if (error) {
 			cli.usage()
 			return null
@@ -266,6 +276,17 @@ class PatchCli {
 		NotificationParameters params = builder.build()
 		patchClient.notify(params)
 		return cmdResult
+	}
+
+
+	static def onClone(def patchClient, def options) {
+		def cmdResult = new Expando()
+		def listOfPatches = options.ocs[0]
+		def src = options.ocs[1]
+		def target = options.ocs[2]
+		OnCloneParameters params = OnCloneParameters.builder().patchNumbers(listOfPatches.split(";").collect().toSet()).src(src).target(target).build()
+		patchClient.startOnClonePipeline(params)
+		return cmdResult;
 	}
 
 	static def onDemand(def patchClient, def options) {
