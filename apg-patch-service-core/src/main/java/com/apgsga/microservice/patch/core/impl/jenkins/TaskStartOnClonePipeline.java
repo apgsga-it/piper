@@ -60,6 +60,7 @@ public class TaskStartOnClonePipeline implements Runnable {
             onCloneParameter.getPatchNumbers().forEach(patchNumber -> {
                 Patch p = preprocessor.retrievePatch(patchNumber);
                 onClonePatchParameters.add(OnClonePatchParameters.builder().patchNumber(patchNumber)
+                                                                           .target(onCloneParameter.getTarget())
                                                                            .dbObjectsAsVcsPath(p.getDbPatch().retrieveDbObjectsAsVcsPath())
                                                                            .dbObjects(p.getDbPatch().getDbObjects())
                                                                            .dbPatchTag(p.getDbPatch().getPatchTag())

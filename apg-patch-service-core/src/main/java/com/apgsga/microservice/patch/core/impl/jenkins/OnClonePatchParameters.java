@@ -15,6 +15,7 @@ import java.util.List;
 public class OnClonePatchParameters {
 
     String patchNumber;
+    String target;
     List<String> dbObjectsAsVcsPath;
     String dbPatchBranch;
     String dbPatchTag;
