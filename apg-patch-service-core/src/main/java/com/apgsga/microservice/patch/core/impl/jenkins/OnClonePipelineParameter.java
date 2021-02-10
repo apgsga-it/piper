@@ -2,7 +2,6 @@ package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import com.google.common.collect.Lists;
 import lombok.Builder;
 import lombok.Value;
 
@@ -15,7 +14,8 @@ public class OnClonePipelineParameter {
 
     String src;
     String target;
-    List<OnClonePatchParameters> patches;
+    List<OnCloneBuildParameters> buildParameters;
+    OnCloneAssembleAndDeployParameter adParameters;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class OnClonePipelineParameterBuilder {}

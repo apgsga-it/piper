@@ -9,10 +9,10 @@ import lombok.Value;
 
 import java.util.List;
 
-@JsonDeserialize(builder = OnClonePatchParameters.OnClonePatchParametersBuilder.class)
+@JsonDeserialize(builder = OnCloneBuildParameters.OnCloneBuildParametersBuilder.class)
 @Builder
 @Value
-public class OnClonePatchParameters {
+public class OnCloneBuildParameters {
 
     String patchNumber;
     String target;
@@ -26,5 +26,5 @@ public class OnClonePatchParameters {
     List<String> dbZipNames;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class OnClonePatchParametersBuilder {}
+    public static class OnCloneBuildParametersBuilder {}
 }

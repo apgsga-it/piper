@@ -56,25 +56,36 @@ public class TaskStartOnClonePipeline implements Runnable {
 
     private String pipelineOnCloneParameterAsJson() {
         try {
-            List<OnClonePatchParameters> onClonePatchParameters = Lists.newArrayList();
+            List<OnCloneBuildParameters> onCloneBuildParameters = Lists.newArrayList();
             onCloneParameter.getPatchNumbers().forEach(patchNumber -> {
                 Patch p = preprocessor.retrievePatch(patchNumber);
-                onClonePatchParameters.add(OnClonePatchParameters.builder().patchNumber(patchNumber)
-                                                                           .target(onCloneParameter.getTarget())
-                                                                           .dbObjectsAsVcsPath(p.getDbPatch().retrieveDbObjectsAsVcsPath())
-                                                                           .dbObjects(p.getDbPatch().getDbObjects())
-                                                                           .dbPatchTag(p.getDbPatch().getPatchTag())
-                                                                           .dbPatchBranch(p.getDbPatch().getDbPatchBranch())
-                                                                           .packagers(preprocessor.retrievePackagerInfoFor(Sets.newHashSet(patchNumber),onCloneParameter.getTarget()))
-                                                                           .dbZipNames(preprocessor.retrieveDbZipNames(Sets.newHashSet(patchNumber),onCloneParameter.getTarget()))
-                                                                           .dockerServices(p.getDockerServices())
-                                                                           .services(p.getServices()).build());
+                onCloneBuildParameters.add(OnCloneBuildParameters.builder()
+                        .patchNumber(patchNumber)
+                        .target(onCloneParameter.getTarget())
+                        .dbObjectsAsVcsPath(p.getDbPatch().retrieveDbObjectsAsVcsPath())
+                        .dbObjects(p.getDbPatch().getDbObjects())
+                        .dbPatchTag(p.getDbPatch().getPatchTag())
+                        .dbPatchBranch(p.getDbPatch().getDbPatchBranch())
+                        .packagers(preprocessor.retrievePackagerInfoFor(Sets.newHashSet(patchNumber),onCloneParameter.getTarget()))
+                        .dbZipNames(preprocessor.retrieveDbZipNames(Sets.newHashSet(patchNumber),onCloneParameter.getTarget()))
+                        .dockerServices(p.getDockerServices())
+                        .services(p.getServices())
+                        .build());
             });
 
-            OnClonePipelineParameter pipelineParameter = OnClonePipelineParameter.builder().target(onCloneParameter.getTarget())
-                                                                                           .src(onCloneParameter.getSrc())
-                                                                                           .patches(onClonePatchParameters)
-                                                                                           .build();
+            OnCloneAssembleAndDeployParameter adParams = OnCloneAssembleAndDeployParameter.builder()
+                    .target(onCloneParameter.getTarget())
+                    .packagers(preprocessor.retrievePackagerInfoFor(onCloneParameter.getPatchNumbers(),onCloneParameter.getTarget()))
+                    .dbZipNames(preprocessor.retrieveDbZipNames(onCloneParameter.getPatchNumbers(),onCloneParameter.getTarget()))
+                    .patchNumbers(onCloneParameter.getPatchNumbers())
+                    .build();
+
+            OnClonePipelineParameter pipelineParameter = OnClonePipelineParameter.builder()
+                    .target(onCloneParameter.getTarget())
+                    .src(onCloneParameter.getSrc())
+                    .buildParameters(onCloneBuildParameters)
+                    .adParameters(adParams)
+                    .build();
             LOGGER.info("OnClonePipelineParameter has been created with following info : " + pipelineParameter.toString());
             ObjectMapper om = new ObjectMapper();
             return om.writeValueAsString(pipelineParameter).replace("\"","\\\"");
