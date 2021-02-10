@@ -9,14 +9,13 @@ import lombok.Value;
 
 import java.util.List;
 
-@JsonDeserialize(builder = OnDemandPipelineParameter.OnDemandPipelineParameterBuilder.class)
+@JsonDeserialize(builder = OnCloneBuildParameters.OnCloneBuildParametersBuilder.class)
 @Builder
 @Value
-public class OnDemandPipelineParameter {
+public class OnCloneBuildParameters {
 
     String patchNumber;
     String target;
-    String developerBranch;
     List<String> dbObjectsAsVcsPath;
     String dbPatchBranch;
     String dbPatchTag;
@@ -27,5 +26,5 @@ public class OnDemandPipelineParameter {
     List<String> dbZipNames;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class OnDemandPipelineParameterBuilder {}
+    public static class OnCloneBuildParametersBuilder {}
 }

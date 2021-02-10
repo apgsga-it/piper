@@ -242,6 +242,20 @@ class PatchCliIntegrationTest extends Specification {
 			repo.clean()
 	}
 
+	def "Patch cli test onClone"() {
+		setup:
+			def client = PatchCli.create()
+		when:
+			client.process(["-sa", "src/test/resources/Patch5401.json"])
+			client.process(["-sa", "src/test/resources/Patch5402.json"])
+			def result = client.process(["-oc", "5401;5402,TEST-SRC,TEST-TARGET"])
+		then:
+			result != null
+			result.returnCode == 0
+		cleanup:
+			repo.clean()
+	}
+
 	def "Patch cli test notifydb"() {
 		setup:
 			def client = PatchCli.create()

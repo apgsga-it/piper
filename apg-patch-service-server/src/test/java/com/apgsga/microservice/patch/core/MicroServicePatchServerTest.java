@@ -356,6 +356,20 @@ public class MicroServicePatchServerTest {
 	}
 
 	@Test
+	public void testOnClonePipeline() {
+		Patch p = Patch.builder().patchNumber("5401").build();
+		Patch p2 = Patch.builder().patchNumber("5402").build();
+		patchService.save(p);
+		patchService.save(p2);
+		OnCloneParameters onCloneParameters = OnCloneParameters.builder()
+				.src("TEST-SRC")
+				.target("TEST_TARGET")
+				.patchNumbers(Sets.newHashSet("5401","5402"))
+				.build();
+		patchService.startOnClonePipeline(onCloneParameters);
+	}
+
+	@Test
 	// JHE : Test mainly done in order to test the syntax with Streams expression
 	public void testRetrieveASpecificTargetInstance() {
 

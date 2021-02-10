@@ -37,5 +37,10 @@ public class JenkinsMockClient implements JenkinsClient {
 		LOGGER.info("startOnDemandPipeline for : " + parameters.toString());
 	}
 
+	@Override
+	public void startOnClonePipeline(OnCloneParameters parameters) {
+		LOGGER.info("startOnClonePipeline for : " + parameters.toString());
+	}
+
 
 }

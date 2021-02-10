@@ -230,6 +230,13 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		patchService.startOnDemandPipeline(parameters);
 	}
 
+	@RequestMapping(value = "/onClone", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public void startOnClonePipeline(@RequestBody OnCloneParameters parameters) {
+		patchService.startOnClonePipeline(parameters);
+	}
+
 	@RequestMapping(value = "/patchIdsForStatus/{status}")
 	@ResponseBody
 	public List<String> patchIdsForStatus(@PathVariable("status") String statusCode) {

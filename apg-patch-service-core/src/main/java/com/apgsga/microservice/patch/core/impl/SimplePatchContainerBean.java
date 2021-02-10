@@ -346,6 +346,25 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
+	public void startOnClonePipeline(OnCloneParameters parameters) {
+		LOGGER.info("Starting onClone pipeline with following parameter: " + parameters.toString());
+		Asserts.notNullOrEmpty(parameters.getSrc(), "Src is required when starting an onClone pipeline");
+		Asserts.notNullOrEmpty(parameters.getTarget(), "target is required when starting an onClone pipeline");
+		Asserts.isTrue(!parameters.getTarget().equalsIgnoreCase(getProductionTargetName()), "clone target cannot be the production environment !!");
+		jenkinsClient.startOnClonePipeline(parameters);
+	}
+
+	private String getProductionTargetName() {
+		String targetName = "chpi211"; // Default
+		for(StageMapping stage : repo.stageMappings().getStageMappings()) {
+			if(stage.getName().equalsIgnoreCase("production")) {
+				targetName = stage.getTarget();
+			}
+		}
+		return targetName;
+	}
+
+	@Override
 	public void startAssembleAndDeployPipeline(AssembleAndDeployParameters parameters) {
 		LOGGER.info("Starting assemble and deploy Pipeline with following parameter: " + parameters.toString());
 		if(!parameters.getPatchNumbers().isEmpty()) {
