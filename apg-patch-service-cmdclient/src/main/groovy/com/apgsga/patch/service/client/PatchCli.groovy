@@ -102,13 +102,14 @@ class PatchCli {
 			build longOpt: 'build', args:4, valueSeparator: ",", argName: 'patchNumber,stage,successNotification,errorNotification', 'Build a patch for a stage. eg.: 8000,Informatiktest,doneOk', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
 			log longOpt: 'log', args:4, valueSeparator: ",", argName: 'patchNumber,target,step,text', 'Log a patch steps for a patch', required: false
-			adp longOpt: 'assembleDeployPipeline', args:4, valueSeparator: ",", argName: 'listOfPatches,target,successNotification,errorNotification', "starts an assembleAndDeploy pipeline. First parameters is a list seprated with ';'", required: false
+			adp longOpt: 'assembleDeployPipeline', args:3, valueSeparator: ",", argName: 'target,successNotification,errorNotification', "starts an assembleAndDeploy pipeline. First parameters is a list seprated with ';'", required: false
 			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "statusCode,destFolder", 'Copy patch files for a given status into the destfolder', required: false
-			i longOpt: 'install', args:4, valueSeparator: ",", argName: 'listOfPatches,target,successNotification,errorNotification', "starts an install pipeline for the given target. First parameters is a list seprated with ';'", required: false
+			i longOpt: 'install', args:3, valueSeparator: ",", argName: 'target,successNotification,errorNotification', "starts an install pipeline for the given target", required: false
 			setup longOpt: 'setup', args:3, valueSeparator: ",", argName: 'patchNumber,successNotification,errorNotification', 'Starts setup for a patch, required before beeing ready to build', required: false
 			notifydb longOpt: 'notifdb', args:4, valueSeparator: ",", argName: "patchNumber,stage,successNotification,errorNotification", 'Notify the DB that a Job has been done successfully', required: false
 			od longOpt: 'onDemand', args:2, valueSeparator: ",", argName: "patchNumber,target", 'Starts an onDemand pipeline for the given patch on the given target', required: false
-			oc longOpt: 'onClone', args:3, valueSeparator: ",", argName: "listOfPatches,src,target", "Starts an onClone Pipeline for the given target, and re-assemble the list of patches", required: false
+			oc longOpt: 'onClone', args:2, valueSeparator: ",", argName: "src,target", "Starts an onClone Pipeline for the given target, and re-assemble a list of patches", required: false
+			patches longOpt: 'patches', args:1, "List of patches as comma separated values", required: false
 		}
 
 		def options = cli.parse(args)
@@ -173,14 +174,20 @@ class PatchCli {
 			}
 		}
 		if (options.adp) {
-			if(options.adps.size() != 4) {
-				println "Following parameters are required: <listOfPatch>,<target>,<successNotification>,<errorNotification>"
+			if(options.adps.size() != 3) {
+				println "Following parameters are required: <target>,<successNotification>,<errorNotification>"
+				error = true
+			}
+			if(!validatePatchNumber(options)) {
 				error = true
 			}
 		}
 		if (options.i) {
-			if(options.is.size() != 4) {
-				println "Following parameters are required: <listOfPatch>,<target>,<successNotification>,<errorNotification>"
+			if(options.is.size() != 3) {
+				println "Following parameters are required: <target>,<successNotification>,<errorNotification>"
+				error = true
+			}
+			if(!validatePatchNumber(options)) {
 				error = true
 			}
 		}
@@ -211,8 +218,11 @@ class PatchCli {
 		}
 
 		if(options.oc) {
-			if(options.ocs.size() != 3) {
-				println "listOfpatches, src and target are required when starting an onClone job"
+			if(options.ocs.size() != 2) {
+				println "src and target are required when starting an onClone job"
+				error = true
+			}
+			if(!validatePatchNumber(options)) {
 				error = true
 			}
 		}
@@ -222,6 +232,21 @@ class PatchCli {
 			return null
 		}
 		options
+	}
+
+	static def validatePatchNumber(options) {
+		def isValid = true
+		if(!options.patches) {
+			println "patches parameter is required when starting an assembleAndDeploy job"
+			isValid = false
+		}
+		options.patchess[0].split(",").collect {it as String}.toSet().each {patchNumber ->
+			if(!patchNumber.isNumber()) {
+				println "One of the patch parameter is not a number !"
+				isValid = false
+			}
+		}
+		return isValid
 	}
 
 	static def cleanLocalMavenRepo(def patchClient) {
@@ -281,10 +306,14 @@ class PatchCli {
 
 	static def onClone(def patchClient, def options) {
 		def cmdResult = new Expando()
-		def listOfPatches = options.ocs[0]
-		def src = options.ocs[1]
-		def target = options.ocs[2]
-		OnCloneParameters params = OnCloneParameters.builder().patchNumbers(listOfPatches.split(";").collect().toSet()).src(src).target(target).build()
+		def src = options.ocs[0]
+		def target = options.ocs[1]
+		def listOfPatches = options.patchess[0]
+		OnCloneParameters params = OnCloneParameters.builder()
+				.patchNumbers(listOfPatches.split(",").collect {it as String}.toSet())
+				.src(src)
+				.target(target)
+				.build()
 		patchClient.startOnClonePipeline(params)
 		return cmdResult;
 	}
@@ -323,31 +352,31 @@ class PatchCli {
 	}
 
 	static def assembleAndDeployPipeline(def patchClient, def options) {
-		def listOfPatches = options.adps[0]
-		def target = options.adps[1]
-		def successNotification = options.adps[2]
-		def errorNotification = options.adps[3]
+		def target = options.adps[0]
+		def successNotification = options.adps[1]
+		def errorNotification = options.adps[2]
+		def listOfPatches = options.patchess[0]
 		println "Starting assembleAndDeploy pipeline for following patches ${listOfPatches} on target ${target} with successNotification=${successNotification} and errorNotification=${errorNotification}"
 		AssembleAndDeployParameters params = AssembleAndDeployParameters.builder()
 				.target(target)
 				.successNotification(successNotification)
 				.errorNotification(errorNotification)
-				.patchNumbers(listOfPatches.split(";").collect().toSet())
+				.patchNumbers(listOfPatches.split(",").collect {it as String}.toSet())
 				.build()
 		patchClient.startAssembleAndDeployPipeline(params)
 	}
 
 	static def installPipeline(def patchClient, def options) {
-		def listOfPatches = options.is[0]
-		def target = options.is[1]
-		def successNotification = options.is[2]
-		def errorNotification = options.is[3]
+		def target = options.is[0]
+		def successNotification = options.is[1]
+		def errorNotification = options.is[2]
+		def listOfPatches = options.patchess[0]
 		println "Starting install pipeline for following patches ${listOfPatches} on target ${target} with successNotification=${successNotification} and errorNotification=${errorNotification}"
 		InstallParameters params = InstallParameters.builder()
 					.target(target)
 					.successNotification(successNotification)
 					.errorNotification(errorNotification)
-				    .patchNumbers(listOfPatches.split(";").collect().toSet())
+				    .patchNumbers(listOfPatches.split(",").collect {it as String}.toSet())
 				    .build()
 		patchClient.startInstallPipeline(params)
 	}
