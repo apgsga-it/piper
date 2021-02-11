@@ -157,7 +157,7 @@ class PatchCliIntegrationTest extends Specification {
 		when:
 			client.process(["-sa", "src/test/resources/Patch5401.json"])
 			client.process(["-sa", "src/test/resources/Patch5402.json"])
-			def result = client.process(["-adp", "5401;5402,dev-jhe,success,error"])
+			def result = client.process(["-adp", "dev-jhe,success,error", "-patches", "5401,5402"])
 		then:
 			result.returnCode == 0
 			result.results != null
@@ -170,7 +170,7 @@ class PatchCliIntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-i", "5401;5402,dev-jhe,success,error"])
+			def result = client.process(["-i", "dev-jhe,success,error", "-patches", "5401,5402"])
 		then:
 			result.returnCode == 0
 			result.results != null
@@ -248,7 +248,7 @@ class PatchCliIntegrationTest extends Specification {
 		when:
 			client.process(["-sa", "src/test/resources/Patch5401.json"])
 			client.process(["-sa", "src/test/resources/Patch5402.json"])
-			def result = client.process(["-oc", "5401;5402,TEST-SRC,TEST-TARGET"])
+			def result = client.process(["-oc", "TEST-SRC,TEST-TARGET", "-patches", "5401,5402"])
 		then:
 			result != null
 			result.returnCode == 0
