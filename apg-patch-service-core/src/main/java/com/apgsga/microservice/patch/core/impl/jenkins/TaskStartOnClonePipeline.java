@@ -19,40 +19,76 @@ public class TaskStartOnClonePipeline implements Runnable {
 
     protected static final Log LOGGER = LogFactory.getLog(TaskStartOnClonePipeline.class.getName());
 
-    private final String ON_CLONE_JOB_PREFIX = "onClone";
+    private String jenkinsUrl;
+    private String jenkinsSshPort;
+    private String jenkinsSshUser;
+    private JenkinsPipelinePreprocessor preprocessor;
+    private OnCloneParameters onCloneParameter;
+    private CommandRunner cmdRunner;
+    private String jenkinsPipelineRepo;
+    private String jenkinsPipelineRepoBranch;
 
-    private final String jenkinsUrl;
-    private final String jenkinsSshPort;
-    private final String jenkinsSshUser;
-    private final JenkinsPipelinePreprocessor preprocessor;
-    private final OnCloneParameters onCloneParameter;
-    private final CommandRunner cmdRunner;
-
-    public TaskStartOnClonePipeline(String jenkinsUrl, String jenkinsSshPort, String jenkinsSshUser, JenkinsPipelinePreprocessor preprocessor, CommandRunner cmdRunner, OnCloneParameters onCloneParameter) {
-        super();
-        this.jenkinsUrl = jenkinsUrl;
-        this.jenkinsSshPort = jenkinsSshPort;
-        this.jenkinsSshUser = jenkinsSshUser;
-        this.preprocessor = preprocessor;
-        this.cmdRunner = cmdRunner;
-        this.onCloneParameter = onCloneParameter;
+    public static TaskStartOnClonePipeline create() {
+        return new TaskStartOnClonePipeline();
     }
 
-    public static Runnable create(String jenkinsUrl, String jenkinsSshPort, String jenkinsSshUser, JenkinsPipelinePreprocessor preprocessor, CommandRunner cmdRunner, OnCloneParameters onCloneParameter) {
-        return new TaskStartOnClonePipeline(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,preprocessor,cmdRunner,onCloneParameter);
+    public TaskStartOnClonePipeline jenkinsUrl(String jenkinsUrl) {
+        this.jenkinsUrl = jenkinsUrl;
+        return this;
+    }
+
+    public TaskStartOnClonePipeline jenkinsSshPort(String jenkinsSshPort) {
+        this.jenkinsSshPort = jenkinsSshPort;
+        return this;
+    }
+
+    public TaskStartOnClonePipeline jenkinsSshUser(String jenkinsSshUser) {
+        this.jenkinsSshUser = jenkinsSshUser;
+        return this;
+    }
+
+    public TaskStartOnClonePipeline preprocessor(JenkinsPipelinePreprocessor preprocessor) {
+        this.preprocessor = preprocessor;
+        return this;
+    }
+
+    public TaskStartOnClonePipeline cmdRunner(CommandRunner cmdRunner) {
+        this.cmdRunner = cmdRunner;
+        return this;
+    }
+
+    public TaskStartOnClonePipeline onCloneParameter(OnCloneParameters onCloneParameter) {
+        this.onCloneParameter = onCloneParameter;
+        return this;
+    }
+
+    public TaskStartOnClonePipeline jenkinsPipelineRepo(String jenkinsPipelineRepo) {
+        this.jenkinsPipelineRepo = jenkinsPipelineRepo;
+        return this;
+    }
+
+    public TaskStartOnClonePipeline jenkinsPipelineRepoBranch(String jenkinsPipelineRepoBranch) {
+        this.jenkinsPipelineRepoBranch = jenkinsPipelineRepoBranch;
+        return this;
     }
 
     @Override
     public void run() {
         LOGGER.info("Starting onClone Pipeline for following parameter : " + onCloneParameter.toString());
-        String jobName = ON_CLONE_JOB_PREFIX + onCloneParameter.getTarget();
-        Map<String,String> jobParameters = Maps.newHashMap();
-        jobParameters.put("PARAMETERS",pipelineOnCloneParameterAsJson());
-        LOGGER.info("OnClone Parameters passed to " + jobName + " Pipeline :" + jobParameters.toString());
-        JenkinsSshCommand buildPipelineCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForStartCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, jobName, jobParameters);
-        List<String> result = cmdRunner.run(buildPipelineCmd);
-        LOGGER.info("Result of OnClone Pipeline Job " + jobName + ", : " + result.toString());
+        Map<String,String> parameters = Maps.newHashMap();
+        parameters.put("target", onCloneParameter.getTarget() );
+        parameters.put("jobPreFix", "onClone");
+        parameters.put("parameter", pipelineOnCloneParameterAsJson());
+        parameters.put("github_repo", jenkinsPipelineRepo);
+        parameters.put("github_repo_branch", jenkinsPipelineRepoBranch);
+        // TODO (jhe,che) : Make configurable
+        // TODO (jhe, che) : possibly more logging
+        parameters.put("script_path", "src/main/groovy/onClonePipeline.groovy");
+        JenkinsSshCommand cmd = JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, "GenericPipelineJobBuilder", parameters);
+        cmdRunner.run(cmd);
     }
+
+
 
     private String pipelineOnCloneParameterAsJson() {
         try {
@@ -66,8 +102,8 @@ public class TaskStartOnClonePipeline implements Runnable {
                         .dbObjects(p.getDbPatch().getDbObjects())
                         .dbPatchTag(p.getDbPatch().getPatchTag())
                         .dbPatchBranch(p.getDbPatch().getDbPatchBranch())
-                        .packagers(preprocessor.retrievePackagerInfoFor(Sets.newHashSet(patchNumber),onCloneParameter.getTarget()))
-                        .dbZipNames(preprocessor.retrieveDbZipNames(Sets.newHashSet(patchNumber),onCloneParameter.getTarget()))
+                        .packagers(preprocessor.retrievePackagerInfoFor(Sets.newHashSet(patchNumber), onCloneParameter.getTarget()))
+                        .dbZipNames(preprocessor.retrieveDbZipNames(Sets.newHashSet(patchNumber), onCloneParameter.getTarget()))
                         .dockerServices(p.getDockerServices())
                         .services(p.getServices())
                         .build());
@@ -75,8 +111,8 @@ public class TaskStartOnClonePipeline implements Runnable {
 
             OnCloneAssembleAndDeployParameter adParams = OnCloneAssembleAndDeployParameter.builder()
                     .target(onCloneParameter.getTarget())
-                    .packagers(preprocessor.retrievePackagerInfoFor(onCloneParameter.getPatchNumbers(),onCloneParameter.getTarget()))
-                    .dbZipNames(preprocessor.retrieveDbZipNames(onCloneParameter.getPatchNumbers(),onCloneParameter.getTarget()))
+                    .packagers(preprocessor.retrievePackagerInfoFor(onCloneParameter.getPatchNumbers(), onCloneParameter.getTarget()))
+                    .dbZipNames(preprocessor.retrieveDbZipNames(onCloneParameter.getPatchNumbers(), onCloneParameter.getTarget()))
                     .patchNumbers(onCloneParameter.getPatchNumbers())
                     .build();
 
@@ -88,10 +124,13 @@ public class TaskStartOnClonePipeline implements Runnable {
                     .build();
             LOGGER.info("OnClonePipelineParameter has been created with following info : " + pipelineParameter.toString());
             ObjectMapper om = new ObjectMapper();
-            return om.writeValueAsString(pipelineParameter).replace("\"","\\\"");
+            return om.writeValueAsString(pipelineParameter).replace("\"", "\\\"");
         } catch (Exception e) {
             LOGGER.error("Error while creating OnClonePipelineParameter : " + e.getMessage());
             throw ExceptionFactory.create("Exception : Create Json PARAMETERS for onClone : " + onCloneParameter.toString());
         }
     }
 }
+
+
+
