@@ -117,7 +117,16 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	@Override
 	public void startOnClonePipeline(OnCloneParameters parameters) {
-		threadExecutor.execute(TaskStartOnClonePipeline.create(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,preprocessor,cmdRunner,parameters));
+		TaskStartOnClonePipeline runnable = TaskStartOnClonePipeline.create()
+				.jenkinsUrl(jenkinsUrl)
+				.jenkinsSshPort(jenkinsSshPort)
+				.jenkinsSshUser(jenkinsSshUser)
+				.preprocessor(preprocessor)
+				.cmdRunner(cmdRunner)
+		        .onCloneParameter(parameters)
+				.jenkinsPipelineRepo(jenkinsPipelineRepo)
+				.jenkinsPipelineRepoBranch(jenkinsPipelineRepoBranch);
+		threadExecutor.execute(runnable);
 	}
 
 	private String formatParameterAsJsonForPipeline(Object obj) {
