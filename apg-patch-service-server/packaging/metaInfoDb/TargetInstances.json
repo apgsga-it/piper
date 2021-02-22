@@ -1,106 +1,1036 @@
 {
   "targetInstances": [
     {
-      "name": "DEV-CHPI211",
+      "name": "CHPI211",
       "services": [
         {
-          "installationHost": "dev-chpi211.apgsga.ch",
+          "installationHost": "<instllationHost>",
           "serviceName": "it21-db",
           "serviceType": "oracle-db"
         },
         {
-          "installationHost": "dev-ds.apgsga.ch",
+          "installationHost": "<instllationHost>",
           "serviceName": "ds-db",
           "serviceType": "oracle-db"
         },
         {
-          "installationHost": "dev-digiflex-p.apgsga.ch",
-          "serviceName": "digiflex",
-          "serviceType": "linuxservice"
-        },
-        {
-          "installationHost": "dev-jadas-p.apgsga.ch",
+          "installationHost": "<instllationHost>",
           "serviceName": "jadas",
           "serviceType": "linuxservice"
         },
         {
-          "installationHost": "dev-service-chpi211.apgsga.ch",
+          "installationHost": "<instllationHost>",
           "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         }
       ]
     },
     {
-      "name": "DEV-CHQI211",
+      "name": "CHEI211",
       "services": [
         {
-          "installationHost": "dev-chqi211.apgsga.ch",
+          "installationHost": "<instllationHost>",
           "serviceName": "it21-db",
           "serviceType": "oracle-db"
         },
         {
-          "installationHost": "dev-service-chqi211.apgsga.ch",
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
           "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         }
       ]
     },
     {
-      "name": "DEV-CHTI211",
+      "name": "CHEI212",
       "services": [
         {
-          "installationHost": "dev-chti211.apgsga.ch",
+          "installationHost": "<instllationHost>",
           "serviceName": "it21-db",
           "serviceType": "oracle-db"
         },
         {
-          "installationHost": "dev-ds.apgsga.ch",
+          "installationHost": "<instllationHost>",
           "serviceName": "ds-db",
           "serviceType": "oracle-db"
         },
         {
-          "installationHost": "dev-digiflex-t.apgsga.ch",
-          "serviceName": "digiflex",
-          "serviceType": "linuxservice"
-        },
-        {
-          "installationHost": "dev-jadas-t.apgsga.ch",
+          "installationHost": "<instllationHost>",
           "serviceName": "jadas",
           "serviceType": "linuxservice"
         },
         {
-          "installationHost": "dev-service-chti211.apgsga.ch",
+          "installationHost": "<instllationHost>",
           "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         }
       ]
     },
     {
-      "name": "DEV-CHEI211",
+      "name": "CHTI211",
       "services": [
         {
-          "installationHost": "dev-chei211.apgsga.ch",
+          "installationHost": "<instllationHost>",
           "serviceName": "it21-db",
           "serviceType": "oracle-db"
         },
         {
-          "installationHost": "dev-ds.apgsga.ch",
+          "installationHost": "<instllationHost>",
           "serviceName": "ds-db",
           "serviceType": "oracle-db"
         },
         {
-          "installationHost": "dev-digiflex-e.apgsga.ch",
-          "serviceName": "digiflex",
-          "serviceType": "linuxservice"
-        },
-        {
-          "installationHost": "dev-jadas-e.apgsga.ch",
+          "installationHost": "<instllationHost>",
           "serviceName": "jadas",
           "serviceType": "linuxservice"
         },
         {
-          "installationHost": "dev-service-chei211.apgsga.ch",
+          "installationHost": "<instllationHost>",
           "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "CHTI212",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "CHTI214",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "CHTI215",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "CHTI216",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-ABL",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-APO",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-BEN",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-CM",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-DAH",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-DRO",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-DRO1",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-FAKTURIERUNG",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-JHE",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-MVB",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-PAV",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-PHS",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-RLA",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-STB",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-UGE",
+      "services": [
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "it21_ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "echoservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "calctestservice",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "<instllationHost>",
+          "serviceName": "test-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         }
       ]

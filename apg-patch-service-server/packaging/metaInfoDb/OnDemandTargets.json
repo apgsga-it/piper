@@ -1,8 +1,24 @@
 {
   "onDemandTargets": [
-    "DEV-CHEI212",
-    "DEV-CHEI211",
+    "CHEI212",
+    "CHTI212",
+    "CHTI214",
+    "CHTI215",
+    "CHTI216",
+    "DEV-ABL",
+    "DEV-APO",
+    "DEV-BEN",
     "DEV-CM",
-    "DEV-JHE"
+    "DEV-DAH",
+    "DEV-DRO",
+    "DEV-DRO1",
+    "DEV-FAKTURIERUNG",
+    "DEV-JHE",
+    "DEV-MVB",
+    "DEV-PAV",
+    "DEV-PHS",
+    "DEV-RLA",
+    "DEV-STB",
+    "DEV-UGE"
   ]
 }
