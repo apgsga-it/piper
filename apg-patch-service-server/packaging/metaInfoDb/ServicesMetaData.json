@@ -47,6 +47,42 @@
       ]
     },
     {
+      "serviceName": "it21-ui",
+      "revisionPkgName": "it21-ui-pkgs/revision",
+      "bomCoordinates": {
+        "artifactId": "dm-bom",
+        "groupId": "com.affichage.common.maven",
+        "name": "_dm_bom",
+        "version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
+        "dependencyLevel": 0
+      },
+      "microServiceBranch": "it21_release_9_1_1_admin_uimig",
+      "baseVersionNumber": "9.1.0",
+      "revisionMnemoPart": "ADMIN-UIMIG",
+      "packages": [
+        {
+          "packagerName": "it21-ui-pkgs/ui",
+          "pkgServiceName": "it21-ui",
+          "starterCoordinates": [
+            "com.affichage.it21.ui:it21-ui-runtime",
+            "com.apgsga.it21.ui.mdt:it21ui-app-starter",
+            "com.apgsga.it21.ui.mdt:javaforms-starter",
+            "com.apgsga.it21:lasttests-jfmt",
+            "org.springframework.boot:spring-boot-starter-tomcat",
+            "moyosoft:moyocore_x64:3.0.4:@dll"
+          ]
+        },
+        {
+          "packagerName": "it21-ui-pkgs/server",
+          "pkgServiceName": "jadas",
+          "starterCoordinates": [
+            "com.apgsga.it21.ui.mdt:jadas-app-starter",
+            "com.apgsga.it21.ui.mdt:jadas-framework-starter"
+          ]
+        }
+      ]
+    },
+    {
       "serviceName": "it21-test-ui",
       "revisionPkgName": "apg-gradle-plugins-testsmodules-3/testapp-3/testapp-revision-pkg-3",
       "bomCoordinates": {
