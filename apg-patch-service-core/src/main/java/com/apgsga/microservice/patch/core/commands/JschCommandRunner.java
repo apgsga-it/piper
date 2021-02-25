@@ -65,6 +65,7 @@ public class JschCommandRunner implements CommandRunner {
 			if (channel.getExitStatus() > 0) {
 				LOGGER.warn("Command : " + command + " returning with exit code: " + channel.getExitStatus());
 			}
+			resultLines.add("SSHExistStatus=" + channel.getExitStatus());
 			channel.disconnect();
 		} catch (Exception e) {
 			throw ExceptionFactory.create("Exception : <%s>  running remote ssh command %s",e,
