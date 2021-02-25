@@ -141,12 +141,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private Patch preProcessSave(Patch patch) {
 		DBPatch dbPatch = DBPatch.builder().dbPatchBranch(DB_PATCH_BRANCH_PREFIX + patch.getPatchNumber()).prodBranch(DB_PROD_BRANCH).build();
 		patch = patch.toBuilder().dbPatch(dbPatch).build();
-		if(!dbPatchBranchExist(patch)) {
-			LOGGER.warn("DB Patch Branch for patch " + patch.getPatchNumber() + " did not exist -> will now be created.");
-			createBranchForDbModules(patch);
-		}
 		if (!repo.patchExists(patch.getPatchNumber())) {
 			jenkinsClient.createPatchPipelines(patch);
+			if(!dbPatchBranchExist(patch)) {
+				LOGGER.warn("DB Patch Branch for patch " + patch.getPatchNumber() + " did not exist -> will now be created.");
+				createBranchForDbModules(patch);
+			}
 		}
 		return patch;
 	}
