@@ -20,7 +20,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -65,7 +65,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -110,7 +110,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -155,7 +155,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -200,7 +200,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -245,7 +245,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -290,7 +290,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -335,7 +335,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -380,7 +380,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -425,7 +425,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -470,7 +470,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -515,7 +515,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -560,7 +560,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -605,7 +605,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -650,7 +650,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -695,7 +695,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -740,7 +740,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -785,7 +785,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -830,7 +830,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -875,7 +875,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -920,7 +920,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -965,7 +965,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
@@ -1010,7 +1010,7 @@
         },
         {
           "installationHost": "<instllationHost>",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         },
         {
