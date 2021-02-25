@@ -50,6 +50,7 @@
 		"com.affichage.it21.resource",
 		"test.apgsga.jenkins-pipeline.it21-patch",
 		"testdbAnotherdbModule",
-		"testdbmodule"
+		"testdbmodule",
+		"piperCheckForBranch"
 	]
 }

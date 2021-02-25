@@ -3,9 +3,11 @@ package com.apgsga.microservice.patch.core.impl;
 import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.*;
+import com.apgsga.microservice.patch.core.commands.Command;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
+import com.apgsga.microservice.patch.core.commands.patch.vcs.RmTmpCheckoutFolder;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.google.common.base.Strings;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +52,14 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Autowired
 	private ArtifactDependencyResolver dependencyResolver;
 
-	@Value("${db.patch.branch.prefix:Patch_}")
+	@Value("${db.patch.branch.prefix:Ms_patch_}")
 	private String DB_PATCH_BRANCH_PREFIX;
 
 	@Value("${db.prod.branch:prod}")
 	private String DB_PROD_BRANCH;
+
+	@Value("${cvs.check.for.branch.project.name:piperCheckForBranch}")
+	private String PIPER_CHECK_FOR_BRANCH_PROJECT_NAME;
 
 	public SimplePatchContainerBean() {
 		super();
@@ -136,10 +142,36 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		if (!repo.patchExists(patch.getPatchNumber())) {
 			DBPatch dbPatch = DBPatch.builder().dbPatchBranch(DB_PATCH_BRANCH_PREFIX + patch.getPatchNumber()).prodBranch(DB_PROD_BRANCH).build();
 			patch = patch.toBuilder().dbPatch(dbPatch).build();
-			createBranchForDbModules(patch);
 			jenkinsClient.createPatchPipelines(patch);
+			if(!dbPatchBranchExist(patch)) {
+				LOGGER.warn("DB Patch Branch for patch " + patch.getPatchNumber() + " did not exist -> will now be created.");
+				createBranchForDbModules(patch);
+			}
 		}
 		return patch;
+	}
+
+	private boolean dbPatchBranchExist(Patch patch) {
+		final CommandRunner sshCommandRunner = sshCommandRunnerFactory.create();
+		sshCommandRunner.preProcess();
+
+		String tempCheckoutFolder = PIPER_CHECK_FOR_BRANCH_PROJECT_NAME + "_" + new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+
+		LOGGER.info("Verifying if DB Patch Branch for patch " + patch.getPatchNumber() + " exists. Checkout will be done remotely on CVS server within /home/svcCvsClient/" + tempCheckoutFolder);
+
+		Command coCvsCmd = PatchSshCommand.createCoCvsModuleToDirectoryCmd(patch.getDbPatch().getDbPatchBranch(), patch.getDbPatch().getProdBranch(), Lists.newArrayList(PIPER_CHECK_FOR_BRANCH_PROJECT_NAME), "-d " + tempCheckoutFolder);
+		List<String> result = sshCommandRunner.run(coCvsCmd);
+
+		if(!result.contains("SSHExistStatus=0")) {
+			return false;
+		}
+
+		// Delete the remote temp folder
+		RmTmpCheckoutFolder rmFolderCmd = new RmTmpCheckoutFolder(tempCheckoutFolder);
+		sshCommandRunner.run(rmFolderCmd);
+		sshCommandRunner.postProcess();
+
+		return true;
 	}
 
 	@Override
