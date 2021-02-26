@@ -47,7 +47,7 @@
       ]
     },
     {
-      "serviceName": "it21-ui",
+      "serviceName": "it21",
       "revisionPkgName": "it21-ui-pkgs/revision",
       "bomCoordinates": {
         "artifactId": "dm-bom",
