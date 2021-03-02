@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -14,7 +15,7 @@ import java.util.Set;
 @Value
 public class InstallPipelineParameter {
 
-    Set<String> patchNumbers;
+    LinkedHashSet<String> patchNumbers;
     String target;
     String successNotification;
     String errorNotification;

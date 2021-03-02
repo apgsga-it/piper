@@ -315,9 +315,13 @@ public class MicroServicePatchServerTest {
 
 	@Test
 	public void testStartInstallPipeline() {
+
+		LinkedHashSet patchNumbers = Sets.newLinkedHashSet();
+		patchNumbers.add("5401");
+
 		InstallParameters params = InstallParameters.builder()
 				.target("dev-jhe")
-				.patchNumbers(Sets.newHashSet("5401"))
+				.patchNumbers(patchNumbers)
 				.successNotification("success")
 				.errorNotification("error")
 				.build();

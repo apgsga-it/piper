@@ -379,11 +379,17 @@ class PatchCli {
 		def errorNotification = options.is[2]
 		def listOfPatches = options.patchess[0]
 		println "Starting install pipeline for following patches ${listOfPatches} on target ${target} with successNotification=${successNotification} and errorNotification=${errorNotification}"
+
+		Set<String> listOfPatchesAsSet = Sets.newLinkedHashSet()
+		listOfPatches.split(",").each {p ->
+			listOfPatchesAsSet.add(p)
+		}
+
 		InstallParameters params = InstallParameters.builder()
 					.target(target)
 					.successNotification(successNotification)
 					.errorNotification(errorNotification)
-				    .patchNumbers(listOfPatches.split(",").collect {it as String}.toSet())
+				    .patchNumbers(listOfPatchesAsSet)
 				    .build()
 		patchClient.startInstallPipeline(params)
 	}
