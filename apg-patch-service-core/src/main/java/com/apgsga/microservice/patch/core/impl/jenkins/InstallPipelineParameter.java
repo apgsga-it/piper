@@ -20,6 +20,7 @@ public class InstallPipelineParameter {
     String successNotification;
     String errorNotification;
     List<PackagerInfo> packagers;
+    Boolean installDbPatch;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class InstallPipelineParameterBuilder {}

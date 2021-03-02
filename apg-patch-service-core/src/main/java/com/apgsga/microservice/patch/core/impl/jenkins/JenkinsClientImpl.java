@@ -103,6 +103,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 				.successNotification(parameters.getSuccessNotification())
 				.patchNumbers(parameters.getPatchNumbers())
 				.packagers(preprocessor.retrievePackagerInfoFor(parameters.getPatchNumbers(),parameters.getTarget()))
+				.installDbPatch(preprocessor.needInstallDbPatchFor(parameters.getPatchNumbers()))
 				.build();
 		startGenericPipelineJobBuilder("install",
 				jenkinsPipelineInstallScript,

@@ -76,6 +76,16 @@ public class JenkinsPipelinePreprocessor {
         return dbZipNames;
     }
 
+    public boolean needInstallDbPatchFor(Set<String> patchNumbers) {
+        for(String patchNumber : patchNumbers) {
+            Patch patch = backend.findById(patchNumber);
+            if(!patch.getDbPatch().getDbObjects().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<Package> packagesFor(Service service) {
         return backend.packagesFor(service);
     }
