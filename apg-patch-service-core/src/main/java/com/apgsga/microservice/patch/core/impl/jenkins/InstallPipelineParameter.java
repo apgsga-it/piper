@@ -21,6 +21,7 @@ public class InstallPipelineParameter {
     String errorNotification;
     List<PackagerInfo> packagers;
     Boolean installDbPatch;
+    String dbZipInstallFrom;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class InstallPipelineParameterBuilder {}

@@ -104,6 +104,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 				.patchNumbers(parameters.getPatchNumbers())
 				.packagers(preprocessor.retrievePackagerInfoFor(parameters.getPatchNumbers(),parameters.getTarget()))
 				.installDbPatch(preprocessor.needInstallDbPatchFor(parameters.getPatchNumbers()))
+				.dbZipInstallFrom(preprocessor.retrieveDbDeployInstallerHost(parameters.getTarget()))
 				.build();
 		startGenericPipelineJobBuilder("install",
 				jenkinsPipelineInstallScript,
