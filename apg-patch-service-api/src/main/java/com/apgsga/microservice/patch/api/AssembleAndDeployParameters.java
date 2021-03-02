@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @JsonDeserialize(builder = AssembleAndDeployParameters.AssembleAndDeployParametersBuilder.class)
@@ -14,7 +15,7 @@ import java.util.Set;
 public class AssembleAndDeployParameters {
 
     @Builder.Default
-    Set<String> patchNumbers = Sets.newHashSet();
+    LinkedHashSet<String> patchNumbers = Sets.newLinkedHashSet();
     String target;
     String successNotification;
     String errorNotification;

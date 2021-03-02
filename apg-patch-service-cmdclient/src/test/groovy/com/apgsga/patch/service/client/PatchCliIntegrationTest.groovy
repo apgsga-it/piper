@@ -157,7 +157,7 @@ class PatchCliIntegrationTest extends Specification {
 		when:
 			client.process(["-sa", "src/test/resources/Patch5401.json"])
 			client.process(["-sa", "src/test/resources/Patch5402.json"])
-			def result = client.process(["-adp", "dev-jhe,success,error", "-patches", "5401,5402"])
+			def result = client.process(["-adp", "dev-jhe,success,error", "-patches", "5402,5401"])
 		then:
 			result.returnCode == 0
 			result.results != null

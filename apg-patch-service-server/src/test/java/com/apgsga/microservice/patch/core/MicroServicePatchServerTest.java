@@ -30,6 +30,7 @@ import org.springframework.util.FileCopyUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -278,11 +279,16 @@ public class MicroServicePatchServerTest {
 		Patch p2 = Patch.builder().patchNumber("5402").build();
 		patchService.save(p);
 		patchService.save(p2);
+
+		LinkedHashSet<String> patchNumbers = Sets.newLinkedHashSet();
+		patchNumbers.add("5401");
+		patchNumbers.add("5402");
+
 		AssembleAndDeployParameters params = AssembleAndDeployParameters.builder()
 											.target("DEV-JHE")
 											.errorNotification("error")
 											.successNotification("success")
-											.patchNumbers(Sets.newHashSet("5401","5402"))
+											.patchNumbers(patchNumbers)
 											.build();
 		patchService.startAssembleAndDeployPipeline(params);
 	}
@@ -293,11 +299,16 @@ public class MicroServicePatchServerTest {
 		Patch p2 = Patch.builder().patchNumber("5402").build();
 		patchService.save(p);
 		patchService.save(p2);
+
+		LinkedHashSet<String> patchNumbers = Sets.newLinkedHashSet();
+		patchNumbers.add("5401");
+		patchNumbers.add("5402");
+
 		AssembleAndDeployParameters params = AssembleAndDeployParameters.builder()
 					.target("DEV-JHE")
 					.errorNotification("error")
 					.successNotification("success")
-					.patchNumbers(Sets.newHashSet("5401","5402"))
+					.patchNumbers(patchNumbers)
 					.build();
 		patchService.startAssembleAndDeployPipeline(params);
 	}

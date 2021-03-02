@@ -3,6 +3,7 @@ package com.apgsga.patch.service.client
 import com.apgsga.microservice.patch.api.*
 import com.apgsga.patch.service.client.rest.PatchRestServiceClient
 import com.google.common.collect.Maps
+import com.google.common.collect.Sets
 import org.codehaus.groovy.runtime.StackTraceUtils
 
 class PatchCli {
@@ -357,11 +358,17 @@ class PatchCli {
 		def errorNotification = options.adps[2]
 		def listOfPatches = options.patchess[0]
 		println "Starting assembleAndDeploy pipeline for following patches ${listOfPatches} on target ${target} with successNotification=${successNotification} and errorNotification=${errorNotification}"
+
+		Set<String> listOfPatchesAsSet = Sets.newLinkedHashSet()
+		listOfPatches.split(",").each {p ->
+			listOfPatchesAsSet.add(p)
+		}
+
 		AssembleAndDeployParameters params = AssembleAndDeployParameters.builder()
 				.target(target)
 				.successNotification(successNotification)
 				.errorNotification(errorNotification)
-				.patchNumbers(listOfPatches.split(",").collect {it as String}.toSet())
+				.patchNumbers(listOfPatchesAsSet)
 				.build()
 		patchClient.startAssembleAndDeployPipeline(params)
 	}
