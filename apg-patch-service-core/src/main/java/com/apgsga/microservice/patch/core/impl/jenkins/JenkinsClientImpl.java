@@ -87,6 +87,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 					.target(parameters.getTarget())
 					.packagers(preprocessor.retrievePackagerInfoFor(parameters.getPatchNumbers(),parameters.getTarget()))
 					.dbZipNames(preprocessor.retrieveDbZipNames(parameters.getPatchNumbers(),parameters.getTarget()))
+				    .dbZipDeployTarget(preprocessor.retrieveDbDeployInstallerHost(parameters.getTarget()))
 					.build();
 		startGenericPipelineJobBuilder("assembleAndDeploy",
 				jenkinsPipelineAssembleScript,

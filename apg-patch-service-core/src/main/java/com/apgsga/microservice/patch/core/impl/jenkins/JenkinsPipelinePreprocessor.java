@@ -25,6 +25,7 @@ public class JenkinsPipelinePreprocessor {
 
 
     public static final String ENTWICKLUNG_STAGE = "entwicklung";
+    public static final String IT_21_DB_SERVICE_NAME = "it21-db";
 
     @SuppressWarnings("unused")
     @Autowired
@@ -94,5 +95,16 @@ public class JenkinsPipelinePreprocessor {
             });
         });
         return packagers;
+    }
+
+    public String retrieveDbDeployInstallerHost(String target) {
+        LOGGER.info("Retrieving db deploy target for target " + target);
+        Optional<TargetInstance> ti = backend.targetInstances().getTargetInstances().stream().filter(f -> f.getName().equalsIgnoreCase(target)).findFirst();
+        Asserts.notNull(ti,"No targetInstance has been found for %s",target);
+        Asserts.isTrue(ti.isPresent(),"No targetInstance has been found for %s",target);
+        Optional<ServiceInstallation> si = ti.get().getServices().stream().filter(s -> s.getServiceName().equalsIgnoreCase(IT_21_DB_SERVICE_NAME)).findFirst();
+        Asserts.notNull(si,"No Service has been found for %s",IT_21_DB_SERVICE_NAME);
+        Asserts.isTrue(si.isPresent(),"No Service has been found for %s",IT_21_DB_SERVICE_NAME);
+        return si.get().getInstallationHost();
     }
 }
