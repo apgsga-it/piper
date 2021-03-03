@@ -70,6 +70,7 @@ public class TaskStartOnDemandPipeline implements Runnable {
                     .services(patch.getServices())
                     .packagers(preprocessor.retrievePackagerInfoFor(Sets.newHashSet(onDemandParameter.getPatchNumber()),onDemandParameter.getTarget()))
                     .dbZipNames(preprocessor.retrieveDbZipNames(Sets.newHashSet(onDemandParameter.getPatchNumber()),onDemandParameter.getTarget()))
+                    .dbZipDeployTarget(preprocessor.retrieveDbDeployInstallerHost(onDemandParameter.getTarget()))
                     .build();
             LOGGER.info("onDemandPipelineParameter has been created with following info : " + onDemandPipelineParameter.toString());
             ObjectMapper om = new ObjectMapper();

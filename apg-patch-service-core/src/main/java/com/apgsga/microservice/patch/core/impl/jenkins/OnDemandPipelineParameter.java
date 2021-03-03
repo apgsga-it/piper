@@ -25,6 +25,7 @@ public class OnDemandPipelineParameter {
     List<Service> services;
     List<PackagerInfo> packagers;
     List<String> dbZipNames;
+    String dbZipDeployTarget;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class OnDemandPipelineParameterBuilder {}
