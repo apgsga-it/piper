@@ -260,7 +260,7 @@ class PatchCliIntegrationTest extends Specification {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-notifydb", "5401,Informatiktest,,notok"])
+			def result = client.process(["-notifydb", "5401,CHEI212,notok"])
 		then:
 			result != null
 			result.returnCode == 0
@@ -268,7 +268,6 @@ class PatchCliIntegrationTest extends Specification {
 		cleanup:
 			repo.clean()
 	}
-
 
 	// Preconditions for Tests used via Spock @Require
 	static def dbConnection() {

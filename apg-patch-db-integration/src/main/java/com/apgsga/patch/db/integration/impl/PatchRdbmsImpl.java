@@ -30,15 +30,12 @@ public class PatchRdbmsImpl implements PatchRdbms {
     public void notify(NotificationParameters params) {
         LOGGER.info("Notifying DB for : " + params.toString());
 
-
-        // JHE (02.03.21) : Quick and dirty just ot be sure DB call is working ...
-        //                  Will be correctly implemented as soon as correct store proc on DB will be ready (cm_patch_workflow_f_pa.notify_action_response)
-
-        String sql = "{call cm.cm_utility_pa.testJhe(:p_param1,:p_param2)}";
+        String sql = "{call cm.cm_patch_workflow_f_pa.notify_action_response(:p_list_of_patches,:p_installation_target,:p_status_message)}";
 
         MapSqlParameterSource sqlParamMap = new MapSqlParameterSource();
-        sqlParamMap.addValue("p_param1", "error = " + params.getErrorNotification());
-        sqlParamMap.addValue("p_param2", "success = " + params.getSuccessNotification());
+        sqlParamMap.addValue("p_list_of_patches", params.getPatchNumbers());
+        sqlParamMap.addValue("p_installation_target", params.getInstallationTarget());
+        sqlParamMap.addValue("p_status_message", params.getNotification());
 
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
         template.execute(sql, sqlParamMap, new PreparedStatementCallback<Object>() {

@@ -107,7 +107,7 @@ class PatchCli {
 			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "statusCode,destFolder", 'Copy patch files for a given status into the destfolder', required: false
 			i longOpt: 'install', args:3, valueSeparator: ",", argName: 'target,successNotification,errorNotification', "starts an install pipeline for the given target", required: false
 			setup longOpt: 'setup', args:3, valueSeparator: ",", argName: 'patchNumber,successNotification,errorNotification', 'Starts setup for a patch, required before beeing ready to build', required: false
-			notifydb longOpt: 'notifdb', args:4, valueSeparator: ",", argName: "patchNumber,stage,successNotification,errorNotification", 'Notify the DB that a Job has been done successfully', required: false
+			notifydb longOpt: 'notifdb', args:3, valueSeparator: ",", argName: "patchNumbers,installationTarget,notification", 'Notify the DB on Job Status', required: false
 			od longOpt: 'onDemand', args:2, valueSeparator: ",", argName: "patchNumber,target", 'Starts an onDemand pipeline for the given patch on the given target', required: false
 			oc longOpt: 'onClone', args:2, valueSeparator: ",", argName: "src,target", "Starts an onClone Pipeline for the given target, and re-assemble a list of patches", required: false
 			patches longOpt: 'patches', args:1, "List of patches as comma separated values", required: false
@@ -193,13 +193,8 @@ class PatchCli {
 			}
 		}
 		if (options.notifydb) {
-			if (options.notifydbs.size() != 4 ) {
-				println "Option sta needs 4 arguments: <patchNumber,stage,successnotification,errorNotification>"
-				error = true
-			}
-			def patchNumber = options.notifydbs[0]
-			if (!patchNumber.isInteger()) {
-				println "Patchnumber ${patchNumber} is not a Integer"
+			if (options.notifydbs.size() != 3 ) {
+				println "Option notifyDb needs 3 arguments: <patchNumbers,installationTarget,notification>"
 				error = true
 			}
 		}
@@ -286,19 +281,16 @@ class PatchCli {
 
 	static def doNotifyDb(def patchClient, def options) {
 		def cmdResult = new Expando()
-		def patchNumber = options.notifydbs[0]
-		def stage = options.notifydbs[1]
-		def successNotification = options.notifydbs[2]
-		def errorNotification = options.notifydbs[3]
-		cmdResult.patchNumber = patchNumber
-		cmdResult.stage = stage
-		cmdResult.successNotification = successNotification
-		cmdResult.errorNotification = errorNotification
+		def patchNumbers = options.notifydbs[0]
+		def target = options.notifydbs[1]
+		def notification = options.notifydbs[2]
+		cmdResult.patchNumbers = patchNumbers
+		cmdResult.target = target
+		cmdResult.notification = notification
 		def builder = NotificationParameters.builder()
-		builder = builder.patchNumber(patchNumber)
-		builder = builder.stage(stage)
-		builder = builder.successNotification(successNotification)
-		builder = builder.errorNotification(errorNotification)
+		builder = builder.patchNumbers(patchNumbers)
+		builder = builder.installationTarget(target)
+		builder = builder.notification(notification)
 		NotificationParameters params = builder.build()
 		patchClient.notify(params)
 		return cmdResult

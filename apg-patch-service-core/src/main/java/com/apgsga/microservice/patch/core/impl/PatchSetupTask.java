@@ -63,10 +63,10 @@ public class PatchSetupTask implements Runnable {
             jschSession.postProcess();
             repo.savePatch(patch);
             LOGGER.info("Patch Setup Task started for patch " + patch.getPatchNumber() + " DONE !! -> notifying db accordingly!");
-            repo.notify(NotificationParameters.builder().patchNumber(patch.getPatchNumber()).successNotification(setupParams.getSuccessNotification()).build());
+            repo.notify(NotificationParameters.builder().patchNumbers(patch.getPatchNumber()).notification(setupParams.getSuccessNotification()).build());
         } catch (Exception e) {
             LOGGER.error("Patch Setup Task for patch " + patch.getPatchNumber() + " encountered an error :" + e.getMessage());
-            repo.notify(NotificationParameters.builder().patchNumber(patch.getPatchNumber()).errorNotification(setupParams.getErrorNotification()).build());
+            repo.notify(NotificationParameters.builder().patchNumbers(patch.getPatchNumber()).notification(setupParams.getErrorNotification()).build());
             throw e;
         }
     }
