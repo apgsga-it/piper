@@ -59,7 +59,7 @@ public class TaskStartOnDemandPipeline implements Runnable {
         try {
             Patch patch = preprocessor.retrievePatch(onDemandParameter.getPatchNumber());
             OnDemandPipelineParameter onDemandPipelineParameter = OnDemandPipelineParameter.builder()
-                    .patchNumber(onDemandParameter.getPatchNumber())
+                    .patchNumbers(onDemandParameter.getPatchNumber())
                     .target(onDemandParameter.getTarget())
                     .developerBranch(patch.getDeveloperBranch())
                     .dbObjectsAsVcsPath(patch.getDbPatch().retrieveDbObjectsAsVcsPath())

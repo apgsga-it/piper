@@ -14,7 +14,7 @@ import java.util.List;
 @Value
 public class OnDemandPipelineParameter {
 
-    String patchNumber;
+    String patchNumbers;
     String target;
     String developerBranch;
     List<String> dbObjectsAsVcsPath;
