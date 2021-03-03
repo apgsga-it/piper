@@ -27,6 +27,7 @@ public class OnDemandPipelineParameter {
     List<String> dbZipNames;
     String dbZipDeployTarget;
     Boolean installDbPatch;
+    String dbZipInstallFrom;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class OnDemandPipelineParameterBuilder {}
