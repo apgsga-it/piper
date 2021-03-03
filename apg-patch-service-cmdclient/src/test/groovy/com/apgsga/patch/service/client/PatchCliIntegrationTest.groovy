@@ -256,11 +256,24 @@ class PatchCliIntegrationTest extends Specification {
 			repo.clean()
 	}
 
-	def "Patch cli test notifydb"() {
+	def "Patch cli test notifydb with one patch"() {
 		setup:
 			def client = PatchCli.create()
 		when:
-			def result = client.process(["-notifydb", "5401,CHEI212,notok"])
+			def result = client.process(["-notifydb", "CHEI212,notok", "-patches", "5401"])
+		then:
+			result != null
+			result.returnCode == 0
+			println result
+		cleanup:
+			repo.clean()
+	}
+
+	def "Patch cli test notifydb with multiple patches"() {
+		setup:
+			def client = PatchCli.create()
+		when:
+			def result = client.process(["-notifydb", "CHEI212,notok", "-patches", "5401,5402,5403"])
 		then:
 			result != null
 			result.returnCode == 0
