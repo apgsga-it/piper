@@ -6,15 +6,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 
 @Component("patchRdbms")
@@ -30,21 +30,23 @@ public class PatchRdbmsImpl implements PatchRdbms {
     public void notify(NotificationParameters params) {
         LOGGER.info("Notifying DB for : " + params.toString());
 
-        String sql = "{call cm.cm_patch_workflow_f_pa.notify_action_response(:p_list_of_patches,:p_installation_target,:p_status_message)}";
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
-        MapSqlParameterSource sqlParamMap = new MapSqlParameterSource();
-        sqlParamMap.addValue("p_list_of_patches", params.getPatchNumbers());
-        sqlParamMap.addValue("p_installation_target", params.getInstallationTarget());
-        sqlParamMap.addValue("p_status_message", params.getNotification());
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withSchemaName("cm")
+                .withCatalogName("cm_patch_workflow_f_pa")
+                .withProcedureName("notify_action_response")
+                .declareParameters(new SqlParameter("p_list_of_patches", Types.VARCHAR),
+                        new SqlParameter("p_installation_target", Types.VARCHAR),
+                        new SqlParameter("p_status_message", Types.VARCHAR));
 
-        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
-        template.execute(sql, sqlParamMap, new PreparedStatementCallback<Object>() {
-                    @Override
-                    public Boolean doInPreparedStatement(PreparedStatement ps)
-                            throws SQLException, DataAccessException {
-                        return ps.execute();
-                    }
-        });
+        SqlParameterSource in = new MapSqlParameterSource()
+                .addValue("p_list_of_patches", params.getPatchNumbers())
+                .addValue("p_installation_target", params.getInstallationTarget())
+                .addValue("p_status_message", params.getNotification());
+
+        jdbcCall.execute(in);
+
     }
 
     @Override
