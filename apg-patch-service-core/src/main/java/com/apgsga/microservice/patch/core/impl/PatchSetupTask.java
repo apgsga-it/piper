@@ -78,7 +78,7 @@ public class PatchSetupTask implements Runnable {
             dependencyResolver.resolveDependencies(service.getArtifactsToPatch());
             for (MavenArtifact mavenArtifact : artifactsToPatch) {
                 String artifactName = am.getArtifactName(mavenArtifact.getGroupId(), mavenArtifact.getArtifactId(), mavenArtifact.getVersion());
-                Asserts.notNull(artifactName,"Missing artifactname for mavenArtifactId: %s, groupId: %s", mavenArtifact.getGroupId(), mavenArtifact.getArtifactId());
+                Asserts.notNull(artifactName,"Missing artifactname for mavenArtifactId: %s, groupId: %s", mavenArtifact.getArtifactId(), mavenArtifact.getGroupId());
                 mavenArtifact.withName(artifactName);
             }
             service.withServiceMetaData(serviceMetaData);

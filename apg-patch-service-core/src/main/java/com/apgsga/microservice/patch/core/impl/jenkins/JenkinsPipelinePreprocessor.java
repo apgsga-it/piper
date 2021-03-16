@@ -4,6 +4,7 @@ import com.apgsga.microservice.patch.api.Package;
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -105,6 +107,20 @@ public class JenkinsPipelinePreprocessor {
             });
         });
         return packagers;
+    }
+
+    public Map<String,InstallDbObjectsInfos> retrieveDbObjectInfoFor(Set<String> patchNumbers) {
+        LOGGER.info("Retrieving dbObject info for following patch(es) : " + patchNumbers.toString());
+        Map<String,InstallDbObjectsInfos> installDbObjectsInfos = Maps.newHashMap();
+        patchNumbers.forEach(number -> {
+            Patch patch = retrievePatch(number);
+            InstallDbObjectsInfos dboInfo = new InstallDbObjectsInfos(patch.getDbPatch().getPatchTag(),patch.getDbPatch().getDbPatchBranch());
+            patch.getDbPatch().getDbObjects().forEach(dbo -> {
+                dboInfo.dbObjectsModuleNames.add(dbo.getModuleName());
+            });
+            installDbObjectsInfos.put(number,dboInfo);
+        });
+        return installDbObjectsInfos;
     }
 
     public String retrieveDbDeployInstallerHost(String target) {

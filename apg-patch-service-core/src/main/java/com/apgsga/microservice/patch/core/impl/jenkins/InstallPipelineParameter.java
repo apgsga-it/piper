@@ -8,7 +8,7 @@ import lombok.Value;
 
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 @JsonDeserialize(builder = InstallPipelineParameter.InstallPipelineParameterBuilder.class)
 @Builder
@@ -22,6 +22,8 @@ public class InstallPipelineParameter {
     List<PackagerInfo> packagers;
     Boolean installDbPatch;
     String dbZipInstallFrom;
+    Boolean isProductionInstallation;
+    Map<String,InstallDbObjectsInfos> installDbObjectsInfos; // Key is a patchNumber
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class InstallPipelineParameterBuilder {}
