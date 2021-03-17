@@ -2,6 +2,7 @@ package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.apgsga.microservice.patch.api.OnDemandParameter;
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.Service;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
@@ -13,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TaskStartOnDemandPipeline implements Runnable {
 
@@ -68,6 +70,7 @@ public class TaskStartOnDemandPipeline implements Runnable {
                     .dbPatchBranch(patch.getDbPatch().getDbPatchBranch())
                     .dockerServices(patch.getDockerServices())
                     .services(patch.getServices())
+                    .artifactsToBuild(patch.getServices().stream().collect(Collectors.toMap(Service::getServiceName, Service::retrieveMavenArtifactsToBuild)))
                     .packagers(preprocessor.retrievePackagerInfoFor(Sets.newHashSet(onDemandParameter.getPatchNumber()),onDemandParameter.getTarget()))
                     .dbZipNames(preprocessor.retrieveDbZipNames(Sets.newHashSet(onDemandParameter.getPatchNumber()),onDemandParameter.getTarget()))
                     .dbZipDeployTarget(preprocessor.retrieveDbDeployInstallerHost(onDemandParameter.getTarget()))

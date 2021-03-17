@@ -1,6 +1,7 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.apgsga.microservice.patch.api.DbObject;
+import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Service;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -8,6 +9,7 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.util.List;
+import java.util.Map;
 
 @JsonDeserialize(builder = OnDemandPipelineParameter.OnDemandPipelineParameterBuilder.class)
 @Builder
@@ -28,6 +30,7 @@ public class OnDemandPipelineParameter {
     String dbZipDeployTarget;
     Boolean installDbPatch;
     String dbZipInstallFrom;
+    Map<String, List<MavenArtifact>> artifactsToBuild;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class OnDemandPipelineParameterBuilder {}

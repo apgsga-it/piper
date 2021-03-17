@@ -1,7 +1,9 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.apgsga.microservice.patch.api.BuildParameter;
+import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.Service;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
@@ -13,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TaskStartBuildPipeline implements Runnable {
 
@@ -56,6 +59,7 @@ public class TaskStartBuildPipeline implements Runnable {
                     .dbPatchBranch(patch.getDbPatch().getDbPatchBranch())
                     .dockerServices(patch.getDockerServices())
                     .services(patch.getServices())
+                    .artifactsToBuild(patch.getServices().stream().collect(Collectors.toMap(Service::getServiceName, Service::retrieveMavenArtifactsToBuild)))
                     .target(preprocessor.retrieveTargetForStageName(buildParameters.getStageName()))
                     .build();
             LOGGER.info("PipelineBuildParameter has been created with following info : " + buildPipelineParameter.toString());
