@@ -71,7 +71,7 @@ public class JenkinsPipelinePreprocessor {
         List<String> dbZipNames = Lists.newArrayList();
         patchNumbers.forEach(patchNumber -> {
             Patch patch = backend.findById(patchNumber);
-            if(!patch.getDbPatch().getDbObjects().isEmpty()) {
+            if(!patch.getDbPatch().getDbObjects().isEmpty() || !patch.getDockerServices().isEmpty()) {
                 dbZipNames.add(patch.getDbPatch().getDbPatchBranch() + "_" + target.toUpperCase() + ".zip");
             }
         });
