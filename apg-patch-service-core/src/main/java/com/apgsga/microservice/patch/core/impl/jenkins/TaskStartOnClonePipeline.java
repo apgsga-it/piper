@@ -2,6 +2,7 @@ package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.apgsga.microservice.patch.api.OnCloneParameters;
 import com.apgsga.microservice.patch.api.Patch;
+import com.apgsga.microservice.patch.api.Service;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
@@ -14,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TaskStartOnClonePipeline implements Runnable {
 
@@ -106,6 +108,7 @@ public class TaskStartOnClonePipeline implements Runnable {
                         .dbZipNames(preprocessor.retrieveDbZipNames(Sets.newHashSet(patchNumber), onCloneParameter.getTarget()))
                         .dockerServices(p.getDockerServices())
                         .services(p.getServices())
+                        .artifactsToBuild(p.getServices().stream().collect(Collectors.toMap(Service::getServiceName, Service::retrieveMavenArtifactsToBuild)))
                         .build());
             });
 
