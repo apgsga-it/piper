@@ -1,14 +1,14 @@
 #!/bin/bash
 
 if [ "$#" -ne 3 ]; then
-  echo "Wrong number of parameter: CVS_RSH, CVS_ROOT and processing modus as parameters expected "
-  exit
+  echo "`date +%Y/%m/%d-%H:%M:%S` - Wrong number of parameter: CVS_RSH, CVS_ROOT and processing modus (\"production\" or any other value) expected as arguments"
+  exit 111
 fi
 
 export CVS_RSH=$1
 export CVSROOT=$2
 PROCESSING_MODUS=$3
-echo "Running with CVS_RSH: \"${CVS_RSH}\" CVSROOT: \"$CVSROOT\" and PROCESSING_MODUS: \"${PROCESSING_MODUS}\""
+echo "`date +%Y/%m/%d-%H:%M:%S` - Running with CVS_RSH: \"${CVS_RSH}\" CVSROOT: \"$CVSROOT\" and PROCESSING_MODUS: \"${PROCESSING_MODUS}\""
 
 for myDiff in {1..3}; do
   myTag=Ms_patch_$( expr ${myDiff} + $( ls -al /var/opt/apg-patch-service-server/db/Patch*.json | grep -iv log | cut -d '/' -f6 | cut -d 'h' -f2 | cut -d '.' -f1 | tail -n1 ))
@@ -29,4 +29,5 @@ for myDiff in {1..3}; do
     done
   fi
 done
+
 exit
