@@ -7,7 +7,7 @@ fi
 
 export CVS_ROOT=$1
 PROCESSING_MODUS=$2
-
+echo "Running with CVS_ROOT : $CVS_ROOT and PROCESSING_MODUS = $PROCESSING_MODUS"
 
 for myDiff in {1..3}; do
   myTag=Ms_patch_$( expr ${myDiff} + $( ls -al /var/opt/apg-patch-service-server/db/Patch*.json | grep -iv log | cut -d '/' -f6 | cut -d 'h' -f2 | cut -d '.' -f1 | tail -n1 ))
@@ -22,6 +22,8 @@ for myDiff in {1..3}; do
       echo "`date +%Y/%m/%d-%H:%M:%S` - Branching to \"${myTag}\" on Module \"${myDbModule}\"";
       if [ "$PROCESSING_MODUS" -eg "production" ]; then
         cvs rtag -r prod -b ${myTag} ${myDbModule}
+      else
+        echo "Dry run, would run : cvs rtag -r prod -b ${myTag} ${myDbModule}"
       fi
     done
   fi
