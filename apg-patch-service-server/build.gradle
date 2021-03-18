@@ -119,12 +119,11 @@ ospackage {
 	
 	// Local Maven Repo
 	directory("/var/opt/${project.name}/mavenrepo", 0755 )
-	
-	from("src/main/groovy") {
-		into "/var/opt/${project.name}/scripts"
-		user "root"
-		permissionGroup "root"
-		fileMode 0755 
+
+	from('packaging/bin') {
+		include '*.*'
+		fileMode 0755
+		into 'bin'
 	}
 	
 }
