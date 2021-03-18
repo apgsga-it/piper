@@ -20,7 +20,7 @@ for myDiff in {1..3}; do
     touch /tmp/doneBranchWorkaround${myTag}
     for myDbModule in $( cat /var/opt/apg-patch-service-server/metaInfoDb/DbModules.json | grep -v '{' | grep -v '}' | grep -v 'dbModules' | grep -v ']' | tr -d '",\t\r' | tr '\n' ' ' ); do
       echo "`date +%Y/%m/%d-%H:%M:%S` - Branching to \"${myTag}\" on Module \"${myDbModule}\"";
-      if [ "$PROCESSING_MODUS" -eg "PRODUCTION" ]; then
+      if [ "$PROCESSING_MODUS" -eg "production" ]; then
         cvs rtag -r prod -b ${myTag} ${myDbModule}
       fi
     done
