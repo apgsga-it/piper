@@ -40,7 +40,7 @@ else
   for DOCKER_SERVICE_VERSION in ${DOCKER_SERVICE_VERSIONS}; do
     myMsg "looking for Docker Services with Version \"${DOCKER_SERVICE_VERSION}\""
 
-    for i in $(ssh dockerbuild-dev@dockerregistry.apgsga.ch -o "StrictHostKeyChecking no" docker images | grep "Cm_patch_${DOCKER_SERVICE_VERSION}" | awk '{ print $1; }'); do
+    for i in $( ssh -o "StrictHostKeyChecking no" dockerbuild-dev@dockerregistry.apgsga.ch docker images | grep "Cm_patch_${DOCKER_SERVICE_VERSION}" | awk '{ print $1; }' ); do
       DOCKER_SERVICE="`basename ${i}`"
       myMsg "Patching Docker Service \"${DOCKER_SERVICE}\" to Version \"${DOCKER_SERVICE_VERSION}\" in Environment \"${TARGET_ENVIRONMENT}\" on Server \"${TARGET_SERVER}\""
       myMsg "... ssh root@${TARGET_SERVER} /opt/apgops/update_docker_service.sh ${TARGET_ENVIRONMENT} ${DOCKER_SERVICE} ${DOCKER_SERVICE_VERSION}"

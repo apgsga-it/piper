@@ -28,17 +28,17 @@ SERVICE_NAMES="${1}"
 SERVICE_TAG="Cm_patch_${2}"
 
 myMsg "removing eventually existing tags"
-for DOCKER_NAME in $( ssh dockerbuild-dev@dockerregistry.apgsga.ch -o "StrictHostKeyChecking no" docker images | grep "${SERVICE_TAG}" | awk '{ print $1; }' ); do
+for DOCKER_NAME in $( ssh -o "StrictHostKeyChecking no" dockerbuild-dev@dockerregistry.apgsga.ch docker images | grep "${SERVICE_TAG}" | awk '{ print $1; }' ); do
   SERVICE_NAME="$( basename ${DOCKER_NAME} )"
   myMsg "... untagging ${SERVICE_NAME}:${SERVICE_TAG}"
-  ssh dockerbuild-dev@dockerregistry.apgsga.ch -o "StrictHostKeyChecking no" /opt/apgops/untag_docker_image.sh ${SERVICE_NAME} ${SERVICE_TAG}
+  ssh -o "StrictHostKeyChecking no" dockerbuild-dev@dockerregistry.apgsga.ch /opt/apgops/untag_docker_image.sh ${SERVICE_NAME} ${SERVICE_TAG}
 done
 
 myMsg "setting new tags"
 
 for SERVICE_NAME in $( echo ${SERVICE_NAMES} | tr ',; ' ' ' ); do
   myMsg "... tagging ${SERVICE_NAME}:${SERVICE_TAG}"
-  ssh dockerbuild-dev@dockerregistry.apgsga.ch -o "StrictHostKeyChecking no" /opt/apgops/tag_docker_image.sh ${SERVICE_NAME} ${SERVICE_TAG}
+  ssh -o "StrictHostKeyChecking no" dockerbuild-dev@dockerregistry.apgsga.ch /opt/apgops/tag_docker_image.sh ${SERVICE_NAME} ${SERVICE_TAG}
 done
 
 myMsg "<<<<END<<<< `whoami`@`hostname`:`type -p ${0}` ${*}"
