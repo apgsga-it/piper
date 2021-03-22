@@ -39,7 +39,7 @@ import static org.junit.Assert.*;
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @TestPropertySource(locations = "application-test.properties")
 @SpringBootTest(classes = MicroPatchServer.class)
-@ActiveProfiles("test,mock,mockMavenRepo,patchOMock")
+@ActiveProfiles("test,mock,mockMavenRepo,patchOMock,mockDocker")
 public class MicroServicePatchServerTest {
 
 	protected final Log LOGGER = LogFactory.getLog(getClass());

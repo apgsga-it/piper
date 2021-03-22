@@ -31,7 +31,7 @@ import java.util.List;
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = { MicroPatchServer.class })
 @TestPropertySource(locations = "application-test.properties")
-@ActiveProfiles("test,mock,mavenRepo,patchOMock")
+@ActiveProfiles("test,mock,mavenRepo,patchOMock,mockDocker")
 public class MicroServicePatchClientArtefactQueryTests {
 
 	private MicroservicePatchClient patchClient;

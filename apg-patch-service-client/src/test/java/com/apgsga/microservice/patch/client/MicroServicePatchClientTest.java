@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 @DirtiesContext(classMode = ClassMode.BEFORE_CLASS)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = {MicroPatchServer.class})
 @TestPropertySource(locations = "application-test.properties")
-@ActiveProfiles("test,mock,mockMavenRepo,patchOMock")
+@ActiveProfiles("test,mock,mockMavenRepo,patchOMock,mockDocker")
 public class MicroServicePatchClientTest {
 
 
