@@ -21,9 +21,11 @@ public class InstallPipelineParameter {
     String errorNotification;
     List<PackagerInfo> packagers;
     Boolean installDbPatch;
+    Boolean installDockerServices;
     String dbZipInstallFrom;
     Boolean isProductionInstallation;
     Map<String,InstallDbObjectsInfos> installDbObjectsInfos; // Key is a patchNumber
+    String pathToDockerInstallScript;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class InstallPipelineParameterBuilder {}

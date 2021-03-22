@@ -35,3 +35,7 @@ mavenrepo.user.name=<%= $artifactory_user %>
 mavenrepo.baseurl=<%= $artifactory_uri %>
 mavenrepo.name=<%= $artifactory_repo %>
 mavenrepo.user.encryptedPwd=<%= $artifactory_passwd %>
+
+# Docker script
+docker.install.script.path=/opt/apg-patch-service-server/bin/ibusDockerInstall.sh
+docker.tag.script.path=/opt/apg-patch-service-server/bin/ibusDockerTagNPush.sh

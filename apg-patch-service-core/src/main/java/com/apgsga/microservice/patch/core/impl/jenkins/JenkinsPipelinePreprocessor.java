@@ -81,7 +81,17 @@ public class JenkinsPipelinePreprocessor {
     public boolean needInstallDbPatchFor(Set<String> patchNumbers) {
         for(String patchNumber : patchNumbers) {
             Patch patch = backend.findById(patchNumber);
-            if(!patch.getDbPatch().getDbObjects().isEmpty() || !patch.getDockerServices().isEmpty()) {
+            if(!patch.getDbPatch().getDbObjects().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean needInstallDockerServicesFor(Set<String> patchNumbers) {
+        for(String patchNumber : patchNumbers) {
+            Patch patch = backend.findById(patchNumber);
+            if(!patch.getDockerServices().isEmpty()) {
                 return true;
             }
         }

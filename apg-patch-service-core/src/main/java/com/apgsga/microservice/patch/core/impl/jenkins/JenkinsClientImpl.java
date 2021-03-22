@@ -58,6 +58,9 @@ public class JenkinsClientImpl implements JenkinsClient {
 	@Value("${jenkins.pipeline.repo.assemble.script}")
 	public String jenkinsPipelineAssembleScript;
 
+	@Value("${docker.install.script.path:/opt/apg-patch-service-server/bin/ibusDockerInstall.sh}")
+	public String dockerInstallScriptPath;
+
 	@Autowired
 	private TaskExecutor threadExecutor;
 
@@ -107,6 +110,8 @@ public class JenkinsClientImpl implements JenkinsClient {
 				.dbZipInstallFrom(preprocessor.retrieveDbDeployInstallerHost(parameters.getTarget()))
 				.isProductionInstallation(preprocessor.retrieveTargetForStageName("produktion").equalsIgnoreCase(parameters.getTarget()))
 				.installDbObjectsInfos(preprocessor.retrieveDbObjectInfoFor(parameters.getPatchNumbers()))
+				.installDockerServices(preprocessor.needInstallDockerServicesFor(parameters.getPatchNumbers()))
+				.pathToDockerInstallScript(dockerInstallScriptPath)
 				.build();
 		startGenericPipelineJobBuilder("install",
 				jenkinsPipelineInstallScript,
