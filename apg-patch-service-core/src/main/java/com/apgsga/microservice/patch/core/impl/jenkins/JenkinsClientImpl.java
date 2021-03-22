@@ -122,7 +122,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 
 	@Override
 	public void startOnDemandPipeline(OnDemandParameter parameters) {
-		threadExecutor.execute(TaskStartOnDemandPipeline.create(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,preprocessor,cmdRunner,parameters));
+		threadExecutor.execute(TaskStartOnDemandPipeline.create(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,preprocessor,cmdRunner,parameters,dockerInstallScriptPath));
 	}
 
 	@Override

@@ -30,8 +30,9 @@ public class TaskStartOnDemandPipeline implements Runnable {
     private final JenkinsPipelinePreprocessor preprocessor;
     private final OnDemandParameter onDemandParameter;
     private final CommandRunner cmdRunner;
+    private final String dockerInstallScriptPath;
 
-    public TaskStartOnDemandPipeline(String jenkinsUrl, String jenkinsSshPort, String jenkinsSshUser, JenkinsPipelinePreprocessor preprocessor, CommandRunner cmdRunner, OnDemandParameter onDemandParameter) {
+    public TaskStartOnDemandPipeline(String jenkinsUrl, String jenkinsSshPort, String jenkinsSshUser, JenkinsPipelinePreprocessor preprocessor, CommandRunner cmdRunner, OnDemandParameter onDemandParameter, String dockerInstallScriptPath) {
         super();
         this.jenkinsUrl = jenkinsUrl;
         this.jenkinsSshPort = jenkinsSshPort;
@@ -39,10 +40,11 @@ public class TaskStartOnDemandPipeline implements Runnable {
         this.preprocessor = preprocessor;
         this.cmdRunner = cmdRunner;
         this.onDemandParameter = onDemandParameter;
+        this.dockerInstallScriptPath = dockerInstallScriptPath;
     }
 
-    public static Runnable create(String jenkinsUrl, String jenkinsSshPort, String jenkinsSshUser, JenkinsPipelinePreprocessor preprocessor, CommandRunner cmdRunner, OnDemandParameter onDemandParameter) {
-        return new TaskStartOnDemandPipeline(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,preprocessor,cmdRunner,onDemandParameter);
+    public static Runnable create(String jenkinsUrl, String jenkinsSshPort, String jenkinsSshUser, JenkinsPipelinePreprocessor preprocessor, CommandRunner cmdRunner, OnDemandParameter onDemandParameter, String dockerInstallScriptPath) {
+        return new TaskStartOnDemandPipeline(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,preprocessor,cmdRunner,onDemandParameter,dockerInstallScriptPath);
     }
 
     @Override
@@ -77,6 +79,7 @@ public class TaskStartOnDemandPipeline implements Runnable {
                     .installDbPatch(preprocessor.needInstallDbPatchFor(Sets.newHashSet(onDemandParameter.getPatchNumber())))
                     .dbZipInstallFrom(preprocessor.retrieveDbDeployInstallerHost(onDemandParameter.getTarget()))
                     .installDockerServices(preprocessor.needInstallDockerServicesFor(Sets.newHashSet(onDemandParameter.getPatchNumber())))
+                    .pathToDockerInstallScript(dockerInstallScriptPath)
                     .build();
             LOGGER.info("onDemandPipelineParameter has been created with following info : " + onDemandPipelineParameter.toString());
             ObjectMapper om = new ObjectMapper();
