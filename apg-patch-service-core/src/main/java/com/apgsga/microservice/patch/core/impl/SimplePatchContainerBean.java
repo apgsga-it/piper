@@ -44,7 +44,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private ArtifactManager am;
 
 	@Autowired
+	@Qualifier("vcsCmdRunnerFactory")
 	private CommandRunnerFactory sshCommandRunnerFactory;
+
+	@Autowired
+	@Qualifier("dockerCmdRunnerFactory")
+	private CommandRunnerFactory dockerCmdRunnerFactory;
 
 	@Autowired
 	private TaskExecutor threadExecutor;
@@ -306,7 +311,8 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		Patch patch = repo.findById(sp.getPatchNumber());
 		Asserts.notNull(patch,"Patch %s does not exist for setup",  sp.getPatchNumber());
 		CommandRunner jschSession = getJschSessionFactory().create();
-		PatchSetupTask.create(jschSession, patch, repo, sp, am, dependencyResolver,DOCKER_TAG_SCRIPT_NAME).run();
+		CommandRunner localSession = getDockerCmdRunnerFactory().create();
+		PatchSetupTask.create(jschSession, localSession, patch, repo, sp, am, dependencyResolver,DOCKER_TAG_SCRIPT_NAME).run();
 	}
 
 	@Override
@@ -320,6 +326,10 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	public CommandRunnerFactory getJschSessionFactory() {
 		return sshCommandRunnerFactory;
+	}
+
+	public CommandRunnerFactory getDockerCmdRunnerFactory() {
+		return dockerCmdRunnerFactory;
 	}
 
 	@Override

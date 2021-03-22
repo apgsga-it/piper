@@ -125,6 +125,18 @@ public class MicroServicePatchConfig {
 		return new ProcessBuilderCmdRunnerFactory();
 	}
 
+	@Bean(name = "dockerCmdRunnerFactory")
+	@Profile({ "liveDocker" })
+	public CommandRunnerFactory localRunnerFactory() {
+		return new ProcessBuilderCmdRunnerFactory();
+	}
+
+	@Bean(name = "dockerCmdRunnerFactory")
+	@Profile({ "mockDocker" })
+	public CommandRunnerFactory localRunnerFactoryMock() {
+		return new LoggingMockProcessBuilderCmdRunnerFactory();
+	}
+
 	@Bean(name = "jenkinsBean")
 	@Profile("mock")
 	public JenkinsClient jenkinsPatchClientMock() {
