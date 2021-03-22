@@ -61,6 +61,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Value("${cvs.check.for.branch.project.name:piperCheckForBranch}")
 	private String PIPER_CHECK_FOR_BRANCH_PROJECT_NAME;
 
+	@Value("${docker.tag.script.path:/opt/apg-patch-service-server/bin/ibusDockerTagNPush.sh}")
+	private String DOCKER_TAG_SCRIPT_NAME;
+
 	public SimplePatchContainerBean() {
 		super();
 	}
@@ -303,14 +306,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		Patch patch = repo.findById(sp.getPatchNumber());
 		Asserts.notNull(patch,"Patch %s does not exist for setup",  sp.getPatchNumber());
 		CommandRunner jschSession = getJschSessionFactory().create();
-		PatchSetupTask.create(jschSession, patch, repo, sp, am, dependencyResolver).run();
+		PatchSetupTask.create(jschSession, patch, repo, sp, am, dependencyResolver,DOCKER_TAG_SCRIPT_NAME).run();
 	}
-
 
 	@Override
 	public void cleanLocalMavenRepo() {
 		am.cleanLocalMavenRepo();
-
 	}
 
 	public PatchPersistence getRepo() {

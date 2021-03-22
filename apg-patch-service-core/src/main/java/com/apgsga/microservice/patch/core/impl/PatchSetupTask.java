@@ -4,6 +4,7 @@ import com.apgsga.artifact.query.ArtifactDependencyResolver;
 import com.apgsga.artifact.query.ArtifactManager;
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
+import com.apgsga.microservice.patch.core.commands.docker.DockerTagAndPushCmd;
 import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import org.apache.commons.logging.Log;
@@ -15,8 +16,8 @@ public class PatchSetupTask implements Runnable {
 
     protected static final Log LOGGER = LogFactory.getLog(PatchSetupTask.class.getName());
 
-    public static Runnable create(CommandRunner jschSession, Patch patch, PatchPersistence repo, SetupParameter setupParams, ArtifactManager am, ArtifactDependencyResolver dependencyResolver) {
-        return new PatchSetupTask(jschSession, patch, repo, setupParams, am, dependencyResolver);
+    public static Runnable create(CommandRunner jschSession, Patch patch, PatchPersistence repo, SetupParameter setupParams, ArtifactManager am, ArtifactDependencyResolver dependencyResolver, String pathToDockerTagScript) {
+        return new PatchSetupTask(jschSession, patch, repo, setupParams, am, dependencyResolver,pathToDockerTagScript);
     }
 
     private final CommandRunner jschSession;
@@ -25,8 +26,9 @@ public class PatchSetupTask implements Runnable {
     private final SetupParameter setupParams;
     private final ArtifactManager am;
     private final ArtifactDependencyResolver dependencyResolver;
+    private final String pathToDockerTagScript;
 
-    private PatchSetupTask(CommandRunner jschSession, Patch patch, PatchPersistence repo, SetupParameter setupParams, ArtifactManager am, ArtifactDependencyResolver dependencyResolver) {
+    private PatchSetupTask(CommandRunner jschSession, Patch patch, PatchPersistence repo, SetupParameter setupParams, ArtifactManager am, ArtifactDependencyResolver dependencyResolver, String pathToDockerTagScript) {
         super();
         this.jschSession = jschSession;
         this.patch = patch;
@@ -34,6 +36,7 @@ public class PatchSetupTask implements Runnable {
         this.setupParams = setupParams;
         this.am = am;
         this.dependencyResolver = dependencyResolver;
+        this.pathToDockerTagScript = pathToDockerTagScript;
     }
 
     @Override
@@ -49,6 +52,10 @@ public class PatchSetupTask implements Runnable {
                 dbPatch.withPatchTag(patch.getTagNr());
                 jschSession.run(PatchSshCommand.createTagPatchModulesCmd(dbPatch.getPatchTag(), patch.getDbPatch().getDbPatchBranch(),
                         patch.getDbPatch().retrieveDbObjectsAsVcsPath()));
+            }
+            if (!patch.getDockerServices().isEmpty()) {
+                LOGGER.info("Following Docker services will be tagged for Patch " + patch.getPatchNumber() + " : " + patch.getDockerServices());
+                jschSession.run(new DockerTagAndPushCmd("/opt/apg-patch-service-server/bin/ibusDockerTagNPush.sh",patch.getDockerServices(),patch.getPatchNumber()));
             }
             for (Service service : patch.getServices()) {
                 if (!service.retrieveMavenArtifactsAsVcsPath().isEmpty()) {
