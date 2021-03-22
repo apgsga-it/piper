@@ -29,6 +29,7 @@ public class OnDemandPipelineParameter {
     List<String> dbZipNames;
     String dbZipDeployTarget;
     Boolean installDbPatch;
+    Boolean installDockerServices;
     String dbZipInstallFrom;
     Map<String, List<MavenArtifact>> artifactsToBuild;
 

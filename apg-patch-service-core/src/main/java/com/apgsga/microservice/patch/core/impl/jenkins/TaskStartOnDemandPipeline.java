@@ -76,6 +76,7 @@ public class TaskStartOnDemandPipeline implements Runnable {
                     .dbZipDeployTarget(preprocessor.retrieveDbDeployInstallerHost(onDemandParameter.getTarget()))
                     .installDbPatch(preprocessor.needInstallDbPatchFor(Sets.newHashSet(onDemandParameter.getPatchNumber())))
                     .dbZipInstallFrom(preprocessor.retrieveDbDeployInstallerHost(onDemandParameter.getTarget()))
+                    .installDockerServices(preprocessor.needInstallDockerServicesFor(Sets.newHashSet(onDemandParameter.getPatchNumber())))
                     .build();
             LOGGER.info("onDemandPipelineParameter has been created with following info : " + onDemandPipelineParameter.toString());
             ObjectMapper om = new ObjectMapper();
