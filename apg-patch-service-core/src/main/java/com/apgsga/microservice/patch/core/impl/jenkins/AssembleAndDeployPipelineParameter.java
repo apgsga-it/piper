@@ -21,6 +21,7 @@ public class AssembleAndDeployPipelineParameter {
     List<PackagerInfo> packagers;
     List<String> dbZipNames;
     String dbZipDeployTarget;
+    boolean isForProduction;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class AssembleAndDeployParameterBuilder {}

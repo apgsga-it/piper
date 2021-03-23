@@ -91,6 +91,7 @@ public class JenkinsClientImpl implements JenkinsClient {
 					.packagers(preprocessor.retrievePackagerInfoFor(parameters.getPatchNumbers(),parameters.getTarget()))
 					.dbZipNames(preprocessor.retrieveDbZipNames(parameters.getPatchNumbers(),parameters.getTarget()))
 				    .dbZipDeployTarget(preprocessor.retrieveDbDeployInstallerHost(parameters.getTarget()))
+					.isForProduction(preprocessor.retrieveTargetForStageName("produktion").equalsIgnoreCase(parameters.getTarget()))
 					.build();
 		startGenericPipelineJobBuilder("assembleAndDeploy",
 				jenkinsPipelineAssembleScript,
