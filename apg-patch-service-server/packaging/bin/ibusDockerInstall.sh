@@ -25,7 +25,7 @@ if [ "${1}" == ""  -o  "${2}" == "" ]; then
 fi
 
 TARGET_ENVIRONMENT="${1}"
-TARGET_ENVIRONMENT="`echo ${TARGET_ENVIRONMENT}|sed -r 's/\.apgsga\.ch+$//i'`"
+TARGET_ENVIRONMENT="`echo ${TARGET_ENVIRONMENT}|sed -r 's/\.apgsga\.ch+$//i'|tr "[:upper:]" "[:lower:]"`"
 TARGET_SERVER="service-${TARGET_ENVIRONMENT}.apgsga.ch"
 
 if [ $( echo ${TARGET_ENVIRONMENT} | tr '[:upper:]' '[:lower:]' ) == *"light"* ]; then
@@ -38,13 +38,13 @@ else
   DOCKER_SERVICE_VERSIONS="$( echo ${2} | tr ',' ' ' )"
 
   for DOCKER_SERVICE_VERSION in ${DOCKER_SERVICE_VERSIONS}; do
-    myMsg "looking for Docker Services with Version \"${DOCKER_SERVICE_VERSION}\""
+    myMsg "looking for Docker Services tagged for Patch \"${DOCKER_SERVICE_VERSION}\""
 
     for i in $( ssh -o "StrictHostKeyChecking no" dockerbuild-dev@dockerregistry.apgsga.ch docker images | grep "Cm_patch_${DOCKER_SERVICE_VERSION}" | awk '{ print $1; }' ); do
       DOCKER_SERVICE="`basename ${i}`"
-      myMsg "Patching Docker Service \"${DOCKER_SERVICE}\" to Version \"${DOCKER_SERVICE_VERSION}\" in Environment \"${TARGET_ENVIRONMENT}\" on Server \"${TARGET_SERVER}\""
-      myMsg "... ssh root@${TARGET_SERVER} /opt/apgops/update_docker_service.sh ${TARGET_ENVIRONMENT} ${DOCKER_SERVICE} ${DOCKER_SERVICE_VERSION}"
-      ssh -o "StrictHostKeyChecking no" root@${TARGET_SERVER} /opt/apgops/update_docker_service.sh ${TARGET_ENVIRONMENT} ${DOCKER_SERVICE} ${DOCKER_SERVICE_VERSION}
+      myMsg "Patching Docker Service \"${DOCKER_SERVICE}\" to Version \"Cm_patch_${DOCKER_SERVICE_VERSION}\" in Environment \"${TARGET_ENVIRONMENT}\" on Server \"${TARGET_SERVER}\""
+      myMsg "... ssh root@${TARGET_SERVER} /opt/apgops/update_docker_service.sh ${TARGET_ENVIRONMENT} ${DOCKER_SERVICE} Cm_patch_${DOCKER_SERVICE_VERSION}"
+      ssh -o "StrictHostKeyChecking no" root@${TARGET_SERVER} /opt/apgops/update_docker_service.sh ${TARGET_ENVIRONMENT} ${DOCKER_SERVICE} Cm_patch_${DOCKER_SERVICE_VERSION}
     done
 
   done
