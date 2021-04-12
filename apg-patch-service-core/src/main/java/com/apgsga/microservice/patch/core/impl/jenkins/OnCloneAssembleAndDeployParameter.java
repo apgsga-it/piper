@@ -18,6 +18,8 @@ public class OnCloneAssembleAndDeployParameter {
     String target;
     List<PackagerInfo> packagers;
     List<String> dbZipNames;
+    boolean isForProduction;
+    String dbZipDeployTarget;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class OnCloneAssembleAndDeployParameterBuilder {}

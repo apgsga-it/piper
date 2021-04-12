@@ -117,6 +117,8 @@ public class TaskStartOnClonePipeline implements Runnable {
                     .packagers(preprocessor.retrievePackagerInfoFor(onCloneParameter.getPatchNumbers(), onCloneParameter.getTarget()))
                     .dbZipNames(preprocessor.retrieveDbZipNames(onCloneParameter.getPatchNumbers(), onCloneParameter.getTarget()))
                     .patchNumbers(onCloneParameter.getPatchNumbers())
+                    .isForProduction(false)
+                    .dbZipDeployTarget(preprocessor.retrieveDbDeployInstallerHost(onCloneParameter.getTarget()))
                     .build();
 
             OnClonePipelineParameter pipelineParameter = OnClonePipelineParameter.builder()
