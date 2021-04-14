@@ -6,8 +6,8 @@ myMsg() {
 
 mySignalHandler() {
   myMsg "Signal ${1} received - exiting"
-  if [ -f "/tmp/doneBranchWorkaround${myTag}" ]; then
-    rm -f /tmp/doneBranchWorkaround${myTag}
+  if [ -f "/var/jenkins/branchWorkaround/done${myTag}" ]; then
+    rm -f /var/jenkins/branchWorkaround/done${myTag}
   fi
   exit 144
 }
@@ -41,21 +41,35 @@ if [ "${CVS_USER}" != "" -a "${CVS_HOST}" != "" ]; then
   fi
 fi
 
+if [ ! -d "/var/jenkins/branchWorkaround" ]; then
+  mkdir -p /var/jenkins/branchWorkaround
+fi
+
+if [ -d "/var/jenkins/branchWorkaround" ]; then
+  myMsg "Going for pre-emptive Branching"
+else
+  myMsg "ERROR: Status-Directory \"/var/jenkins/branchWorkaround\" missing - no processing possible"
+  exit 118
+fi
+
 for myDiff in {1..3}; do
-  myTag=Ms_patch_$( expr ${myDiff} + $( ls -al /var/opt/apg-patch-service-server/db/Patch*.json | grep -iv log | cut -d '/' -f6 | cut -d 'h' -f2 | cut -d '.' -f1 | tail -n1 ))
+  myTag=Ms_patch_$( expr ${myDiff} + $( ls -al /var/opt/apg-patch-service-server/db/Patch*.json | grep -iv null | grep -iv log | cut -d '/' -f6 | cut -d 'h' -f2 | cut -d '.' -f1 | tail -n1 ))
 
   myMsg "Going to create Branch \"${myTag}\""
 
-  if [ -f "/tmp/doneBranchWorkaround${myTag}" ]; then
+  if [ -f "/var/jenkins/branchWorkaround/done${myTag}" ]; then
     myMsg "... already processed earlier - not going to process \"${myTag}\" twice"
   else
-    touch /tmp/doneBranchWorkaround${myTag}
+    touch /var/jenkins/branchWorkaround/done${myTag}
     for myDbModule in $( cat /var/opt/apg-patch-service-server/metaInfoDb/DbModules.json | grep -v '{' | grep -v '}' | grep -v 'dbModules' | grep -v ']' | tr -d '",\t\r' | tr '\n' ' ' ); do
       myMsg "Branching to \"${myTag}\" on Module \"${myDbModule}\"";
       if [ "$PROCESSING_MODE" == "production" -o "$PROCESSING_MODE" == "integration" ]; then
         cvs rtag -r prod -b ${myTag} ${myDbModule}
-        if [ $? -ne 0 ]; then
-          rm -f /tmp/doneBranchWorkaround${myTag}
+        rtag_rc=$?
+        if [ ${rtag_rc} -ne 0 ]; then
+          myMsg "... ERROR: something went wrong (rtag rc=${rtag_rc}) - \"${myTag}\" will have to be reprocessed later"
+          rm -f /var/jenkins/branchWorkaround/done${myTag}
+          exit 117
         fi
       else
         myMsg "Dry run, would run : cvs rtag -r prod -b ${myTag} ${myDbModule}"
