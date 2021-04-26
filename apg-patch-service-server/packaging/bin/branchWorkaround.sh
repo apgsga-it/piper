@@ -6,8 +6,8 @@ myMsg() {
 
 mySignalHandler() {
   myMsg "Signal ${1} received - exiting"
-  if [ -f "/var/jenkins/branchWorkaround/done${myTag}" ]; then
-    rm -f /var/jenkins/branchWorkaround/done${myTag}
+  if [ -f "/var/jenkins/branchWorkaround/done-${myTag}-$( date +%Y%m%d )" ]; then
+    rm -f /var/jenkins/branchWorkaround/done-${myTag}-$( date +%Y%m%d )
   fi
   exit 144
 }
@@ -57,18 +57,18 @@ for myDiff in {1..3}; do
 
   myMsg "Going to create Branch \"${myTag}\""
 
-  if [ -f "/var/jenkins/branchWorkaround/done${myTag}" ]; then
-    myMsg "... already processed earlier - not going to process \"${myTag}\" twice"
+  if [ -f "/var/jenkins/branchWorkaround/done-${myTag}-$( date +%Y%m%d )" ]; then
+    myMsg "... already processed earlier today - not going to process \"${myTag}\" twice"
   else
-    touch /var/jenkins/branchWorkaround/done${myTag}
+    touch /var/jenkins/branchWorkaround/done-${myTag}-$( date +%Y%m%d )
     for myDbModule in $( cat /var/opt/apg-patch-service-server/metaInfoDb/DbModules.json | grep -v '{' | grep -v '}' | grep -v 'dbModules' | grep -v ']' | tr -d '",\t\r' | tr '\n' ' ' ); do
       myMsg "Branching to \"${myTag}\" on Module \"${myDbModule}\"";
       if [ "$PROCESSING_MODE" == "production" -o "$PROCESSING_MODE" == "integration" ]; then
-        cvs rtag -r prod -b ${myTag} ${myDbModule}
+        cvs rtag -F -B -r prod -b ${myTag} ${myDbModule}
         rtag_rc=$?
         if [ ${rtag_rc} -ne 0 ]; then
           myMsg "... ERROR: something went wrong (rtag rc=${rtag_rc}) - \"${myTag}\" will have to be reprocessed later"
-          rm -f /var/jenkins/branchWorkaround/done${myTag}
+          rm -f /var/jenkins/branchWorkaround/done-${myTag}-$( date +%Y%m%d )
           exit 117
         fi
       else
