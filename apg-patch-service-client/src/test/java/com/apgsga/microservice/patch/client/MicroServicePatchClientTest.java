@@ -286,4 +286,10 @@ public class MicroServicePatchClientTest {
         patchClient.startOnDemandInstallation(p);
     }
 
+    @Test
+    public void testCheckPatchConflicts() {
+        //TODO JHE : implement test
+        fail("JHE: to be implemented");
+    }
+
 }
