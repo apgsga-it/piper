@@ -2,6 +2,7 @@ package com.apgsga.patch.service.client
 
 import com.apgsga.microservice.patch.api.*
 import com.apgsga.patch.service.client.rest.PatchRestServiceClient
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.collect.Maps
 import com.google.common.collect.Sets
 import org.codehaus.groovy.runtime.StackTraceUtils
@@ -65,6 +66,8 @@ class PatchCli {
 				cmdResults.result = onDemand(patchClient,options)
 			} else if (options.oc) {
 				cmdResults.result = onClone(patchClient, options)
+			} else if (options.cpc) {
+				cmdResults.result = checkPatchConflicts(patchClient, options)
 			}
 			cmdResults.returnCode = 0
 			return cmdResults
@@ -111,6 +114,8 @@ class PatchCli {
 			od longOpt: 'onDemand', args:2, valueSeparator: ",", argName: "patchNumber,target", 'Starts an onDemand pipeline for the given patch on the given target', required: false
 			oc longOpt: 'onClone', args:2, valueSeparator: ",", argName: "src,target", "Starts an onClone Pipeline for the given target, and re-assemble a list of patches", required: false
 			patches longOpt: 'patches', args:1, "List of patches as comma separated values", required: false
+			cpc longOpt: 'checkPatchConflicts', args:0, "Check for patch conflicts", required: false
+			patchList longOpt: 'patchList', args:1, "List of patches with corresponding eMail address, as JSON format. Sample JSON: [{\"patchNumber\":\"<patchNumber_1>\",\"eMails\": [\"<eMail_1>\",\"<eMail_n>\"]},{\"patchNumber\":\"<patchNumber_n>\",\"eMails\": [\"<eMail_n>\"]}]", required: false
 		}
 
 		def options = cli.parse(args)
@@ -211,7 +216,7 @@ class PatchCli {
 
 		if(options.od) {
 			if(options.ods.size() != 2) {
-				println "patchNumber and target are required when starting an onDomand job"
+				println "patchNumber and target are required when starting an onDemand job"
 				error = true
 			}
 		}
@@ -226,11 +231,40 @@ class PatchCli {
 			}
 		}
 
+		if(options.cpc) {
+			if(!options.cpcs) {
+				println "cpc doesn't have parameters, list of patches are provided with patchList parameter"
+				error = true
+			}
+			if(!validatePatchList(options)) {
+				error = true
+			}
+		}
+
 		if (error) {
 			cli.usage()
 			return null
 		}
 		options
+	}
+
+	static def validatePatchList(options) {
+		def isValid = true
+		if(!options.patchList || options.patchLists.size() != 1) {
+			println "patchList requires the JSON String as parameter"
+			isValid = false
+		}
+		if(isValid) {
+			// To check if the parameter is correctly formatted, we try to deserialize it.
+			ObjectMapper om = new ObjectMapper()
+			try {
+				om.readValue(options.patchLists[0], PatchListParameter[].class)
+			}catch(Exception ex) {
+				println "Error while trying to deserialize patchList parameter: ${ex.getMessage()}"
+				isValid = false
+			}
+		}
+		return isValid
 	}
 
 	static def validatePatchNumber(options) {
@@ -312,6 +346,20 @@ class PatchCli {
 				.build()
 		patchClient.startOnClonePipeline(params)
 		return cmdResult;
+	}
+
+	static def checkPatchConflicts(def patchClient, def options) {
+		def cmdResult = new Expando()
+		def jsonString = options.patchLists[0]
+		ObjectMapper om = new ObjectMapper()
+		try {
+			def parameters = om.readValue(jsonString, PatchListParameter[].class)
+			patchClient.checkPatchConflicts(parameters)
+			cmdResult.cpc = "checkPatchConflicts correctly started"
+		}catch(Exception ex) {
+			cmdResult.cpc = ex.getMessage()
+		}
+		return cmdResult
 	}
 
 	static def onDemand(def patchClient, def options) {
