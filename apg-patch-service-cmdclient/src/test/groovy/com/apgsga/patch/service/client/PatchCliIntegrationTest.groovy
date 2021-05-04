@@ -299,7 +299,7 @@ class PatchCliIntegrationTest extends Specification {
 		setup:
 		def client = PatchCli.create()
 		when:
-		def result = client.process(["-cpc", "-patchList", "[{\"patchNumber\":\"<patchNumber_1>\",\"eMails\": [\"<eMail_1>\",\"<eMail_n>\"]},{\"patchNumber\":\"<patchNumber_n>\",\"eMails\": [\"<eMail_n>\"]}]"])
+		def result = client.process(["-cpc", "-patchList", "[{\"patchNumber\":\"patchNumber_1\",\"eMails\": [\"eMail_1\",\"eMail_n\"]},{\"patchNumber\":\"patchNumber_n\",\"eMails\": [\"eMail_n\"]}]"])
 		then:
 		result != null
 		result.returnCode == 0

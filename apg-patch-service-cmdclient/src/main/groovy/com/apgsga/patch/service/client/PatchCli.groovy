@@ -353,7 +353,7 @@ class PatchCli {
 		def jsonString = options.patchLists[0]
 		ObjectMapper om = new ObjectMapper()
 		try {
-			def parameters = om.readValue(jsonString, PatchListParameter[].class)
+			List<PatchListParameter> parameters = om.readValue(jsonString, PatchListParameter[].class)
 			patchClient.checkPatchConflicts(parameters)
 			cmdResult.cpc = "checkPatchConflicts correctly started"
 		}catch(Exception ex) {
