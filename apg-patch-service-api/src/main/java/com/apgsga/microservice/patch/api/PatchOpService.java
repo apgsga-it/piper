@@ -69,4 +69,6 @@ public interface PatchOpService {
 
 	void startOnClonePipeline(OnCloneParameters parameters);
 
+	void checkPatchConflicts(List<PatchListParameter> parameters);
+
 }

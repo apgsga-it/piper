@@ -397,6 +397,11 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		jenkinsClient.startOnClonePipeline(parameters);
 	}
 
+	@Override
+	public void checkPatchConflicts(List<PatchListParameter> parameters) {
+
+	}
+
 	private String getProductionTargetName() {
 		String targetName = "chpi211"; // Default
 		for(StageMapping stage : repo.stageMappings().getStageMappings()) {

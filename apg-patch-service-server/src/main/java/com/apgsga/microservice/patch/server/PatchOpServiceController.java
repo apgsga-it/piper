@@ -237,6 +237,13 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		patchService.startOnClonePipeline(parameters);
 	}
 
+	@RequestMapping(value = "/checkPatchConflicts", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.OK)
+	@Override
+	public void checkPatchConflicts(@RequestBody List<PatchListParameter> parameters) {
+		patchService.checkPatchConflicts(parameters);
+	}
+
 	@RequestMapping(value = "/patchIdsForStatus/{status}")
 	@ResponseBody
 	public List<String> patchIdsForStatus(@PathVariable("status") String statusCode) {
