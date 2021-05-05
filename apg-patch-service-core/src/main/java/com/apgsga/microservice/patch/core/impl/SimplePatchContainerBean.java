@@ -409,6 +409,12 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		});
 		List<PatchConflict> patchConflicts = conflictsChecker.checkConflicts();
 
+		if(!patchConflicts.isEmpty()) {
+			jenkinsClient.startNotificationForPatchConflictPipeline(parameters,patchConflicts);
+		}
+		else {
+			LOGGER.info("No conflict found for following patches: " + parameters.stream().map(PatchListParameter::getPatchNumber).collect(Collectors.joining(",")));
+		}
 
 	}
 
