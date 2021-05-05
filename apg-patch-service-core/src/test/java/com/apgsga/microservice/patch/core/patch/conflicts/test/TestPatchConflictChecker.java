@@ -2,6 +2,7 @@ package com.apgsga.microservice.patch.core.patch.conflicts.test;
 
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflict;
+import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflictsCheckerImpl;
 import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflictsChecker;
 import com.google.common.collect.Lists;
 import org.junit.Assert;
@@ -15,7 +16,7 @@ public class TestPatchConflictChecker {
     public void testConflictDockerServicesForTwoPatches() {
         Patch p1 = Patch.builder().patchNumber("1234").dockerServices(Lists.newArrayList("dockerService")).build();
         Patch p2 = Patch.builder().patchNumber("2345").dockerServices(Lists.newArrayList("dockerService")).build();
-        PatchConflictsChecker checker = PatchConflictsChecker.create();
+        PatchConflictsChecker checker = PatchConflictsCheckerImpl.create();
         checker.addPatch(p1);
         checker.addPatch(p2);
         List<PatchConflict> patchConflicts = checker.checkConflicts();
@@ -37,7 +38,7 @@ public class TestPatchConflictChecker {
         Patch p2 = Patch.builder().patchNumber("2345").dockerServices(Lists.newArrayList("dockerService_2")).build();
         Patch p3 = Patch.builder().patchNumber("3456").dockerServices(Lists.newArrayList("dockerService_2")).build();
         Patch p4 = Patch.builder().patchNumber("4567").dockerServices(Lists.newArrayList("dockerService")).build();
-        PatchConflictsChecker checker = PatchConflictsChecker.create();
+        PatchConflictsChecker checker = PatchConflictsCheckerImpl.create();
         checker.addPatch(p1);
         checker.addPatch(p2);
         checker.addPatch(p3);
@@ -83,7 +84,7 @@ public class TestPatchConflictChecker {
         DBPatch dbp2 = DBPatch.builder().dbObjects(dbo2).build();
         Patch p2 = Patch.builder().patchNumber("2345").dbPatch(dbp2).build();
 
-        PatchConflictsChecker conflictsChecker = PatchConflictsChecker.create();
+        PatchConflictsChecker conflictsChecker = PatchConflictsCheckerImpl.create();
         conflictsChecker.addPatch(p1);
         conflictsChecker.addPatch(p2);
 
@@ -124,7 +125,7 @@ public class TestPatchConflictChecker {
         DBPatch dbp4 = DBPatch.builder().dbObjects(dbo4).build();
         Patch p4 = Patch.builder().patchNumber("4567").dbPatch(dbp4).build();
 
-        PatchConflictsChecker conflictsChecker = PatchConflictsChecker.create();
+        PatchConflictsChecker conflictsChecker = PatchConflictsCheckerImpl.create();
         conflictsChecker.addPatch(p1);
         conflictsChecker.addPatch(p2);
         conflictsChecker.addPatch(p3);
@@ -152,7 +153,7 @@ public class TestPatchConflictChecker {
         List<Service> s2 = Lists.newArrayList(Service.builder().serviceName("s1").artifactsToPatch(artifacts2).build());
         Patch p2 = Patch.builder().patchNumber("2345").services(s2).build();
 
-        PatchConflictsChecker conflictsChecker = PatchConflictsChecker.create();
+        PatchConflictsChecker conflictsChecker = PatchConflictsCheckerImpl.create();
         conflictsChecker.addPatch(p1);
         conflictsChecker.addPatch(p2);
 
@@ -188,7 +189,7 @@ public class TestPatchConflictChecker {
         List<Service> s4 = Lists.newArrayList(Service.builder().serviceName("s1").artifactsToPatch(artifacts4).build());
         Patch p4 = Patch.builder().patchNumber("3456").services(s4).build();
 
-        PatchConflictsChecker conflictsChecker = PatchConflictsChecker.create();
+        PatchConflictsChecker conflictsChecker = PatchConflictsCheckerImpl.create();
         conflictsChecker.addPatch(p1);
         conflictsChecker.addPatch(p2);
         conflictsChecker.addPatch(p3);
@@ -274,7 +275,7 @@ public class TestPatchConflictChecker {
         DBPatch dbp5 = DBPatch.builder().dbObjects(dbo2).build();
         Patch p5 = Patch.builder().patchNumber("5").dbPatch(dbp5).build();
 
-        PatchConflictsChecker conflictsChecker = PatchConflictsChecker.create();
+        PatchConflictsChecker conflictsChecker = PatchConflictsCheckerImpl.create();
         conflictsChecker.addPatch(p1);
         conflictsChecker.addPatch(p2);
         conflictsChecker.addPatch(p3);
