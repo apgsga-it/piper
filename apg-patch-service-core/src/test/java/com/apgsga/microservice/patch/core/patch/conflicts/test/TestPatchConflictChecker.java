@@ -319,4 +319,17 @@ public class TestPatchConflictChecker {
         });
     }
 
+    @Test
+    public void testNoConflict() {
+        Patch p1 = Patch.builder().patchNumber("1").dockerServices(Lists.newArrayList("dockerService")).build();
+        List<DbObject> dbo = Lists.newArrayList(DbObject.builder().fileName("f").filePath("p").moduleName("m").build());
+        Patch p2 = Patch.builder().patchNumber("2").dbPatch(DBPatch.builder().dbObjects(dbo).build()).build();
+
+        PatchConflictsChecker checker = PatchConflictsCheckerImpl.create();
+        checker.addPatch(p1);
+        checker.addPatch(p2);
+
+        Assert.assertTrue(checker.checkConflicts().isEmpty());
+    }
+
 }
