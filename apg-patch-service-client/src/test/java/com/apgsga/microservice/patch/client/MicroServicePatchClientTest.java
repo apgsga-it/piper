@@ -285,11 +285,4 @@ public class MicroServicePatchClientTest {
         OnDemandParameter p = OnDemandParameter.builder().patchNumber("5401").target("DEV-JHE").build();
         patchClient.startOnDemandInstallation(p);
     }
-
-    @Test
-    public void testCheckPatchConflicts() {
-        //TODO JHE : implement test
-        fail("JHE: to be implemented");
-    }
-
 }
