@@ -10,6 +10,8 @@ import lombok.Getter;
 import java.util.List;
 import java.util.Map;
 
+//TODO JHE : better use Lombok here
+
 @Getter
 public class PatchConflict {
 
