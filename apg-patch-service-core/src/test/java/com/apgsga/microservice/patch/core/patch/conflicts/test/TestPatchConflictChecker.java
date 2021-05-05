@@ -169,6 +169,149 @@ public class TestPatchConflictChecker {
         Assert.assertTrue(Lists.newArrayList(p1.getPatchNumber(),p2.getPatchNumber()).contains(patchConflicts.get(0).getP2().getPatchNumber()));
     }
 
-    here, write next test for mavenARtifacts
+    @Test
+    public void testConflictSameMavenArtifactForSameServiceForMultiplePatches() {
+        List<MavenArtifact> artifacts1 = Lists.newArrayList(MavenArtifact.builder().artifactId("art").groupId("grp").name("art.grp").version("ver").build());
+        List<Service> s1 = Lists.newArrayList(Service.builder().serviceName("s1").artifactsToPatch(artifacts1).build());
+        Patch p1 = Patch.builder().patchNumber("1234").services(s1).build();
+
+        List<MavenArtifact> artifacts2 = Lists.newArrayList(MavenArtifact.builder().artifactId("art").groupId("grp").name("art.grp").version("ver").build());
+        List<Service> s2 = Lists.newArrayList(Service.builder().serviceName("s1").artifactsToPatch(artifacts2).build());
+        Patch p2 = Patch.builder().patchNumber("2345").services(s2).build();
+
+        List<MavenArtifact> artifacts3 = Lists.newArrayList(MavenArtifact.builder().artifactId("art_2").groupId("grp").name("art.grp").version("ver").build());
+        List<Service> s3 = Lists.newArrayList(Service.builder().serviceName("s1").artifactsToPatch(artifacts3).build());
+        Patch p3 = Patch.builder().patchNumber("3456").services(s3).build();
+
+        List<MavenArtifact> artifacts4 = Lists.newArrayList(MavenArtifact.builder().artifactId("art_2").groupId("grp").name("art.grp").version("ver").build());
+        List<Service> s4 = Lists.newArrayList(Service.builder().serviceName("s1").artifactsToPatch(artifacts4).build());
+        Patch p4 = Patch.builder().patchNumber("3456").services(s4).build();
+
+        PatchConflictsChecker conflictsChecker = PatchConflictsChecker.create();
+        conflictsChecker.addPatch(p1);
+        conflictsChecker.addPatch(p2);
+        conflictsChecker.addPatch(p3);
+        conflictsChecker.addPatch(p4);
+
+        List<PatchConflict> patchConflicts = conflictsChecker.checkConflicts();
+        Assert.assertTrue(patchConflicts.size() == 2);
+        Assert.assertTrue(patchConflicts.get(0).getDbObjects().isEmpty());
+        Assert.assertTrue(patchConflicts.get(0).getDockerServices().isEmpty());
+        Assert.assertTrue(patchConflicts.get(1).getDbObjects().isEmpty());
+        Assert.assertTrue(patchConflicts.get(1).getDockerServices().isEmpty());
+        Assert.assertTrue(patchConflicts.get(0).getMavenArtifacts().size() == 1);
+        Assert.assertTrue(patchConflicts.get(1).getMavenArtifacts().size() == 1);
+
+
+        patchConflicts.forEach(pc -> {
+            if(pc.getMavenArtifacts().get(0).getArtifactId().equals("art")) {
+                Assert.assertTrue(pc.getMavenArtifacts().get(0).getArtifactId().equals("art"));
+                Assert.assertTrue(pc.getMavenArtifacts().get(0).getGroupId().equals("grp"));
+                Assert.assertTrue(pc.getMavenArtifacts().get(0).getName().equals("art.grp"));
+                Assert.assertTrue(pc.getMavenArtifacts().get(0).getVersion().equals("ver"));
+                Assert.assertTrue(Lists.newArrayList(p1.getPatchNumber(),p2.getPatchNumber()).contains(pc.getP1().getPatchNumber()));
+                Assert.assertTrue(Lists.newArrayList(p1.getPatchNumber(),p2.getPatchNumber()).contains(pc.getP2().getPatchNumber()));
+            }
+            else {
+                Assert.assertTrue(pc.getMavenArtifacts().get(0).getArtifactId().equals("art_2"));
+                Assert.assertTrue(pc.getMavenArtifacts().get(0).getGroupId().equals("grp"));
+                Assert.assertTrue(pc.getMavenArtifacts().get(0).getName().equals("art.grp"));
+                Assert.assertTrue(pc.getMavenArtifacts().get(0).getVersion().equals("ver"));
+                Assert.assertTrue(Lists.newArrayList(p3.getPatchNumber(),p4.getPatchNumber()).contains(pc.getP1().getPatchNumber()));
+                Assert.assertTrue(Lists.newArrayList(p3.getPatchNumber(),p4.getPatchNumber()).contains(pc.getP2().getPatchNumber()));
+            }
+        });
+    }
+
+    @Test
+    public void testConflictMultipleObjectsForMultiplePatch() {
+        List<DbObject> dbo1 = Lists.newArrayList(DbObject.builder().moduleName("module_dbo1").fileName("filename_dbo1").filePath("patch_dbo1").build(),
+                                                 DbObject.builder().moduleName("module_dbo1_b").fileName("filename_dbo1_b").filePath("patch_dbo1_b").build());
+        DBPatch dbp1 = DBPatch.builder().dbObjects(dbo1).build();
+        List<MavenArtifact> mavenArtifacts1 = Lists.newArrayList(MavenArtifact.builder().artifactId("art").groupId("grp").name("art-grp").version("ver").build(),
+                                                                 MavenArtifact.builder().artifactId("art2").groupId("grp2").name("art-grp2").version("ver").build(),
+                                                                 MavenArtifact.builder().artifactId("art3").groupId("grp").name("art-grp").version("ver").build());
+        List<Service> services1 = Lists.newArrayList(Service.builder().serviceName("testService").artifactsToPatch(mavenArtifacts1).build());
+        Patch p1 = Patch.builder().patchNumber("1").dockerServices(Lists.newArrayList("dockerService","dockerService_2","dockerService_3"))
+                .dbPatch(dbp1)
+                .services(services1)
+                .build();
+
+        List<DbObject> dbo2 = Lists.newArrayList(DbObject.builder().moduleName("module_dbo2").fileName("filename_dbo2").filePath("patch_dbo2").build(),
+                DbObject.builder().moduleName("module_dbo2_b").fileName("filename_dbo2_b").filePath("patch_dbo2_b").build());
+        DBPatch dbp2 = DBPatch.builder().dbObjects(dbo2).build();
+        List<MavenArtifact> mavenArtifacts2 = Lists.newArrayList(MavenArtifact.builder().artifactId("art_2").groupId("grp_2").name("art-grp_2").version("ver").build(),
+                MavenArtifact.builder().artifactId("art2_2").groupId("grp2_2").name("art-grp2_2").version("ver").build(),
+                MavenArtifact.builder().artifactId("art3_2").groupId("grp").name("art-grp").version("ver").build());
+        List<Service> services2 = Lists.newArrayList(Service.builder().serviceName("testService").artifactsToPatch(mavenArtifacts2).build());
+        Patch p2 = Patch.builder().patchNumber("2").dockerServices(Lists.newArrayList("dockerService_2"))
+                .dbPatch(dbp2)
+                .services(services2)
+                .build();
+
+        List<DbObject> dbo3 = Lists.newArrayList(DbObject.builder().moduleName("module_dbo3").fileName("filename_dbo3").filePath("patch_dbo3").build());
+        DBPatch dbp3 = DBPatch.builder().dbObjects(dbo3).build();
+        List<MavenArtifact> mavenArtifacts3 = Lists.newArrayList(MavenArtifact.builder().artifactId("art_3").groupId("grp_3").name("art-grp_3").version("ver").build(),
+                MavenArtifact.builder().artifactId("art2").groupId("grp2").name("art-grp2").version("ver").build(),
+                MavenArtifact.builder().artifactId("art3_3").groupId("grp").name("art-grp").version("ver").build());
+        List<Service> services3 = Lists.newArrayList(Service.builder().serviceName("testService").artifactsToPatch(mavenArtifacts3).build());
+        Patch p3 = Patch.builder().patchNumber("3").dockerServices(Lists.newArrayList("dockerService","anotherService"))
+                .dbPatch(dbp3)
+                .services(services3)
+                .build();
+
+        List<DbObject> dbo4 = Lists.newArrayList(DbObject.builder().moduleName("module_dbo4").fileName("filename_dbo4").filePath("patch_dbo4").build());
+        DBPatch dbp4 = DBPatch.builder().dbObjects(dbo4).build();
+        Patch p4 = Patch.builder().patchNumber("4").dockerServices(Lists.newArrayList("dockerService_4"))
+                .dbPatch(dbp4)
+                .build();
+
+        List<DbObject> dbo5 = Lists.newArrayList(DbObject.builder().moduleName("module_dbo2").fileName("filename_dbo2").filePath("patch_dbo2").build(),
+                DbObject.builder().moduleName("module_dbo2_b").fileName("filename_dbo2_b").filePath("patch_dbo2_b").build());
+        DBPatch dbp5 = DBPatch.builder().dbObjects(dbo2).build();
+        Patch p5 = Patch.builder().patchNumber("5").dbPatch(dbp5).build();
+
+        PatchConflictsChecker conflictsChecker = PatchConflictsChecker.create();
+        conflictsChecker.addPatch(p1);
+        conflictsChecker.addPatch(p2);
+        conflictsChecker.addPatch(p3);
+        conflictsChecker.addPatch(p4);
+        conflictsChecker.addPatch(p5);
+        List<PatchConflict> patchConflicts = conflictsChecker.checkConflicts();
+
+        Assert.assertTrue("Size was " + patchConflicts.size(), patchConflicts.size() == 3);
+
+        patchConflicts.forEach(pc -> {
+            if(Lists.newArrayList("1","2").contains(pc.getP1().getPatchNumber()) && Lists.newArrayList("1","2").contains(pc.getP2().getPatchNumber())) {
+                Assert.assertTrue(pc.getMavenArtifacts().isEmpty());
+                Assert.assertTrue(pc.getDbObjects().isEmpty());
+                Assert.assertTrue(pc.getDockerServices().size() == 1);
+                Assert.assertTrue(pc.getDockerServices().get(0).equals("dockerService_2"));
+            } else if(Lists.newArrayList("1","3").contains(pc.getP1().getPatchNumber()) && Lists.newArrayList("1","3").contains(pc.getP2().getPatchNumber())) {
+                Assert.assertTrue(pc.getDbObjects().isEmpty());
+                Assert.assertTrue(pc.getDockerServices().size() == 1);
+                Assert.assertTrue(pc.getDockerServices().get(0).equals("dockerService"));
+                Assert.assertTrue(pc.getMavenArtifacts().size() == 1);
+                Assert.assertTrue(pc.getMavenArtifacts().get(0).getArtifactId().equals("art2"));
+                Assert.assertTrue(pc.getMavenArtifacts().get(0).getGroupId().equals("grp2"));
+                Assert.assertTrue(pc.getMavenArtifacts().get(0).getName().equals("art-grp2"));
+                Assert.assertTrue(pc.getMavenArtifacts().get(0).getVersion().equals("ver"));
+            }
+            else if(Lists.newArrayList("2","5").contains(pc.getP1().getPatchNumber()) && Lists.newArrayList("2","5").contains(pc.getP2().getPatchNumber())) {
+                Assert.assertTrue(pc.getMavenArtifacts().isEmpty());
+                Assert.assertTrue(pc.getDockerServices().isEmpty());
+                Assert.assertTrue(pc.getDbObjects().size() == 2);
+                Assert.assertTrue(Lists.newArrayList("module_dbo2","module_dbo2_b").contains(pc.getDbObjects().get(0).getModuleName()));
+                Assert.assertTrue(Lists.newArrayList("filename_dbo2","filename_dbo2_b").contains(pc.getDbObjects().get(0).getFileName()));
+                Assert.assertTrue(Lists.newArrayList("patch_dbo2","patch_dbo2_b").contains(pc.getDbObjects().get(0).getFilePath()));
+                Assert.assertTrue(Lists.newArrayList("module_dbo2","module_dbo2_b").contains(pc.getDbObjects().get(1).getModuleName()));
+                Assert.assertTrue(Lists.newArrayList("filename_dbo2","filename_dbo2_b").contains(pc.getDbObjects().get(1).getFileName()));
+                Assert.assertTrue(Lists.newArrayList("patch_dbo2","patch_dbo2_b").contains(pc.getDbObjects().get(1).getFilePath()));
+            }
+            else {
+                Assert.fail("Should never be here !!");
+            }
+        });
+    }
 
 }
