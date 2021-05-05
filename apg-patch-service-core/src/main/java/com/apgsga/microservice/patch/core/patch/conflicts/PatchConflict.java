@@ -4,21 +4,23 @@ import com.apgsga.microservice.patch.api.DbObject;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 public class PatchConflict {
 
     private Patch p1;
     private Patch p2;
-    private List<MavenArtifact> mavenArtifacts;
+    private Map<String,List<MavenArtifact>> serviceWithMavenArtifacts;
     private List<DbObject> dbObjects;
     private List<String> dockerServices;
 
     private PatchConflict(){
-        mavenArtifacts = Lists.newArrayList();
+        serviceWithMavenArtifacts = Maps.newHashMap();
         dbObjects = Lists.newArrayList();
         dockerServices = Lists.newArrayList();
     }
@@ -37,8 +39,8 @@ public class PatchConflict {
         return this;
     }
 
-    protected PatchConflict mavenArtifacts(List<MavenArtifact> mavenArtifacts) {
-        this.mavenArtifacts = mavenArtifacts;
+    protected PatchConflict mavenArtifacts(Map<String,List<MavenArtifact>> mavenArtifactsForServices) {
+        this.serviceWithMavenArtifacts = mavenArtifactsForServices;
         return this;
     }
 

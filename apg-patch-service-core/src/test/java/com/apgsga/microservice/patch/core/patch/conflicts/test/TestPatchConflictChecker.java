@@ -25,7 +25,7 @@ public class TestPatchConflictChecker {
         Assert.assertTrue(patchConflicts.get(0).getDockerServices().size() == 1);
         Assert.assertTrue(patchConflicts.get(0).getDockerServices().get(0).equals("dockerService"));
         Assert.assertTrue(patchConflicts.get(0).getDbObjects().isEmpty());
-        Assert.assertTrue(patchConflicts.get(0).getMavenArtifacts().isEmpty());
+        Assert.assertTrue(patchConflicts.get(0).getServiceWithMavenArtifacts().isEmpty());
         Assert.assertTrue(Lists.newArrayList("1234","2345").contains(patchConflicts.get(0).getP1().getPatchNumber()));
         Assert.assertTrue(Lists.newArrayList("1234","2345").contains(patchConflicts.get(0).getP2().getPatchNumber()));
         Assert.assertFalse(patchConflicts.get(0).getP1().getPatchNumber().equals(patchConflicts.get(0).getP2().getPatchNumber()));
@@ -55,7 +55,7 @@ public class TestPatchConflictChecker {
                 Assert.assertTrue(Lists.newArrayList(p1.getPatchNumber(),p4.getPatchNumber()).contains(pc.getP2().getPatchNumber()));
                 Assert.assertTrue(pc.getDockerServices().size() == 1);
                 Assert.assertTrue(pc.getDockerServices().get(0).equals("dockerService"));
-                Assert.assertTrue(pc.getMavenArtifacts().isEmpty());
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().isEmpty());
                 Assert.assertTrue(pc.getDbObjects().isEmpty());
             }
             else {
@@ -63,7 +63,7 @@ public class TestPatchConflictChecker {
                 Assert.assertTrue(Lists.newArrayList(p2.getPatchNumber(),p3.getPatchNumber()).contains(pc.getP2().getPatchNumber()));
                 Assert.assertTrue(pc.getDockerServices().size() == 1);
                 Assert.assertTrue(pc.getDockerServices().get(0).equals("dockerService_2"));
-                Assert.assertTrue(pc.getMavenArtifacts().isEmpty());
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().isEmpty());
                 Assert.assertTrue(pc.getDbObjects().isEmpty());
             }
         }
@@ -90,7 +90,7 @@ public class TestPatchConflictChecker {
         List<PatchConflict> patchConflicts = conflictsChecker.checkConflicts();
         Assert.assertTrue(patchConflicts.size() == 1);
         Assert.assertTrue(patchConflicts.get(0).getDockerServices().isEmpty());
-        Assert.assertTrue(patchConflicts.get(0).getMavenArtifacts().isEmpty());
+        Assert.assertTrue(patchConflicts.get(0).getServiceWithMavenArtifacts().isEmpty());
         Assert.assertTrue(patchConflicts.get(0).getDbObjects().size() == 1);
         Assert.assertTrue(patchConflicts.get(0).getDbObjects().get(0).getModuleName().equals("test.modules"));
         Assert.assertTrue(patchConflicts.get(0).getDbObjects().get(0).getFileName().equals("testFileName.sql"));
@@ -133,7 +133,7 @@ public class TestPatchConflictChecker {
         List<PatchConflict> patchConflicts = conflictsChecker.checkConflicts();
         Assert.assertTrue(patchConflicts.size() == 1);
         Assert.assertTrue(patchConflicts.get(0).getDockerServices().isEmpty());
-        Assert.assertTrue(patchConflicts.get(0).getMavenArtifacts().isEmpty());
+        Assert.assertTrue(patchConflicts.get(0).getServiceWithMavenArtifacts().isEmpty());
         Assert.assertTrue(patchConflicts.get(0).getDbObjects().size() == 1);
         Assert.assertTrue(patchConflicts.get(0).getDbObjects().get(0).getModuleName().equals("test.modules"));
         Assert.assertTrue(patchConflicts.get(0).getDbObjects().get(0).getFileName().equals("testFileName.sql"));
@@ -160,11 +160,12 @@ public class TestPatchConflictChecker {
         Assert.assertTrue(patchConflicts.size() == 1);
         Assert.assertTrue(patchConflicts.get(0).getDbObjects().isEmpty());
         Assert.assertTrue(patchConflicts.get(0).getDockerServices().isEmpty());
-        Assert.assertTrue(patchConflicts.get(0).getMavenArtifacts().size() == 1);
-        Assert.assertTrue(patchConflicts.get(0).getMavenArtifacts().get(0).getArtifactId().equals("art"));
-        Assert.assertTrue(patchConflicts.get(0).getMavenArtifacts().get(0).getGroupId().equals("grp"));
-        Assert.assertTrue(patchConflicts.get(0).getMavenArtifacts().get(0).getName().equals("art.grp"));
-        Assert.assertTrue(patchConflicts.get(0).getMavenArtifacts().get(0).getVersion().equals("ver"));
+        Assert.assertTrue(patchConflicts.get(0).getServiceWithMavenArtifacts().size() == 1);
+        Assert.assertTrue(patchConflicts.get(0).getServiceWithMavenArtifacts().get("s1").size() == 1);
+        Assert.assertTrue(patchConflicts.get(0).getServiceWithMavenArtifacts().get("s1").get(0).getArtifactId().equals("art"));
+        Assert.assertTrue(patchConflicts.get(0).getServiceWithMavenArtifacts().get("s1").get(0).getGroupId().equals("grp"));
+        Assert.assertTrue(patchConflicts.get(0).getServiceWithMavenArtifacts().get("s1").get(0).getName().equals("art.grp"));
+        Assert.assertTrue(patchConflicts.get(0).getServiceWithMavenArtifacts().get("s1").get(0).getVersion().equals("ver"));
         Assert.assertTrue(Lists.newArrayList(p1.getPatchNumber(),p2.getPatchNumber()).contains(patchConflicts.get(0).getP1().getPatchNumber()));
         Assert.assertTrue(Lists.newArrayList(p1.getPatchNumber(),p2.getPatchNumber()).contains(patchConflicts.get(0).getP2().getPatchNumber()));
     }
@@ -199,24 +200,26 @@ public class TestPatchConflictChecker {
         Assert.assertTrue(patchConflicts.get(0).getDockerServices().isEmpty());
         Assert.assertTrue(patchConflicts.get(1).getDbObjects().isEmpty());
         Assert.assertTrue(patchConflicts.get(1).getDockerServices().isEmpty());
-        Assert.assertTrue(patchConflicts.get(0).getMavenArtifacts().size() == 1);
-        Assert.assertTrue(patchConflicts.get(1).getMavenArtifacts().size() == 1);
+        Assert.assertTrue(patchConflicts.get(0).getServiceWithMavenArtifacts().size() == 1);
+        Assert.assertTrue(patchConflicts.get(0).getServiceWithMavenArtifacts().get("s1").size() == 1);
+        Assert.assertTrue(patchConflicts.get(1).getServiceWithMavenArtifacts().size() == 1);
+        Assert.assertTrue(patchConflicts.get(1).getServiceWithMavenArtifacts().get("s1").size() == 1);
 
 
         patchConflicts.forEach(pc -> {
-            if(pc.getMavenArtifacts().get(0).getArtifactId().equals("art")) {
-                Assert.assertTrue(pc.getMavenArtifacts().get(0).getArtifactId().equals("art"));
-                Assert.assertTrue(pc.getMavenArtifacts().get(0).getGroupId().equals("grp"));
-                Assert.assertTrue(pc.getMavenArtifacts().get(0).getName().equals("art.grp"));
-                Assert.assertTrue(pc.getMavenArtifacts().get(0).getVersion().equals("ver"));
+            if(pc.getServiceWithMavenArtifacts().get("s1").get(0).getArtifactId().equals("art")) {
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().get("s1").get(0).getArtifactId().equals("art"));
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().get("s1").get(0).getGroupId().equals("grp"));
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().get("s1").get(0).getName().equals("art.grp"));
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().get("s1").get(0).getVersion().equals("ver"));
                 Assert.assertTrue(Lists.newArrayList(p1.getPatchNumber(),p2.getPatchNumber()).contains(pc.getP1().getPatchNumber()));
                 Assert.assertTrue(Lists.newArrayList(p1.getPatchNumber(),p2.getPatchNumber()).contains(pc.getP2().getPatchNumber()));
             }
             else {
-                Assert.assertTrue(pc.getMavenArtifacts().get(0).getArtifactId().equals("art_2"));
-                Assert.assertTrue(pc.getMavenArtifacts().get(0).getGroupId().equals("grp"));
-                Assert.assertTrue(pc.getMavenArtifacts().get(0).getName().equals("art.grp"));
-                Assert.assertTrue(pc.getMavenArtifacts().get(0).getVersion().equals("ver"));
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().get("s1").get(0).getArtifactId().equals("art_2"));
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().get("s1").get(0).getGroupId().equals("grp"));
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().get("s1").get(0).getName().equals("art.grp"));
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().get("s1").get(0).getVersion().equals("ver"));
                 Assert.assertTrue(Lists.newArrayList(p3.getPatchNumber(),p4.getPatchNumber()).contains(pc.getP1().getPatchNumber()));
                 Assert.assertTrue(Lists.newArrayList(p3.getPatchNumber(),p4.getPatchNumber()).contains(pc.getP2().getPatchNumber()));
             }
@@ -283,7 +286,7 @@ public class TestPatchConflictChecker {
 
         patchConflicts.forEach(pc -> {
             if(Lists.newArrayList("1","2").contains(pc.getP1().getPatchNumber()) && Lists.newArrayList("1","2").contains(pc.getP2().getPatchNumber())) {
-                Assert.assertTrue(pc.getMavenArtifacts().isEmpty());
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().isEmpty());
                 Assert.assertTrue(pc.getDbObjects().isEmpty());
                 Assert.assertTrue(pc.getDockerServices().size() == 1);
                 Assert.assertTrue(pc.getDockerServices().get(0).equals("dockerService_2"));
@@ -291,14 +294,15 @@ public class TestPatchConflictChecker {
                 Assert.assertTrue(pc.getDbObjects().isEmpty());
                 Assert.assertTrue(pc.getDockerServices().size() == 1);
                 Assert.assertTrue(pc.getDockerServices().get(0).equals("dockerService"));
-                Assert.assertTrue(pc.getMavenArtifacts().size() == 1);
-                Assert.assertTrue(pc.getMavenArtifacts().get(0).getArtifactId().equals("art2"));
-                Assert.assertTrue(pc.getMavenArtifacts().get(0).getGroupId().equals("grp2"));
-                Assert.assertTrue(pc.getMavenArtifacts().get(0).getName().equals("art-grp2"));
-                Assert.assertTrue(pc.getMavenArtifacts().get(0).getVersion().equals("ver"));
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().size() == 1);
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().get("testService").size() == 1);
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().get("testService").get(0).getArtifactId().equals("art2"));
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().get("testService").get(0).getGroupId().equals("grp2"));
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().get("testService").get(0).getName().equals("art-grp2"));
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().get("testService").get(0).getVersion().equals("ver"));
             }
             else if(Lists.newArrayList("2","5").contains(pc.getP1().getPatchNumber()) && Lists.newArrayList("2","5").contains(pc.getP2().getPatchNumber())) {
-                Assert.assertTrue(pc.getMavenArtifacts().isEmpty());
+                Assert.assertTrue(pc.getServiceWithMavenArtifacts().isEmpty());
                 Assert.assertTrue(pc.getDockerServices().isEmpty());
                 Assert.assertTrue(pc.getDbObjects().size() == 2);
                 Assert.assertTrue(Lists.newArrayList("module_dbo2","module_dbo2_b").contains(pc.getDbObjects().get(0).getModuleName()));

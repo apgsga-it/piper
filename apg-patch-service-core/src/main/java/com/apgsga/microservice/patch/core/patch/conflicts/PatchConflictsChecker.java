@@ -4,8 +4,10 @@ import com.apgsga.microservice.patch.api.DbObject;
 import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import java.util.List;
+import java.util.Map;
 
 public class PatchConflictsChecker {
 
@@ -40,23 +42,23 @@ public class PatchConflictsChecker {
         while(i < patchToBeChecked.size()) {
             List<String> duplicateDockerServices = ducplicateDockerServicesFor(srcPatch,patchToBeChecked.get(i));
             List<DbObject> duplicateDbObjects = duplicateDbObjectsFor(srcPatch,patchToBeChecked.get(i));
-            List<MavenArtifact> duplicateMavenArtifacts = duplicateMavenArtifacts(srcPatch,patchToBeChecked.get(i));
+            Map<String,List<MavenArtifact>> duplicateMavenArtifactsForService = duplicateMavenArtifactsForServices(srcPatch,patchToBeChecked.get(i));
 
-            if(!duplicateDockerServices.isEmpty() || !duplicateDbObjects.isEmpty() || !duplicateMavenArtifacts.isEmpty()) {
+            if(!duplicateDockerServices.isEmpty() || !duplicateDbObjects.isEmpty() || !duplicateMavenArtifactsForService.isEmpty()) {
                 result.add(PatchConflict.create()
                                         .patch1(srcPatch)
                                         .patch2(patchToBeChecked.get(i))
                                         .dockerServices(duplicateDockerServices)
                                         .dbObjects(duplicateDbObjects)
-                                        .mavenArtifacts(duplicateMavenArtifacts));
+                                        .mavenArtifacts(duplicateMavenArtifactsForService));
             }
             i++;
         }
         return result;
     }
 
-    private List<MavenArtifact> duplicateMavenArtifacts(Patch srcPatch, Patch comparedPatch) {
-        List<MavenArtifact> result = Lists.newArrayList();
+    private Map<String,List<MavenArtifact>> duplicateMavenArtifactsForServices(Patch srcPatch, Patch comparedPatch) {
+        Map<String,List<MavenArtifact>> result = Maps.newHashMap();
         if(srcPatch.getServices() != null && !srcPatch.getServices().isEmpty()) {
             srcPatch.getServices().forEach(srcService -> {
                 srcService.getArtifactsToPatch().forEach(srcMa -> {
@@ -66,7 +68,12 @@ public class PatchConflictsChecker {
                                 compService.getArtifactsToPatch().forEach(compMa -> {
                                     // JHE: equals method generated from Lombok annotation
                                     if(srcMa.equals(compMa)) {
-                                        result.add(srcMa);
+                                        if(result.containsKey(srcService.getServiceName())) {
+                                            result.get(srcService.getServiceName()).add(srcMa);
+                                        }
+                                        else {
+                                            result.put(srcService.getServiceName(),Lists.newArrayList(srcMa));
+                                        }
                                     }
                                 });
                             }
