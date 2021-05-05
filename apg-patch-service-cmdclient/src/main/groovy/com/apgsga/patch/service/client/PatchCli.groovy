@@ -115,6 +115,7 @@ class PatchCli {
 			oc longOpt: 'onClone', args:2, valueSeparator: ",", argName: "src,target", "Starts an onClone Pipeline for the given target, and re-assemble a list of patches", required: false
 			patches longOpt: 'patches', args:1, "List of patches as comma separated values", required: false
 			cpc longOpt: 'checkPatchConflicts', args:0, "Check for patch conflicts", required: false
+			// JHE (05.05.2021): in the future, -patchList option will replace -patches ... but further changes will be required on DB-Workflow side before being able to remove -patches
 			patchList longOpt: 'patchList', args:1, "List of patches with corresponding eMail address, as JSON format. Sample JSON: [{\"patchNumber\":\"<patchNumber_1>\",\"eMails\": [\"<eMail_1>\",\"<eMail_n>\"]},{\"patchNumber\":\"<patchNumber_n>\",\"eMails\": [\"<eMail_n>\"]}]", required: false
 		}
 
