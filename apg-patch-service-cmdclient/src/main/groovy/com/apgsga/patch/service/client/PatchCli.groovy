@@ -67,7 +67,7 @@ class PatchCli {
 			} else if (options.oc) {
 				cmdResults.result = onClone(patchClient, options)
 			} else if (options.cpc) {
-				cmdResults.result = checkPatchConflicts(patchClient, options)
+				cmdResults.results['cpc'] = checkPatchConflicts(patchClient, options)
 			}
 			cmdResults.returnCode = 0
 			return cmdResults
@@ -256,6 +256,7 @@ class PatchCli {
 			isValid = false
 		}
 		if(isValid) {
+			println "apscli received following string from command line : ${options.patchLists[0]}"
 			// To check if the parameter is correctly formatted, we try to deserialize it.
 			ObjectMapper om = new ObjectMapper()
 			try {

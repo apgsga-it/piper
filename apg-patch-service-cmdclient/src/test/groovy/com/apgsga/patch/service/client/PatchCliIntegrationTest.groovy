@@ -294,12 +294,14 @@ class PatchCliIntegrationTest extends Specification {
 		result.results.size() == 0
 	}
 
-	def "Patch Cli should return a non-empty results size when trying to pass a wrong JSON for patchList parameter"() {
+	def "Patch Cli should return a non-empty results size when trying to pass a correct JSON for patchList parameter"() {
 		// JHE (04.05.2021) : at the moment, patchList parameter is only used in context of cpc (checkPatchConflicts)
 		setup:
 		def client = PatchCli.create()
 		when:
-		def result = client.process(["-cpc", "-patchList", "[{\"patchNumber\":\"patchNumber_1\",\"eMails\": [\"eMail_1\",\"eMail_n\"]},{\"patchNumber\":\"patchNumber_n\",\"eMails\": [\"eMail_n\"]}]"])
+		client.process(["-sa", "src/test/resources/Patch5401.json"])
+		client.process(["-sa", "src/test/resources/Patch5402.json"])
+		def result = client.process(["-cpc", "-patchList", "[{\"patchNumber\":\"5401\",\"eMails\":[\"eMail_1\",\"eMail_n\"]},{\"patchNumber\":\"5402\",\"eMails\":[\"eMail_n\"]}]"])
 		then:
 		result != null
 		result.returnCode == 0
