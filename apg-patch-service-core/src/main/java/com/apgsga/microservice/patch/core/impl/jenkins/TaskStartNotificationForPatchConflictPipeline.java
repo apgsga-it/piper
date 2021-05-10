@@ -50,9 +50,9 @@ public class TaskStartNotificationForPatchConflictPipeline implements Runnable {
         Map<String,String> jobParameters = Maps.newHashMap();
         jobParameters.put("PARAMETERS", notificationForPatchConflictParameterAsJson());
         LOGGER.info("TaskStartNotificationForPatchConflictPipeline Parameters passed to " + NOTIFICATION_FOR_CONFLICT_PIPELINE_NAME + " Pipeline :" + jobParameters.toString());
-        JenkinsSshCommand.createJenkinsSshBuildJobAndReturnImmediatelyCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, NOTIFICATION_FOR_CONFLICT_PIPELINE_NAME, jobParameters);
-        LOGGER.info(NOTIFICATION_FOR_CONFLICT_PIPELINE_NAME + " pipeline has been started, Piper didn't wait for a confirmation that the Job successfully started.");
-
+        JenkinsSshCommand sshCmd = JenkinsSshCommand.createJenkinsSshBuildJobAndWaitForStartCmd(jenkinsUrl, jenkinsSshPort, jenkinsSshUser, NOTIFICATION_FOR_CONFLICT_PIPELINE_NAME, jobParameters);
+        List<String> result = cmdRunner.run(sshCmd);
+        LOGGER.info("Result of " + NOTIFICATION_FOR_CONFLICT_PIPELINE_NAME + " Pipeline Job " + result.toString());
     }
 
     private String notificationForPatchConflictParameterAsJson() {
