@@ -26,7 +26,7 @@ public class TaskStartNotificationForPatchConflictPipeline implements Runnable {
     private String jenkinsSshPort;
     private String jenkinsSshUser;
     private List<PatchListParameter> patchListParameters;
-    private List<PatchConflict> patchConflictParamters;
+    private List<PatchConflict> patchConflictParameters;
     private CommandRunner cmdRunner;
 
 
@@ -35,7 +35,7 @@ public class TaskStartNotificationForPatchConflictPipeline implements Runnable {
         this.jenkinsSshPort = jenkinsSshPort;
         this.jenkinsSshUser = jenkinsSshUser;
         this.patchListParameters = patchListParameters;
-        this.patchConflictParamters = patchConflicts;
+        this.patchConflictParameters = patchConflicts;
         this.cmdRunner = cmdRunner;
     }
 
@@ -59,7 +59,7 @@ public class TaskStartNotificationForPatchConflictPipeline implements Runnable {
         try {
             List<NotificationForPatchConflictPipelineParameters> params = Lists.newArrayList();
 
-            patchConflictParamters.forEach(pc -> {
+            patchConflictParameters.forEach(pc -> {
                 NotificationForPatchConflictPipelineParameters.builder()
                         .patchConflict(pc)
                         .emailAdress(emailAdressFor(pc))
