@@ -10,9 +10,9 @@ class PatchListParameterTest extends Specification {
     def "test JSON marshalling"() {
         given:
             def emailsFor1234 = Lists.newArrayList("paul@apgsga.ch","bernard@apgsga.ch")
-            def pl = PatchListParameter.builder().patchNumber("1234").eMails(emailsFor1234).build()
+            def pl = PatchListParameter.builder().patchNumber("1234").emails(emailsFor1234).build()
             def emailsFor5678 = Lists.newArrayList("jeff@apgsga.ch")
-            def pl2 = PatchListParameter.builder().patchNumber("5678").eMails(emailsFor5678).build()
+            def pl2 = PatchListParameter.builder().patchNumber("5678").emails(emailsFor5678).build()
             List<PatchListParameter> pls = Lists.newArrayList(pl,pl2)
         when:
             ObjectMapper om = new ObjectMapper()
@@ -32,13 +32,13 @@ class PatchListParameterTest extends Specification {
             parameters.size() == 2
             parameters.each {patchListParam ->
                 if(patchListParam.getPatchNumber().equals("1234")) {
-                    patchListParam.EMails.size() == 2
-                    patchListParam.EMails.contains("paul@apgsga.ch")
-                    patchListParam.EMails.contains("robert@apgsga.ch")
+                    patchListParam.getEmails.size() == 2
+                    patchListParam.getEmails.contains("paul@apgsga.ch")
+                    patchListParam.getEmails.contains("robert@apgsga.ch")
                 }
                 else if(patchListParam.getPatchNumber().equals("5678")) {
-                    patchListParam.EMails.size() == 1
-                    patchListParam.EMails.contains("jeff@apgsga.ch")
+                    patchListParam.getEmails.size() == 1
+                    patchListParam.getEmails.contains("jeff@apgsga.ch")
                 }
                 else {
                     Assert.fail("patchNumber should not be anything else than 1234 or 5678", patchListParam)

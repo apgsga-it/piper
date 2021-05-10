@@ -405,8 +405,8 @@ public class MicroServicePatchServerTest {
 		patchService.save(p1);
 		patchService.save(p2);
 		List<PatchListParameter> patchToBeChecked = Lists.newArrayList();
-		patchToBeChecked.add(PatchListParameter.builder().patchNumber(p1.getPatchNumber()).eMails(Lists.newArrayList("robert@apgsga.ch")).build());
-		patchToBeChecked.add(PatchListParameter.builder().patchNumber(p2.getPatchNumber()).eMails(Lists.newArrayList("jeff@apgsga.ch")).build());
+		patchToBeChecked.add(PatchListParameter.builder().patchNumber(p1.getPatchNumber()).emails(Lists.newArrayList("robert@apgsga.ch")).build());
+		patchToBeChecked.add(PatchListParameter.builder().patchNumber(p2.getPatchNumber()).emails(Lists.newArrayList("jeff@apgsga.ch")).build());
 		patchService.checkPatchConflicts(patchToBeChecked);
 	}
 }

@@ -301,7 +301,7 @@ class PatchCliIntegrationTest extends Specification {
 		when:
 		client.process(["-sa", "src/test/resources/Patch5401.json"])
 		client.process(["-sa", "src/test/resources/Patch5402.json"])
-		def result = client.process(["-cpc", "-patchList", "[{\"patchNumber\":\"5401\",\"eMails\":[\"eMail_1\",\"eMail_n\"]},{\"patchNumber\":\"5402\",\"eMails\":[\"eMail_n\"]}]"])
+		def result = client.process(["-cpc", "-patchList", "[{\"patchNumber\":\"5401\",\"emails\":[\"eMail_1\",\"eMail_n\"]},{\"patchNumber\":\"5402\",\"emails\":[\"eMail_n\"]}]"])
 		then:
 		result != null
 		result.returnCode == 0

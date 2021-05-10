@@ -11,12 +11,12 @@ import lombok.Value;
 import java.util.List;
 
 @Value
-@Builder(toBuilder = true)
+@Builder
 @JsonDeserialize(builder = PatchListParameter.PatchListParameterBuilder.class)
 public class PatchListParameter {
 
     String patchNumber;
-    List<String> eMails;
+    List<String> emails;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class PatchListParameterBuilder {}

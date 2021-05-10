@@ -80,7 +80,7 @@ public class TaskStartNotificationForPatchConflictPipeline implements Runnable {
         patchListParameters.forEach(plp -> {
             //TODO JHE : to be verified, but most probably this will add duplicate adresses, we might want a Set instead of List
             if(plp.getPatchNumber().equals(pc.getP1().getPatchNumber()) || plp.getPatchNumber().equals(pc.getP2().getPatchNumber())) {
-                result.addAll(plp.getEMails());
+                result.addAll(plp.getEmails());
             }
         });
         return result;
