@@ -58,15 +58,12 @@ public class TaskStartNotificationForPatchConflictPipeline implements Runnable {
     private String notificationForPatchConflictParameterAsJson() {
         try {
             List<NotificationForPatchConflictPipelineParameters> params = Lists.newArrayList();
-
             patchConflictParameters.forEach(pc -> {
-                NotificationForPatchConflictPipelineParameters.builder()
-                        .patchConflict(pc)
-                        .emailAdress(emailAdressFor(pc))
-                        .build();
+                params.add(NotificationForPatchConflictPipelineParameters.builder()
+                            .patchConflict(pc)
+                            .emailAdress(emailAdressFor(pc))
+                            .build());
             });
-
-
             ObjectMapper om = new ObjectMapper();
             return om.writeValueAsString(params).replace("\"","\\\"");
         } catch (JsonProcessingException e) {
