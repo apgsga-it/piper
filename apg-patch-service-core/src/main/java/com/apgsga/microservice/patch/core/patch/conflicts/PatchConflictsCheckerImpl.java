@@ -47,7 +47,7 @@ public class PatchConflictsCheckerImpl implements PatchConflictsChecker {
 
         while(i < patchToBeChecked.size()) {
             List<String> duplicateDockerServices = ducplicateDockerServicesFor(srcPatch,patchToBeChecked.get(i));
-            List<DbObject> duplicateDbObjects = duplicateDbObjectsFor(srcPatch,patchToBeChecked.get(i));
+            Map<String,List<DbObject>> duplicateDbObjects = duplicateDbObjectsFor(srcPatch,patchToBeChecked.get(i));
             Map<String,List<MavenArtifact>> duplicateMavenArtifactsForService = duplicateMavenArtifactsForServices(srcPatch,patchToBeChecked.get(i));
 
             if(!duplicateDockerServices.isEmpty() || !duplicateDbObjects.isEmpty() || !duplicateMavenArtifactsForService.isEmpty()) {
@@ -92,13 +92,17 @@ public class PatchConflictsCheckerImpl implements PatchConflictsChecker {
         return result;
     }
 
-    private List<DbObject> duplicateDbObjectsFor(Patch srcPatch, Patch comparedPatch) {
-        List<DbObject> result = Lists.newArrayList();
+    private Map<String,List<DbObject>> duplicateDbObjectsFor(Patch srcPatch, Patch comparedPatch) {
+        Map<String,List<DbObject>> result = Maps.newHashMap();
         if(srcPatch.getDbPatch() != null) {
             srcPatch.getDbPatch().getDbObjects().forEach(srcDbo -> {
                 // JHE: equals method generated from Lombok annotation
                 if (comparedPatch.getDbPatch().getDbObjects().contains(srcDbo)) {
-                    result.add(srcDbo);
+                    if(result.containsKey(srcDbo.getModuleName())) {
+                        result.get(srcDbo.getModuleName()).add(srcDbo);
+                    }else {
+                        result.put(srcDbo.getModuleName(),Lists.newArrayList(srcDbo));
+                    }
                 }
             });
         }

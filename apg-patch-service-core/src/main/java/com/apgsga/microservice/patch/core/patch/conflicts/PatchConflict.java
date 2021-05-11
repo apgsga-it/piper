@@ -19,7 +19,7 @@ public class PatchConflict {
     Patch p1;
     Patch p2;
     Map<String,List<MavenArtifact>> serviceWithMavenArtifacts;
-    List<DbObject> dbObjects;
+    Map<String,List<DbObject>> dbObjects;
     List<String> dockerServices;
 
     @JsonPOJOBuilder(withPrefix = "")

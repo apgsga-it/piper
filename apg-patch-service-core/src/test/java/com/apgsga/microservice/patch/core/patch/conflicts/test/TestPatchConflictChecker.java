@@ -93,9 +93,9 @@ public class TestPatchConflictChecker {
         Assert.assertTrue(patchConflicts.get(0).getDockerServices().isEmpty());
         Assert.assertTrue(patchConflicts.get(0).getServiceWithMavenArtifacts().isEmpty());
         Assert.assertTrue(patchConflicts.get(0).getDbObjects().size() == 1);
-        Assert.assertTrue(patchConflicts.get(0).getDbObjects().get(0).getModuleName().equals("test.modules"));
-        Assert.assertTrue(patchConflicts.get(0).getDbObjects().get(0).getFileName().equals("testFileName.sql"));
-        Assert.assertTrue(patchConflicts.get(0).getDbObjects().get(0).getFilePath().equals("test/file/path"));
+        Assert.assertTrue(patchConflicts.get(0).getDbObjects().keySet().contains("test.modules"));
+        Assert.assertTrue(patchConflicts.get(0).getDbObjects().get("test.modules").get(0).getFileName().equals("testFileName.sql"));
+        Assert.assertTrue(patchConflicts.get(0).getDbObjects().get("test.modules").get(0).getFilePath().equals("test/file/path"));
         Assert.assertTrue(Lists.newArrayList(p1.getPatchNumber(),p2.getPatchNumber()).contains(patchConflicts.get(0).getP1().getPatchNumber()));
         Assert.assertTrue(Lists.newArrayList(p1.getPatchNumber(),p2.getPatchNumber()).contains(patchConflicts.get(0).getP2().getPatchNumber()));
     }
@@ -136,9 +136,9 @@ public class TestPatchConflictChecker {
         Assert.assertTrue(patchConflicts.get(0).getDockerServices().isEmpty());
         Assert.assertTrue(patchConflicts.get(0).getServiceWithMavenArtifacts().isEmpty());
         Assert.assertTrue(patchConflicts.get(0).getDbObjects().size() == 1);
-        Assert.assertTrue(patchConflicts.get(0).getDbObjects().get(0).getModuleName().equals("test.modules"));
-        Assert.assertTrue(patchConflicts.get(0).getDbObjects().get(0).getFileName().equals("testFileName.sql"));
-        Assert.assertTrue(patchConflicts.get(0).getDbObjects().get(0).getFilePath().equals("test/file/path"));
+        Assert.assertTrue(patchConflicts.get(0).getDbObjects().keySet().contains("test.modules"));
+        Assert.assertTrue(patchConflicts.get(0).getDbObjects().get("test.modules").get(0).getFileName().equals("testFileName.sql"));
+        Assert.assertTrue(patchConflicts.get(0).getDbObjects().get("test.modules").get(0).getFilePath().equals("test/file/path"));
         Assert.assertTrue(Lists.newArrayList(p1.getPatchNumber(),p4.getPatchNumber()).contains(patchConflicts.get(0).getP1().getPatchNumber()));
         Assert.assertTrue(Lists.newArrayList(p1.getPatchNumber(),p4.getPatchNumber()).contains(patchConflicts.get(0).getP2().getPatchNumber()));
     }
@@ -306,12 +306,9 @@ public class TestPatchConflictChecker {
                 Assert.assertTrue(pc.getServiceWithMavenArtifacts().isEmpty());
                 Assert.assertTrue(pc.getDockerServices().isEmpty());
                 Assert.assertTrue(pc.getDbObjects().size() == 2);
-                Assert.assertTrue(Lists.newArrayList("module_dbo2","module_dbo2_b").contains(pc.getDbObjects().get(0).getModuleName()));
-                Assert.assertTrue(Lists.newArrayList("filename_dbo2","filename_dbo2_b").contains(pc.getDbObjects().get(0).getFileName()));
-                Assert.assertTrue(Lists.newArrayList("patch_dbo2","patch_dbo2_b").contains(pc.getDbObjects().get(0).getFilePath()));
-                Assert.assertTrue(Lists.newArrayList("module_dbo2","module_dbo2_b").contains(pc.getDbObjects().get(1).getModuleName()));
-                Assert.assertTrue(Lists.newArrayList("filename_dbo2","filename_dbo2_b").contains(pc.getDbObjects().get(1).getFileName()));
-                Assert.assertTrue(Lists.newArrayList("patch_dbo2","patch_dbo2_b").contains(pc.getDbObjects().get(1).getFilePath()));
+                Assert.assertTrue(pc.getDbObjects().keySet().contains("module_dbo2"));
+
+                Assert.assertTrue(pc.getDbObjects().keySet().contains("module_dbo2_b"));
             }
             else {
                 Assert.fail("Should never be here !!");
