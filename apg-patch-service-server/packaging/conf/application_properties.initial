@@ -21,7 +21,6 @@ vcs.user=<%= $piper_cvs_user %>
 
 # Jenkins
 jenkins.host=<%= $piper_jenkins_host %>
-# TODO JHE (25.09.2020): svcjenkinsclient ? to be verified with UGE
 jenkins.ssh.user=<%= $jenkins_ssh_user %>
 jenkins.ssh.port=<%= $jenkins_cli_port %>
 jenkins.pipeline.repo=<%= $jenkins_builder_pipeline_repo %>
