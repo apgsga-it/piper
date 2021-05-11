@@ -54,10 +54,6 @@ class PatchCli {
 			} else if (options.i) {
 				def result = installPipeline(patchClient, options)
 				cmdResults.results['i'] = result
-			} else if (options.cpf) {
-				def status = options.cpfs[0]
-				def destFolder = options.cpfs[1]
-				cmdResults.result = copyPatchFile(patchClient,status,destFolder)
 			} else if (options.setup) {
 				cmdResults.result = doSetup(patchClient,options)
 			} else if (options.notifydb) {
@@ -107,7 +103,6 @@ class PatchCli {
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
 			log longOpt: 'log', args:4, valueSeparator: ",", argName: 'patchNumber,target,step,text', 'Log a patch steps for a patch', required: false
 			adp longOpt: 'assembleDeployPipeline', args:3, valueSeparator: ",", argName: 'target,successNotification,errorNotification', "starts an assembleAndDeploy pipeline. First parameters is a list seprated with ';'", required: false
-			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "statusCode,destFolder", 'Copy patch files for a given status into the destfolder', required: false
 			i longOpt: 'install', args:3, valueSeparator: ",", argName: 'target,successNotification,errorNotification', "starts an install pipeline for the given target", required: false
 			setup longOpt: 'setup', args:3, valueSeparator: ",", argName: 'patchNumber,successNotification,errorNotification', 'Starts setup for a patch, required before beeing ready to build', required: false
 			notifydb longOpt: 'notifdb', args:2, valueSeparator: ",", argName: "installationTarget,notification", 'Notify the DB on Job Status', required: false
@@ -204,13 +199,6 @@ class PatchCli {
 				error = true
 			}
 			if(!validatePatchNumber(options)) {
-				error = true
-			}
-		}
-
-		if(options.cpf) {
-			if(options.cpfs.size() != 2) {
-				println "status and destFolder are required when copying patch files"
 				error = true
 			}
 		}
@@ -438,14 +426,6 @@ class PatchCli {
 				    .build()
 		patchClient.startInstallPipeline(params)
 	}
-
-	static def copyPatchFile(PatchRestServiceClient patchClient, def status, def destFolder) throws Exception {
-		Map params = Maps.newHashMap()
-		params.put("status",status)
-		params.put("destFolder",destFolder)
-		patchClient.copyPatchFiles(params)
-	}
-
 
 	private static def fetchPiperUrl(def options) {
 		if(options.purls && options.purls.size() == 1) {

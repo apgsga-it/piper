@@ -209,14 +209,6 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 		patchService.startInstallPipeline(parameters);
 	}
 
-
-	@RequestMapping(value = "/copyPatchFiles", method = RequestMethod.POST)
-	@ResponseStatus(HttpStatus.OK)
-	@Override
-	public void copyPatchFiles(@RequestBody Map<String,String> params) {
-		patchService.copyPatchFiles(params);
-	}
-
 	@RequestMapping(value = "/notify", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	public void notify(@RequestBody NotificationParameters params) {

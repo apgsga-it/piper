@@ -39,12 +39,6 @@ class PatchRestServiceClient implements PatchOpService {
 		restTemplate.postForLocation(getRestBaseUri() + "/startInstallPipeline", parameters)
 	}
 
-	@Override
-	void copyPatchFiles(Map params) {
-		restTemplate.postForLocation(getRestBaseUri() + "/copyPatchFiles", params)
-	}
-
-
 	void save(File patchFile, Class<Patch> clx) {
 		println "File ${patchFile} to be uploaded"
 		ObjectMapper mapper = new ObjectMapper()
