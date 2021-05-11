@@ -5,11 +5,15 @@ import com.apgsga.microservice.patch.api.MavenArtifact;
 import com.apgsga.microservice.patch.api.Patch;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 import java.util.Map;
 
 public class PatchConflictsCheckerImpl implements PatchConflictsChecker {
+
+    protected static final Log LOGGER = LogFactory.getLog(PatchConflictsCheckerImpl.class.getName());
 
     private List<Patch> patchToBeChecked;
 
