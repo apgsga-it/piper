@@ -13,11 +13,4 @@ public interface PatchRdbms {
      */
     void notify(NotificationParameters params);
 
-    /**
-     *
-     * @param statusCode : eg: 80, 25, 15
-     * @return : List of Patch number currently in the statusCode passed as parameter
-     */
-    List<String> patchIdsForStatus(String statusCode);
-
 }

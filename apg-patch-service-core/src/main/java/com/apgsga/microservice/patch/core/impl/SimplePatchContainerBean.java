@@ -352,11 +352,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public List<String> patchIdsForStatus(String statusCode) {
-		return this.repo.patchIdsForStatus(statusCode);
-	}
-
-	@Override
 	public void notify(NotificationParameters params) {
 		this.repo.notify(params);
 	}

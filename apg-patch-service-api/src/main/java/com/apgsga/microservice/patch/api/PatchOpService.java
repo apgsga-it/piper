@@ -53,8 +53,6 @@ public interface PatchOpService {
 	 */
 	void startInstallPipeline(InstallParameters parameters);
 
-	List<String> patchIdsForStatus(String statusCode);
-
 	void notify(NotificationParameters params);
 
 	void startOnDemandPipeline(OnDemandParameter parameters);

@@ -49,13 +49,4 @@ public class PatchRdbmsImpl implements PatchRdbms {
 
     }
 
-    @Override
-    @Deprecated // TODO JHE (18.11.2020): Not 100% sure yet, but this will most probably be removed
-    public List<String> patchIdsForStatus(String statusCode) {
-        /*
-        String sql = "SELECT id FROM cm_patch_f p INNER JOIN cm_patch_status_f s ON p.status = s.pat_status WHERE s.pat_status = " + statusCode;
-        return jdbcTemplate.queryForList(sql, String.class);
-        */
-        return null;
-    }
 }

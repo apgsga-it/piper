@@ -20,8 +20,4 @@ public class PatchRdbmsMockImpl implements PatchRdbms {
         LOGGER.warn("Mocked notify with NotificationParameters: " + params.toString());
     }
 
-    @Override
-    public List<String> patchIdsForStatus(String statusCode) {
-        return null;
-    }
 }

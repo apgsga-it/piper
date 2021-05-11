@@ -235,13 +235,4 @@ public class PatchOpServiceController implements PatchOpService, PatchPersistenc
 	public void checkPatchConflicts(@RequestBody List<PatchListParameter> parameters) {
 		patchService.checkPatchConflicts(parameters);
 	}
-
-	@RequestMapping(value = "/patchIdsForStatus/{status}")
-	@ResponseBody
-	public List<String> patchIdsForStatus(@PathVariable("status") String statusCode) {
-		return patchRdbms.patchIdsForStatus(statusCode);
-	}
-
-
-
 }

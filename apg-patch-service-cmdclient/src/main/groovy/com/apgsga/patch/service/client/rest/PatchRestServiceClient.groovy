@@ -90,9 +90,4 @@ class PatchRestServiceClient implements PatchOpService {
 		restTemplate.postForLocation(getRestBaseUri() + "/checkPatchConflicts", parameters)
 	}
 
-	@Override
-	List<String> patchIdsForStatus(String statusCode) {
-		return restTemplate.getForObject(getRestBaseUri() + "/patchIdsForStatus/{status}", String[].class, [status:statusCode])
-	}
-
 }
