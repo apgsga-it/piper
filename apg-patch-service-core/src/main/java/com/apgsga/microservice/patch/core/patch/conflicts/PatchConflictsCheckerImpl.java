@@ -51,12 +51,13 @@ public class PatchConflictsCheckerImpl implements PatchConflictsChecker {
             Map<String,List<MavenArtifact>> duplicateMavenArtifactsForService = duplicateMavenArtifactsForServices(srcPatch,patchToBeChecked.get(i));
 
             if(!duplicateDockerServices.isEmpty() || !duplicateDbObjects.isEmpty() || !duplicateMavenArtifactsForService.isEmpty()) {
-                result.add(PatchConflict.create()
-                                        .patch1(srcPatch)
-                                        .patch2(patchToBeChecked.get(i))
+                result.add(PatchConflict.builder()
+                                        .p1(srcPatch)
+                                        .p2(patchToBeChecked.get(i))
                                         .dockerServices(duplicateDockerServices)
                                         .dbObjects(duplicateDbObjects)
-                                        .mavenArtifacts(duplicateMavenArtifactsForService));
+                                        .serviceWithMavenArtifacts(duplicateMavenArtifactsForService)
+                                        .build());
             }
             i++;
         }
