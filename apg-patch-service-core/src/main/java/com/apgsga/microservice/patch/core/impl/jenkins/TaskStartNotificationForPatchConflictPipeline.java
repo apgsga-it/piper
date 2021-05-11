@@ -9,11 +9,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class TaskStartNotificationForPatchConflictPipeline implements Runnable {
@@ -61,7 +63,7 @@ public class TaskStartNotificationForPatchConflictPipeline implements Runnable {
             patchConflictParameters.forEach(pc -> {
                 params.add(NotificationForPatchConflictPipelineParameters.builder()
                             .patchConflict(pc)
-                            .emailAdress(emailAdressFor(pc))
+                            .emailAdress(emailAdressesFor(pc))
                             .build());
             });
             ObjectMapper om = new ObjectMapper();
@@ -72,10 +74,9 @@ public class TaskStartNotificationForPatchConflictPipeline implements Runnable {
         }
     }
 
-    private List<String> emailAdressFor(PatchConflict pc) {
-        List<String> result = Lists.newArrayList();
+    private Set<String> emailAdressesFor(PatchConflict pc) {
+        Set<String> result = Sets.newHashSet();
         patchListParameters.forEach(plp -> {
-            //TODO JHE : to be verified, but most probably this will add duplicate adresses, we might want a Set instead of List
             if(plp.getPatchNumber().equals(pc.getP1().getPatchNumber()) || plp.getPatchNumber().equals(pc.getP2().getPatchNumber())) {
                 result.addAll(plp.getEmails());
             }
