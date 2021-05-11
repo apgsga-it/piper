@@ -10,6 +10,7 @@ import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
 import com.apgsga.microservice.patch.core.commands.patch.vcs.RmTmpCheckoutFolder;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflict;
+import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflictCheckerFactory;
 import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflictsChecker;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.google.common.base.Strings;
@@ -46,7 +47,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	private ArtifactManager am;
 
 	@Autowired
-	private PatchConflictsChecker conflictsChecker;
+	private PatchConflictCheckerFactory conflictsCheckerFactory;
 
 	@Autowired
 	@Qualifier("vcsCmdRunnerFactory")
@@ -404,6 +405,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Override
 	public void checkPatchConflicts(List<PatchListParameter> parameters) {
+		PatchConflictsChecker conflictsChecker = conflictsCheckerFactory.create();
 		parameters.forEach(p -> {
 			conflictsChecker.addPatch(repo.findById(p.getPatchNumber()));
 		});

@@ -8,15 +8,14 @@ import com.apgsga.microservice.patch.core.commands.*;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsMockClient;
 import com.apgsga.microservice.patch.core.impl.persistence.PatchPersistenceImpl;
-import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflictsChecker;
-import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflictsCheckerImpl;
+import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflictCheckerFactory;
+import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflictsCheckerFactoryImpl;
 import com.apgsga.patch.db.integration.api.PatchRdbms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -170,9 +169,8 @@ public class MicroServicePatchConfig {
 	}
 
 	@Bean(name = "patchConflictsChecker")
-	@Scope("prototype")
-	public PatchConflictsChecker patchConflictsChecker() {
-		return PatchConflictsCheckerImpl.create();
+	public PatchConflictCheckerFactory patchConflictsCheckerFactory() {
+		return new PatchConflictsCheckerFactoryImpl();
 	}
 
 
