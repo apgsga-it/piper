@@ -42,8 +42,6 @@ public interface PatchPersistence {
 
 	String targetFor(String stageName);
 
-	List<String> patchIdsForStatus(String statusCode);
-
 	void notify(NotificationParameters params);
 
 	void clean();

@@ -55,5 +55,4 @@ class PatchCliIntegrationExceptionHandlingTests extends Specification {
 		result != null
 		result.returnCode ==  0
 	}
-	
 }

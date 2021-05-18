@@ -53,20 +53,12 @@ public interface PatchOpService {
 	 */
 	void startInstallPipeline(InstallParameters parameters);
 
-	/**
-	 * Copies JSON Patch files to a destination folder
-	 * @param params : 2 parameters required with following keys: "status" and "destFolder"
-	 */
-	//TODO JHE (18.11.2020): will probably be removed, but I want to wait until implemenation of assembleAndDeploy to be 100% sure
-	@Deprecated
-	void copyPatchFiles(Map<String,String> params);
-
-	List<String> patchIdsForStatus(String statusCode);
-
 	void notify(NotificationParameters params);
 
 	void startOnDemandPipeline(OnDemandParameter parameters);
 
 	void startOnClonePipeline(OnCloneParameters parameters);
+
+	void checkPatchConflicts(List<PatchListParameter> parameters);
 
 }

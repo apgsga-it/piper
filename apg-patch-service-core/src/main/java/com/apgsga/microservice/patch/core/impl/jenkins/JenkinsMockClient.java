@@ -1,10 +1,13 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.apgsga.microservice.patch.api.*;
+import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflict;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Profile("mock")
 @Component("jenkinsBean")
@@ -42,5 +45,12 @@ public class JenkinsMockClient implements JenkinsClient {
 		LOGGER.info("startOnClonePipeline for : " + parameters.toString());
 	}
 
+	@Override
+	public void startNotificationForPatchConflictPipeline(List<PatchListParameter> patchListParams, List<PatchConflict> patchConflicts) {
+		LOGGER.info("startNotificationForPatchConflictPipeline for : ");
+		patchListParams.forEach(p -> {
+			LOGGER.info(p.toString());
+		});
+	}
 
 }

@@ -397,4 +397,16 @@ public class MicroServicePatchServerTest {
 		Assert.assertEquals(targetInstance.getName(),searchedTarget);
 		Assert.assertEquals("dev-digiflex-e.apgsga.ch",targetInstance.getServices().stream().filter(s -> s.getServiceName().equals(searchedService)).findFirst().get().getInstallationHost());
 	}
+
+	@Test
+	public void testPatchConflicts() {
+		Patch p1 = Patch.builder().patchNumber("1234").dockerServices(Lists.newArrayList("dockerService_1")).build();
+		Patch p2 = Patch.builder().patchNumber("2345").dockerServices(Lists.newArrayList("dockerService_1")).build();
+		patchService.save(p1);
+		patchService.save(p2);
+		List<PatchListParameter> patchToBeChecked = Lists.newArrayList();
+		patchToBeChecked.add(PatchListParameter.builder().patchNumber(p1.getPatchNumber()).emails(Lists.newArrayList("robert@apgsga.ch")).build());
+		patchToBeChecked.add(PatchListParameter.builder().patchNumber(p2.getPatchNumber()).emails(Lists.newArrayList("jeff@apgsga.ch")).build());
+		patchService.checkPatchConflicts(patchToBeChecked);
+	}
 }

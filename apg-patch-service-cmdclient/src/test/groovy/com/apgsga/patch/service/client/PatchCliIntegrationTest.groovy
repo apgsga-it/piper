@@ -282,6 +282,32 @@ class PatchCliIntegrationTest extends Specification {
 			repo.clean()
 	}
 
+	def "Patch Cli should return an empty results size when trying to pass a wrong JSON for patchList parameter"() {
+		// JHE (04.05.2021) : at the moment, patchList parameter is only used in context of cpc (checkPatchConflicts)
+		setup:
+		def client = PatchCli.create()
+		when:
+		def result = client.process(["-cpc", "-patchList", "[jsonIsWrong]"])
+		then:
+		result != null
+		result.returnCode == 0
+		result.results.size() == 0
+	}
+
+	def "Patch Cli should return a non-empty results size when trying to pass a correct JSON for patchList parameter"() {
+		// JHE (04.05.2021) : at the moment, patchList parameter is only used in context of cpc (checkPatchConflicts)
+		setup:
+		def client = PatchCli.create()
+		when:
+		client.process(["-sa", "src/test/resources/Patch5401.json"])
+		client.process(["-sa", "src/test/resources/Patch5402.json"])
+		def result = client.process(["-cpc", "-patchList", "[{\"patchNumber\":\"5401\",\"emails\":[\"eMail_1\",\"eMail_n\"]},{\"patchNumber\":\"5402\",\"emails\":[\"eMail_n\"]}]"])
+		then:
+		result != null
+		result.returnCode == 0
+		result.results.size() != 0
+	}
+
 	// Preconditions for Tests used via Spock @Require
 	static def dbConnection() {
 		Properties pr = loadProperties()

@@ -1,6 +1,9 @@
 package com.apgsga.microservice.patch.core.impl.jenkins;
 
 import com.apgsga.microservice.patch.api.*;
+import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflict;
+
+import java.util.List;
 
 public interface JenkinsClient {
 
@@ -15,4 +18,6 @@ public interface JenkinsClient {
 	void startOnDemandPipeline(OnDemandParameter parameters);
 
 	void startOnClonePipeline(OnCloneParameters parameters);
+
+	void startNotificationForPatchConflictPipeline(List<PatchListParameter> parameters, List<PatchConflict> patchConflicts);
 }

@@ -2,6 +2,7 @@ package com.apgsga.patch.service.client
 
 import com.apgsga.microservice.patch.api.*
 import com.apgsga.patch.service.client.rest.PatchRestServiceClient
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.collect.Maps
 import com.google.common.collect.Sets
 import org.codehaus.groovy.runtime.StackTraceUtils
@@ -53,10 +54,6 @@ class PatchCli {
 			} else if (options.i) {
 				def result = installPipeline(patchClient, options)
 				cmdResults.results['i'] = result
-			} else if (options.cpf) {
-				def status = options.cpfs[0]
-				def destFolder = options.cpfs[1]
-				cmdResults.result = copyPatchFile(patchClient,status,destFolder)
 			} else if (options.setup) {
 				cmdResults.result = doSetup(patchClient,options)
 			} else if (options.notifydb) {
@@ -65,6 +62,8 @@ class PatchCli {
 				cmdResults.result = onDemand(patchClient,options)
 			} else if (options.oc) {
 				cmdResults.result = onClone(patchClient, options)
+			} else if (options.cpc) {
+				cmdResults.results['cpc'] = checkPatchConflicts(patchClient, options)
 			}
 			cmdResults.returnCode = 0
 			return cmdResults
@@ -104,13 +103,15 @@ class PatchCli {
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
 			log longOpt: 'log', args:4, valueSeparator: ",", argName: 'patchNumber,target,step,text', 'Log a patch steps for a patch', required: false
 			adp longOpt: 'assembleDeployPipeline', args:3, valueSeparator: ",", argName: 'target,successNotification,errorNotification', "starts an assembleAndDeploy pipeline. First parameters is a list seprated with ';'", required: false
-			cpf longOpt: 'copyPatchFiles', args:2, valueSeparator: ",", argName: "statusCode,destFolder", 'Copy patch files for a given status into the destfolder', required: false
 			i longOpt: 'install', args:3, valueSeparator: ",", argName: 'target,successNotification,errorNotification', "starts an install pipeline for the given target", required: false
 			setup longOpt: 'setup', args:3, valueSeparator: ",", argName: 'patchNumber,successNotification,errorNotification', 'Starts setup for a patch, required before beeing ready to build', required: false
 			notifydb longOpt: 'notifdb', args:2, valueSeparator: ",", argName: "installationTarget,notification", 'Notify the DB on Job Status', required: false
 			od longOpt: 'onDemand', args:2, valueSeparator: ",", argName: "patchNumber,target", 'Starts an onDemand pipeline for the given patch on the given target', required: false
 			oc longOpt: 'onClone', args:2, valueSeparator: ",", argName: "src,target", "Starts an onClone Pipeline for the given target, and re-assemble a list of patches", required: false
 			patches longOpt: 'patches', args:1, "List of patches as comma separated values", required: false
+			cpc longOpt: 'checkPatchConflicts', args:0, "Check for patch conflicts", required: false
+			// JHE (05.05.2021): in the future, -patchList option will replace -patches ... but further changes will be required on DB-Workflow side before being able to remove -patches
+			patchList longOpt: 'patchList', args:1, "List of patches with corresponding eMail address, as JSON format. Sample JSON: [{\"patchNumber\":\"<patchNumber_1>\",\"eMails\": [\"<eMail_1>\",\"<eMail_n>\"]},{\"patchNumber\":\"<patchNumber_n>\",\"eMails\": [\"<eMail_n>\"]}]", required: false
 		}
 
 		def options = cli.parse(args)
@@ -202,16 +203,9 @@ class PatchCli {
 			}
 		}
 
-		if(options.cpf) {
-			if(options.cpfs.size() != 2) {
-				println "status and destFolder are required when copying patch files"
-				error = true
-			}
-		}
-
 		if(options.od) {
 			if(options.ods.size() != 2) {
-				println "patchNumber and target are required when starting an onDomand job"
+				println "patchNumber and target are required when starting an onDemand job"
 				error = true
 			}
 		}
@@ -226,11 +220,41 @@ class PatchCli {
 			}
 		}
 
+		if(options.cpc) {
+			if(!options.cpcs) {
+				println "cpc doesn't have parameters, list of patches are provided with patchList parameter"
+				error = true
+			}
+			if(!validatePatchList(options)) {
+				error = true
+			}
+		}
+
 		if (error) {
 			cli.usage()
 			return null
 		}
 		options
+	}
+
+	static def validatePatchList(options) {
+		def isValid = true
+		if(!options.patchList || options.patchLists.size() != 1) {
+			println "patchList requires the JSON String as parameter"
+			isValid = false
+		}
+		if(isValid) {
+			println "apscli received following string from command line : ${options.patchLists[0]}"
+			// To check if the parameter is correctly formatted, we try to deserialize it.
+			ObjectMapper om = new ObjectMapper()
+			try {
+				om.readValue(options.patchLists[0], PatchListParameter[].class)
+			}catch(Exception ex) {
+				println "Error while trying to deserialize patchList parameter: ${ex.getMessage()}"
+				isValid = false
+			}
+		}
+		return isValid
 	}
 
 	static def validatePatchNumber(options) {
@@ -305,13 +329,28 @@ class PatchCli {
 		def src = options.ocs[0]
 		def target = options.ocs[1]
 		def listOfPatches = options.patchess[0]
+
 		OnCloneParameters params = OnCloneParameters.builder()
-				.patchNumbers(listOfPatches.split(",").collect {it as String}.toSet())
+				.patchNumbers(sortedSetForPatchesOption(listOfPatches))
 				.src(src)
 				.target(target)
 				.build()
 		patchClient.startOnClonePipeline(params)
 		return cmdResult;
+	}
+
+	static def checkPatchConflicts(def patchClient, def options) {
+		def cmdResult = new Expando()
+		def jsonString = options.patchLists[0]
+		ObjectMapper om = new ObjectMapper()
+		try {
+			List<PatchListParameter> parameters = om.readValue(jsonString, PatchListParameter[].class)
+			patchClient.checkPatchConflicts(parameters)
+			cmdResult.cpc = "checkPatchConflicts correctly started"
+		}catch(Exception ex) {
+			cmdResult.cpc = ex.getMessage()
+		}
+		return cmdResult
 	}
 
 	static def onDemand(def patchClient, def options) {
@@ -354,16 +393,11 @@ class PatchCli {
 		def listOfPatches = options.patchess[0]
 		println "Starting assembleAndDeploy pipeline for following patches ${listOfPatches} on target ${target} with successNotification=${successNotification} and errorNotification=${errorNotification}"
 
-		Set<String> listOfPatchesAsSet = Sets.newLinkedHashSet()
-		listOfPatches.split(",").each {p ->
-			listOfPatchesAsSet.add(p)
-		}
-
 		AssembleAndDeployParameters params = AssembleAndDeployParameters.builder()
 				.target(target)
 				.successNotification(successNotification)
 				.errorNotification(errorNotification)
-				.patchNumbers(listOfPatchesAsSet)
+				.patchNumbers(sortedSetForPatchesOption(listOfPatches))
 				.build()
 		patchClient.startAssembleAndDeployPipeline(params)
 	}
@@ -375,27 +409,14 @@ class PatchCli {
 		def listOfPatches = options.patchess[0]
 		println "Starting install pipeline for following patches ${listOfPatches} on target ${target} with successNotification=${successNotification} and errorNotification=${errorNotification}"
 
-		Set<String> listOfPatchesAsSet = Sets.newLinkedHashSet()
-		listOfPatches.split(",").each {p ->
-			listOfPatchesAsSet.add(p)
-		}
-
 		InstallParameters params = InstallParameters.builder()
 					.target(target)
 					.successNotification(successNotification)
 					.errorNotification(errorNotification)
-				    .patchNumbers(listOfPatchesAsSet)
+				    .patchNumbers(sortedSetForPatchesOption(listOfPatches))
 				    .build()
 		patchClient.startInstallPipeline(params)
 	}
-
-	static def copyPatchFile(PatchRestServiceClient patchClient, def status, def destFolder) throws Exception {
-		Map params = Maps.newHashMap()
-		params.put("status",status)
-		params.put("destFolder",destFolder)
-		patchClient.copyPatchFiles(params)
-	}
-
 
 	private static def fetchPiperUrl(def options) {
 		if(options.purls && options.purls.size() == 1) {
@@ -404,6 +425,14 @@ class PatchCli {
 		else {
 			return System.getProperty("piper.host.default.url")
 		}
+	}
+
+	private static def sortedSetForPatchesOption(patches) {
+		Set<String> listOfPatchesAsSet = Sets.newLinkedHashSet()
+		patches.split(",").each {p ->
+			listOfPatchesAsSet.add(p)
+		}
+		return listOfPatchesAsSet
 	}
 
 }

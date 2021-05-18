@@ -156,12 +156,13 @@ publishing {
 
 publishToMavenLocal {}.dependsOn(buildRpm)
 artifactoryPublish {}.dependsOn(buildRpm)
+
 artifactory {
 	contextUrl = "${mavenRepoBaseUrl}/"
     publish {
-
+		def publishYumRepoName = project.hasProperty("apgMultiserviceYumRepo") ? project.property("apgMultiserviceYumRepo") : "multiservice_yumdev"
         repository {
-            repoKey = "${yumRepoDevName}"
+            repoKey = "${publishYumRepoName}"
             username = mavenRepoUser
             password = mavenRepoPwd
             ivy {

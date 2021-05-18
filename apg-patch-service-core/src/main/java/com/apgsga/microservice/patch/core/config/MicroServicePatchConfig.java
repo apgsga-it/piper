@@ -8,6 +8,8 @@ import com.apgsga.microservice.patch.core.commands.*;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsMockClient;
 import com.apgsga.microservice.patch.core.impl.persistence.PatchPersistenceImpl;
+import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflictCheckerFactory;
+import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflictsCheckerFactoryImpl;
 import com.apgsga.patch.db.integration.api.PatchRdbms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -164,6 +166,11 @@ public class MicroServicePatchConfig {
 	public CommandRunner commandRunner() {
 		ProcessBuilderCmdRunnerFactory runnerFactory = new ProcessBuilderCmdRunnerFactory();
 		return runnerFactory.create();
+	}
+
+	@Bean(name = "patchConflictsChecker")
+	public PatchConflictCheckerFactory patchConflictsCheckerFactory() {
+		return new PatchConflictsCheckerFactoryImpl();
 	}
 
 

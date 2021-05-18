@@ -9,6 +9,9 @@ import com.apgsga.microservice.patch.core.commands.CommandRunnerFactory;
 import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
 import com.apgsga.microservice.patch.core.commands.patch.vcs.RmTmpCheckoutFolder;
 import com.apgsga.microservice.patch.core.impl.jenkins.JenkinsClient;
+import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflict;
+import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflictCheckerFactory;
+import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflictsChecker;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -42,6 +45,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 
 	@Autowired
 	private ArtifactManager am;
+
+	@Autowired
+	private PatchConflictCheckerFactory conflictsCheckerFactory;
 
 	@Autowired
 	@Qualifier("vcsCmdRunnerFactory")
@@ -346,17 +352,6 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	}
 
 	@Override
-	public void copyPatchFiles(Map<String,String> params) {
-
-		//TODO JHE (18.11.2020) : empty for now as this is a deprecated method which will probably be deleted
-	}
-
-	@Override
-	public List<String> patchIdsForStatus(String statusCode) {
-		return this.repo.patchIdsForStatus(statusCode);
-	}
-
-	@Override
 	public void notify(NotificationParameters params) {
 		this.repo.notify(params);
 	}
@@ -395,6 +390,23 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		Asserts.notNullOrEmpty(parameters.getTarget(), "target is required when starting an onClone pipeline");
 		Asserts.isTrue(!parameters.getTarget().equalsIgnoreCase(getProductionTargetName()), "clone target cannot be the production environment !!");
 		jenkinsClient.startOnClonePipeline(parameters);
+	}
+
+	@Override
+	public void checkPatchConflicts(List<PatchListParameter> parameters) {
+		PatchConflictsChecker conflictsChecker = conflictsCheckerFactory.create();
+		parameters.forEach(p -> {
+			conflictsChecker.addPatch(repo.findById(p.getPatchNumber()));
+		});
+		List<PatchConflict> patchConflicts = conflictsChecker.checkConflicts();
+
+		if(!patchConflicts.isEmpty()) {
+			jenkinsClient.startNotificationForPatchConflictPipeline(parameters,patchConflicts);
+		}
+		else {
+			LOGGER.info("No conflict found for following patches: " + parameters.stream().map(PatchListParameter::getPatchNumber).collect(Collectors.joining(",")));
+		}
+
 	}
 
 	private String getProductionTargetName() {
