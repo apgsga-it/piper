@@ -379,7 +379,7 @@ public class MicroServicePatchServerTest {
 		OnCloneParameters onCloneParameters = OnCloneParameters.builder()
 				.src("TEST-SRC")
 				.target("TEST_TARGET")
-				.patchNumbers(Sets.newHashSet("5401","5402"))
+				.patchNumbers(Sets.newLinkedHashSet("5401","5402"))
 				.build();
 		patchService.startOnClonePipeline(onCloneParameters);
 	}
