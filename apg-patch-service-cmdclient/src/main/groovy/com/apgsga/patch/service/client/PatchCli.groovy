@@ -329,8 +329,9 @@ class PatchCli {
 		def src = options.ocs[0]
 		def target = options.ocs[1]
 		def listOfPatches = options.patchess[0]
+
 		OnCloneParameters params = OnCloneParameters.builder()
-				.patchNumbers(listOfPatches.split(",").collect {it as String}.toSet())
+				.patchNumbers(sortedSetForPatchesOption(listOfPatches))
 				.src(src)
 				.target(target)
 				.build()
@@ -392,16 +393,11 @@ class PatchCli {
 		def listOfPatches = options.patchess[0]
 		println "Starting assembleAndDeploy pipeline for following patches ${listOfPatches} on target ${target} with successNotification=${successNotification} and errorNotification=${errorNotification}"
 
-		Set<String> listOfPatchesAsSet = Sets.newLinkedHashSet()
-		listOfPatches.split(",").each {p ->
-			listOfPatchesAsSet.add(p)
-		}
-
 		AssembleAndDeployParameters params = AssembleAndDeployParameters.builder()
 				.target(target)
 				.successNotification(successNotification)
 				.errorNotification(errorNotification)
-				.patchNumbers(listOfPatchesAsSet)
+				.patchNumbers(sortedSetForPatchesOption(listOfPatches))
 				.build()
 		patchClient.startAssembleAndDeployPipeline(params)
 	}
@@ -413,16 +409,11 @@ class PatchCli {
 		def listOfPatches = options.patchess[0]
 		println "Starting install pipeline for following patches ${listOfPatches} on target ${target} with successNotification=${successNotification} and errorNotification=${errorNotification}"
 
-		Set<String> listOfPatchesAsSet = Sets.newLinkedHashSet()
-		listOfPatches.split(",").each {p ->
-			listOfPatchesAsSet.add(p)
-		}
-
 		InstallParameters params = InstallParameters.builder()
 					.target(target)
 					.successNotification(successNotification)
 					.errorNotification(errorNotification)
-				    .patchNumbers(listOfPatchesAsSet)
+				    .patchNumbers(sortedSetForPatchesOption(listOfPatches))
 				    .build()
 		patchClient.startInstallPipeline(params)
 	}
@@ -434,6 +425,14 @@ class PatchCli {
 		else {
 			return System.getProperty("piper.host.default.url")
 		}
+	}
+
+	private static def sortedSetForPatchesOption(patches) {
+		Set<String> listOfPatchesAsSet = Sets.newLinkedHashSet()
+		patches.split(",").each {p ->
+			listOfPatchesAsSet.add(p)
+		}
+		return listOfPatchesAsSet
 	}
 
 }
