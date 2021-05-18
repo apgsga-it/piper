@@ -376,10 +376,13 @@ public class MicroServicePatchServerTest {
 		Patch p2 = Patch.builder().patchNumber("5402").build();
 		patchService.save(p);
 		patchService.save(p2);
+		LinkedHashSet<String> patchNumbers = Sets.newLinkedHashSet();
+		patchNumbers.add("5401");
+		patchNumbers.add("5402");
 		OnCloneParameters onCloneParameters = OnCloneParameters.builder()
 				.src("TEST-SRC")
 				.target("TEST_TARGET")
-				.patchNumbers(Sets.newLinkedHashSet("5401","5402"))
+				.patchNumbers(patchNumbers)
 				.build();
 		patchService.startOnClonePipeline(onCloneParameters);
 	}
