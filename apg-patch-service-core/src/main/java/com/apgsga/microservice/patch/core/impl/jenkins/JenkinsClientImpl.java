@@ -3,6 +3,7 @@ package com.apgsga.microservice.patch.core.impl.jenkins;
 import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
+import com.apgsga.microservice.patch.core.patch.conflicts.PatchConflict;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unused")
@@ -137,6 +139,12 @@ public class JenkinsClientImpl implements JenkinsClient {
 		        .onCloneParameter(parameters)
 				.jenkinsPipelineRepo(jenkinsPipelineRepo)
 				.jenkinsPipelineRepoBranch(jenkinsPipelineRepoBranch);
+		threadExecutor.execute(runnable);
+	}
+
+	@Override
+	public void startNotificationForPatchConflictPipeline(List<PatchListParameter> patchListParameters, List<PatchConflict> patchConflicts) {
+		TaskStartNotificationForPatchConflictPipeline runnable = TaskStartNotificationForPatchConflictPipeline.create(jenkinsUrl,jenkinsSshPort,jenkinsSshUser,patchListParameters,patchConflicts,cmdRunner);
 		threadExecutor.execute(runnable);
 	}
 

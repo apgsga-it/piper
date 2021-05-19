@@ -306,11 +306,6 @@ public class PatchPersistenceImpl implements PatchPersistence {
 	}
 
 	@Override
-	public List<String> patchIdsForStatus(String statusCode) {
-		return patchRdbms.patchIdsForStatus(statusCode);
-	}
-
-	@Override
 	public void notify(NotificationParameters params) {
 		patchRdbms.notify(params);
 	}

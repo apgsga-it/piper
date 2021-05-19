@@ -376,10 +376,13 @@ public class MicroServicePatchServerTest {
 		Patch p2 = Patch.builder().patchNumber("5402").build();
 		patchService.save(p);
 		patchService.save(p2);
+		LinkedHashSet<String> patchNumbers = Sets.newLinkedHashSet();
+		patchNumbers.add("5401");
+		patchNumbers.add("5402");
 		OnCloneParameters onCloneParameters = OnCloneParameters.builder()
 				.src("TEST-SRC")
 				.target("TEST_TARGET")
-				.patchNumbers(Sets.newHashSet("5401","5402"))
+				.patchNumbers(patchNumbers)
 				.build();
 		patchService.startOnClonePipeline(onCloneParameters);
 	}
@@ -396,5 +399,17 @@ public class MicroServicePatchServerTest {
 		Assert.assertNotNull(targetInstance);
 		Assert.assertEquals(targetInstance.getName(),searchedTarget);
 		Assert.assertEquals("dev-digiflex-e.apgsga.ch",targetInstance.getServices().stream().filter(s -> s.getServiceName().equals(searchedService)).findFirst().get().getInstallationHost());
+	}
+
+	@Test
+	public void testPatchConflicts() {
+		Patch p1 = Patch.builder().patchNumber("1234").dockerServices(Lists.newArrayList("dockerService_1")).build();
+		Patch p2 = Patch.builder().patchNumber("2345").dockerServices(Lists.newArrayList("dockerService_1")).build();
+		patchService.save(p1);
+		patchService.save(p2);
+		List<PatchListParameter> patchToBeChecked = Lists.newArrayList();
+		patchToBeChecked.add(PatchListParameter.builder().patchNumber(p1.getPatchNumber()).emails(Lists.newArrayList("robert@apgsga.ch")).build());
+		patchToBeChecked.add(PatchListParameter.builder().patchNumber(p2.getPatchNumber()).emails(Lists.newArrayList("jeff@apgsga.ch")).build());
+		patchService.checkPatchConflicts(patchToBeChecked);
 	}
 }

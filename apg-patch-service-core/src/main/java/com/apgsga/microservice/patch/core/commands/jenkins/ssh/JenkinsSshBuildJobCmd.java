@@ -84,8 +84,6 @@ public class JenkinsSshBuildJobCmd extends JenkinsSshCommand {
             tmpCmd.add("-c");
             tmpCmd.add(catCmd.toString());
 
-            //TODO JHE (01.10.2020): eventually add -w and -f options, but not sure that would work
-
             return tmpCmd.toArray(new String[0]);
         }
         else {
