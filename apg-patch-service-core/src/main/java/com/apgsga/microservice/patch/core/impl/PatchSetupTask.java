@@ -7,10 +7,12 @@ import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.docker.DockerTagAndPushCmd;
 import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
 import com.apgsga.microservice.patch.exceptions.Asserts;
+import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PatchSetupTask implements Runnable {
 
@@ -61,12 +63,20 @@ public class PatchSetupTask implements Runnable {
             }
             for (Service service : patch.getServices()) {
                 if (!service.retrieveMavenArtifactsAsVcsPath().isEmpty()) {
-                    LOGGER.info("Creating Tag for Java Artifact for patch " + patch.getPatchNumber() + " and service " + service.getServiceName());
-                    ServiceMetaData serviceMetaData = repo.getServiceMetaDataByName(service.getServiceName());
-                    service.withServiceMetaData(serviceMetaData);
-                    service.withPatchTag(patch.getTagNr(), patch.getPatchNumber());
-                    jschSession.run(PatchSshCommand.createTagPatchModulesCmd(service.getPatchTag(), serviceMetaData.getMicroServiceBranch(),
-                            service.retrieveMavenArtifactsAsVcsPath()));
+                    // JHE (26.05.2021): This is a temporary workaround because Digiflex is using Artifacts coming from different CVS Branches.
+                    //                   These Artifacts will become libraries for which we'll then be able to use a fix version, without the need of tagging anymore.
+                    //                   In between, so that we can go forward with Digiflex integration, we use this workaround.
+                    if(service.getServiceName().equalsIgnoreCase("digiflex")) {
+                        tagForDigiflex(service);
+                    }
+                    else {
+                        LOGGER.info("Creating Tag for Java Artifact for patch " + patch.getPatchNumber() + " and service " + service.getServiceName());
+                        ServiceMetaData serviceMetaData = repo.getServiceMetaDataByName(service.getServiceName());
+                        service.withServiceMetaData(serviceMetaData);
+                        service.withPatchTag(patch.getTagNr(), patch.getPatchNumber());
+                        jschSession.run(PatchSshCommand.createTagPatchModulesCmd(service.getPatchTag(), serviceMetaData.getMicroServiceBranch(),
+                                service.retrieveMavenArtifactsAsVcsPath()));
+                    }
                 }
             }
             jschSession.postProcess();
@@ -78,6 +88,31 @@ public class PatchSetupTask implements Runnable {
             repo.notify(NotificationParameters.builder().patchNumbers(patch.getPatchNumber()).notification(setupParams.getErrorNotification()).build());
             throw e;
         }
+    }
+
+    // JHE (26.05.2021) : Temporary workaround, see comment from caller for further details
+    private void tagForDigiflex(Service service) {
+        LOGGER.info("Creating Tag for Java Artifacts for Digiflex using a temporary workaround.");
+        ServiceMetaData serviceMetaData = repo.getServiceMetaDataByName(service.getServiceName());
+        ServiceMetaData it21ServiceMetaData = repo.getServiceMetaDataByName("it21");
+        service.withPatchTag(patch.getTagNr(), patch.getPatchNumber());
+
+        final List<String> artifactsToBeBuildFromIt21Branch = Lists.newArrayList("com.affichage.it21.domainwerte.ds","com.affichage.it21.domainwerte.pm","com.affichage.it21.domainwerte.vk","com.affichage.it21.domainwerte.lo","com.affichage.it21.common.dao");
+        LOGGER.info("List of Digiflex Artifacts which have to be tagged from IT21 Branch: " + artifactsToBeBuildFromIt21Branch.toString());
+        List<String> mavenArtifactsOnDigiflexBranch = service.retrieveMavenArtifactsAsVcsPath().stream().filter(art -> !artifactsToBeBuildFromIt21Branch.contains(art)).collect(Collectors.toList());
+        List<String> mavenArtifactsOnIt21Branch = service.retrieveMavenArtifactsAsVcsPath().stream().filter(art -> artifactsToBeBuildFromIt21Branch.contains(art)).collect(Collectors.toList());
+
+        if(!mavenArtifactsOnDigiflexBranch.isEmpty()) {
+            LOGGER.info("Tagging will be done from Digiflex Branch for following Artifacts : " + mavenArtifactsOnDigiflexBranch.toString());
+            service.withServiceMetaData(serviceMetaData);
+            jschSession.run(PatchSshCommand.createTagPatchModulesCmd(service.getPatchTag(), serviceMetaData.getMicroServiceBranch(),mavenArtifactsOnDigiflexBranch));
+        }
+        if(!mavenArtifactsOnIt21Branch.isEmpty()) {
+            LOGGER.info("Tagging will be done from IT21 Branch (for Digiflex Service) for following Artifacts : " + mavenArtifactsOnIt21Branch.toString());
+            service.withServiceMetaData(it21ServiceMetaData);
+            jschSession.run(PatchSshCommand.createTagPatchModulesCmd(service.getPatchTag(), it21ServiceMetaData.getMicroServiceBranch(),mavenArtifactsOnIt21Branch));
+        }
+
     }
 
     private void resolveDependencies() {
