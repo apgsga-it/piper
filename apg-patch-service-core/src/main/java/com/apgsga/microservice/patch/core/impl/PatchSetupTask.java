@@ -98,17 +98,17 @@ public class PatchSetupTask implements Runnable {
         service.withPatchTag(patch.getTagNr(), patch.getPatchNumber());
 
         final List<String> artifactsToBeBuildFromIt21Branch = Lists.newArrayList("com.affichage.it21.domainwerte.ds","com.affichage.it21.domainwerte.pm","com.affichage.it21.domainwerte.vk","com.affichage.it21.domainwerte.lo","com.affichage.it21.common.dao");
-        LOGGER.info("List of Digiflex Artifacts which have to be tagged from IT21 Branch: " + artifactsToBeBuildFromIt21Branch.toString());
+        LOGGER.info("List of Digiflex Artifacts which have to be tagged from IT21 Branch: " + artifactsToBeBuildFromIt21Branch);
         List<String> mavenArtifactsOnDigiflexBranch = service.retrieveMavenArtifactsAsVcsPath().stream().filter(art -> !artifactsToBeBuildFromIt21Branch.contains(art)).collect(Collectors.toList());
         List<String> mavenArtifactsOnIt21Branch = service.retrieveMavenArtifactsAsVcsPath().stream().filter(art -> artifactsToBeBuildFromIt21Branch.contains(art)).collect(Collectors.toList());
 
         if(!mavenArtifactsOnDigiflexBranch.isEmpty()) {
-            LOGGER.info("Tagging will be done from Digiflex Branch for following Artifacts : " + mavenArtifactsOnDigiflexBranch.toString());
+            LOGGER.info("Tagging will be done from Digiflex Branch for following Artifacts : " + mavenArtifactsOnDigiflexBranch);
             service.withServiceMetaData(serviceMetaData);
             jschSession.run(PatchSshCommand.createTagPatchModulesCmd(service.getPatchTag(), serviceMetaData.getMicroServiceBranch(),mavenArtifactsOnDigiflexBranch));
         }
         if(!mavenArtifactsOnIt21Branch.isEmpty()) {
-            LOGGER.info("Tagging will be done from IT21 Branch (for Digiflex Service) for following Artifacts : " + mavenArtifactsOnIt21Branch.toString());
+            LOGGER.info("Tagging will be done from IT21 Branch (for Digiflex Service) for following Artifacts : " + mavenArtifactsOnIt21Branch);
             service.withServiceMetaData(it21ServiceMetaData);
             jschSession.run(PatchSshCommand.createTagPatchModulesCmd(service.getPatchTag(), it21ServiceMetaData.getMicroServiceBranch(),mavenArtifactsOnIt21Branch));
         }
