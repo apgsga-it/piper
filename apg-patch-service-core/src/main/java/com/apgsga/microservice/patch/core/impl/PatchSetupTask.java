@@ -8,10 +8,19 @@ import com.apgsga.microservice.patch.core.commands.docker.DockerTagAndPushCmd;
 import com.apgsga.microservice.patch.core.commands.patch.vcs.PatchSshCommand;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class PatchSetupTask implements Runnable {
@@ -107,12 +116,46 @@ public class PatchSetupTask implements Runnable {
             ServiceMetaData serviceMetaData = repo.getServiceMetaDataByName(service.getServiceName());
             service.withServiceMetaData(serviceMetaData);
             service.withPatchTag(patch.getTagNr(), patch.getPatchNumber());
-            jschSession.run(PatchSshCommand.createTagPatchModulesCmd(service.getPatchTag(), serviceMetaData.getMicroServiceBranch(), service.retrieveMavenArtifactsAsVcsPath()));
+
+            Map<String, List<String>> branchWithCvsModules = CvsModuleSplitter.create()
+                    .withMavenArtifactsModuleNames(service.retrieveMavenArtifactsAsVcsPath())
+                    .withDefaultCvsBranch(serviceMetaData.getMicroServiceBranch())
+                    .withCvsConfigSpecificBranchFilePath(cvsConfigSpecificBranchFilePath)
+                    .splitModuleForBranch();
+
+            branchWithCvsModules.keySet().forEach(cvsBranch -> {
+                LOGGER.info("Java Artifact " + service.getPatchTag() + " tag will be done from " + cvsBranch + " branch for following modules : " + branchWithCvsModules.get(cvsBranch));
+                jschSession.run(PatchSshCommand.createTagPatchModulesCmd(service.getPatchTag(), cvsBranch, branchWithCvsModules.get(cvsBranch)));
+            });
         } catch (Exception e) {
             LOGGER.error("Patch Setup Task for patch " + patch.getPatchNumber() + " encountered an error while tagging Java Artifacts:" + e.getMessage());
             notifyDbFor(setupParams.getErrorNotification());
-            throw e;
         }
+    }
+
+    private Map<String, List<String>> splitModulesOnSpecificBranches(String defaultCvsBranchForService, List<String> p_mavenCvsModules) throws IOException {
+        // Ensure we don't modify the original list
+        List<String> mavenCvsModules = Lists.newArrayList(p_mavenCvsModules);
+        Map<String, List<String>> result = Maps.newHashMap();
+        // Specific branch configuration is define within cvsConfigSpecificBranchFilePath, if it exists
+        if (Files.exists(new File(cvsConfigSpecificBranchFilePath).toPath())) {
+            Properties branchConfig = new Properties();
+            branchConfig.load(new FileInputStream(cvsConfigSpecificBranchFilePath));
+            branchConfig.forEach((k,v) -> {
+                List<String> modulesForSpecificBranch = Arrays.asList(v.toString().split(","));
+                List<String> modulesForCurrentSpecificBranch = mavenCvsModules.stream().filter(m -> modulesForSpecificBranch.contains(m)).collect(Collectors.toList());
+                if(!modulesForCurrentSpecificBranch.isEmpty()) {
+                    result.put((String) k,modulesForCurrentSpecificBranch);
+                    mavenCvsModules.removeIf(m -> modulesForCurrentSpecificBranch.contains(m));
+                }
+            });
+            if(!mavenCvsModules.isEmpty()) {
+                result.put(defaultCvsBranchForService,mavenCvsModules);
+            }
+        } else {
+            result.put(defaultCvsBranchForService, mavenCvsModules);
+        }
+        return result;
     }
 
     private void notifyDbFor(String notification) {
