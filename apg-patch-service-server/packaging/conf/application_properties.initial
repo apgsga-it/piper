@@ -38,3 +38,6 @@ mavenrepo.user.encryptedPwd=<%= $artifactory_passwd %>
 # Docker script
 docker.install.script.path=/opt/apg-patch-service-server/bin/ibusDockerInstall.sh
 docker.tag.script.path=/opt/apg-patch-service-server/bin/ibusDockerTagNPush.sh
+
+# Path to property file where specific CVS Branches are define for list of CVS modules
+cvs.config.specific.branch.file.path=/etc/opt/apg-patch-service-server/cvsConfigSpecificBranchForModules.properties
