@@ -47,10 +47,9 @@ public class PatchSetupTask implements Runnable {
 
     @Override
     public void run() {
-        resolveDependencies();
-        patch.nextTagNr();
         LOGGER.info("Patch Setup Task started for patch " + patch.getPatchNumber());
-        jschSession.preProcess();
+        resolveDependencies();
+        preprocess();
         if (!patch.getDbPatch().retrieveDbObjectsAsVcsPath().isEmpty()) {
             tagDbModules();
         }
@@ -62,19 +61,44 @@ public class PatchSetupTask implements Runnable {
                 createTagFor(service);
             }
         }
+        postProcess();
+    }
+
+    private void postProcess() {
+        jschSession.postProcess();
+        repo.savePatch(patch);
+        LOGGER.info("Patch Setup Task for patch " + patch.getPatchNumber() + " DONE !! -> notifying db accordingly!");
+        notifyDbFor(setupParams.getSuccessNotification());
+    }
+
+    private void preprocess() {
+        patch.nextTagNr();
+        jschSession.preProcess();
     }
 
     private void tagAndPushDockerServices() {
-        LOGGER.info("Following Docker services will be tagged for Patch " + patch.getPatchNumber() + " : " + patch.getDockerServices());
-        localSession.run(new DockerTagAndPushCmd(pathToDockerTagScript, patch.getDockerServices(), patch.getPatchNumber()));
+        try {
+            LOGGER.info("Following Docker services will be tagged for Patch " + patch.getPatchNumber() + " : " + patch.getDockerServices());
+            localSession.run(new DockerTagAndPushCmd(pathToDockerTagScript, patch.getDockerServices(), patch.getPatchNumber()));
+        } catch (Exception e) {
+            LOGGER.error("Patch Setup Task for patch " + patch.getPatchNumber() + " encountered an error while tagging and pushing Docker Service(s):" + e.getMessage());
+            notifyDbFor(setupParams.getErrorNotification());
+            throw e;
+        }
     }
 
     private void tagDbModules() {
-        LOGGER.info("Creating Tag for DB Objects for patch " + patch.getPatchNumber());
-        DBPatch dbPatch = patch.getDbPatch();
-        dbPatch.withPatchTag(patch.getTagNr());
-        jschSession.run(PatchSshCommand.createTagPatchModulesCmd(dbPatch.getPatchTag(), patch.getDbPatch().getDbPatchBranch(),
-                patch.getDbPatch().retrieveDbObjectsAsVcsPath()));
+        try {
+            LOGGER.info("Creating Tag for DB Objects for patch " + patch.getPatchNumber());
+            DBPatch dbPatch = patch.getDbPatch();
+            dbPatch.withPatchTag(patch.getTagNr());
+            jschSession.run(PatchSshCommand.createTagPatchModulesCmd(dbPatch.getPatchTag(), patch.getDbPatch().getDbPatchBranch(),
+                    patch.getDbPatch().retrieveDbObjectsAsVcsPath()));
+        } catch (Exception e) {
+            LOGGER.error("Patch Setup Task for patch " + patch.getPatchNumber() + " encountered an error while tagging DB Modules:" + e.getMessage());
+            notifyDbFor(setupParams.getErrorNotification());
+            throw e;
+        }
     }
 
     private void createTagFor(Service service) {
@@ -92,17 +116,16 @@ public class PatchSetupTask implements Runnable {
                 jschSession.run(PatchSshCommand.createTagPatchModulesCmd(service.getPatchTag(), serviceMetaData.getMicroServiceBranch(),
                         service.retrieveMavenArtifactsAsVcsPath()));
             }
-
-
-            jschSession.postProcess();
-            repo.savePatch(patch);
-            LOGGER.info("Patch Setup Task started for patch " + patch.getPatchNumber() + " DONE !! -> notifying db accordingly!");
-            repo.notify(NotificationParameters.builder().patchNumbers(patch.getPatchNumber()).notification(setupParams.getSuccessNotification()).build());
         } catch (Exception e) {
-            LOGGER.error("Patch Setup Task for patch " + patch.getPatchNumber() + " encountered an error :" + e.getMessage());
-            repo.notify(NotificationParameters.builder().patchNumbers(patch.getPatchNumber()).notification(setupParams.getErrorNotification()).build());
+            LOGGER.error("Patch Setup Task for patch " + patch.getPatchNumber() + " encountered an error while tagging Java Artifacts:" + e.getMessage());
+            notifyDbFor(setupParams.getErrorNotification());
             throw e;
         }
+    }
+
+    private void notifyDbFor(String notification) {
+        repo.notify(NotificationParameters.builder().patchNumbers(patch.getPatchNumber()).notification(notification).build());
+        LOGGER.info("DB has been notified for patch " + patch.getPatchNumber() + " with following notification : " + notification);
     }
 
     // JHE (26.05.2021) : Temporary workaround, see comment from caller for further details
