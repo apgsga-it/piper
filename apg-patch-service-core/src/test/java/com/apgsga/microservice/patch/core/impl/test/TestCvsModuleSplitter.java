@@ -157,4 +157,25 @@ public class TestCvsModuleSplitter {
         });
     }
 
+    @Test
+    public void testWhenCustomBranchIsSameAsDefaultBranch() throws IOException {
+        String defaultCvsBranch = "specificCvsBranch_1";
+        String specificCvsBranch = "specificCvsBranch_1";
+        List<String> cvsModulesOnSpecificBranch = Lists.newArrayList("module.1.1");
+        List<String> cvsModules = Lists.newArrayList("module.s.1","module.s.2");
+        cvsModules.addAll(cvsModulesOnSpecificBranch);
+        String fileName = "src/test/resources/testCvsConfigSpecificBranchForModules.properties";
+        Map<String, List<String>> result = CvsModuleSplitter.create()
+                .withCvsConfigSpecificBranchFilePath(fileName)
+                .withDefaultCvsBranch(defaultCvsBranch)
+                .withMavenArtifactsModuleNames(cvsModules)
+                .splitModuleForBranch();
+        Assert.assertEquals("wrong number of Branch has been set",1,result.keySet().size());
+        Assert.assertTrue(defaultCvsBranch + " should be define as a key",result.keySet().contains(defaultCvsBranch));
+        Assert.assertEquals("missing artifacts for " + defaultCvsBranch + " branch",3,result.get(defaultCvsBranch).size());
+        result.get(defaultCvsBranch).forEach(m -> {
+            Assert.assertTrue(m + " should be in the list for " + defaultCvsBranch, cvsModules.contains(m));
+        });
+    }
+
 }

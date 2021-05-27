@@ -44,22 +44,28 @@ public class CvsModuleSplitter {
         Map<String, List<String>> result = Maps.newHashMap();
         // Specific branch configuration is define within cvsConfigSpecificBranchFilePath, if it exists
         if (Files.exists(new File(cvsConfigSpecificBranchFilePath).toPath())) {
-            Properties branchConfig = new Properties();
-            branchConfig.load(new FileInputStream(cvsConfigSpecificBranchFilePath));
-            branchConfig.forEach((k,v) -> {
-                List<String> modulesForSpecificBranch = Arrays.asList(v.toString().split(","));
-                List<String> modulesForCurrentSpecificBranch = mavenArtifactsModuleNames.stream().filter(m -> modulesForSpecificBranch.contains(m)).collect(Collectors.toList());
-                if(!modulesForCurrentSpecificBranch.isEmpty()) {
-                    result.put((String) k,modulesForCurrentSpecificBranch);
-                    mavenArtifactsModuleNames.removeIf(m -> modulesForCurrentSpecificBranch.contains(m));
-                }
-            });
-            if(!mavenArtifactsModuleNames.isEmpty()) {
-                result.put(defaultCvsBranch,mavenArtifactsModuleNames);
-            }
+            doSplit(result);
         } else {
             result.put(defaultCvsBranch, mavenArtifactsModuleNames);
         }
         return result;
+    }
+
+    private void doSplit(Map<String, List<String>> result) throws IOException {
+        Properties branchConfig = new Properties();
+        branchConfig.load(new FileInputStream(cvsConfigSpecificBranchFilePath));
+        branchConfig.forEach((k,v) -> {
+            if(!((String)k).equalsIgnoreCase(defaultCvsBranch)) {
+                List<String> modulesForSpecificBranch = Arrays.asList(v.toString().split(","));
+                List<String> modulesForCurrentSpecificBranch = mavenArtifactsModuleNames.stream().filter(m -> modulesForSpecificBranch.contains(m)).collect(Collectors.toList());
+                if (!modulesForCurrentSpecificBranch.isEmpty()) {
+                    result.put((String) k, modulesForCurrentSpecificBranch);
+                    mavenArtifactsModuleNames.removeIf(m -> modulesForCurrentSpecificBranch.contains(m));
+                }
+            }
+        });
+        if(!mavenArtifactsModuleNames.isEmpty()) {
+            result.put(defaultCvsBranch,mavenArtifactsModuleNames);
+        }
     }
 }
