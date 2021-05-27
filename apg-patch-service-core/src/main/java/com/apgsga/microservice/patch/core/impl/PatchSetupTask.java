@@ -47,40 +47,53 @@ public class PatchSetupTask implements Runnable {
 
     @Override
     public void run() {
+        resolveDependencies();
+        patch.nextTagNr();
+        LOGGER.info("Patch Setup Task started for patch " + patch.getPatchNumber());
+        jschSession.preProcess();
+        if (!patch.getDbPatch().retrieveDbObjectsAsVcsPath().isEmpty()) {
+            tagDbModules();
+        }
+        if (!patch.getDockerServices().isEmpty()) {
+            tagAndPushDockerServices();
+        }
+        for (Service service : patch.getServices()) {
+            if (!service.retrieveMavenArtifactsAsVcsPath().isEmpty()) {
+                createTagFor(service);
+            }
+        }
+    }
+
+    private void tagAndPushDockerServices() {
+        LOGGER.info("Following Docker services will be tagged for Patch " + patch.getPatchNumber() + " : " + patch.getDockerServices());
+        localSession.run(new DockerTagAndPushCmd(pathToDockerTagScript, patch.getDockerServices(), patch.getPatchNumber()));
+    }
+
+    private void tagDbModules() {
+        LOGGER.info("Creating Tag for DB Objects for patch " + patch.getPatchNumber());
+        DBPatch dbPatch = patch.getDbPatch();
+        dbPatch.withPatchTag(patch.getTagNr());
+        jschSession.run(PatchSshCommand.createTagPatchModulesCmd(dbPatch.getPatchTag(), patch.getDbPatch().getDbPatchBranch(),
+                patch.getDbPatch().retrieveDbObjectsAsVcsPath()));
+    }
+
+    private void createTagFor(Service service) {
         try {
-            resolveDependencies();
-            patch.nextTagNr();
-            LOGGER.info("Patch Setup Task started for patch " + patch.getPatchNumber());
-            jschSession.preProcess();
-            if (!patch.getDbPatch().retrieveDbObjectsAsVcsPath().isEmpty()) {
-                LOGGER.info("Creating Tag for DB Objects for patch " + patch.getPatchNumber());
-                DBPatch dbPatch = patch.getDbPatch();
-                dbPatch.withPatchTag(patch.getTagNr());
-                jschSession.run(PatchSshCommand.createTagPatchModulesCmd(dbPatch.getPatchTag(), patch.getDbPatch().getDbPatchBranch(),
-                        patch.getDbPatch().retrieveDbObjectsAsVcsPath()));
+            // JHE (26.05.2021): This is a temporary workaround because Digiflex is using Artifacts coming from different CVS Branches.
+            //                   These Artifacts will become libraries for which we'll then be able to use a fix version, without the need of tagging anymore.
+            //                   In between, so that we can go forward with Digiflex integration, we use this workaround.
+            if (service.getServiceName().equalsIgnoreCase("digiflex")) {
+                tagForDigiflex(service);
+            } else {
+                LOGGER.info("Creating Tag for Java Artifact for patch " + patch.getPatchNumber() + " and service " + service.getServiceName());
+                ServiceMetaData serviceMetaData = repo.getServiceMetaDataByName(service.getServiceName());
+                service.withServiceMetaData(serviceMetaData);
+                service.withPatchTag(patch.getTagNr(), patch.getPatchNumber());
+                jschSession.run(PatchSshCommand.createTagPatchModulesCmd(service.getPatchTag(), serviceMetaData.getMicroServiceBranch(),
+                        service.retrieveMavenArtifactsAsVcsPath()));
             }
-            if (!patch.getDockerServices().isEmpty()) {
-                LOGGER.info("Following Docker services will be tagged for Patch " + patch.getPatchNumber() + " : " + patch.getDockerServices());
-                localSession.run(new DockerTagAndPushCmd(pathToDockerTagScript,patch.getDockerServices(),patch.getPatchNumber()));
-            }
-            for (Service service : patch.getServices()) {
-                if (!service.retrieveMavenArtifactsAsVcsPath().isEmpty()) {
-                    // JHE (26.05.2021): This is a temporary workaround because Digiflex is using Artifacts coming from different CVS Branches.
-                    //                   These Artifacts will become libraries for which we'll then be able to use a fix version, without the need of tagging anymore.
-                    //                   In between, so that we can go forward with Digiflex integration, we use this workaround.
-                    if(service.getServiceName().equalsIgnoreCase("digiflex")) {
-                        tagForDigiflex(service);
-                    }
-                    else {
-                        LOGGER.info("Creating Tag for Java Artifact for patch " + patch.getPatchNumber() + " and service " + service.getServiceName());
-                        ServiceMetaData serviceMetaData = repo.getServiceMetaDataByName(service.getServiceName());
-                        service.withServiceMetaData(serviceMetaData);
-                        service.withPatchTag(patch.getTagNr(), patch.getPatchNumber());
-                        jschSession.run(PatchSshCommand.createTagPatchModulesCmd(service.getPatchTag(), serviceMetaData.getMicroServiceBranch(),
-                                service.retrieveMavenArtifactsAsVcsPath()));
-                    }
-                }
-            }
+
+
             jschSession.postProcess();
             repo.savePatch(patch);
             LOGGER.info("Patch Setup Task started for patch " + patch.getPatchNumber() + " DONE !! -> notifying db accordingly!");
