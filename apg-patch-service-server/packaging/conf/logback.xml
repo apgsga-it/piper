@@ -2,12 +2,28 @@
 <configuration>
 
 	<include resource="org/springframework/boot/logging/logback/defaults.xml" />
-	<property name="LOG_FILE"
-		value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}apg-patch-service-server.log}" />
 	<include resource="org/springframework/boot/logging/logback/file-appender.xml" />
-	<root level="INFO">
-		<appender-ref ref="FILE" />
-	</root>
 
+	<appender name="PIPER_ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<encoder>
+			<pattern>${FILE_LOG_PATTERN}</pattern>
+		</encoder>
+		<file>log/apg-patch-service-server.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+
+			<!-- daily rollover -->
+			<fileNamePattern>log/apg-patch-service-server.%d{yyyy-MM-dd}.log
+			</fileNamePattern>
+
+			<!-- 30 days history, but max 3GB -->
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>3GB</totalSizeCap>
+
+		</rollingPolicy>
+	</appender>
+
+	<root level="INFO">
+		<appender-ref ref="PIPER_ROLLING_FILE" />
+	</root>
 
 </configuration>
