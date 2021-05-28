@@ -1,0 +1,11 @@
+# List of CVS Modules for which the CVS Branch is common for ALL Services.
+# Information within this file is used during Setup task, when we tag the Java Artifact Modules.
+# Path to this file is configured with cvs.config.specific.branch.file.path Property
+# Information within this file is used ONLY for Java Module, and not for SQL.
+# Information within this file is read dynamically by Piper. No restart is required when we modify it.
+# File format is: <cvsBranch>=<commaSeparatedListOfCvsModuleName>
+# Example :
+#      it21_release_9_1_1_admin_uimig=com.affichage.it21.domainwerte.aenv,com.affichage.it21.domainwerte.alog
+#      anotherCvsBRanch=com.another.module.1,com.another.module.2,com.another.module.n
+
+it21_release_9_1_1_admin_uimig=com.affichage.it21.domainwerte.aenv,com.affichage.it21.domainwerte.alog,com.affichage.it21.domainwerte.arep,com.affichage.it21.domainwerte.au,com.affichage.it21.domainwerte.cm,com.affichage.it21.domainwerte.dbj,com.affichage.it21.domainwerte.ds,com.affichage.it21.domainwerte.fm,com.affichage.it21.domainwerte.geos,com.affichage.it21.domainwerte.gp,com.affichage.it21.domainwerte.ibus,com.affichage.it21.domainwerte.ifib,com.affichage.it21.domainwerte.iz,com.affichage.it21.domainwerte.lgbw,com.affichage.it21.domainwerte.lo,com.affichage.it21.domainwerte.pm,com.affichage.it21.domainwerte.podi,com.affichage.it21.domainwerte.ppix,com.affichage.it21.domainwerte.pz,com.affichage.it21.domainwerte.qq,com.affichage.it21.domainwerte.vk,com.affichage.it21.domainwerte.zo
