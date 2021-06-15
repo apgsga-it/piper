@@ -14,7 +14,6 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -27,8 +26,8 @@ public class PatchSetupTask implements Runnable {
 
     protected static final Log LOGGER = LogFactory.getLog(PatchSetupTask.class.getName());
 
-    public static Runnable create(CommandRunner jschSession, CommandRunner localSession, Patch patch, PatchPersistence repo, SetupParameter setupParams, ArtifactManager am, ArtifactDependencyResolver dependencyResolver, String pathToDockerTagScript,String cvsConfigSpecificBranchFilePath) {
-        return new PatchSetupTask(jschSession, localSession, patch, repo, setupParams, am, dependencyResolver,pathToDockerTagScript,cvsConfigSpecificBranchFilePath);
+    public static Runnable create(CommandRunner jschSession, CommandRunner localSession, Patch patch, PatchPersistence repo, SetupParameter setupParams, ArtifactManager am, ArtifactDependencyResolver dependencyResolver, String pathToDockerTagScript,String cvsConfigSpecificBranchFilePath, String tagDbModuleChunkSize) {
+        return new PatchSetupTask(jschSession, localSession, patch, repo, setupParams, am, dependencyResolver,pathToDockerTagScript,cvsConfigSpecificBranchFilePath,tagDbModuleChunkSize);
     }
 
     private final CommandRunner jschSession;
@@ -40,8 +39,9 @@ public class PatchSetupTask implements Runnable {
     private final ArtifactDependencyResolver dependencyResolver;
     private final String pathToDockerTagScript;
     private final String cvsConfigSpecificBranchFilePath;
+    private final String tagDbModuleChunkSize;
 
-    private PatchSetupTask(CommandRunner jschSession, CommandRunner localSession, Patch patch, PatchPersistence repo, SetupParameter setupParams, ArtifactManager am, ArtifactDependencyResolver dependencyResolver, String pathToDockerTagScript, String cvsConfigSpecificBranchFilePath) {
+    private PatchSetupTask(CommandRunner jschSession, CommandRunner localSession, Patch patch, PatchPersistence repo, SetupParameter setupParams, ArtifactManager am, ArtifactDependencyResolver dependencyResolver, String pathToDockerTagScript, String cvsConfigSpecificBranchFilePath, String tagDbModuleChunkSize) {
         super();
         this.jschSession = jschSession;
         this.localSession = localSession;
@@ -52,6 +52,7 @@ public class PatchSetupTask implements Runnable {
         this.dependencyResolver = dependencyResolver;
         this.pathToDockerTagScript = pathToDockerTagScript;
         this.cvsConfigSpecificBranchFilePath = cvsConfigSpecificBranchFilePath;
+        this.tagDbModuleChunkSize = tagDbModuleChunkSize;
     }
 
     @Override
@@ -101,8 +102,12 @@ public class PatchSetupTask implements Runnable {
             LOGGER.info("Creating Tag for DB Objects for patch " + patch.getPatchNumber());
             DBPatch dbPatch = patch.getDbPatch();
             dbPatch.withPatchTag(patch.getTagNr());
-            jschSession.run(PatchSshCommand.createTagPatchModulesCmd(dbPatch.getPatchTag(), patch.getDbPatch().getDbPatchBranch(),
-                    patch.getDbPatch().retrieveDbObjectsAsVcsPath()));
+            List<List<String>> dbModulesChunks = Lists.partition(patch.getDbPatch().retrieveDbObjectsAsVcsPath(), Integer.parseInt(tagDbModuleChunkSize));
+            LOGGER.info("DB Objects will be tagged in " + dbModulesChunks.size() + " chunk(s).");
+            dbModulesChunks.forEach(chunk -> {
+                LOGGER.info("Following DB Objects will now be tagged : " + chunk);
+                jschSession.run(PatchSshCommand.createTagPatchModulesCmd(dbPatch.getPatchTag(), patch.getDbPatch().getDbPatchBranch(),chunk));
+            });
         } catch (Exception e) {
             LOGGER.error("Patch Setup Task for patch " + patch.getPatchNumber() + " encountered an error while tagging DB Modules:" + e.getMessage());
             notifyDbFor(setupParams.getErrorNotification());
