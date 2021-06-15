@@ -41,3 +41,6 @@ docker.tag.script.path=/opt/apg-patch-service-server/bin/ibusDockerTagNPush.sh
 
 # Path to property file where specific CVS Branches are define for list of CVS modules
 cvs.config.specific.branch.file.path=/etc/opt/apg-patch-service-server/cvsConfigSpecificBranchForModules.properties
+
+# Max number of db modules which will be tagged in one shot. Restart required for new setting to be applied
+tag.db.module.chunk.size=30
