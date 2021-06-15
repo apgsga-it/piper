@@ -78,6 +78,9 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 	@Value("${cvs.config.specific.branch.file.path:/etc/opt/apg-patch-service-server/cvsConfigSpecificBranchForModules.properties}")
 	private String CVS_CONFIG_SPECIFIC_BRANCH_FILE_PATH;
 
+	@Value("${tag.db.module.chunk.size:30}")
+	private String TAG_DB_MODULE_CHUNK_SIZE;
+
 	public SimplePatchContainerBean() {
 		super();
 	}
@@ -321,7 +324,7 @@ public class SimplePatchContainerBean implements PatchService, PatchOpService {
 		Asserts.notNull(patch,"Patch %s does not exist for setup",  sp.getPatchNumber());
 		CommandRunner jschSession = getJschSessionFactory().create();
 		CommandRunner localSession = getDockerCmdRunnerFactory().create();
-		PatchSetupTask.create(jschSession, localSession, patch, repo, sp, am, dependencyResolver,DOCKER_TAG_SCRIPT_NAME,CVS_CONFIG_SPECIFIC_BRANCH_FILE_PATH).run();
+		PatchSetupTask.create(jschSession, localSession, patch, repo, sp, am, dependencyResolver,DOCKER_TAG_SCRIPT_NAME,CVS_CONFIG_SPECIFIC_BRANCH_FILE_PATH,TAG_DB_MODULE_CHUNK_SIZE).run();
 	}
 
 	@Override
