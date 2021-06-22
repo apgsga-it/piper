@@ -101,7 +101,7 @@ class PatchCli {
 			sa longOpt: 'save', args:1, argName: 'patchFile', 'Saves a <patchFile> to the server, which starts the Patch Pipeline', required: false
 			build longOpt: 'build', args:4, valueSeparator: ",", argName: 'patchNumber,stage,successNotification,errorNotification', 'Build a patch for a stage. eg.: 8000,Informatiktest,doneOk', required: false
 			cm longOpt: 'cleanLocalMavenRepo', "Clean local Maven Repo used bei service", required: false
-			log longOpt: 'log', args:4, valueSeparator: ",", argName: 'patchNumber,target,step,text', 'Log a patch steps for a patch', required: false
+			log longOpt: 'log', args:5, valueSeparator: ",", argName: 'patchNumber,target,step,text,buildUrl', 'Log a patch steps for a patch', required: false
 			adp longOpt: 'assembleDeployPipeline', args:3, valueSeparator: ",", argName: 'target,successNotification,errorNotification', "starts an assembleAndDeploy pipeline. First parameters is a list seprated with ';'", required: false
 			i longOpt: 'install', args:3, valueSeparator: ",", argName: 'target,successNotification,errorNotification', "starts an install pipeline for the given target", required: false
 			setup longOpt: 'setup', args:3, valueSeparator: ",", argName: 'patchNumber,successNotification,errorNotification', 'Starts setup for a patch, required before beeing ready to build', required: false
@@ -170,8 +170,9 @@ class PatchCli {
 			}
 		}
 		if (options.log) {
-			if (options.logs.size() != 4) {
-				println "Logging activity requires a Patch number, target, step and text"
+			// JHE (22.06.2021): Both test for backward compatibility
+			if (options.logs.size() != 4 && options.logs.size() != 5) {
+				println "Logging activity requires a Patch number, target, step, text and optionally a buildUrl"
 				error = true
 			}
 		}
@@ -376,10 +377,12 @@ class PatchCli {
 		def target = options.logs[1]
 		def step = options.logs[2]
 		def text = options.logs[3]
+		def linkToJob = options.logs[4] == null ? "Not supported yet" : options.logs[4]
 		def pldBuilder = PatchLogDetails.builder()
 		pldBuilder.target(target)
 		pldBuilder.patchPipelineTask(step)
 		pldBuilder.logText(text)
+		pldBuilder.linkToJob(linkToJob)
 		pldBuilder.datetime(new Date())
 		def pld = pldBuilder.build()
 		println "Logging patch activity for patch number ${patchNumber} with following info : target=${target},step=${step},text=${text}"
