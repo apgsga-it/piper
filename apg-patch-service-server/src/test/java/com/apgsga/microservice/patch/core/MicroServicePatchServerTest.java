@@ -341,7 +341,7 @@ public class MicroServicePatchServerTest {
 	@Test
 	public void testPatchServiceSetup() {
 		Service service = Service.builder()
-				.serviceName("SomeOtherService")
+				.serviceName("it21")
 				.build();
 		List<Service> services = Lists.newArrayList(service);
 		Patch p = Patch.builder()
@@ -392,7 +392,7 @@ public class MicroServicePatchServerTest {
 	public void testRetrieveASpecificTargetInstance() {
 
 		String searchedTarget = "DEV-CHEI211";
-		String searchedService = "digiflex";
+		String searchedService = "digiflex-web-sa";
 
 		TargetInstance targetInstance = patchService.getRepo().targetInstances().getTargetInstances().stream().filter(ti -> ti.getName().equals(searchedTarget)).findFirst().get();
 

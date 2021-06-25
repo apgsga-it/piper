@@ -90,25 +90,28 @@ public class TaskStartOnClonePipeline implements Runnable {
         cmdRunner.run(cmd);
     }
 
-
+    private boolean needToDealWithDb() {
+        return preprocessor.isTargetPartOfStageMapping(onCloneParameter.getTarget()) || preprocessor.isDbConfiguredFor(onCloneParameter.getTarget());
+    }
 
     private String pipelineOnCloneParameterAsJson() {
         try {
             List<OnCloneBuildParameters> onCloneBuildParameters = Lists.newArrayList();
             onCloneParameter.getPatchNumbers().forEach(patchNumber -> {
                 Patch p = preprocessor.retrievePatch(patchNumber);
+                List<Service> servicesForPatchOnTarget = preprocessor.reduceOnlyServicesConfiguredForTarget(p.getServices(),onCloneParameter.getTarget());
                 onCloneBuildParameters.add(OnCloneBuildParameters.builder()
                         .patchNumber(patchNumber)
                         .target(onCloneParameter.getTarget())
-                        .dbObjectsAsVcsPath(p.getDbPatch().retrieveDbObjectsAsVcsPath())
-                        .dbObjects(p.getDbPatch().getDbObjects())
+                        .dbObjectsAsVcsPath(needToDealWithDb() ? p.getDbPatch().retrieveDbObjectsAsVcsPath() : Lists.newArrayList())
+                        .dbObjects(needToDealWithDb() ? p.getDbPatch().getDbObjects() : Lists.newArrayList())
                         .dbPatchTag(p.getDbPatch().getPatchTag())
                         .dbPatchBranch(p.getDbPatch().getDbPatchBranch())
                         .packagers(preprocessor.retrievePackagerInfoFor(Sets.newHashSet(patchNumber), onCloneParameter.getTarget()))
                         .dbZipNames(preprocessor.retrieveDbZipNames(Sets.newHashSet(patchNumber), onCloneParameter.getTarget()))
                         .dockerServices(p.getDockerServices())
-                        .services(p.getServices())
-                        .artifactsToBuild(p.getServices().stream().collect(Collectors.toMap(Service::getServiceName, Service::retrieveMavenArtifactsToBuild)))
+                        .services(servicesForPatchOnTarget)
+                        .artifactsToBuild(servicesForPatchOnTarget.stream().collect(Collectors.toMap(Service::getServiceName, Service::retrieveMavenArtifactsToBuild)))
                         .build());
             });
 
