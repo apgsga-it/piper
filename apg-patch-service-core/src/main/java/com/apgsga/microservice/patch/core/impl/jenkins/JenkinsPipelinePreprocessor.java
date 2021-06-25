@@ -5,6 +5,7 @@ import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -173,7 +174,7 @@ public class JenkinsPipelinePreprocessor {
 
     private List<Service> javaServicesFor(List<Service> services, String target) {
         List<String> servicesConfiguredForTarget = getServicesConfiguredFor(target);
-        List<Service> filteredServices = Lists.newArrayList();
+        Set<Service> filteredServices = Sets.newHashSet();
         services.forEach( s -> {
             s.getServiceMetaData().getPackages().forEach(p -> {
                 if(servicesConfiguredForTarget.contains(p.getPkgServiceName())) {
@@ -181,7 +182,7 @@ public class JenkinsPipelinePreprocessor {
                 }
             });
         });
-        return filteredServices;
+        return Lists.newArrayList(filteredServices);
     }
 
     private List<String> getServicesConfiguredFor(String target) {
