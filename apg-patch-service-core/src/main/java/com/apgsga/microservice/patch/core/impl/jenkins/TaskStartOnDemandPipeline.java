@@ -7,6 +7,7 @@ import com.apgsga.microservice.patch.core.commands.CommandRunner;
 import com.apgsga.microservice.patch.core.commands.jenkins.ssh.JenkinsSshCommand;
 import com.apgsga.microservice.patch.exceptions.ExceptionFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.logging.Log;
@@ -59,24 +60,29 @@ public class TaskStartOnDemandPipeline implements Runnable {
         LOGGER.info("Result of onDemand Pipeline Job " + jobName + ", : " + result.toString());
     }
 
+    private boolean needToDealWithDb() {
+        return preprocessor.isTargetPartOfStageMapping(onDemandParameter.getTarget()) || preprocessor.isDbConfiguredFor(onDemandParameter.getTarget());
+    }
+
     private String pipelineOnDemandParameterAsJson() {
         try {
             Patch patch = preprocessor.retrievePatch(onDemandParameter.getPatchNumber());
+            List<Service> servicesForPatchOnTarget = preprocessor.reduceOnlyServicesConfiguredForTarget(patch.getServices(),onDemandParameter.getTarget());
             OnDemandPipelineParameter onDemandPipelineParameter = OnDemandPipelineParameter.builder()
                     .patchNumber(onDemandParameter.getPatchNumber())
                     .target(onDemandParameter.getTarget())
                     .developerBranch(patch.getDeveloperBranch())
-                    .dbObjectsAsVcsPath(patch.getDbPatch().retrieveDbObjectsAsVcsPath())
+                    .dbObjectsAsVcsPath(needToDealWithDb() ? patch.getDbPatch().retrieveDbObjectsAsVcsPath() : Lists.newArrayList())
                     .dbPatchTag(patch.getDbPatch().getPatchTag())
-                    .dbObjects(patch.getDbPatch().getDbObjects())
+                    .dbObjects(needToDealWithDb() ? patch.getDbPatch().getDbObjects() : Lists.newArrayList())
                     .dbPatchBranch(patch.getDbPatch().getDbPatchBranch())
                     .dockerServices(patch.getDockerServices())
-                    .services(patch.getServices())
-                    .artifactsToBuild(patch.getServices().stream().collect(Collectors.toMap(Service::getServiceName, Service::retrieveMavenArtifactsToBuild)))
+                    .services(servicesForPatchOnTarget)
+                    .artifactsToBuild(servicesForPatchOnTarget.stream().collect(Collectors.toMap(Service::getServiceName, Service::retrieveMavenArtifactsToBuild)))
                     .packagers(preprocessor.retrievePackagerInfoFor(Sets.newHashSet(onDemandParameter.getPatchNumber()),onDemandParameter.getTarget()))
                     .dbZipNames(preprocessor.retrieveDbZipNames(Sets.newHashSet(onDemandParameter.getPatchNumber()),onDemandParameter.getTarget()))
                     .dbZipDeployTarget(preprocessor.retrieveDbDeployInstallerHost(onDemandParameter.getTarget()))
-                    .installDbPatch(preprocessor.needInstallDbPatchFor(Sets.newHashSet(onDemandParameter.getPatchNumber())))
+                    .installDbPatch(preprocessor.needInstallDbPatchFor(Sets.newHashSet(onDemandParameter.getPatchNumber()),onDemandParameter.getTarget()))
                     .dbZipInstallFrom(preprocessor.retrieveDbDeployInstallerHost(onDemandParameter.getTarget()))
                     .installDockerServices(preprocessor.needInstallDockerServicesFor(Sets.newHashSet(onDemandParameter.getPatchNumber())))
                     .pathToDockerInstallScript(dockerInstallScriptPath)

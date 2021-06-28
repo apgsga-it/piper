@@ -5,6 +5,7 @@ import com.apgsga.microservice.patch.api.*;
 import com.apgsga.microservice.patch.exceptions.Asserts;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
-@Profile("live")
+@Profile({"live","test"})
 @Component("jenkinsPipelinePreprocessor")
 public class JenkinsPipelinePreprocessor {
 
@@ -52,11 +55,11 @@ public class JenkinsPipelinePreprocessor {
         return backend.findById(patchNumber);
     }
 
-    public String retrieveVcsBranchFor(Service service) {
+    private String retrieveVcsBranchFor(Service service) {
         return  backend.getServiceMetaDataByName(service.getServiceName()).getMicroServiceBranch();
     }
 
-    public String retrieveTargetHostFor(Package aPackage, String target) {
+    private String retrieveTargetHostFor(Package aPackage, String target) {
         Optional<TargetInstance> targetInstanceOptional = backend.targetInstances().getTargetInstances().stream().filter(ti -> ti.getName().equalsIgnoreCase(target)).findFirst();
         Asserts.notNull(targetInstanceOptional,"No targetInstance has been found for %s",target);
         Asserts.isTrue(targetInstanceOptional.isPresent(),"No targetInstance has been found for %s",target);
@@ -69,20 +72,24 @@ public class JenkinsPipelinePreprocessor {
 
     public List<String> retrieveDbZipNames(Set<String> patchNumbers, String target) {
         List<String> dbZipNames = Lists.newArrayList();
-        patchNumbers.forEach(patchNumber -> {
-            Patch patch = backend.findById(patchNumber);
-            if(!patch.getDbPatch().getDbObjects().isEmpty()) {
-                dbZipNames.add(patch.getDbPatch().getDbPatchBranch() + "_" + target.toUpperCase() + ".zip");
-            }
-        });
+        if(isTargetPartOfStageMapping(target) || isDbConfiguredFor(target)) {
+            patchNumbers.forEach(patchNumber -> {
+                Patch patch = backend.findById(patchNumber);
+                if (!patch.getDbPatch().getDbObjects().isEmpty()) {
+                    dbZipNames.add(patch.getDbPatch().getDbPatchBranch() + "_" + target.toUpperCase() + ".zip");
+                }
+            });
+        }
         return dbZipNames;
     }
 
-    public boolean needInstallDbPatchFor(Set<String> patchNumbers) {
-        for(String patchNumber : patchNumbers) {
-            Patch patch = backend.findById(patchNumber);
-            if(!patch.getDbPatch().getDbObjects().isEmpty()) {
-                return true;
+    public boolean needInstallDbPatchFor(Set<String> patchNumbers, String target) {
+        if(isTargetPartOfStageMapping(target) || isDbConfiguredFor(target)) {
+            for (String patchNumber : patchNumbers) {
+                Patch patch = backend.findById(patchNumber);
+                if (!patch.getDbPatch().getDbObjects().isEmpty()) {
+                    return true;
+                }
             }
         }
         return false;
@@ -98,7 +105,7 @@ public class JenkinsPipelinePreprocessor {
         return false;
     }
 
-    public List<Package> packagesFor(Service service) {
+    private List<Package> packagesFor(Service service) {
         return backend.packagesFor(service);
     }
 
@@ -106,7 +113,8 @@ public class JenkinsPipelinePreprocessor {
         LOGGER.info("Retrieving packager info for target " + target + " and following patch(es) : " + patchNumbers.toString());
         List<PackagerInfo> packagers = Lists.newArrayList();
         patchNumbers.forEach(number -> {
-            retrievePatch(number).getServices().forEach(service -> {
+            List<Service> servicesConfiguredForTarget = reduceOnlyServicesConfiguredForTarget(retrievePatch(number).getServices(), target);
+            servicesConfiguredForTarget.forEach(service -> {
                 packagesFor(service).forEach(aPackage -> {
                     if(!packagers.stream().anyMatch(p -> p.name.equals(aPackage.getPackagerName()))) {
                         packagers.add(new PackagerInfo(aPackage.getPackagerName()
@@ -119,28 +127,70 @@ public class JenkinsPipelinePreprocessor {
         return packagers;
     }
 
-    public Map<String,InstallDbObjectsInfos> retrieveDbObjectInfoFor(Set<String> patchNumbers) {
+    public Map<String,InstallDbObjectsInfos> retrieveDbObjectInfoFor(Set<String> patchNumbers, String target) {
         LOGGER.info("Retrieving dbObject info for following patch(es) : " + patchNumbers.toString());
         Map<String,InstallDbObjectsInfos> installDbObjectsInfos = Maps.newHashMap();
-        patchNumbers.forEach(number -> {
-            Patch patch = retrievePatch(number);
-            InstallDbObjectsInfos dboInfo = new InstallDbObjectsInfos(patch.getDbPatch().getPatchTag(),patch.getDbPatch().getDbPatchBranch());
-            patch.getDbPatch().getDbObjects().forEach(dbo -> {
-                dboInfo.dbObjectsModuleNames.add(dbo.getModuleName());
+        if(isTargetPartOfStageMapping(target) || isDbConfiguredFor(target)) {
+            patchNumbers.forEach(number -> {
+                Patch patch = retrievePatch(number);
+                InstallDbObjectsInfos dboInfo = new InstallDbObjectsInfos(patch.getDbPatch().getPatchTag(), patch.getDbPatch().getDbPatchBranch());
+                patch.getDbPatch().getDbObjects().forEach(dbo -> {
+                    dboInfo.dbObjectsModuleNames.add(dbo.getModuleName());
+                });
+                installDbObjectsInfos.put(number, dboInfo);
             });
-            installDbObjectsInfos.put(number,dboInfo);
-        });
+        }
         return installDbObjectsInfos;
     }
 
+
     public String retrieveDbDeployInstallerHost(String target) {
-        LOGGER.info("Retrieving db deploy target for target " + target);
-        Optional<TargetInstance> ti = backend.targetInstances().getTargetInstances().stream().filter(f -> f.getName().equalsIgnoreCase(target)).findFirst();
-        Asserts.notNull(ti,"No targetInstance has been found for %s",target);
-        Asserts.isTrue(ti.isPresent(),"No targetInstance has been found for %s",target);
-        Optional<ServiceInstallation> si = ti.get().getServices().stream().filter(s -> s.getServiceName().equalsIgnoreCase(IT_21_DB_SERVICE_NAME)).findFirst();
-        Asserts.notNull(si,"No Service has been found for %s",IT_21_DB_SERVICE_NAME);
-        Asserts.isTrue(si.isPresent(),"No Service has been found for %s",IT_21_DB_SERVICE_NAME);
-        return si.get().getInstallationHost();
+        if(isTargetPartOfStageMapping(target) || isDbConfiguredFor(target)) {
+            LOGGER.info("Retrieving db deploy target for target " + target);
+            Optional<TargetInstance> ti = backend.targetInstances().getTargetInstances().stream().filter(f -> f.getName().equalsIgnoreCase(target)).findFirst();
+            Asserts.notNull(ti, "No targetInstance has been found for %s", target);
+            Asserts.isTrue(ti.isPresent(), "No targetInstance has been found for %s", target);
+            Optional<ServiceInstallation> si = ti.get().getServices().stream().filter(s -> s.getServiceName().equalsIgnoreCase(IT_21_DB_SERVICE_NAME)).findFirst();
+            Asserts.notNull(si, "No Service has been found for %s", IT_21_DB_SERVICE_NAME);
+            Asserts.isTrue(si.isPresent(), "No Service has been found for %s", IT_21_DB_SERVICE_NAME);
+            return si.get().getInstallationHost();
+        }
+        return null;
+    }
+
+    public boolean isTargetPartOfStageMapping(String target) {
+        List<StageMapping> stageMappings = backend.stageMappings().getStageMappings();
+        return stageMappings.stream().filter(s -> s.getTarget().equalsIgnoreCase(target)).count() > 0;
+    }
+
+    public boolean isDbConfiguredFor(String target) {
+        return getServicesConfiguredFor(target).contains(IT_21_DB_SERVICE_NAME);
+    }
+
+    public List<Service> reduceOnlyServicesConfiguredForTarget(List<Service> services, String target) {
+        List<Service> result = !isTargetPartOfStageMapping(target) ? javaServicesFor(services,target) : services;
+        return result;
+    }
+
+    private List<Service> javaServicesFor(List<Service> services, String target) {
+        List<String> servicesConfiguredForTarget = getServicesConfiguredFor(target);
+        Set<Service> filteredServices = Sets.newHashSet();
+        services.forEach( s -> {
+            s.getServiceMetaData().getPackages().forEach(p -> {
+                if(servicesConfiguredForTarget.contains(p.getPkgServiceName())) {
+                    filteredServices.add(s);
+                }
+            });
+        });
+        return Lists.newArrayList(filteredServices);
+    }
+
+    private List<String> getServicesConfiguredFor(String target) {
+        List<String> result = Lists.newArrayList();
+        Optional<TargetInstance> targetInstance = backend.targetInstances().getTargetInstances().stream().filter(t -> t.getName().equalsIgnoreCase(target)).findFirst();
+        if(targetInstance.isPresent()) {
+            result.addAll(targetInstance.get().getServices().stream().map(s -> s.getServiceName()).collect(Collectors.toList()));
+        }
+        return result;
     }
 }

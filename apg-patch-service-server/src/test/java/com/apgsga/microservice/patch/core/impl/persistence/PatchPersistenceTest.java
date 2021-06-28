@@ -106,8 +106,8 @@ public class PatchPersistenceTest {
 
 	@Test
 	public void testFindServiceByName() {
-		assertNotNull(repo.getServiceMetaDataByName("It21Ui"));
-		assertNotNull(repo.getServiceMetaDataByName("SomeOtherService"));
+		assertNotNull(repo.getServiceMetaDataByName("it21"));
+		assertNotNull(repo.getServiceMetaDataByName("digiflex"));
 	}
 
 	@Test
@@ -175,19 +175,19 @@ public class PatchPersistenceTest {
 	@Test
 	public void testLoadTargetInstances() {
 		TargetInstances targetInstances = repo.targetInstances();
-		assertEquals(4,targetInstances.getTargetInstances().size());
+		assertEquals(5,targetInstances.getTargetInstances().size());
 		for(TargetInstance targetInstance : targetInstances.getTargetInstances()) {
 			// JHE : Just test two, not even sure it makes sense to load a complete file
 			if(targetInstance.getName().equals("DEV-CHPI211")) {
-				assertEquals(5,targetInstance.getServices().size());
-				List<String> devChpi211ServiceNames = Stream.of("it21-db","ds-db","digiflex","jadas","it21_ui").collect(Collectors.toList());
+				assertEquals(6,targetInstance.getServices().size());
+				List<String> devChpi211ServiceNames = Stream.of("it21-db","ds-db","digiflex-web-sa","digiflex-web-it21","jadas","it21-ui").collect(Collectors.toList());
 				for(ServiceInstallation serviceMetaData : targetInstance.getServices()) {
 					assertTrue(devChpi211ServiceNames.contains(serviceMetaData.getServiceName()));
 				}
 			}
 			if(targetInstance.getName().equals("DEV-CHQI211")) {
 				assertEquals(2,targetInstance.getServices().size());
-				List<String> devChqi211ServiceNames = Stream.of("it21-db","it21_ui").collect(Collectors.toList());
+				List<String> devChqi211ServiceNames = Stream.of("it21-db","it21-ui").collect(Collectors.toList());
 				List<String> devChqi211NoServiceNames = Stream.of("ds-db","digiflex","jadas").collect(Collectors.toList());
 				for(ServiceInstallation serviceMetaData : targetInstance.getServices()) {
 					assertTrue(devChqi211ServiceNames.contains(serviceMetaData.getServiceName()));

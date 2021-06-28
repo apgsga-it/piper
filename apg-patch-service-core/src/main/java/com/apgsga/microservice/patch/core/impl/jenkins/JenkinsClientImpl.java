@@ -109,10 +109,10 @@ public class JenkinsClientImpl implements JenkinsClient {
 				.successNotification(parameters.getSuccessNotification())
 				.patchNumbers(parameters.getPatchNumbers())
 				.packagers(preprocessor.retrievePackagerInfoFor(parameters.getPatchNumbers(),parameters.getTarget()))
-				.installDbPatch(preprocessor.needInstallDbPatchFor(parameters.getPatchNumbers()))
+				.installDbPatch(preprocessor.needInstallDbPatchFor(parameters.getPatchNumbers(),parameters.getTarget()))
 				.dbZipInstallFrom(preprocessor.retrieveDbDeployInstallerHost(parameters.getTarget()))
 				.isProductionInstallation(preprocessor.retrieveTargetForStageName("produktion").equalsIgnoreCase(parameters.getTarget()))
-				.installDbObjectsInfos(preprocessor.retrieveDbObjectInfoFor(parameters.getPatchNumbers()))
+				.installDbObjectsInfos(preprocessor.retrieveDbObjectInfoFor(parameters.getPatchNumbers(),parameters.getTarget()))
 				.installDockerServices(preprocessor.needInstallDockerServicesFor(parameters.getPatchNumbers()))
 				.pathToDockerInstallScript(dockerInstallScriptPath)
 				.build();
