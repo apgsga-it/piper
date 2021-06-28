@@ -16,6 +16,7 @@ public class PatchLogDetails  {
 	String target;
 	String patchPipelineTask;
 	String logText;
+	String linkToJob;
 
 	@JsonPOJOBuilder(withPrefix = "")
 	public static class PatchLogDetailsBuilder {}

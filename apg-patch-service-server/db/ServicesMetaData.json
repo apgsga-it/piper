@@ -1,7 +1,8 @@
 {
 	"servicesMetaData": [
 		{
-			"serviceName": "It21Ui",
+			"serviceName": "it21",
+			"revisionPkgName": "it21-ui-pkgs/revision",
 			"bomCoordinates": {
 				"artifactId": "dm-bom",
 				"groupId": "com.affichage.common.maven",
@@ -9,45 +10,107 @@
 				"version": "9.1.0.ADMIN-UIMIG-SNAPSHOT",
 				"dependencyLevel": 0
 			},
-			"microServiceBranch": "it21_release_9_1_0_admin_uimig",
+			"microServiceBranch": "it21_release_9_1_1_admin_uimig",
 			"baseVersionNumber": "9.1.0",
 			"revisionMnemoPart": "ADMIN-UIMIG",
 			"packages": [
 				{
-					"packagerName": "it21ui-package",
+					"packagerName": "it21-ui-pkgs/ui",
+					"pkgServiceName": "it21-ui",
 					"starterCoordinates": [
-						"someappgroupId:artifactId",
-						"anotherappgroupId:anotherartifactId"
+						"com.affichage.it21.ui:it21-ui-runtime",
+						"com.apgsga.it21.ui.mdt:it21ui-app-starter",
+						"com.apgsga.it21.ui.mdt:javaforms-starter",
+						"com.apgsga.it21:lasttests-jfmt",
+						"org.springframework.boot:spring-boot-starter-tomcat",
+						"moyosoft:moyocore_x64:3.0.4:@dll"
 					]
 				},
 				{
-					"packagerName": "it21jadas-package",
+					"packagerName": "it21-ui-pkgs/server",
+					"pkgServiceName": "jadas",
 					"starterCoordinates": [
-						"someappgroupId:artifactId",
-						"anotherappgroupId:anotherartifactId"
+						"com.apgsga.it21.ui.mdt:jadas-app-starter",
+						"com.apgsga.it21.ui.mdt:jadas-framework-starter"
 					]
 				}
 			]
 		},
 		{
-			"serviceName": "SomeOtherService",
+			"serviceName": "digiflex",
+			"revisionPkgName": "digiflex-revision-pkg",
 			"bomCoordinates": {
-				"artifactId": "other-dm-bom",
+				"artifactId": "dm-bom",
+				"dependencyLevel": 0,
 				"groupId": "com.affichage.common.maven",
 				"name": "_dm_bom",
-				"version": "1.1.0.WHATEVER-SNAPSHOT",
-				"dependencyLevel": 0
+				"version": "9.1.0.DIGIFLEX-SNAPSHOT"
 			},
-			"microServiceBranch": "it21_release_9_1_0_admin_uimig",
+			"microServiceBranch": "apg_vaadin_1_0_x_digiflex",
 			"baseVersionNumber": "9.1.0",
-			"revisionMnemoPart": "ADMIN-UIMIG",
+			"revisionMnemoPart": "DIGIFLEX",
 			"packages": [
 				{
-					"packagerName": "otherpackage",
-					"starterCoordinates": [
-						"someappgroupId:artifactId",
-						"anotherappgroupId:anotherartifactId"
-					]
+					"packagerName": "digiflex-web-sa-pkg",
+					"pkgServiceName": "digiflex-web-sa",
+					"starterCoordinates": []
+				},
+				{
+					"packagerName": "digiflex-web-it21-pkg",
+					"pkgServiceName": "digiflex-web-it21",
+					"starterCoordinates": []
+				}
+			]
+		},
+		{
+			"serviceName": "aushang-planung",
+			"revisionPkgName": "aushang-planung-pkgs/revision",
+			"bomCoordinates": {
+				"artifactId": "dm-bom-aushang-planung",
+				"dependencyLevel": 0,
+				"groupId": "com.affichage.common.maven",
+				"name": "_dm-bom-aushang-planung",
+				"version": "9.1.0.SSO-SNAPSHOT"
+			},
+			"microServiceBranch": "sso_migration_ecommerce_oidc",
+			"baseVersionNumber": "9.1.0",
+			"revisionMnemoPart": "SSO",
+			"packages": [
+				{
+					"packagerName": "aushang-planung-pkgs/rest",
+					"pkgServiceName": "aush-plan-rest",
+					"starterCoordinates": []
+				},
+				{
+					"packagerName": "aushang-planung-pkgs/ui",
+					"pkgServiceName": "aush-plan-ui",
+					"starterCoordinates": []
+				}
+			]
+		},
+		{
+			"serviceName": "info-display",
+			"revisionPkgName": "info-display-pkgs/revision",
+			"bomCoordinates": {
+				"artifactId": "dm-bom-info-display",
+				"dependencyLevel": 0,
+				"groupId": "com.affichage.common.maven",
+				"name": "_dm-bom-info-display",
+				"version": "9.1.0.SSO-SNAPSHOT"
+			},
+			"microServiceBranch": "sso_migration_ecommerce_oidc",
+			"baseVersionNumber": "9.1.0",
+			"revisionMnemoPart": "SSO",
+			"packages": [
+				{
+					"packagerName": "info-display-pkgs/rest",
+					"pkgServiceName": "info-display-rest",
+					"starterCoordinates": []
+				},
+				{
+					"packagerName": "info-display-pkgs/ui",
+					"pkgServiceName": "info-display-ui",
+					"starterCoordinates": []
 				}
 			]
 		}

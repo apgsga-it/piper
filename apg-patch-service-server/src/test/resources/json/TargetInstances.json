@@ -15,7 +15,12 @@
         },
         {
           "installationHost": "dev-digiflex-p.apgsga.ch",
-          "serviceName": "digiflex",
+          "serviceName": "digiflex-web-sa",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "dev-digiflex-t.apgsga.ch",
+          "serviceName": "digiflex-web-it21",
           "serviceType": "linuxservice"
         },
         {
@@ -25,7 +30,7 @@
         },
         {
           "installationHost": "dev-service-chpi211.apgsga.ch",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         }
       ]
@@ -40,7 +45,7 @@
         },
         {
           "installationHost": "dev-service-chqi211.apgsga.ch",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         }
       ]
@@ -60,7 +65,12 @@
         },
         {
           "installationHost": "dev-digiflex-t.apgsga.ch",
-          "serviceName": "digiflex",
+          "serviceName": "digiflex-web-sa",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "dev-digiflex-t.apgsga.ch",
+          "serviceName": "digiflex-web-it21",
           "serviceType": "linuxservice"
         },
         {
@@ -70,7 +80,7 @@
         },
         {
           "installationHost": "dev-service-chti211.apgsga.ch",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         }
       ]
@@ -90,7 +100,12 @@
         },
         {
           "installationHost": "dev-digiflex-e.apgsga.ch",
-          "serviceName": "digiflex",
+          "serviceName": "digiflex-web-sa",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "dev-digiflex-t.apgsga.ch",
+          "serviceName": "digiflex-web-it21",
           "serviceType": "linuxservice"
         },
         {
@@ -100,7 +115,42 @@
         },
         {
           "installationHost": "dev-service-chei211.apgsga.ch",
-          "serviceName": "it21_ui",
+          "serviceName": "it21-ui",
+          "serviceType": "linuxbasedwindowsfilesystem"
+        }
+      ]
+    },
+    {
+      "name": "DEV-JHE",
+      "services": [
+        {
+          "installationHost": "dev-chei211.apgsga.ch",
+          "serviceName": "it21-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "dev-ds.apgsga.ch",
+          "serviceName": "ds-db",
+          "serviceType": "oracle-db"
+        },
+        {
+          "installationHost": "dev-digiflex-e.apgsga.ch",
+          "serviceName": "digiflex-web-sa",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "dev-digiflex-t.apgsga.ch",
+          "serviceName": "digiflex-web-it21",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "dev-jadas-e.apgsga.ch",
+          "serviceName": "jadas",
+          "serviceType": "linuxservice"
+        },
+        {
+          "installationHost": "dev-service-chei211.apgsga.ch",
+          "serviceName": "it21-ui",
           "serviceType": "linuxbasedwindowsfilesystem"
         }
       ]
