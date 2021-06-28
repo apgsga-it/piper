@@ -67,6 +67,7 @@ public class TaskStartOnDemandPipeline implements Runnable {
     private String pipelineOnDemandParameterAsJson() {
         try {
             Patch patch = preprocessor.retrievePatch(onDemandParameter.getPatchNumber());
+            List<Service> servicesForPatchOnTarget = preprocessor.reduceOnlyServicesConfiguredForTarget(patch.getServices(),onDemandParameter.getTarget());
             OnDemandPipelineParameter onDemandPipelineParameter = OnDemandPipelineParameter.builder()
                     .patchNumber(onDemandParameter.getPatchNumber())
                     .target(onDemandParameter.getTarget())
@@ -76,8 +77,8 @@ public class TaskStartOnDemandPipeline implements Runnable {
                     .dbObjects(needToDealWithDb() ? patch.getDbPatch().getDbObjects() : Lists.newArrayList())
                     .dbPatchBranch(patch.getDbPatch().getDbPatchBranch())
                     .dockerServices(patch.getDockerServices())
-                    .services(preprocessor.reduceOnlyServicesConfiguredForTarget(patch.getServices(),onDemandParameter.getTarget()))
-                    .artifactsToBuild(patch.getServices().stream().collect(Collectors.toMap(Service::getServiceName, Service::retrieveMavenArtifactsToBuild)))
+                    .services(servicesForPatchOnTarget)
+                    .artifactsToBuild(servicesForPatchOnTarget.stream().collect(Collectors.toMap(Service::getServiceName, Service::retrieveMavenArtifactsToBuild)))
                     .packagers(preprocessor.retrievePackagerInfoFor(Sets.newHashSet(onDemandParameter.getPatchNumber()),onDemandParameter.getTarget()))
                     .dbZipNames(preprocessor.retrieveDbZipNames(Sets.newHashSet(onDemandParameter.getPatchNumber()),onDemandParameter.getTarget()))
                     .dbZipDeployTarget(preprocessor.retrieveDbDeployInstallerHost(onDemandParameter.getTarget()))
