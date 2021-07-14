@@ -195,10 +195,19 @@ public class ArtifactManagerImpl implements ArtifactManager {
     }
 
     public static MavenArtifact create(Dependency dependency) {
-        return MavenArtifact.builder()
+        MavenArtifact.MavenArtifactBuilder builder = MavenArtifact.builder();
+        builder
                 .artifactId(dependency.getArtifactId())
                 .groupId(dependency.getGroupId())
-                .version(dependency.getVersion()).build();
+                .version(dependency.getVersion());
+        // Because of Backward compatability , type "jar" is default
+        if (dependency.getType() != null && !dependency.getType().isEmpty()  && !dependency.getType().equals("jar")) {
+            builder.type(dependency.getType());
+        }
+        if (dependency.getScope() != null && !dependency.getScope().isEmpty()) {
+            builder.scope(dependency.getScope());
+        }
+        return builder.build();
     }
 
     private static void normalizeVersions(List<MavenArtifact> artifacts, Properties properties) {
