@@ -16,6 +16,10 @@ public class MavenArtifact {
     @Getter
     final String groupId;
     @Getter
+    final String type;
+    @Getter
+    final String scope;
+    @Getter
     String name;
     @Getter
     String version;
